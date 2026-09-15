@@ -1,6 +1,6 @@
 const status = document.getElementById("load-state");
 try {
-  await import("./game.mjs");
+  await import("./game.mjs?v=0.2");
   document.getElementById("start").disabled = false;
   document.getElementById("base").disabled = false;
   status.textContent = "准备完成 · 建议使用电脑、键盘与鼠标";

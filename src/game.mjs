@@ -7,6 +7,7 @@ import { showWorkshop } from "./skill-ui.mjs";
 import { Abilities } from "./abilities.mjs";
 import { passiveStats } from "./passives.mjs";
 import { basicStats } from "./basic.mjs";
+import { CombatControls } from './controls.mjs';
 import { startShift, tickFarm, recoverResidents } from "./farm.mjs";
 import { BossDirector } from "./boss.mjs";
 import { Soundscape } from "./audio.mjs";
@@ -39,6 +40,9 @@ let running = false,
   noticeUntil = 0,
   shake = 0,
   wave = 0;
+const basicCooldowns = Array(7).fill(0);
+let lesson = 0, lessonStart = null, practicedSkill = false;
+const controls = new CombatControls({select:i=>{selected=i;cooldown=basicCooldowns[i];},basic:()=>attack(),skill:slot=>cast(slot),hint:message=>toast(message)});
 let player,
   guards = [],
   humans = [],
@@ -441,6 +445,8 @@ function spawnRoom() {
   player.y = 735;
   player.immune = 1;
   cooldown = 0;
+  basicCooldowns.fill(0);
+  controls.clear();
   wave = 0;
   abilities.fields = [];
   abilities.pending = [];
@@ -459,7 +465,7 @@ function spawnRoom() {
     bossPhase = 0;
     toast(BOSS_LINES[0]);
   } else {
-    for (let i = 0; i < layout.guards; i++) {
+    for (let i = 0; i < (stage === 0 && room === 0 ? Math.max(16, layout.guards) : layout.guards); i++) {
       guards.push({
         id: "g" + i,
         x: 230 + ((i * 191) % 1130),
@@ -506,7 +512,7 @@ function spawnRoom() {
       guards.forEach((e, i) => {
         const group = Math.floor(i / 4),
           j = i % 4;
-        e.x = 360 + group * 420 + (j % 2) * 42;
+        e.x = 360 + (group % 3) * 420 + (j % 2) * 42;
         e.y = 515 + Math.floor(j / 2) * 42;
         e.training = true;
         e.cd = 4;
@@ -523,6 +529,8 @@ function begin() {
   room = 0;
   selected = 0;
   tutorial = 0;
+  lesson = 0; practicedSkill = false;
+  lessonStart = {x:800,y:735};
   orbit = [];
   abilities.reset();
   player = Object.assign(R.createPlayer(), {
@@ -537,7 +545,7 @@ function begin() {
   paused = false;
   $("overlay").hidden = true;
   spawnRoom();
-  toast("WASD 移动。把鼠标指向机器人，靠近后按住左键。");
+  toast("教学 1/7：先用 WASD 走一小段。守卫暂时不会行动。");
 }
 function nextRoom() {
   if (alive().length) {
@@ -569,7 +577,7 @@ function showUnlock() {
   paused = true;
   $("overlay").hidden = false;
   $("overlay").innerHTML =
-    `<div class="panel"><span class="eyebrow">DESIRE INTERFACE ${stage + 1} / 7</span><h2>${SINS[stage].name}</h2><p>${LESSONS[stage][0]}</p><p>${LESSONS[stage][1]}</p><p class="muted">旧能力仍然可以使用。数字键切换欲望，Q / E 释放当前装备的技能。解锁与升级不会随死亡消失。</p><button class="primary" id="continue-unlock">接入${SINS[stage].name}</button></div>`;
+    `<div class="panel"><span class="eyebrow">DESIRE INTERFACE ${stage + 1} / 7</span><h2>${SINS[stage].name}</h2><p>${LESSONS[stage][0]}</p><p>${LESSONS[stage][1]}</p><p class="muted">按 ${stage+1} 直接普攻；按住 ${stage+1}＋Q / E 释放该罪技能。旧能力可直接按对应数字使用，不需要左键。解锁与升级不会随死亡消失。</p><button class="primary" id="continue-unlock">接入${SINS[stage].name}</button></div>`;
   $("continue-unlock").onclick = () => {
     paused = false;
     $("overlay").hidden = true;
@@ -654,6 +662,10 @@ function slothAction(e) {
     );
 }
 function attack() {
+  cooldown = basicCooldowns[selected];
+  try { performAttack(); } finally { basicCooldowns[selected] = cooldown; }
+}
+function performAttack() {
   if (cooldown > 0 || !running || player.recovery > 0) return;
   for (const h of humans) h.awareUntil = time + 8;
   const id = sin(),
@@ -813,6 +825,7 @@ function cast(slot) {
   const error = abilities.cast(sin(), slot);
   if (error) toast(error);
   else {
+    practicedSkill = true;
     sound(70, 0.25, "triangle", 0.04);
     shake = 4;
   }
@@ -921,7 +934,8 @@ function tick(dt) {
     }
   }
   if (!running || paused) return;
-  cooldown = Math.max(0, cooldown - dt);
+  for (let i=0;i<7;i++) basicCooldowns[i] = Math.max(0,basicCooldowns[i]-dt);
+  cooldown = basicCooldowns[selected];
   skillCD = skillCD.map((x) => Math.max(0, x - dt));
   dashCD = Math.max(0, dashCD - dt);
   player.immune = Math.max(0, player.immune - dt);
@@ -1015,7 +1029,10 @@ function tick(dt) {
       player.restPaid = true;
     }
   }
-  if (mouse.down) attack();
+  controls.tick(dt);
+  if (stage===0 && room===0 && lesson===0 && dist(player,lessonStart)>65) {
+    lesson=1; toast('教学 2/7：鼠标指向机器人，靠近后按 1 吞食。每口有约7秒冷却，咬完先躲开。');
+  }
   if (
     stage === 0 &&
     room === 0 &&
@@ -1033,7 +1050,7 @@ function tick(dt) {
     toast("下一组回收守卫已启动。普攻击败可继续积累暴食。");
   }
   for (const e of alive()) {
-    if (e.waiting || e.id === "boss") continue;
+    if (e.waiting || e.id === "boss" || (stage===0 && room===0 && lesson===0)) continue;
     e.flash = Math.max(0, (e.flash || 0) - dt);
     if (e.stun > 0) {
       e.stun -= dt;
@@ -1062,6 +1079,8 @@ function tick(dt) {
   }
   for (const h of humans) {
     if (h.state !== "desiring") continue;
+    const before = {x:h.x,y:h.y};
+    h.action = '寻找目标';
     const id = dominantDesire(h.sins),
       value = h.sins[id],
       satisfied = new Set();
@@ -1073,8 +1092,13 @@ function tick(dt) {
       const target = desiredProp(h, props, 0);
       if (target) {
         seek(h, target, 20 + value * 0.6, dt);
-        if (dist(h, target) < 28) satisfied.add(id);
-      }
+        h.action = '奔向食物';
+        if (dist(h, target) < 28) {
+          h.action = '正在进食';
+          h.eatingTime = (h.eatingTime || 0) + dt;
+          if(h.eatingTime >= 1.2) { satisfied.add(id); h.eatingTime=0; h.satisfiedUntil=time+1; }
+        } else h.eatingTime=0;
+      } else { h.eatingTime=0; h.action='找不到食物'; }
     } else if (id === "greed") {
       const bullet = bullets.find(
         (b) => !b.friendly && b.life > 0 && dist(h, b) < 80,
@@ -1086,6 +1110,7 @@ function tick(dt) {
       }
       const item = desiredProp(h, props, 1);
       if (item) {
+        h.action='抢夺物品';
         seek(h, item, 20 + value * 0.6, dt);
         if (dist(h, item) < 28) {
           item.active = false;
@@ -1099,6 +1124,7 @@ function tick(dt) {
       }
     } else if (id === "lust") {
       const partner = desiredPartner(h, humans, player);
+      h.action='靠近连接对象';
       seek(h, partner, 40 + value * 0.4, dt);
       h.bondTime = dist(h, partner) < 90 ? (h.bondTime || 0) + dt : 0;
       if (
@@ -1120,6 +1146,7 @@ function tick(dt) {
         targets.some((e) => dist(e, h) < 150) ||
         dist(player, h) < 80;
       h.restTime = disturbed ? 0 : (h.restTime || 0) + dt;
+      h.action=disturbed?'无法安静休息':'正在休息';
       if (fulfilled(id, { kind: "rest", duration: h.restTime }))
         satisfied.add(id);
       if (disturbed && nearest && dist(nearest, h) < 150 && h.decision < 0) {
@@ -1129,9 +1156,11 @@ function tick(dt) {
     } else {
       const e = desiredOpponent(h, targets, id);
       if (e) {
+        h.action='追击机器人';
         seek(h, e, 30 + value * 0.65, dt);
         if (dist(h, e) < 65 && h.decision < 0) {
           h.decision = 1;
+          h.attackUntil=time+.35;
           let success = false;
           if (id === "pride") {
             const displacement = e.heavy
@@ -1156,6 +1185,9 @@ function tick(dt) {
         }
       }
     }
+    h.moving=dist(before,h)>.02;
+    h.satisfiedNow=satisfied.has(id) || (h.satisfiedUntil||0)>time;
+    if(satisfied.has(id)) h.satisfiedUntil=time+1;
     if (R.advanceHuman(h, dt, satisfied)) rescue(h);
   }
   for (const b of bullets) {
@@ -1343,6 +1375,14 @@ function tick(dt) {
     showDeath();
   }
   if (tutorial === 0 && player.sins.gluttony >= 40) tutorial = 1;
+  if(stage===0 && room===0) {
+    if(lesson===1 && player.sins.gluttony>=12) lesson=2;
+    if(lesson===2 && practicedSkill) lesson=3;
+    if(lesson===3 && player.sins.gluttony>=40) lesson=4;
+    if(lesson>=3 && humans.some(h=>h.sins.gluttony>=40)) lesson=Math.max(lesson,5);
+    if(lesson===5 && props.filter(p=>p.type==='temptation').every(p=>!p.active)) lesson=6;
+    if(tutorial===3) lesson=7;
+  }
   updateHUD();
 }
 function updateHUD() {
@@ -1382,16 +1422,25 @@ function updateHUD() {
   ];
   const list = abilities.active(sin()),
     skills = list
-      .map((n, i) => `${["Q", "E", "R", "T", "G"][i]} ${n.name}`)
+      .map((n, i) => `${selected+1}+${["Q", "E", "R", "T", "G"][i]} ${n.name}`)
       .join(" / ");
   const t =
     stage === 0 && room === 0
-      ? intro[tutorial]
+      ? [
+        ['1/7 · 先移动','WASD 或方向键走一小段。鼠标只负责瞄准。现在守卫不会攻击。'],
+        ['2/7 · 实际吞食','鼠标指向机器人，靠近后按 1（可按住）。不是左键！暴食每口冷却约7秒，击败守卫获得罪。先攒12点。'],
+        ['3/7 · 实际释放组合技能','靠近机器人，按住 1 再按 Q。单按 Q 不会释放；这一招消耗12点暴食。数字和技能键必须同时按住。'],
+        ['4/7 · 准备解救','继续按 1 击败守卫，攒40点暴食。冷却显示在下方。白衣人会被误伤，别贴着他们吞食。'],
+        ['5/7 · 把欲望分出去','鼠标指向白衣人，靠近后右键两次，每次转移20点当前罪。达到40点才开始解救计时。'],
+        ['6/7 · 关闭食物供应','走到每个食物台旁按 F，把所有供应关掉。人吃到东西，解救计时就会重新开始。'],
+        ['7/7 · 等待断联','保护白衣人，等头顶计时环走完。40点需连续18秒不被满足；被解救的人永久进入基地。'],
+        ['教学完成 · 前往下一室','清除剩下的守卫，走到后方中央门按 F。以后按1—7直接普攻；数字＋Q/E等使用技能。'],
+      ][lesson]
       : [SINS[selected].basic, skills + "。清场后到后方门按 F。"];
   $("task").textContent = t[0];
   $("explain").textContent = t[1];
   $("target").textContent =
-    `普攻 ${cooldown > 0 ? cooldown.toFixed(1) + "秒后就绪" : "就绪"} · 不消耗罪　残渣 ${player.residue || 0} · 捕获弹 ${orbit.length}`;
+    `[${selected+1}] ${SINS[selected].name}普攻 ${basicCooldowns[selected] > 0 ? basicCooldowns[selected].toFixed(1) + "秒后就绪" : "就绪"} · 不消耗罪　残渣 ${player.residue || 0} · 捕获弹 ${orbit.length}`;
   const signature = list.map((n) => n.code).join();
   if ($("skillbar").dataset.signature !== signature) {
     $("skillbar").dataset.signature = signature;
@@ -1400,7 +1449,7 @@ function updateHUD() {
         const el = document.createElement("div");
         el.className = "skill-chip";
         const key = document.createElement("kbd");
-        key.textContent = ["Q", "E", "R", "T", "G"][i];
+        key.textContent = `${selected+1}+${["Q", "E", "R", "T", "G"][i]}`;
         el.append(
           key,
           document.createTextNode(n.name),
@@ -1509,9 +1558,9 @@ function draw() {
         ctx,
         atlas.people,
         e,
-        e.state === "desiring" ? 2 : e.awareUntil > time ? 0 : 1,
+        e.moving ? 3 : e.state === "desiring" ? 2 : e.awareUntil > time ? 0 : 1,
         e.x,
-        e.y,
+        e.y + (e.action==='正在进食' ? Math.sin(time*9)*4 : e.attackUntil>time ? -5 : 0),
         120,
         time,
         atlas.fx,
@@ -1552,14 +1601,15 @@ function draw() {
         -Math.PI / 2 + Math.PI * 2 * Math.min(1, progress),
       );
       ctx.stroke();
-      ctx.font = "11px sans-serif";
+      ctx.font = "13px sans-serif";
       ctx.fillStyle = "#d5dad2";
       ctx.textAlign = "center";
       ctx.fillText(
-        `${Math.floor(e.sins[id])} · ${Number.isFinite(d) ? Math.max(0, Math.ceil(d - e.unmet[id])) + "s" : "需40罪"}`,
+        `${Math.floor(e.sins[id])}罪 · ${!Number.isFinite(d) ? '不足40，尚未计时' : e.satisfiedNow ? '获得满足，计时重置' : '断联剩余 '+Math.max(0, d-e.unmet[id]).toFixed(1)+'秒'}`,
         e.x,
         e.y - height - 28,
       );
+      ctx.fillText(e.action || '寻找目标',e.x,e.y-height-45);
     }
   }
   for (const e of remnants) {
@@ -1685,6 +1735,15 @@ function draw() {
   vignette.addColorStop(1, "#000a");
   ctx.fillStyle = vignette;
   ctx.fillRect(0, 0, W, H);
+  if(running && stage===0 && room===0) {
+    let target, label;
+    if(lesson===0){target={x:650,y:735};label='WASD 走到这里';}
+    else if(lesson<=3){target=alive().filter(e=>!e.waiting).sort((a,b)=>dist(a,player)-dist(b,player))[0];label=lesson===2?'靠近 · 1＋Q':'靠近 · 按1吞食';}
+    else if(lesson===4 || lesson===6){target=humans.find(h=>!['rescued','recovered'].includes(h.state));label=lesson===4?'右键注入两次':'保护他 · 等待断联';}
+    else if(lesson===5){target=props.filter(p=>p.type==='temptation'&&p.active).sort((a,b)=>dist(a,player)-dist(b,player))[0];label='靠近 · F关闭';}
+    else if(lesson===7&&!alive().length){target={x:800,y:450};label='F 前往下一室';}
+    if(target){ctx.save();ctx.strokeStyle='#d5cf9e';ctx.lineWidth=2;ctx.setLineDash([5,7]);ctx.beginPath();ctx.ellipse(target.x,target.y+5,40+Math.sin(time*3)*4,16,0,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);ctx.font='14px sans-serif';ctx.textAlign='center';const w=ctx.measureText(label).width+20;ctx.fillStyle='#111918ed';ctx.fillRect(target.x-w/2,target.y+24,w,25);ctx.fillStyle='#f0ead2';ctx.fillText(label,target.x,target.y+42);ctx.restore();}
+  }
 }
 function showDeath() {
   $("overlay").hidden = false;
@@ -1794,6 +1853,7 @@ function togglePause() {
   paused = !paused;
   $("overlay").hidden = !paused;
   if (paused) {
+    controls.clear();
     $("overlay").innerHTML =
       '<div class="panel"><span class="eyebrow">PAUSED</span><h2>暂停接入</h2><p>现场计时已停止。</p><button id="resume" class="primary">继续</button><button id="settings">声音与画面</button><button id="camp">结束本次接入，回基地</button></div>';
     $("resume").onclick = togglePause;
@@ -1863,12 +1923,7 @@ window.addEventListener("keydown", (e) => {
   if (e.repeat) return;
   if (k === "escape") togglePause();
   if (!running || paused) return;
-  if (+k >= 1 && +k <= save.unlocked) {
-    selected = +k - 1;
-    updateHUD();
-  }
-  if (k === "q") cast(0);
-  if (k === "e") cast(1);
+  controls.down(k,save.unlocked);
   if (k === "f") interact();
   if (k === " " && dashCD <= 0) {
     const dx = (keys.has("d") ? 1 : 0) - (keys.has("a") ? 1 : 0),
@@ -1896,17 +1951,12 @@ window.addEventListener("keydown", (e) => {
     player.immune = 0.4;
   }
 });
-window.addEventListener("keyup", (e) => keys.delete(e.key.toLowerCase()));
+window.addEventListener("keyup", (e) => {const k=e.key.toLowerCase();keys.delete(k);if(running&&!paused)controls.up(k);else controls.clear();});
 window.addEventListener("blur", () => {
+  controls.clear();
   keys.clear();
   mouse.down = false;
   if (running && !paused) togglePause();
-});
-window.addEventListener("keydown", (e) => {
-  if (running && !paused && !e.repeat) {
-    const slot = ["r", "t", "g"].indexOf(e.key.toLowerCase());
-    if (slot >= 0) cast(slot + 2);
-  }
 });
 canvas.addEventListener("mousemove", (e) => {
   const r = canvas.getBoundingClientRect(),
@@ -1916,7 +1966,7 @@ canvas.addEventListener("mousemove", (e) => {
 });
 canvas.addEventListener("mousedown", (e) => {
   if (!running || paused) return;
-  if (e.button === 0) mouse.down = true;
+  if (e.button === 0) toast('普攻直接按 1—7；技能按住对应数字＋Q / E。鼠标只负责瞄准。');
   if (e.button === 2) inject();
 });
 window.addEventListener("mouseup", () => (mouse.down = false));
@@ -1940,6 +1990,8 @@ window.__game = {
       stage,
       room,
       tutorial,
+      lesson,
+      basicCooldowns: [...basicCooldowns],
       save,
       running,
       paused,
