@@ -1,4 +1,4 @@
-import {CARDS, PROFESSIONS} from './cards.js?v=e38f7686abea';
+import {CARDS, PROFESSIONS} from './cards.js?v=0fac9c07a0f1';
 const neutralSets=[['N01','N03','N05','N09','N11','N15'],['N02','N07','N10','N12','N14','N17'],['N04','N08','N13','N18','N19','N20']];
 export function preset(profession,variant=0){
  const ids=Object.values(CARDS).filter(c=>c.profession===profession&&c.kind==='main').map(c=>c.id);

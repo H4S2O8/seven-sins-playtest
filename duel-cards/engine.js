@@ -1,4 +1,4 @@
-import {CARDS,RULES,defaultDeck,judge} from './cards.js?v=e38f7686abea';
+import {CARDS,RULES,defaultDeck,judge} from './cards.js?v=0fac9c07a0f1';
 export {CARDS,RULES,judge};
 const clone=x=>structuredClone(x);
 const enemy=id=>1-id;

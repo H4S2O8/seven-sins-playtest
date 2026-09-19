@@ -1,5 +1,5 @@
 // This module receives view(state, player), never the private engine state.
-import {CARDS, judge} from './cards.js?v=e38f7686abea';
+import {CARDS, judge} from './cards.js?v=0fac9c07a0f1';
 const recent=(xs,round)=>(xs||[]).filter(x=>x.round>=round-2).reduce((n,x)=>n+x.n,0);
 const publicPlayer=p=>({...p,hand:p.hand||Array.from({length:p.handCount},()=>({})),acquired:p.acquired||0});
 function faceValue(v,owner,combo,face,support){
