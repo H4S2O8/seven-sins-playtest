@@ -1,4 +1,4 @@
-import {CARDS,RULES,defaultDeck,judge} from './cards.js';
+import {CARDS,RULES,defaultDeck,judge} from './cards.js?v=e38f7686abea';
 export {CARDS,RULES,judge};
 const clone=x=>structuredClone(x);
 const enemy=id=>1-id;
@@ -18,10 +18,10 @@ export function validateDeck(profession,entries){
  const n=(names.get(c.name)||0)+e.copies;check(n<=3,`同名「${c.name}」最多3张`);names.set(c.name,n);count+=e.copies;
  }check(count===35,`卡组需要35张，目前${count}张`);return true;
 }
-export function createGame({professions=['WR','GL'],decks=null,seed=12873,names=['你','对手']}={}){
+export function createGame({professions=['WR','GL'],decks=null,seed=12873,names=['你','对手'],skipMulligan=false}={}){
  const s={version:2,rng:seed||1,serial:1,players:[],turn:0,actions:0,round:1,pending:null,field:null,rule:'higher',nextRule:null,queue:[],choice:null,phase:'starting',log:[],winner:null,ended:false,fieldSpent:{},actionNo:0};
  for(let id=0;id<2;id++){const profession=professions[id],entries=decks?.[id]||defaultDeck(profession);validateDeck(profession,entries);const p={name:names[id],profession,life:60,armor:0,temp:0,hand:[],deck:[],discard:[],exile:[],sleep:[],used:[],statuses:{},discarded:0,selfHarm:[],returns:[],gifts:[],traded:[],usedAlien:[],acquired:0,started:0,skipDraw:0,debt:[],oaths:0,heroUses:0,decklist:clone(entries),revealed:[],fatigue:0};s.players.push(p);p.deck=shuffled(s,entries.flatMap(e=>Array.from({length:e.copies},()=>mint(s,e.id,id))));p.hand=p.deck.splice(0,5);}
- s.nextRule=nextRule(s,s.rule);s.queue.push({type:'begin'});run(s);return s;
+ s.nextRule=nextRule(s,s.rule);s.queue.push(...(skipMulligan?[]:[{type:'mulligan',p:0},{type:'mulligan',p:1}]),{type:'begin'});run(s);return s;
 }
 function enqueue(s,...jobs){s.queue.unshift(...jobs.filter(Boolean));}
 function request(s,owner,title,options,min=1,max=1,then={}){s.choice={owner,title,options,min,max,then};s.phase='choice';}
@@ -49,6 +49,9 @@ function resolution(s,combo,reply){const p=s.players[combo.owner],o=s.players[1-
 function run(s){let guard=0;while(s.queue.length&&!s.choice&&!s.ended){check(++guard<2500,'效果循环过长');job(s,s.queue.shift());}if(!s.ended&&!s.choice&&!s.queue.length)s.phase='action';}
 function job(s,j){const p=s.players[j.p];
  switch(j.type){
+ case 'mulligan':{
+  request(s,j.p,'开局换牌：选择要换掉的牌，也可以一张不选、全部保留。每人只有这一次机会。',p.hand.map(option),0,p.hand.length,{mode:'mulligan',p:j.p});return;
+ }
  case 'begin':{
   const pid=s.turn,p=s.players[pid];s.actionNo++;s.fieldSpent={};p.started++;p.acquired=0;s.round=Math.min(20,Math.floor(s.actions/2)+1);
   if(s.actions>0&&s.actions%6===0){s.rule=s.nextRule;s.nextRule=nextRule(s,s.rule);log(s,`进入第${s.round}回合，数字规则改为「${RULES.find(r=>r.id===s.rule).name}」。已等待的牌不改判定。`);}
@@ -176,6 +179,12 @@ function job(s,j){const p=s.players[j.p];
 function returnCards(s,pid,entities,natural=false){const p=s.players[pid];p.hand.push(...entities.map(({due,postponed,...e})=>e));p.returns.push({round:s.round,n:entities.length});p.acquired+=entities.length;log(s,`${label(s,pid)}取回${entities.length}张暂存牌。`);if(natural&&p.profession==='SL'&&entities.length>=2)enqueue(s,{type:'heal',p:pid,n:2});enqueue(s,{type:'overflow',p:pid});}
 export function choose(state,ids){const s=clone(state),c=s.choice;check(c,'当前没有选择');check(Array.isArray(ids)&&new Set(ids).size===ids.length&&ids.length>=c.min&&ids.length<=c.max,'选择数量不符');check(ids.every(id=>c.options.some(o=>o.id===id)),'非法选择');const t=c.then,p=s.players[t.p];s.choice=null;s.phase='processing';
  switch(t.mode){
+ case 'mulligan':{
+  const held=ids.map(id=>take(p,'hand',id));
+  const replacements=p.deck.splice(0,held.length);p.hand.push(...replacements);
+  p.deck=shuffled(s,[...p.deck,...held]);p.mulliganDone=true;
+  log(s,`${label(s,t.p)}${held.length?'更换了'+held.length+'张起手牌':'保留了全部起手牌'}。`);break;
+ }
  case 'discard':discardJob(s,t.p,ids.map(id=>take(p,'hand',id)));break;
  case 'saveDiscard':{const kept=t.entities.filter(e=>ids.includes(e.uid));p.sleep.push(...kept.map(e=>({...e,due:p.started+1,postponed:false})));actualDiscard(s,t.p,t.entities.filter(e=>!ids.includes(e.uid)));break;}
  case 'normal':if(ids[0]==='borrow'){p.skipDraw=2;enqueue(s,{type:'draw',p:t.p,n:3,normal:true});}else enqueue(s,ids[0]==='normal'?{type:'draw',p:t.p,n:1,normal:true}:{type:ids[0],p:t.p,n:5});break;

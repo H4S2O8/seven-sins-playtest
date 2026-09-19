@@ -1,5 +1,5 @@
 // This module receives view(state, player), never the private engine state.
-import {CARDS, judge} from './cards.js';
+import {CARDS, judge} from './cards.js?v=e38f7686abea';
 const recent=(xs,round)=>(xs||[]).filter(x=>x.round>=round-2).reduce((n,x)=>n+x.n,0);
 const publicPlayer=p=>({...p,hand:p.hand||Array.from({length:p.handCount},()=>({})),acquired:p.acquired||0});
 function faceValue(v,owner,combo,face,support){
@@ -30,6 +30,9 @@ function faceValue(v,owner,combo,face,support){
 export function chooseAI(v){
  const c=v.choice,p=v.players[c.owner];if(!c?.options)return [];
  const mode=c.then?.mode;
+ if(mode==='mulligan'){
+  let keptMain=0,keptSupport=0;return c.options.filter(o=>{const card=CARDS[o.cardId];if(card.kind==='main'&&!card.cost.alienExile&&!(card.cost.discard>=3)){keptMain++;return false;}if(card.kind==='support'&&keptSupport++===0)return false;return true;}).map(o=>o.id);
+ }
  if(mode==='normal')return [p.life<45&&c.options.some(o=>o.id==='heal')?'heal':'normal'];
  if(mode==='due')return ['return'];
  let n=c.min;

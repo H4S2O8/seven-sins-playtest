@@ -1,7 +1,8 @@
-import {createGame} from './engine.js';
+import {createGame} from './engine.js?v=e38f7686abea';
 export const LESSONS=[
  {title:'欢迎：你不需要懂任何卡牌术语',body:'这是一场两个人轮流操作的对决。你在下面，对手在上面。双方有60点生命。让对手的生命降到0，你就赢了；自己的生命降到0就输了。现在不需要记住任何职业或组合。',goal:'找到下方标着“你的生命”的横条。它显示的是你还能承受多少生命损失。',info:true},
  {title:'卡牌不是钱，也不是人物',body:'下面的一块块文字方框就是卡牌。开局前先选好35张组成卡组，开局随机拿5张成为手牌，其余30张留在牌库里。通常轮到你，会从牌库拿1张；先手第一回合不额外抽。抽牌能让你更早拿到需要的牌，拿到不等于必须马上使用。教程会单独摆好练习所需的牌，不是正式对局的起手。',goal:'单击一张牌只会选中它，不会立刻消耗。可以再点另一张改选，最后按“确认出牌”才提交。',info:true},
+ {title:'开局换牌：先整理这5张',body:'开局可以换牌一次。点中不想留的牌，再确认选择，系统会补回同样数量，然后把换走的牌洗回牌库。没有选中的牌保留。也可以一张不选直接确认。还没开打，不耗数字，不会执行牌的效果。注意：有同名牌时，可能抽到另一张同名牌。',goal:'在“开局换牌”区域点选想换掉的牌，再确认选择。前期至少留一张不需要额外费用的主牌，通常更容易起步。',mulligan:true},
  {title:'一张主牌有两种结果',body:'每张普通主牌写着“成功”和“失败”。每次只执行其中一面，不是两面一起执行。“失败”不等于输了游戏：试探的成功是打对手6点，失败是给自己恢复6点。有时你更需要失败。',goal:'找到“试探”，阅读它的两个文字区域。两个区域不是两个可以自己按的技能。',info:true},
  {title:'先做第一手：你的牌会等待',body:'点选“试探”，再点数字10，然后按确认。数字不是伤害，不是花费10点生命。它是给对方的一个问题：你会用什么数字回应？此刻没有对方数字，所以你的牌还不能生效。',goal:'选试探 → 选10 → 确认。观察生命没有立刻变化，牌进入中央等待区。',hand:['N01','N02'],main:'N01',number:10,noReply:true},
  {title:'对手回应，才结算你的牌',body:'还是打出试探和10。这次练习对手会固定回应11。当前规则是“更高”：回应11大于10，所以你的试探成功，对手失去6生命。随后对手的牌留下，等待你的下一手。',goal:'用试探+10出牌，看日志逐项说明：回应11 → 成功 → 对手扣6生命。',hand:['N01','N02'],main:'N01',number:10,reply:11},
@@ -22,7 +23,7 @@ export const LESSONS=[
  {title:'最后一道练习：不再指定数字',body:'你只有12生命，没有护甲。对手的试探配10正在等待。你手中有护住要害和试探。先处理眼前危险，再考虑自己下一张牌；你的新牌不会抢在对方旧牌前生效。',goal:'用任意主牌，选一个能让对手试探失败的数字。选牌和数字后先读结算预览。',life:12,hand:['N02','N01'],pending:'N01',pendingNumber:10,wanted:'failure'},
  {title:'你已经会进行一局了',body:'你已经亲手做过：选主牌、选数字、控制对手结果、等待回应、用辅牌、支付材料、建立公共条款、交割、管理血量与护甲。接下来进入练习对局。随时可以打开词语解释或返回任意一课，不需要一次记住所有职业。',goal:'建议第一次选择愤怒，保留结算预览。以看懂每次结果为目标，不必急着赢。',info:true,final:true}
 ];
-export function lessonState(index){const l=LESSONS[index],s=createGame({professions:[l.profession||'WR','WR'],names:['你','练习对手'],seed:7});s.players[0].hand=(l.hand||['N01','N02']).map(cardId=>({uid:`lesson${s.serial++}`,cardId,owner:0}));s.players[0].life=l.life??60;s.players[0].armor=l.armor||0;s.players[0].used=l.used||[];s.rule=l.rule||'higher';s.nextRule=s.rule==='higher'?'parity':'near';
+export function lessonState(index){const l=LESSONS[index],s=createGame({professions:[l.profession||'WR','WR'],names:['你','练习对手'],seed:7,skipMulligan:!l.mulligan});if(l.mulligan)return s;s.players[0].hand=(l.hand||['N01','N02']).map(cardId=>({uid:`lesson${s.serial++}`,cardId,owner:0}));s.players[0].life=l.life??60;s.players[0].armor=l.armor||0;s.players[0].used=l.used||[];s.rule=l.rule||'higher';s.nextRule=s.rule==='higher'?'parity':'near';
  if(l.field)s.field={id:l.field,owner:0,card:{uid:`lesson${s.serial++}`,cardId:l.field,owner:0}};
  if(l.pending)s.pending={owner:1,card:{uid:`lesson${s.serial++}`,cardId:l.pending,owner:1},number:l.pendingNumber,rule:s.rule,materials:[]};
  s.log=['教学练习局：每课独立重置，只展示这次需要的内容。'];return s;}
