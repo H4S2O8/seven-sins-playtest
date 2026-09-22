@@ -653,7 +653,10 @@ export function generateBet(random = Math.random) {
   for (let attempt = 0; attempt < 24; attempt++) {
     const metric = pick(random, ['filteredCount', 'filteredCount', 'relationCount', 'sum', 'spread', 'max', 'min', 'thresholdCount', 'targetDistance', 'evenCount']);
     const expressionNode = makeLeaf(random, metric);
-    const boards = witnessBoards(expressionNode);
+    const hasEffects = conditions(expressionNode).flatMap(atoms).some(c => ['attribute', 'keyword', 'status'].includes(c.kind));
+    // Numeric targets must be meaningful on ordinary starts, not merely at
+    // safety-boundary values. Effect predicates still need installed witnesses.
+    const boards = hasEffects ? witnessBoards(expressionNode) : OPENING_WITNESSES;
     const values = [...new Set(boards.map(b => rawValue(expressionNode, b)))].sort((a, b) => a - b);
     if (values.length < 2) continue;
     const comparison = pick(random, ['gte', 'lte', 'eq']);

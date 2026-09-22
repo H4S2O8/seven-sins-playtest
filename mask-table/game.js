@@ -76,8 +76,9 @@ function updateKnowledge(s,actor,entry){
  if(pair){const [a,b]=pair;[viewer.known[a],viewer.known[b]]=[viewer.known[b],viewer.known[a]];for(const k of viewer.known)if(k&&k.revision===rev-1)k.revision=rev;}
 }
 function applyPublicCard(s,who,card,targets){
+ const plain=s.players[who].board.cells.every(c=>!c.attribute&&!c.keywords.length&&!Object.keys(c.statuses).length);
  const result=executeCard(s.players[who].board,card,targets);
- appendHistory(s,who,{type:'card',cardId:card.id,card:deep(card),targets:[...targets]});updateKnowledge(s,who,{type:'card',cardId:card.id,card,targets});
+ appendHistory(s,who,{type:'card',cardId:card.id,card:deep(card),targets:[...targets]});updateKnowledge(s,who,plain?{type:'card',cardId:card.id,card,targets}:{type:'changed'});
  s.lastAnimation={who,targets:[...targets],card:deep(card),events:who===0?result.events:[],nonce:++s.logId};
  const pos=['上','右','下','左','中'];addLog(s,`${s.players[who].name}打出「${card.name}」${targets.length?' → '+targets.map(i=>pos[i]).join('、'):''}。${card.description}`,'card',who);
  return result;
