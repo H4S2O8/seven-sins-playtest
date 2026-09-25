@@ -751,7 +751,7 @@ function foeRow(o: Observation): string {
   const opp = o.opponent;
   const lb = ui.lastBattle && ui.lastBattle.hand === o.handNo ? ui.lastBattle : null;
   if (lb) return battleUnits(lb.result.final[AI], lb.teams[AI].reveal);
-  const peeking = o.phase === "peek" && o.toAct.includes(HUMAN);
+  const peeking = o.phase === "peek" && o.toAct.includes(HUMAN) && !o.me.peek; // 偷看过一次就不能再点
   return [0, 1, 2].map((pos) => {
     const eq = opp.equipment[pos];
     const unit = `${AI}-${pos}`;
