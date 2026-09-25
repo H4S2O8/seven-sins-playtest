@@ -553,12 +553,14 @@ code { background: #0005; border-radius: 4px; padding: 0 4px; font-size: 12px; }
  * 没翻开时背面朝上，翻开时绕水平轴抬起来翻。 */
 .card.tile {
   --r: 7px;
-  --t: 5px;
+  /* 薄：只有 2px 厚、离桌面 1px（顶面约高出桌面 4px），出手冲过中间这一行时从上面掠过，不会插进去 */
+  --t: 2px;
   --metal: #b8904e;
   width: auto; flex: 1 1 0; min-width: 0; max-width: 250px;
   height: max(46px, calc(var(--cw) * 0.5));
   cursor: pointer;
 }
+.card.tile > .lift { --z0: calc(var(--t) / 2 + 1px); }
 .card.tile.t-arena { --tone: #1f5049; --tone2: #0b2320; --icon: var(--icon-arena); }
 .card.tile.t-rule { --tone: #243470; --tone2: #0b1230; --icon: var(--icon-rule); }
 .card.tile.t-pe { --tone: #4c2468; --tone2: #1a0b28; --icon: var(--icon-pe); }

@@ -546,7 +546,7 @@ async function playBattle(b: Playback) {
       }
       if (e.type === "recoil") {
         // 碰撞：被打的人顶回去
-        void strike(unitEl(e.seat, e.pos), unitEl(e.targetSeat, e.targetPos), 300 / b.speed, 0.14);
+        void strike(unitEl(e.seat, e.pos), unitEl(e.targetSeat, e.targetPos), 300 / b.speed, 0.14, true);
         pulse(unitEl(e.targetSeat, e.targetPos), "fx-hit", 500);
         floater(e.seat, e.pos, "反击", "recoil");
       }

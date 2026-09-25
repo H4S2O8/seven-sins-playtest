@@ -164,7 +164,7 @@ export function laneShift(el: HTMLElement | null, dir: number, ms: number, facin
  * reach = 1 冲到两张牌刚好碰上，小于 1 只冲一部分（反击）。
  * 返回撞上目标的那一刻，调用方在这时播受击、震屏、伤害数字。
  */
-export function strike(from: HTMLElement | null, to: HTMLElement | null, ms: number, reach = 1): Promise<void> {
+export function strike(from: HTMLElement | null, to: HTMLElement | null, ms: number, reach = 1, recoil = false): Promise<void> {
   if (!from || !to || reducedMotion()) return new Promise((r) => setTimeout(r, ms * 0.5));
   cancel(from, "flip");
   cancel(from, "strike");
@@ -176,15 +176,24 @@ export function strike(from: HTMLElement | null, to: HTMLElement | null, ms: num
   const stop = Math.max(0, len - tr.height * 0.62) / len;
   const [dx, dy] = localOffset(from, (bx - ax) * stop * reach, (by - ay) * stop * reach);
   const hit = 0.58;
+  // 撞上的那一刻也不落回桌面：牌的后半截这时还悬在中间那一行（场地 / 规则 / 公共效果）上方，
+  // 落到 0 会插进那几块牌里；停在 CLEAR 高度，底面同时高过中间那一行和被打的那张牌
+  const CLEAR = 14;
+  // 反击：被打的人贴着桌面往前顶一下（最多抬 4px），不能像出手那样跳起来——攻击者这时正悬在它上方
+  const frames: Keyframe[] = recoil ? [
+    { transform: "none", zIndex: 8 },
+    { transform: `translate(${dx}px, ${dy}px) translateZ(4px)`, offset: hit, easing: "ease-out", zIndex: 8 },
+    { transform: "none", zIndex: 8 },
+  ] : [
+    { transform: "none", zIndex: 9 },
+    { transform: `translate(${-dx * 0.08}px, ${-dy * 0.08}px) translateZ(46px) rotateX(${dy > 0 ? -10 : 10}deg)`, offset: 0.26, easing: "cubic-bezier(.5,0,.9,.4)", zIndex: 9 },
+    { transform: `translate(${dx}px, ${dy}px) translateZ(${CLEAR + 18}px)`, offset: hit - 0.04, zIndex: 9 },
+    { transform: `translate(${dx * 0.94}px, ${dy * 0.94}px) translateZ(${CLEAR}px)`, offset: hit, easing: "ease-out", zIndex: 9 },
+    { transform: `translate(${dx * 0.9}px, ${dy * 0.9}px) translateZ(${CLEAR + 4}px)`, offset: 0.7, easing: "cubic-bezier(.4,0,.2,1)", zIndex: 9 },
+    { transform: "none", zIndex: 9 },
+  ];
   const a = from.animate(
-    [
-      { transform: "none", zIndex: 9 },
-      { transform: `translate(${-dx * 0.08}px, ${-dy * 0.08}px) translateZ(46px) rotateX(${dy > 0 ? -10 : 10}deg)`, offset: 0.26, easing: "cubic-bezier(.5,0,.9,.4)", zIndex: 9 },
-      { transform: `translate(${dx}px, ${dy}px) translateZ(26px)`, offset: hit - 0.04, zIndex: 9 },
-      { transform: `translate(${dx * 0.94}px, ${dy * 0.94}px) translateZ(0)`, offset: hit, easing: "ease-out", zIndex: 9 },
-      { transform: `translate(${dx * 0.9}px, ${dy * 0.9}px) translateZ(8px)`, offset: 0.7, easing: "cubic-bezier(.4,0,.2,1)", zIndex: 9 },
-      { transform: "none", zIndex: 9 },
-    ],
+    frames,
     { duration: ms },
   );
   a.id = "strike";
