@@ -26,6 +26,16 @@ npm run sim -- tables 100 cautious aggressive   # 整张牌桌对局（random / 
 | `src/game/view.ts` | 每个座位能看到的信息（严格隐藏对手的暗牌）与合法动作 |
 | `src/ai/agents.ts` | 随机对手、启发式对手（只读自己的观察，用战斗模拟估胜率） |
 | `src/sim/` | 模拟器 |
+| `web/` | 网页试玩界面（`npm run build:web` 打包） |
+
+## 网页试玩
+
+```sh
+npm run build:web                 # 打包到仓库根目录的 sin-squad-v3/
+```
+
+`web/` 是网页界面的源码：你和电脑 1 对 1，规则全部由这里的核心驱动，界面只负责显示、点击和战斗回放。
+打包结果是纯静态文件，本地用任意静态服务器打开仓库根目录下的 `sin-squad-v3/` 即可，GitHub Pages 也能直接托管。
 
 战斗完全确定：同样的输入永远得到同样的结果。牌桌的随机数可以用种子复现。
 

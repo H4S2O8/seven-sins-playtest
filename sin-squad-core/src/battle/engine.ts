@@ -40,6 +40,8 @@ export interface BattleResult {
   rounds: number;
   events: BattleEvent[];
   final: [UnitSnapshot[], UnitSnapshot[]];
+  /** 开战准备做完、第 1 轮之前的快照，给回放用。 */
+  start: [UnitSnapshot[], UnitSnapshot[]];
   /** 每一轮结束后的快照，给回放用。 */
   timeline: Array<[UnitSnapshot[], UnitSnapshot[]]>;
 }
@@ -54,6 +56,7 @@ class Battle {
   private readonly bet: [BetContext, BetContext];
   private readonly events: BattleEvent[] = [];
   private readonly timeline: Array<[UnitSnapshot[], UnitSnapshot[]]> = [];
+  private readonly start: [UnitSnapshot[], UnitSnapshot[]];
   private readonly victory: VictoryState;
   private readonly maxRounds: number;
   private round = 0;
@@ -68,6 +71,7 @@ class Battle {
     this.setupBattle();
     this.victory = setupVictory(input.ruleId, this.teams, [this.bet[0].revealedPos, this.bet[1].revealedPos]);
     this.maxRounds = maxRoundsFor(input.ruleId);
+    this.start = [this.teams[0].map(snapshot), this.teams[1].map(snapshot)];
   }
 
   // ───────────────────────── 开战前 ─────────────────────────
@@ -233,7 +237,7 @@ class Battle {
 
   private finish(winner: Seat | null, reason: BattleResult["reason"]): BattleResult {
     return {
-      winner, reason, rounds: this.round, events: this.events, timeline: this.timeline,
+      winner, reason, rounds: this.round, events: this.events, start: this.start, timeline: this.timeline,
       final: [this.teams[0].map(snapshot), this.teams[1].map(snapshot)],
     };
   }
