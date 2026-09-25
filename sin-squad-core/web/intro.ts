@@ -1,6 +1,6 @@
 import type { Style } from "../src/ai/agents.js";
 import { character } from "../src/content/characters.js";
-import type { Seat } from "../src/types.js";
+import type { Seat, Sin } from "../src/types.js";
 import { HUMAN, SIN_COLOR, SIN_GLYPH } from "./text.js";
 
 /**
@@ -36,17 +36,18 @@ export interface GateHooks {
   canReturn(): boolean;
 }
 
-export const OPPONENTS: Record<Style, { title: string; face: string; quote: string; about: string; level: string }> = {
+/** 对手：每种电脑风格一名，立绘是 web/art/foe-<风格>.webp 的半身像。 */
+export const OPPONENTS: Record<Style, { title: string; sin: Sin; quote: string; about: string; level: string }> = {
   cautious: {
-    title: "谨慎的税官", face: "GR2", quote: "不见兔子不撒鹰。",
+    title: "谨慎的税官", sin: "贪婪", quote: "不见兔子不撒鹰。",
     about: "很少诈唬，拿到好牌才加注，形势不对就弃牌。", level: "适合第一次玩",
   },
   aggressive: {
-    title: "激进的挑衅者", face: "WR1", quote: "跟，还是不跟？",
-    about: "频繁下注、加注，逼你做决定；但他的牌不一定好。", level: "压力大",
+    title: "激进的挑衅者", sin: "愤怒", quote: "跟，还是不跟？",
+    about: "频繁下注、加注，逼你做决定；但她的牌不一定好。", level: "压力大",
   },
   bluff: {
-    title: "爱诈唬的魅惑者", face: "LU3", quote: "你猜我亮的是真的吗？",
+    title: "爱诈唬的魅惑者", sin: "色欲", quote: "你猜我亮的是真的吗？",
     about: "常用弱牌下大注，也会拿着好牌装弱。", level: "最难读",
   },
 };
@@ -165,10 +166,17 @@ export class Gate {
   }
 
   private portrait(id: string, cls = "") {
-    const c = character(id);
-    return `<div class="hero ${cls}" style="--sin:${SIN_COLOR[c.sin]}">
-      <span class="hero-glyph">${SIN_GLYPH[c.sin]}</span>
-      ${this.art.has(id) ? `<img src="art/${id}.webp" alt="" draggable="false">` : ""}
+    return this.figure(id, character(id).sin, cls);
+  }
+
+  private foeFace(style: Style, cls = "") {
+    return this.figure(`foe-${style}`, OPPONENTS[style].sin, `bust ${cls}`);
+  }
+
+  private figure(art: string, sin: Sin, cls: string) {
+    return `<div class="hero ${cls}" style="--sin:${SIN_COLOR[sin]}">
+      <span class="hero-glyph">${SIN_GLYPH[sin]}</span>
+      ${this.art.has(art) ? `<img src="art/${art}.webp" alt="" draggable="false">` : ""}
     </div>`;
   }
 
@@ -206,7 +214,7 @@ export class Gate {
     const cards = (Object.keys(OPPONENTS) as Style[]).map((k) => {
       const o = OPPONENTS[k];
       return `<div class="foe-card" data-go="pick" data-arg="${k}" role="button" tabindex="0">
-        ${this.portrait(o.face, "foe-face")}
+        ${this.foeFace(k, "foe-face")}
         <div class="foe-info">
           <b>${o.title}</b>
           <q>${o.quote}</q>
@@ -254,7 +262,7 @@ export class Gate {
       <div class="pool-sum" style="--delay:${n * 120 + 500}ms">
         <div class="sin-chips">${sinChips}</div>
         <div class="pool-stats">攻最高 <b>${hitter.name} ${hitter.atk}</b> · 血最厚 <b>${tank.name} ${tank.hp}</b> · 连击 ${multi} 名 · 重击 ${n - multi} 名</div>
-        <div class="foe-pool"><span class="mini-backs">${foe}</span>对手也有 ${open.foePoolSize} 名——你一个都看不到，他也看不到你的。</div>
+        <div class="foe-pool"><span class="mini-backs">${foe}</span>对手也有 ${open.foePoolSize} 名——你一个都看不到，她也看不到你的。</div>
       </div>
       <div class="gate-actions row">
         <button data-go="skip">跳过，直接开局</button>
@@ -270,7 +278,7 @@ export class Gate {
       <div class="coin-stage">
         <div class="coin ${mine ? "lands-me" : "lands-foe"}">
           <div class="coin-face me">你</div>
-          <div class="coin-face foe">${this.portrait(OPPONENTS[open.style].face, "coin-hero")}</div>
+          <div class="coin-face foe">${this.foeFace(open.style, "coin-hero")}</div>
         </div>
         <div class="coin-shadow"></div>
       </div>

@@ -578,6 +578,9 @@ table.ref tr { border-bottom: 1px solid #ffffff12; }
 }
 .hero { -webkit-mask-image: linear-gradient(#000 72%, #0000); mask-image: linear-gradient(#000 72%, #0000); }
 .hero img { position: absolute; left: 50%; top: 4%; width: 120%; transform: translateX(-50%); filter: drop-shadow(0 4px 6px #000c); pointer-events: none; }
+.hero.bust img { width: 100%; top: 3%; }
+.coin-face .hero.bust { -webkit-mask-image: none; mask-image: none; }
+.coin-face .hero.bust img { width: 150%; top: 2%; }
 .hero-glyph {
   font-family: "STKaiti", "KaiTi", "Noto Serif SC", serif; font-weight: 900; color: #ffffff30;
   font-size: calc(clamp(76px, 14vw, 150px) * .5);
