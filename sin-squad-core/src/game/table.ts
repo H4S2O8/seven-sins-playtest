@@ -90,7 +90,6 @@ export type TableEvent =
   | { type: "handStart"; no: number; dealer: Seat; ante: number; arenaOptions: [string, string]; chooser: Seat }
   | { type: "arenaChosen"; seat: Seat; arenaId: string }
   | { type: "placed"; seat: Seat; revealPos: number; characterId: string; eaten: number | null }
-  | { type: "peeked"; seat: Seat }
   | { type: "betAction"; seat: Seat; round: 1 | 2; action: string; amount: number; stack: number; pot: number }
   | { type: "refund"; seat: Seat; amount: number }
   | { type: "operate"; round: 1 | 2; fee: number; drafted: [boolean, boolean] }
@@ -227,6 +226,7 @@ export class Table {
       case "chooseArena": return this.onArena(seat, action.index);
       case "place": return this.onPlace(seat, action.picks, action.eat, action.reveal);
       case "peek": return this.onPeek(seat, action.pos);
+      case "peekSwap": return this.onPeekSwap(seat, action.swap);
       case "check": case "bet": case "call": case "raise": case "allIn": case "fold":
         return this.onBet(seat, action);
       case "operate": return this.onOperate(seat, action.draft);
@@ -286,9 +286,33 @@ export class Table {
     if (!Number.isInteger(pos) || pos < 0 || pos > 2 || foe.slots[pos] === null || pos === foe.reveal) {
       throw new Error("只能查看对手一个暗置的位置");
     }
+    if (h.peek[seat]) throw new Error("已经偷看过了");
+    // 暗中进行：不写进公开的牌桌记录
     h.peek[seat] = { pos, characterId: foe.slots[pos]! };
+  }
+
+  /** 偷看之后，可以交换自己两名暗置人物的位置（亮出的那名和空位不能动）。同样暗中进行。 */
+  private onPeekSwap(seat: Seat, swap: [number, number] | null) {
+    this.expect("peek");
+    const h = this.hand;
+    if (!h.peek[seat]) throw new Error("先偷看，再决定要不要换位");
+    const pl = h.placement[seat]!;
+    if (swap) {
+      const [a, b] = swap;
+      const movable = (p: number) => Number.isInteger(p) && p >= 0 && p <= 2 && pl.slots[p] !== null && p !== pl.reveal;
+      if (a === b || !movable(a) || !movable(b)) throw new Error("只能交换自己两名暗置人物的位置");
+      [pl.slots[a], pl.slots[b]] = [pl.slots[b], pl.slots[a]];
+      if (pl.eat) {
+        if (pl.eat.eater === a) pl.eat = { ...pl.eat, eater: b };
+        else if (pl.eat.eater === b) pl.eat = { ...pl.eat, eater: a };
+      }
+      // 对手要是也偷看过被换走的人，他看到的跟着这名人物走
+      const theirs = h.peek[other(seat)];
+      if (theirs && (theirs.pos === a || theirs.pos === b)) {
+        h.peek[other(seat)] = { ...theirs, pos: pl.slots.indexOf(theirs.characterId) };
+      }
+    }
     h.peekPending[seat] = false;
-    this.log.push({ type: "peeked", seat });
     if (!h.peekPending[0] && !h.peekPending[1]) this.afterPlacement();
   }
 

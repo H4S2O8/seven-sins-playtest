@@ -52,8 +52,6 @@ export function logLine(e: TableEvent): string | null {
     case "placed":
       return `${who(e.seat)}排好了位，亮出 ${posName(e.revealPos)} ${name(e.characterId)}` +
         (e.eaten !== null ? `；饕餮吞掉了 ${posName(e.eaten)} 的队友` : "");
-    case "peeked":
-      return `${who(e.seat)}的窥视者偷看了${e.seat === HUMAN ? "对手" : "你"}一个暗置位置`;
     case "betAction": {
       const label = BET_LABEL[e.action] ?? e.action;
       return `第 ${e.round} 轮：${who(e.seat)}${label}${e.amount > 0 ? ` ${e.amount}` : ""}（奖池 ${e.pot}）`;
@@ -137,7 +135,7 @@ export const CARD_TEXT: Record<string, string> = {
   GL1: "<b>吸血</b>：自己攻击时，回复造成伤害的一半",
   GL2: "排位时可以<b>吞掉</b>一名队友，获得它的攻和血",
   GL3: "每有一人倒下（不论敌我），+1/+3",
-  EN1: "亮牌后，<b>偷看</b>对手一张暗牌",
+  EN1: "亮牌后<b>暗中偷看</b>对手一张暗牌，再可交换自己两张暗牌的位置",
   EN2: "<b>开战</b>：攻和形状变得和对位一样（取高）",
   EN3: "<b>开战</b>：夺走对位的装备",
   SL1: "你每过牌一次，+0/+4",

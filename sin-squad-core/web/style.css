@@ -31,7 +31,7 @@ html, body {
 
 #app {
   /* 卡牌尺寸：手机按屏高压缩，保证整张桌子一屏放下 */
-  --cwb: clamp(68px, min(26vw, 12.2dvh), 118px);
+  --cwb: clamp(72px, min(28vw, 13.6dvh), 128px);
   --cw: var(--cwb);
   --tw: calc(var(--cwb) * 0.72);
   height: 100dvh;
@@ -42,7 +42,7 @@ html, body {
   padding: 0 10px;
 }
 @media (min-width: 700px) {
-  #app { --cwb: clamp(88px, 14.5dvh, 150px); --tw: calc(var(--cwb) * 0.72); padding: 0 18px; }
+  #app { --cwb: clamp(96px, 19dvh, 190px); --tw: calc(var(--cwb) * 0.66); padding: 0 18px; }
 }
 
 .loading { color: var(--muted); text-align: center; margin-top: 40vh; }
@@ -139,7 +139,7 @@ small { color: var(--muted); font-weight: normal; }
 .chips i:nth-child(3) { background: #2f8a4a; }
 .chips.c1 i:nth-child(1), .chips.c2 i:nth-child(-n+2), .chips.c3 i { display: block; }
 
-.row { display: flex; justify-content: center; gap: clamp(10px, 4vw, 34px); padding: 11px 0 9px; }
+.row { display: flex; justify-content: center; gap: clamp(10px, 3vw, 40px); padding: 11px 0 9px; }
 
 .center { display: flex; flex-direction: column; align-items: center; gap: 5px; }
 .envs { display: flex; gap: 6px; justify-content: center; width: 100%; }

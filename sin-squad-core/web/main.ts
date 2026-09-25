@@ -557,7 +557,7 @@ function phaseLabel(o: Observation): string {
   switch (o.phase) {
     case "arena": return "选场地";
     case "place": return "排位";
-    case "peek": return "窥视";
+    case "peek": return o.toAct.includes(HUMAN) ? "窥视" : "排位完成";
     case "bet": return `第 ${o.betting.round} 轮下注`;
     case "operate": return "操作：拿装备？";
     case "draft": return "挑装备";
@@ -658,7 +658,7 @@ function dock(o: Observation): string {
     }
     case "arena": return arenaDock(o, mine);
     case "place": return placeDock(o, mine);
-    case "peek": return mine ? prompt("你的窥视者可以偷看一张暗牌", "点对手的一张暗牌") : waiting("对手的窥视者在偷看你的暗牌");
+    case "peek": return mine ? peekDock(o) : waiting("等待对手");
     case "bet": return mine ? betDock(o) : waiting(`对手在考虑第 ${o.betting.round} 轮下注`);
     case "operate": return mine ? operateDock(o) : waiting("等对手决定要不要拿装备");
     case "draft": return mine && o.me.offers ? draftDock(o) : waiting("对手在挑装备");
@@ -714,6 +714,18 @@ function placeDock(o: Observation, mine: boolean) {
   return head + tray(true) + eat + `<div class="actions">
     ${btn("清空", "clearPlace", undefined, ui.place.slots.some((x) => x !== null) ? "big" : "big disabled")}
     ${btn("确认排位", "place", undefined, `primary big ${ok ? "" : "disabled"}`)}</div>`;
+}
+
+/** 窥视者：先暗中偷看，再决定要不要交换自己两名暗置人物。 */
+function peekDock(o: Observation) {
+  if (!o.me.peek) return prompt("你的窥视者可以暗中偷看一张暗牌", "点对手的一张暗牌；对手不会知道你看过");
+  const pl = o.me.placement!;
+  const seen = `${posName(o.me.peek.pos)} 是 ${character(o.me.peek.characterId).name}`;
+  const swaps = legalActions(table!, HUMAN).flatMap((a) => (a.type === "peekSwap" && a.swap ? [a.swap] : []));
+  const label = ([a, b]: [number, number]) => `${posName(a)} ${character(pl.slots[a]!).name} ⇄ ${posName(b)} ${character(pl.slots[b]!).name}`;
+  return prompt(`偷看到：对手${seen}`, swaps.length ? "要不要交换你两名暗置人物的位置？对手不会知道" : "你只有一名暗置人物，没法换位") +
+    `<div class="actions compact">${swaps.map((sw) => btn(label(sw), "peekSwap", `${sw[0]}-${sw[1]}`)).join("")}</div>
+    <div class="actions">${btn("不交换，开始下注", "peekSwap", "-1", "primary big")}</div>`;
 }
 
 function betDock(o: Observation) {
@@ -942,6 +954,11 @@ function onAct(name: string, arg: string | undefined) {
       });
     }
     case "peek": return act({ type: "peek", pos: n });
+    case "peekSwap": {
+      if (arg === "-1") return act({ type: "peekSwap", swap: null });
+      const [a, b] = (arg ?? "").split("-").map(Number);
+      return act({ type: "peekSwap", swap: [a, b] });
+    }
     case "check": return act({ type: "check" });
     case "call": return act({ type: "call" });
     case "fold": return act({ type: "fold" });

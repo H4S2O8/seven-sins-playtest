@@ -46,7 +46,7 @@ export class HeuristicAgent implements Agent {
     switch (obs.phase) {
       case "arena": return this.rng.pick(acts);
       case "place": return this.choosePlacement(obs, acts);
-      case "peek": return this.rng.pick(acts);
+      case "peek": return acts[0].type === "peek" ? this.rng.pick(acts) : this.chooseSwap(obs, acts);
       case "bet": return this.chooseBet(obs, acts);
       case "operate": return { type: "operate", draft: obs.opFee <= Math.max(10, obs.stacks[seat] * 0.25) };
       case "draft": return this.chooseDraft(obs, acts);
@@ -146,6 +146,24 @@ export class HeuristicAgent implements Agent {
     if (toCall === 0) return has("check") ?? acts[0];
     if (p >= potOdds + (this.style === "cautious" ? 0.05 : -0.05)) return has("call") ?? has("allIn")!;
     return has("fold") ?? has("call") ?? acts[0];
+  }
+
+  /** 偷看之后：试每一种换位（包括不换），挑估算胜率最高的。 */
+  private chooseSwap(obs: Observation, acts: Action[]): Action {
+    const base = this.myTeam(obs)!;
+    let best = acts[0];
+    let bestScore = -1;
+    for (const a of acts) {
+      if (a.type !== "peekSwap") continue;
+      const team: TeamSetup = { ...base, slots: base.slots.map((s) => ({ ...s })) };
+      if (a.swap) {
+        const [x, y] = a.swap;
+        [team.slots[x], team.slots[y]] = [team.slots[y], team.slots[x]];
+      }
+      const s = this.estimate(obs, team, {}, 8);
+      if (s > bestScore) { bestScore = s; best = a; }
+    }
+    return best;
   }
 
   private chooseDraft(obs: Observation, acts: Action[]): Action {

@@ -115,6 +115,48 @@ describe("下注与操作费", () => {
   });
 });
 
+describe("窥视者", () => {
+  /** 找一个非庄家发到窥视者的牌桌，把它暗置排上，双方排完位后进入窥视阶段。 */
+  function toPeek() {
+    for (let seed = 1; seed < 500; seed++) {
+      const t = new Table({ seed });
+      driveUntil(t, "place");
+      const placer = t.toAct()[0];
+      const idx = t.hand.dealt[placer].indexOf("EN1");
+      if (idx < 0) continue;
+      const rest = [0, 1, 2, 3].filter((i) => i !== idx).slice(0, 2);
+      t.apply(placer, { type: "place", picks: [rest[0], idx, rest[1]], eat: null, reveal: 0 }); // 窥视者暗置在 2 号位
+      const dealer: Seat = placer === 0 ? 1 : 0;
+      if (t.hand.dealt[dealer].includes("EN1")) continue; // 只要一方有窥视者
+      t.apply(dealer, { type: "place", picks: [0, 1, 2], eat: null, reveal: 0 });
+      expect(t.phase).toBe("peek");
+      expect(t.toAct()).toEqual([placer]);
+      return { t, seat: placer };
+    }
+    throw new Error("没有找到合适的种子");
+  }
+
+  it("偷看是暗中进行的：不写进公开的牌桌记录", () => {
+    const { t, seat } = toPeek();
+    const before = t.log.length;
+    t.apply(seat, { type: "peek", pos: 1 });
+    expect(t.log.length).toBe(before);
+    expect(observe(t, seat).me.peek?.pos).toBe(1);
+    expect(observe(t, seat === 0 ? 1 : 0).me.peek).toBeNull();
+  });
+
+  it("偷看后可以交换自己两名暗置人物；亮出的那名不能动", () => {
+    const { t, seat } = toPeek();
+    t.apply(seat, { type: "peek", pos: 2 });
+    const slots = t.hand.placement[seat]!.slots.slice();
+    expect(() => t.apply(seat, { type: "peekSwap", swap: [0, 1] })).toThrow(); // 0 号位是亮出的
+    expect(legalActions(t, seat)).toContainEqual({ type: "peekSwap", swap: [1, 2] });
+    t.apply(seat, { type: "peekSwap", swap: [1, 2] });
+    expect(t.hand.placement[seat]!.slots).toEqual([slots[0], slots[2], slots[1]]);
+    expect(t.phase).toBe("bet");
+  });
+});
+
 describe("公共效果暗标", () => {
   function toBid(seed: number) {
     const t = new Table({ seed });

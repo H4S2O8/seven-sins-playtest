@@ -28,7 +28,7 @@ export const CHARACTERS: readonly CharacterDef[] = [
     ability: "每有一名人物倒下（不论敌我），+1/+3", tag: "血战养成", stage: 1 },
   // 嫉妒
   { id: "EN1", name: "窥视者", sin: "嫉妒", atk: 3, hp: 8, shape: "multi", armor: 0, barrier: 0,
-    ability: "亮牌后，可以查看对手一名暗置人物", tag: "情报", stage: 1 },
+    ability: "亮牌后，暗中查看对手一名暗置人物，然后可以交换自己两名暗置人物的位置（对手不会知道）", tag: "情报", stage: 1 },
   { id: "EN2", name: "摹拳客", sin: "嫉妒", atk: 1, hp: 10, shape: "heavy", armor: 0, barrier: 0,
     ability: "开战时，攻和攻击形状变得与对位敌人相同（取较高攻）", tag: "镜子", stage: 2 },
   { id: "EN3", name: "夺装者", sin: "嫉妒", atk: 3, hp: 7, shape: "heavy", armor: 0, barrier: 0,
