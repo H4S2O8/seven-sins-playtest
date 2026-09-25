@@ -65,6 +65,10 @@ interface Ui {
   lastBattle: { hand: number; result: BattleResult; teams: [Placement, Placement]; equipment: [(string | null)[], (string | null)[]] } | null;
 }
 
+/** 有立绘的人物（打包时由 scripts/build-web.mjs 根据 web/art/ 填入）。 */
+declare const __ART_IDS__: string[];
+const ART = new Set<string>(typeof __ART_IDS__ === "undefined" ? [] : __ART_IDS__);
+
 const STYLE_NAME: Record<Style, string> = { cautious: "谨慎", aggressive: "激进", bluff: "爱诈唬" };
 
 let table: Table | null = null;
@@ -404,7 +408,7 @@ function card(id: string, o: CardOpts = {}) {
   const eqs = (o.equipList ?? (equip ? [equip] : [])).map((x) => equipment(x));
   return `<div class="card ${o.cls ?? ""} ${o.dead ? "dead" : ""} ${o.act ? "clickable" : ""} ${b.barrier ? "shielded" : ""}"
       style="--sin:${SIN_COLOR[c.sin]}"${o.unit ? ` data-unit="${o.unit}"` : ""}${attrs(o)} title="${esc(`${c.name}（${c.sin}）：${c.ability}`)}">
-    <div class="art"><span class="glyph">${SIN_GLYPH[c.sin]}</span></div>
+    <div class="art ${ART.has(id) ? "has-portrait" : ""}"><span class="glyph">${SIN_GLYPH[c.sin]}</span>${ART.has(id) ? `<img class="portrait" src="art/${id}.webp" alt="" draggable="false">` : ""}</div>
     <div class="ribbon">${c.name}</div>
     <div class="text">${CARD_TEXT[id] ?? esc(c.ability)}</div>
     ${eqs.length ? `<div class="equip" title="${esc(eqs.map((e) => `${e.name}：${e.text}`).join("；"))}">⚙ ${eqs.map((e) => e.name).join("、")}</div>` : ""}
@@ -841,7 +845,7 @@ function sheetView(): string {
     case "card": {
       const c = character(s.id);
       const eq = s.equip ? equipment(s.equip) : null;
-      return wrap("card-sheet", `<div class="big-card">${card(s.id, { equip: s.equip, cls: "large" })}</div>
+      return wrap("card-sheet", `${ART.has(s.id) ? `<img class="full-portrait" src="art/${s.id}.webp" alt="${c.name}立绘">` : ""}<div class="big-card">${card(s.id, { equip: s.equip, cls: "large" })}</div>
         <div class="card-info"><h2>${c.name}<small>${c.sin} · ${c.tag}${c.stage === 2 ? " · 第二阶段" : ""}</small></h2>
         <p class="stats">攻 <b>${c.atk}</b> · 血 <b>${c.hp}</b> · ${shapeName(c.shape)}${c.armor ? ` · 护甲 ${c.armor}` : ""}${c.barrier ? ` · 屏障 ${c.barrier}` : ""}</p>
         <p class="ability">${esc(c.ability)}</p>
