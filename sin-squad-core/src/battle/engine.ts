@@ -1,5 +1,5 @@
 import { character } from "../content/characters.js";
-import { equipment } from "../content/tables.js";
+import { equipment, slotEffect } from "../content/tables.js";
 import { other, type BetContext, type Seat, type TeamSetup } from "../types.js";
 import {
   armorOf, emptyUnit, health, MAX_BARRIER, round1, snapshot, unitFrom,
@@ -91,6 +91,8 @@ class Battle {
     team.forEach((u, i) => {
       const e = setup.slots[i].equipmentId;
       if (u.exists && e) u.equipmentIds.push(e);
+      const fx = setup.slots[i].effectId;
+      if (u.exists && fx) u.equipmentIds.push(fx);
     });
     if (setup.eat) {
       const eater = team[setup.eat.eater];
@@ -183,7 +185,8 @@ class Battle {
   }
 
   private applyEquipment(u: Unit, id: string) {
-    const e = equipment(id).effect;
+    const definition = id.startsWith("FX") ? slotEffect(id).effect : equipment(id).effect;
+    const e = definition;
     switch (e.kind) {
       case "stat": u.atk += e.atk; u.hp += e.hp; u.eqAtk += e.atk; u.eqHp += e.hp; break;
       case "shape": u.shape = e.shape; u.atk += e.atk; u.eqAtk += e.atk; break;

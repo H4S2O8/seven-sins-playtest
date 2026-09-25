@@ -42,6 +42,20 @@ export interface EquipmentDef {
   effect: EquipmentEffect;
 }
 
+/** 效果槽牌。当前核心将可验证的静态效果映射到新版攻/血面板。 */
+export type SlotEffect =
+  | { kind: "stat"; atk: number; hp: number }
+  | { kind: "armor"; armor: number; hp: number }
+  | { kind: "barrier"; barrier: number; atk: number }
+  | { kind: "shape"; shape: AttackShape; atk: number };
+
+export interface SlotEffectDef {
+  id: string;
+  name: string;
+  text: string;
+  effect: SlotEffect;
+}
+
 export type RuleFamily = "快速击破" | "关键人物" | "维持压制" | "限时作战";
 
 export interface RuleDef {
@@ -71,6 +85,7 @@ export interface PublicEffectDef {
 export interface SlotSetup {
   characterId: string | null; // null = 空位（例如被饕餮吞掉）
   equipmentId: string | null;
+  effectId?: string | null;
 }
 
 /** 饕餮在排位时吞掉队友：eater、eaten 都是位置编号。 */
