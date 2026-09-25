@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { runBattle } from "../src/battle/engine.js";
+import { runBattle, splitMulti } from "../src/battle/engine.js";
 import { randomBattle } from "../src/sim/sampler.js";
 import { Rng } from "../src/rng.js";
 import { afterHit, battle, hpAfter, team } from "./helpers.js";
@@ -97,14 +97,27 @@ describe("轮流出手与碰撞", () => {
     expect(wake[1][0].hp).toBe(4 - 3);
   });
 
-  it("吸血只算自己主动攻击，回复一半；反击打出的伤害不回血", () => {
+  it("吸血：自己攻击每打中一段回 1，反击打出的伤害不回血", () => {
     const r = battle(team(["GL1", null, null]), team(["LU1", null, null]));
-    // 嚼盾兽 3/8 连击打同行药袋 3/12：打出 3，回 1.5；同时吃药袋 3 点反击
-    expect(afterHit(r, 1)[0][0].hp).toBe(8 - 3 + 1.5);
+    // 嚼盾兽 3/8 连击 1+2 打同行药袋 3/12：两段都打中，回 2；同时吃药袋 3 点反击
+    expect(afterHit(r, 1)[0][0].hp).toBe(8 - 3 + 2);
     expect(afterHit(r, 1)[1][0].hp).toBe(12 - 3);
     // 药袋回打：嚼盾兽挨 3，它的反击也打出 3，但不回血
-    expect(afterHit(r, 2)[0][0].hp).toBe(6.5 - 3);
+    expect(afterHit(r, 2)[0][0].hp).toBe(7 - 3);
     expect(afterHit(r, 2)[1][0].hp).toBe(9 - 3);
+  });
+
+  it("吸血按打中的段数算：护甲吃掉一段就少回 1", () => {
+    // 瞌睡客护甲 1：连击 1+2 → 第一段被吃光，只有第二段打中，回 1
+    const r = battle(team(["GL1", null, null]), team(["SL1", null, null]));
+    const hp0 = r.start[0][0].startHp;
+    expect(afterHit(r, 1)[0][0].hp).toBe(hp0 - 1 + 1);
+  });
+
+  it("连击拆成两段整数：奇数时后一段多 1", () => {
+    expect(splitMulti(3)).toEqual([1, 2]);
+    expect(splitMulti(4)).toEqual([2, 2]);
+    expect(splitMulti(1)).toEqual([1]);
   });
 
   it("每一帧都附带当时的快照，给回放用", () => {
@@ -195,6 +208,18 @@ describe("确定性", () => {
     for (let i = 0; i < 200; i++) {
       const { input } = randomBattle(rng);
       expect(runBattle(input)).toEqual(runBattle(input));
+    }
+  });
+
+  it("所有结算都是整数：血量、伤害、回复没有小数", () => {
+    const rng = new Rng(5);
+    for (let i = 0; i < 2000; i++) {
+      const r = runBattle(randomBattle(rng).input);
+      for (const e of r.events) {
+        if (e.type === "damage") expect(Number.isInteger(e.amount) && Number.isInteger(e.hpAfter)).toBe(true);
+        if (e.type === "heal") expect(Number.isInteger(e.amount)).toBe(true);
+        if (e.type === "attack") expect(e.segments.every(Number.isInteger)).toBe(true);
+      }
     }
   });
 

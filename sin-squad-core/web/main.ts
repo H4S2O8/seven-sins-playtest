@@ -1,5 +1,5 @@
 import { HeuristicAgent, type Style } from "../src/ai/agents.js";
-import type { BattleEvent, BattleResult } from "../src/battle/engine.js";
+import { splitMulti, type BattleEvent, type BattleResult } from "../src/battle/engine.js";
 import type { UnitSnapshot } from "../src/battle/unit.js";
 import { CHARACTERS, character } from "../src/content/characters.js";
 import { ARENAS, EQUIPMENT, PUBLIC_EFFECTS, RULES, arena, equipment, publicEffect, rule } from "../src/content/tables.js";
@@ -447,6 +447,11 @@ function attrs(o: { act?: string; arg?: string | number; drag?: string; drop?: s
   return dnd + (o.act ? ` data-act="${o.act}"${o.arg !== undefined ? ` data-arg="${o.arg}"` : ""} role="button" tabindex="0"` : "");
 }
 
+/** 连击直接写出两段各打多少，比如“连击 1+2”。 */
+function shapeLabel(shape: AttackShape, atk: number): string {
+  return shape === "multi" ? `${shapeName(shape)} ${splitMulti(Math.max(0, atk)).join("+")}` : shapeName(shape);
+}
+
 function card(id: string, o: CardOpts = {}) {
   const c = character(id);
   const equip = o.equip ?? null;
@@ -460,7 +465,7 @@ function card(id: string, o: CardOpts = {}) {
     <div class="ribbon">${c.name}</div>
     <div class="text">${CARD_TEXT[id] ?? esc(c.ability)}</div>
     ${eqs.length ? `<div class="equip" title="${esc(eqs.map((e) => `${e.name}：${e.text}`).join("；"))}">⚙ ${eqs.map((e) => e.name).join("、")}</div>` : ""}
-    <span class="shape-badge ${b.shape}" title="${shapeName(b.shape)}">${shapeName(b.shape)}</span>
+    <span class="shape-badge ${b.shape}">${shapeLabel(b.shape, b.atk)}</span>
     ${b.armor ? `<span class="armor-badge" title="护甲 ${b.armor}">${b.armor}</span>` : ""}
     ${b.barrier ? `<span class="barrier-badge" title="屏障 ${b.barrier}">${b.barrier}</span>` : ""}
     <span class="gem atk ${atkCls}">${num(b.atk)}</span>
@@ -908,7 +913,7 @@ function sheetView(): string {
       const eq = s.equip ? equipment(s.equip) : null;
       return wrap("card-sheet", `${ART.has(s.id) ? `<img class="full-portrait" src="art/${s.id}.webp" alt="${c.name}立绘">` : ""}<div class="big-card">${card(s.id, { equip: s.equip, cls: "large" })}</div>
         <div class="card-info"><h2>${c.name}<small>${c.sin} · ${c.tag}${c.stage === 2 ? " · 第二阶段" : ""}</small></h2>
-        <p class="stats">攻 <b>${c.atk}</b> · 血 <b>${c.hp}</b> · ${shapeName(c.shape)}${c.armor ? ` · 护甲 ${c.armor}` : ""}${c.barrier ? ` · 屏障 ${c.barrier}` : ""}</p>
+        <p class="stats">攻 <b>${c.atk}</b> · 血 <b>${c.hp}</b> · ${shapeLabel(c.shape, c.atk)}${c.armor ? ` · 护甲 ${c.armor}` : ""}${c.barrier ? ` · 屏障 ${c.barrier}` : ""}</p>
         <p class="ability">${esc(c.ability)}</p>
         ${eq ? `<p class="equip-line">⚙ ${eq.name}：${eq.text}</p>` : ""}
         <p class="muted">重击 → 护甲 → 连击 → 屏障 → 重击：前者克后者。</p></div>`);

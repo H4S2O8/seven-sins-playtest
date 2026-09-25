@@ -2,7 +2,7 @@ import { character } from "../content/characters.js";
 import { equipment } from "../content/tables.js";
 import { other, type BetContext, type Seat, type TeamSetup } from "../types.js";
 import {
-  armorOf, emptyUnit, health, MAX_BARRIER, round1, snapshot, unitFrom,
+  armorOf, emptyUnit, health, MAX_BARRIER, snapshot, unitFrom,
   type Unit, type UnitSnapshot,
 } from "./unit.js";
 import { instantClaims, roundEndClaims, setupVictory, timeoutWinner, type VictoryState } from "./victory.js";
@@ -478,7 +478,7 @@ class Battle {
 
     // 算出伤害并拆段
     /** 一次攻击：护甲按段减到 0 为止，但整次攻击只要有一段打中，至少扣 1。 */
-    interface Hit { a: Unit; t: Unit; sum: number; landed: boolean; minOne: boolean }
+    interface Hit { a: Unit; t: Unit; sum: number; landed: boolean; minOne: boolean; segs: number }
     /** 一段伤害：a 是伤害来源，t 是承受者；recoil = 碰撞反伤。 */
     interface Seg { a: Unit; t: Unit; amount: number; hit: Hit; recoil: boolean }
     const segs: Seg[] = [];
@@ -496,29 +496,28 @@ class Battle {
     if (this.abilityOn(a, "无瑕刺客") && a.hp >= a.maxHp) { d *= 2; this.trig(a, "无瑕刺客", "满血：攻击翻倍"); }
     if (this.abilityOn(a, "清算者") && r === 1 && this.bet[other(a.seat)].betOrRaiseCount > 0) { d *= 2; this.trig(a, "清算者", "对手加过注：首轮翻倍"); }
     if (this.has("P11") && (no === 3 || no === 6)) d *= 2;
-    if (this.has("P26") && a.pos === 1) d = Math.floor(d * 1.25 * 2) / 2;
-    const parts = a.shape === "multi" ? [d / 2, d / 2] : [d];
+    if (this.has("P26") && a.pos === 1) d = Math.round(d * 1.25);
+    const parts = a.shape === "multi" ? splitMulti(d) : [d];
     this.events.push({ round: r, type: "attack", seat: a.seat, pos: a.pos, targetSeat: t.seat, targetPos: t.pos, segments: parts });
-    const hit: Hit = { a, t, sum: 0, landed: false, minOne: true };
+    const hit: Hit = { a, t, sum: 0, landed: false, minOne: true, segs: 0 };
     hitList.push(hit);
     for (const p of parts) segs.push({ a, t, amount: p, hit, recoil: false });
     if (this.has("P09") && r >= 2) {
       // 深夜霜降：独立的一段 1 点伤害，护甲可以挡掉
-      const frost: Hit = { a, t, sum: 0, landed: false, minOne: false };
+      const frost: Hit = { a, t, sum: 0, landed: false, minOne: false, segs: 0 };
       hitList.push(frost);
       segs.push({ a, t, amount: 1, hit: frost, recoil: false });
     }
     // 碰撞：被打的人把自己的攻整段打回来（这一轮不出手、正在转线的人除外）
     if (this.retaliates(t)) {
       this.events.push({ round: r, type: "recoil", seat: t.seat, pos: t.pos, targetSeat: a.seat, targetPos: a.pos, amount: t.atk });
-      const back: Hit = { a: t, t: a, sum: 0, landed: false, minOne: true };
+      const back: Hit = { a: t, t: a, sum: 0, landed: false, minOne: true, segs: 0 };
       hitList.push(back);
       segs.push({ a: t, t: a, amount: t.atk, hit: back, recoil: true });
     }
 
     // 结算每一段（先记账，再一起扣血）
     const dmg = new Map<Unit, number>();
-    const dealt = new Map<Unit, number>();
     const hits = new Map<Unit, number>();
     const hitters = new Map<Unit, Set<Unit>>();
     const armorBreaks = new Map<Unit, number>();
@@ -536,15 +535,15 @@ class Battle {
       if (this.has("P04") && health(dst) > 0.75) armor = Math.floor(armor / 2);
       let real = Math.max(0, s.amount - armor);
       s.hit.landed = true;
-      if (this.has("A07") && dst.attacks === 0) real /= 2;
-      if (this.has("A09") && r <= 2) real = Math.min(real, dst.startHp / 4);
-      if (this.has("P26") && dst.pos === 1) real *= 1.25;
-      if (this.has("P27") && dst.pos !== 1 && src.pos === 1 && src.seat !== dst.seat && !dst.sideCoverUsed) { dst.sideCoverUsed = true; real /= 2; }
-      real = round1(real);
+      // 所有伤害都是整数：减半向下取整，+25% 四舍五入
+      if (this.has("A07") && dst.attacks === 0) real = Math.floor(real / 2);
+      if (this.has("A09") && r <= 2) real = Math.min(real, Math.max(1, Math.floor(dst.startHp / 4)));
+      if (this.has("P26") && dst.pos === 1) real = Math.round(real * 1.25);
+      if (this.has("P27") && dst.pos !== 1 && src.pos === 1 && src.seat !== dst.seat && !dst.sideCoverUsed) { dst.sideCoverUsed = true; real = Math.floor(real / 2); }
       s.hit.sum += real;
       if (real <= 0) continue;
+      s.hit.segs++;
       add(dmg, dst, real);
-      add(dealt, src, real);
       add(hits, dst, 1);
       (hitters.get(dst) ?? hitters.set(dst, new Set()).get(dst)!).add(src);
       if (this.has("P03") && real >= 6) add(armorBreaks, dst, 1);
@@ -557,26 +556,28 @@ class Battle {
     // 每次攻击（和每次反击）至少扣 1；被屏障整段挡掉的不算打中
     for (const h of hitList) {
       if (!h.landed || !h.minOne || h.sum >= 1) continue;
-      const top = round1(1 - h.sum);
+      const top = 1 - h.sum;
       if (h.sum === 0) {
+        h.segs = 1;
         add(hits, h.t, 1);
         (hitters.get(h.t) ?? hitters.set(h.t, new Set()).get(h.t)!).add(h.a);
       }
       add(dmg, h.t, top);
-      add(dealt, h.a, top);
     }
 
     // 碰撞双方同时扣血
     for (const [u, v] of dmg) this.loseHp(u, v);
 
-    // 吸血：只算自己主动攻击打出的伤害（反击不算），回复一半
-    const drained = dealt.get(a) ?? 0;
-    if (drained > 0 && a.hp > 0 && this.abilityOn(a, "嚼盾兽")) {
-      let heal = round1(drained / 2);
-      if (this.has("P19")) heal /= 2;
-      if (this.has("P18") && r >= 4) heal /= 2;
-      if (a.hp < a.maxHp) this.trig(a, "嚼盾兽", "吸血");
-      this.heal(a, heal);
+    // 吸血：自己主动攻击每打中一段回 1（反击不算）
+    const bites = hit.segs;
+    if (bites > 0 && a.hp > 0 && this.abilityOn(a, "嚼盾兽")) {
+      let heal = bites;
+      if (this.has("P19")) heal -= 1;
+      if (this.has("P18") && r >= 4) heal -= 1;
+      if (heal > 0) {
+        if (a.hp < a.maxHp) this.trig(a, "嚼盾兽", `吸血 +${heal}`);
+        this.heal(a, heal);
+      }
     }
     // 蓄痛、裂甲
     for (const [u, n] of hits) {
@@ -605,9 +606,9 @@ class Battle {
 
   private loseHp(u: Unit, v: number) {
     if (v <= 0 || !u.alive) return;
-    u.hp = round1(u.hp - v);
+    u.hp = u.hp - v;
     u.lostTotal += v;
-    this.events.push({ round: this.round, type: "damage", seat: u.seat, pos: u.pos, amount: round1(v), hpAfter: u.hp });
+    this.events.push({ round: this.round, type: "damage", seat: u.seat, pos: u.pos, amount: v, hpAfter: u.hp });
     if (this.has("P21") && u.hp > 0) {
       u.bloodSpringAcc += v;
       while (u.bloodSpringAcc >= 5) { u.bloodSpringAcc -= 5; this.heal(u, 2); }
@@ -617,9 +618,9 @@ class Battle {
   private heal(u: Unit, v: number) {
     if (v <= 0 || u.hp <= 0) return;
     const room = u.maxHp - u.hp;
-    const real = round1(Math.min(room, v));
+    const real = Math.min(room, v);
     if (real > 0) {
-      u.hp = round1(u.hp + real);
+      u.hp = u.hp + real;
       this.events.push({ round: this.round, type: "heal", seat: u.seat, pos: u.pos, amount: real });
     }
     if (this.has("P20") && v - real > 0 && u.barrier < 1) this.addBarrier(u, 1);
@@ -708,6 +709,12 @@ class Battle {
       }
     }
   }
+}
+
+/** 连击：伤害拆成两段整数，奇数时后一段多 1（屏障先挡掉小的那段）；0 的那段不算。 */
+export function splitMulti(d: number): number[] {
+  const first = Math.floor(d / 2);
+  return first > 0 ? [first, d - first] : [d];
 }
 
 function minBy<T>(items: T[], f: (x: T) => number): T {
