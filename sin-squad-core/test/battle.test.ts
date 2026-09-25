@@ -115,15 +115,16 @@ describe("轮流出手与碰撞", () => {
 });
 
 describe("胜负判定", () => {
-  it("同一次碰撞里同时达成：比整场造成的伤害，相同则平局", () => {
+  it("同一次碰撞里同时达成（同归于尽）算平局，谁打得多都一样", () => {
     const draw = battle(team(["WR3", null, null]), team(["WR3", null, null]));
     expect(draw.winner).toBeNull();
     expect(draw.reason).toBe("平局");
 
-    const win = battle(team(["WR3", null, null], ["E01"]), team(["WR3", null, null]));
-    expect(win.winner).toBe(0);
-    expect(win.reason).toBe("同时达成·比伤害");
-    expect(win.rounds).toBe(1);
+    const lopsided = battle(team(["WR3", null, null], ["E01"]), team(["WR3", null, null]));
+    // 带校准刃的清算者打出 8、对面只打出 5，但两人同时倒下，照样是平局
+    expect(lopsided.winner).toBeNull();
+    expect(lopsided.reason).toBe("平局");
+    expect(lopsided.rounds).toBe(1);
   });
 
   it("众目所向：击倒对方亮出的那名就立刻赢，哪怕他还有人站着", () => {

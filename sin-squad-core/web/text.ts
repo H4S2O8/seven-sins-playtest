@@ -153,7 +153,6 @@ export const CARD_TEXT: Record<string, string> = {
 
 export const REASON_TEXT: Record<BattleResult["reason"], string> = {
   达成规则: "达成胜利规则",
-  "同时达成·比伤害": "双方同一轮达成，比这一轮造成的伤害",
   到时比较: "打满轮数，按规则比较",
   平局: "平局",
 };

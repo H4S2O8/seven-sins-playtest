@@ -51,7 +51,7 @@ export type BattleEvent =
 export interface BattleResult {
   /** null = 平局。 */
   winner: Seat | null;
-  reason: "达成规则" | "同时达成·比伤害" | "到时比较" | "平局";
+  reason: "达成规则" | "到时比较" | "平局";
   rounds: number;
   events: BattleEvent[];
   final: [UnitSnapshot[], UnitSnapshot[]];
@@ -85,8 +85,6 @@ class Battle {
   private readonly first: Seat;
   private readonly frames: BattleFrame[] = [];
   private frameMark = 0;
-  /** 双方整场造成的伤害（同时达成时比这个）。 */
-  private readonly dealtTotal: [number, number] = [0, 0];
   /** 这一轮不出手的人。 */
   private readonly idle = new Set<Unit>();
   /** 这一轮每人被谁打过（集火回响用）。 */
@@ -312,14 +310,10 @@ class Battle {
     return this.finish(w, w === null ? "平局" : "到时比较");
   }
 
-  /** 有人达成胜利条件就结束；双方同时达成时比整场造成的伤害。 */
+  /** 有人达成胜利条件就结束；双方同时达成（例如同归于尽）算平局。 */
   private decide(claims: [boolean, boolean]): BattleResult | null {
     if (!claims[0] && !claims[1]) return null;
-    if (claims[0] && claims[1]) {
-      const d = this.dealtTotal[0] - this.dealtTotal[1];
-      if (Math.abs(d) < 1e-9) return this.finish(null, "平局");
-      return this.finish(d > 0 ? 0 : 1, "同时达成·比伤害");
-    }
+    if (claims[0] && claims[1]) return this.finish(null, "平局");
     return this.finish(claims[0] ? 0 : 1, "达成规则");
   }
 
@@ -574,7 +568,6 @@ class Battle {
 
     // 碰撞双方同时扣血
     for (const [u, v] of dmg) this.loseHp(u, v);
-    for (const [u, v] of dealt) this.dealtTotal[u.seat] += v;
 
     // 吸血：只算自己主动攻击打出的伤害（反击不算），回复一半
     const drained = dealt.get(a) ?? 0;
