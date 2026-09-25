@@ -124,6 +124,10 @@ code { background: #0005; border-radius: 4px; padding: 0 4px; font-size: 12px; }
 }
 .seat .stack { display: flex; align-items: center; gap: 4px; }
 .seat .stack b { color: var(--gold); font-size: 16px; }
+.seat .allin-tag {
+  margin-left: 4px; padding: 0 7px; border-radius: 999px; font-size: 11.5px; font-weight: 800;
+  background: linear-gradient(#7a2c5a, #561c40); border: 1px solid #b0508a; color: #ffd8ee;
+}
 .seat .meta { color: #b8c9b8; font-size: 12px; white-space: nowrap; }
 .seat .status { color: var(--good); font-size: 12px; white-space: nowrap; }
 .seat.acting .status { animation: pulse 1.2s infinite; }

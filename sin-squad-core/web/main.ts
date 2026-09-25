@@ -654,7 +654,7 @@ function seatBar(o: Observation, seat: Seat) {
     <span class="avatar">${seat === HUMAN ? "你" : "机"}</span>
     <span class="who">${name}</span>
     ${o.dealer === seat ? `<span class="dealer" title="庄家">庄</span>` : ""}
-    <span class="stack">${chipStack(stack)}<b>${stack}</b></span>
+    <span class="stack">${chipStack(stack)}<b>${stack}</b>${stack === 0 && o.phase !== "over" ? `<span class="allin-tag" title="筹码全在奖池里，赢下这手就拿回来">全押</span>` : ""}</span>
     ${extra}
     <span class="status">${acting ? (seat === HUMAN ? "轮到你" : "思考中…") : submitted ? "已决定" : ""}</span>
     ${roundBet ? `<span class="bet-pill">${chipStack(roundBet)}${roundBet}</span>` : ""}
