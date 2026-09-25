@@ -12,8 +12,11 @@ import {
 } from "./text.js";
 import { Gate, type Opening, type SaveInfo } from "./intro.js";
 import { morph } from "./morph.js";
-import { bubble as hudBubble, crumble, flip, floater as hudFloater, laneShift, measure, pulse, shake, shatter, strike, type Snapshot } from "./motion.js";
+import {
+  bubble as hudBubble, crumble, flip, floater as hudFloater, laneShift, measure, pulse, reducedMotion, shake, shatter, strike, type Snapshot,
+} from "./motion.js";
 import { isMuted, setScene, toggleMuted } from "./music.js";
+import { installTilt } from "./tilt.js";
 import { disableTips, dismissTip, resetTips, tipHtml } from "./tips.js";
 
 /**
@@ -99,32 +102,90 @@ const revealLayer = document.createElement("div");
 revealLayer.id = "reveal";
 document.body.appendChild(revealLayer);
 
+/**
+ * 翻开时：两张有厚度的大牌从桌面上立起来、在空中翻到正面；点一下（或几秒后）飞回桌上对应的那块长条牌，落下时那块牌震一下。
+ */
 function showReveal(ruleId: string, peId: string | null) {
   const r = rule(ruleId);
   const pe = peId ? publicEffect(peId) : null;
-  const face = (label: string, id: string, name: string, sub: string, text: string, i: number) => `
-    <div class="reveal-card" style="--i:${i}">
-      <div class="reveal-art"${artStyle(id)}></div>
-      <div class="reveal-body"><span class="reveal-label">${label}</span><b>${name}</b><small>${sub}</small><p>${text}</p></div>
+  const hand = table?.hand.no ?? 0;
+  const face = (label: string, which: string, id: string, name: string, sub: string, text: string, i: number) => `
+    <div class="card rv" data-target="h${hand}-env-${which}" style="--i:${i}">
+      <div class="lift"><div class="flip">
+        <i class="edge top"></i><i class="edge bottom"></i><i class="edge left"></i><i class="edge right"></i>
+        <div class="face front">
+          <div class="reveal-art"${artStyle(id)}></div>
+          <div class="reveal-body"><span class="reveal-label">${label}</span><b>${name}</b><small>${sub}</small><p>${text}</p></div>
+        </div>
+        <div class="face back"><div class="emblem"><span>罪</span></div></div>
+      </div></div>
     </div>`;
+  revealLeaving = false;
   revealLayer.innerHTML = `<div class="reveal-pop" role="dialog" aria-label="规则揭晓">
     <div class="reveal-title">翻开</div>
     <div class="reveal-cards">
-      ${face("胜利规则", r.id, r.name, `${r.family} · 最多 ${r.maxRounds} 轮`, r.text, 0)}
-      ${pe ? face("公共效果", pe.id, pe.name, `${pe.kind} · 双方表决要不要生效`, pe.text, 1) : ""}
+      ${face("胜利规则", "rule", r.id, r.name, `${r.family} · 最多 ${r.maxRounds} 轮`, r.text, 0)}
+      ${pe ? face("公共效果", "pe", pe.id, pe.name, `${pe.kind} · 双方表决要不要生效`, pe.text, 1) : ""}
     </div>
     <small class="reveal-hint">点一下继续</small>
   </div>`;
+  if (!reducedMotion()) {
+    revealLayer.querySelectorAll<HTMLElement>(".card.rv").forEach((el, i) => {
+      const t = { duration: 900, delay: 120 + i * 260, fill: "backwards" as const };
+      // 从桌面上立起来（平躺、很小、在下方）→ 冲过头一点 → 停在眼前
+      el.animate([
+        { transform: "translateY(42vh) rotateX(64deg) scale(.42)" },
+        { transform: "translateY(-22px) rotateX(-6deg) scale(1.05)", offset: 0.7 },
+        { transform: "none" },
+      ], { ...t, easing: "cubic-bezier(.2,.7,.3,1)" });
+      // 起来的途中从背面翻到正面
+      el.querySelector(".flip")?.animate([
+        { transform: "rotateY(180deg)" },
+        { transform: "rotateY(180deg)", offset: 0.22 },
+        { transform: "rotateY(-12deg)", offset: 0.8 },
+        { transform: "rotateY(0deg)" },
+      ], { ...t, easing: "ease-in-out" });
+    });
+  }
   if (revealTimer !== null) clearTimeout(revealTimer);
-  revealTimer = window.setTimeout(hideReveal, 4200);
+  revealTimer = window.setTimeout(hideReveal, 4600);
 }
 
+let revealLeaving = false;
 function hideReveal() {
   if (revealTimer !== null) clearTimeout(revealTimer);
   revealTimer = null;
-  if (!revealLayer.innerHTML) return;
-  revealLayer.innerHTML = "";
-  scheduleAi();
+  if (!revealLayer.innerHTML || revealLeaving) return;
+  const done = () => {
+    revealLeaving = false;
+    revealLayer.innerHTML = "";
+    scheduleAi();
+  };
+  const cards = [...revealLayer.querySelectorAll<HTMLElement>(".card.rv")];
+  if (reducedMotion() || !cards.length) return done();
+  revealLeaving = true;
+  revealLayer.querySelector(".reveal-pop")?.classList.add("leaving");
+  const tilt = parseFloat(getComputedStyle(app).getPropertyValue("--tilt")) || 0;
+  const flights = cards.map((el, i) => {
+    el.getAnimations().forEach((x) => x.finish());
+    const tile = app.querySelector<HTMLElement>(`[data-key="${el.dataset.target}"]`);
+    const a = el.getBoundingClientRect();
+    const b = tile?.getBoundingClientRect();
+    const opts = { duration: 560, delay: i * 90, easing: "cubic-bezier(.5,0,.3,1)", fill: "forwards" as const };
+    if (!b || !b.width) {
+      return el.animate([{ transform: "none" }, { transform: "translateY(30vh) scale(.4)", visibility: "hidden" }], opts).finished;
+    }
+    // 缩到桌上那块牌的大小、按桌面的倾斜躺下去，落在它上面
+    const k = Math.min(b.width / a.width, b.height / a.height) * 1.15;
+    const dx = b.left + b.width / 2 - (a.left + a.width / 2);
+    const dy = b.top + b.height / 2 - (a.top + a.height / 2);
+    return el.animate([
+      { transform: "none" },
+      { transform: `translate(${dx * 0.55}px, ${dy * 0.45}px) translateZ(60px) rotateX(${tilt * 0.5}deg) scale(${(k + 1) / 2})`, offset: 0.55 },
+      { transform: `translate(${dx}px, ${dy}px) rotateX(${tilt + 40}deg) scale(${k})`, visibility: "hidden" },
+    ], opts).finished.then(() => { if (tile) pulse(tile, "fx-proc", 900); });
+  });
+  Promise.all(flights).then(done, done);
 }
 revealLayer.addEventListener("click", hideReveal);
 
@@ -835,18 +896,33 @@ function seatBar(o: Observation, seat: Seat) {
   </div>`;
 }
 
+/**
+ * 场地 / 胜利规则 / 公共效果：横放在桌上的三块有厚度的长条牌。没翻开时背面朝上，翻开时抬起来绕水平轴翻过去。
+ * 每手一组新的（key 带手数），新一手会重新发到桌上。
+ */
+function envTile(o: Observation, which: "arena" | "rule" | "pe", title: string, name: string | null, text: string, hint: string, state = "", art: string | null = null) {
+  const down = !name;
+  const pic = name ? artUrl(art) : null;
+  const cls = ["card", "tile", down ? "down" : "", state, pic ? "has-art" : ""].filter(Boolean).join(" ");
+  return `<div class="${cls}" data-key="h${o.handNo}-env-${which}"${pic ? ` style="--art:url('${pic}')"` : ""} data-act="sheet" data-arg="env:${which}" role="button" tabindex="0">
+    <div class="shade"></div>
+    <div class="lift"><div class="flip">
+      <i class="edge top"></i><i class="edge bottom"></i><i class="edge left"></i><i class="edge right"></i>
+      <div class="face front"><span class="env-title">${title}</span><span class="env-name">${name ?? ""}</span><span class="env-text">${text}</span></div>
+      <div class="face back"><span class="tile-seal">罪</span><span class="tile-back"><span class="env-title">${title}</span><span class="env-text">${hint}</span></span></div>
+    </div></div>
+  </div>`;
+}
+
 function center(o: Observation) {
-  const tile = (which: "arena" | "rule" | "pe", title: string, name: string | null, text: string, state = "", art: string | null = null) =>
-    `<div class="env ${name ? "" : "down"} ${state} ${name && artUrl(art) ? "has-art" : ""}"${name ? artStyle(art) : ""} data-act="sheet" data-arg="env:${which}" role="button" tabindex="0">
-      <span class="env-title">${title}</span><span class="env-name">${name ?? "未翻开"}</span><span class="env-text">${text}</span></div>`;
   const a = o.arenaId ? arena(o.arenaId) : null;
   const r = o.ruleId ? rule(o.ruleId) : null;
   const pe = o.publicEffectId ? publicEffect(o.publicEffectId) : null;
   const peState = o.publicEffectActive === null ? (pe ? "voting" : "") : o.publicEffectActive ? "on" : "off";
   const peLabel = pe ? `${pe.name}${o.publicEffectActive === null ? "" : o.publicEffectActive ? " ✓" : " ✗"}` : null;
-  const tiles = tile("arena", "场地", a?.name ?? null, a?.text ?? `候选：${o.arenaOptions.map((x) => arena(x).name).join(" / ")}`, "", o.arenaId) +
-    tile("rule", "胜利规则", r ? r.name : null, r ? `${r.text}（最多 ${r.maxRounds} 轮）` : "第 1 轮下注后翻开", "", o.ruleId) +
-    tile("pe", "公共效果", peLabel, pe ? pe.text : r ? "已全押，本手没有" : "和规则一起翻开", peState, o.publicEffectId);
+  const tiles = envTile(o, "arena", "场地", a?.name ?? null, a?.text ?? "", `候选：${o.arenaOptions.map((x) => arena(x).name).join(" / ")}`, "", o.arenaId) +
+    envTile(o, "rule", "胜利规则", r ? r.name : null, r ? `${r.text}（最多 ${r.maxRounds} 轮）` : "", "第 1 轮下注后翻开", "", o.ruleId) +
+    envTile(o, "pe", "公共效果", peLabel, pe ? pe.text : "", r ? "已全押，本手没有" : "和规则一起翻开", peState, o.publicEffectId);
   let status = phaseLabel(o);
   if (ui.battle) {
     const b = ui.battle;
@@ -986,7 +1062,7 @@ function arenaDock(o: Observation, mine: boolean) {
   const tiles = o.arenaOptions.map((id, i) => {
     const a = arena(id);
     const pic = artUrl(id) ? `<div class="option-art"${artStyle(id)}></div>` : "";
-    return `<div class="option ${pic ? "with-art" : ""} ${mine ? "clickable" : ""}"${mine ? attrs({ act: "arena", arg: i }) : ""}>${pic}<b>${a.name}</b><small>${a.kind}</small><p>${a.text}</p></div>`;
+    return `<div class="option ${pic ? "with-art" : ""} ${mine ? "clickable" : ""}"${mine ? attrs({ act: "arena", arg: i }) + ` data-tilt="8"` : ""}>${pic}<b>${a.name}</b><small>${a.kind}</small><p>${a.text}</p></div>`;
   }).join("");
   return (mine ? prompt("选一张场地", "你筹码较少（或一样多且你不是庄家）") : waiting("对手在选场地")) + `<div class="tray options">${tiles}</div>`;
 }
@@ -1484,7 +1560,7 @@ app.addEventListener("input", (ev) => {
 // ───────────────────────── 入场 ─────────────────────────
 
 const gate = new Gate({
-  card: (id, cls) => card(id, { cls }),
+  card: (id, cls, down) => card(id, { cls, down }),
   back: (cls) => card(null, { cls }),
   save: saveInfo,
   start(s): Opening {
@@ -1509,6 +1585,7 @@ const gate = new Gate({
 }, ART);
 
 window.addEventListener("resize", () => render(false));
+installTilt();
 // 调试模式：直接开桌，跳过入场
 if (debug) newTable(debug.style ?? "cautious");
 else { render(); gate.show("title"); }

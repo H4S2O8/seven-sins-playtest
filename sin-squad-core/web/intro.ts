@@ -1,6 +1,7 @@
 import type { Style } from "../src/ai/agents.js";
 import { character } from "../src/content/characters.js";
 import type { Seat, Sin } from "../src/types.js";
+import { turnCard } from "./motion.js";
 import { isMuted, toggleMuted } from "./music.js";
 import { HUMAN, SIN_COLOR, SIN_GLYPH } from "./text.js";
 
@@ -22,8 +23,8 @@ export interface Opening {
 }
 
 export interface GateHooks {
-  /** 画一张人物牌（用牌桌那边同一套卡面）。 */
-  card(id: string, cls?: string): string;
+  /** 画一张人物牌（用牌桌那边同一套有厚度的 3D 卡面）；down = 背面朝上。 */
+  card(id: string, cls?: string, down?: boolean): string;
   back(cls?: string): string;
   save(): SaveInfo | null;
   /** 开一张新桌，返回开局信息（牌池、庄家等）。 */
@@ -159,6 +160,12 @@ export class Gate {
         seat?.focus();
       }, 1900);
     }
+    // 起始牌池：8 张牌背面朝上发到小桌垫上，再一张接一张抬起来翻开
+    if (now?.kind === "pool") {
+      this.root.querySelectorAll<HTMLElement>(".pool-cards .card").forEach((el, i) => {
+        window.setTimeout(() => { if (this.screen === now) turnCard(el, false); }, 450 + i * 150);
+      });
+    }
     if (now?.kind === "seat") {
       this.timer = window.setTimeout(() => { if (this.screen === now) this.go("sit"); }, 2600);
     }
@@ -207,7 +214,7 @@ export class Gate {
     const save = this.hooks.save();
     const heroes = HEROES.map((id, i) => this.portrait(id, `h${i}`)).join("");
     return `<div class="title-stage">
-      <div class="heroes">${heroes}</div>
+      <div class="heroes" data-tilt="5">${heroes}</div>
       <h1 class="logo">七罪暗队</h1>
       <p class="tagline">德州扑克的下注 × 酒馆战棋的自动战斗<br><small>只亮一张牌，剩下的全靠你讲故事</small></p>
       <div class="gate-actions">
@@ -226,7 +233,7 @@ export class Gate {
   private opponentView() {
     const cards = (Object.keys(OPPONENTS) as Style[]).map((k) => {
       const o = OPPONENTS[k];
-      return `<div class="foe-card" data-go="pick" data-arg="${k}" role="button" tabindex="0">
+      return `<div class="foe-card" data-go="pick" data-arg="${k}" role="button" tabindex="0" data-tilt="12">
         ${this.foeFace(k, "foe-face")}
         <div class="foe-info">
           <b>${o.title}</b>
@@ -250,10 +257,7 @@ export class Gate {
   }
 
   private poolView(open: Opening) {
-    const cards = open.pool.map((id, i) => `<div class="flipper" style="--i:${i}">
-        <div class="face front">${this.hooks.card(id, "small")}</div>
-        <div class="face rear">${this.hooks.back("small")}</div>
-      </div>`).join("");
+    const cards = open.pool.map((id, i) => `<div class="pool-slot" style="--i:${i}">${this.hooks.card(id, "small", true)}</div>`).join("");
     const sins = new Map<string, number>();
     let multi = 0;
     for (const id of open.pool) {
@@ -271,7 +275,7 @@ export class Gate {
     return `<div class="gate-panel wide">
       <h2>你的起始牌池</h2>
       <p class="gate-sub">从全部人物里随机抽了 ${n} 名。每手从这里随机发 4 名，挑 3 名上场。</p>
-      <div class="pool-cards">${cards}</div>
+      <div class="pool-mat"><div class="pool-cards">${cards}</div></div>
       <div class="pool-sum" style="--delay:${n * 120 + 500}ms">
         <div class="sin-chips">${sinChips}</div>
         <div class="pool-stats">攻最高 <b>${hitter.name} ${hitter.atk}</b> · 血最厚 <b>${tank.name} ${tank.hp}</b> · 连击 ${multi} 名 · 重击 ${n - multi} 名</div>
@@ -290,6 +294,7 @@ export class Gate {
       <h2>抛筹码定庄</h2>
       <div class="coin-stage">
         <div class="coin ${mine ? "lands-me" : "lands-foe"}">
+          ${Array.from({ length: 9 }, (_, i) => `<i class="coin-rim" style="--z:${(i - 4) * 1.25}px"></i>`).join("")}
           <div class="coin-face me">你</div>
           <div class="coin-face foe">${this.foeFace(open.style, "coin-hero")}</div>
         </div>

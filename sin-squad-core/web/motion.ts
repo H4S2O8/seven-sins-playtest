@@ -103,26 +103,40 @@ export function flip(root: Element, before: Snapshot, from: Rects = new Map(), d
 /**
  * 翻面：先把牌抬起来（离桌面超过半张牌宽，转到侧面时才不会插进桌面），在空中翻过去，再落回桌面。
  * .flip 的最终角度由 .card.down 决定，这里只补中间的弧线；wasDown 是翻之前的朝向。
+ * 横放的长条牌（.tile：场地、规则、公共效果）绕水平轴翻，只需要抬起半个牌高。
  */
-function turnOver(el: HTMLElement, wasDown: boolean) {
+function turnOver(el: HTMLElement, wasDown: boolean, delayMs?: number) {
   const f = el.querySelector<HTMLElement>(":scope > .lift > .flip");
   if (!f) return;
   cancel(f, "turn");
-  const w = el.offsetWidth;
+  const tile = el.classList.contains("tile");
+  const axis = tile ? "X" : "Y";
+  const reach = tile ? el.offsetHeight : el.offsetWidth;
   const a = wasDown ? 180 : 0;
   const b = wasDown ? 0 : 180;
   const at = (k: number) => a + (b - a) * k;
-  const delay = parseFloat(getComputedStyle(el).getPropertyValue("--flip-delay")) || 0;
+  const delay = delayMs ?? (parseFloat(getComputedStyle(el).getPropertyValue("--flip-delay")) || 0);
+  // 翻的时候远端那条边也会转到眼前，平时藏着的上沿先露出来
+  el.classList.add("fx-turning");
   const anim = f.animate(
     [
-      { transform: `translateZ(0) rotateY(${a}deg)` },
-      { transform: `translateZ(${w * 0.62}px) rotateY(${at(0.06)}deg)`, offset: 0.28, easing: "cubic-bezier(.45,0,.55,1)" },
-      { transform: `translateZ(${w * 0.66}px) rotateY(${at(0.94)}deg)`, offset: 0.72, easing: "cubic-bezier(.6,0,.9,.5)" },
-      { transform: `translateZ(0) rotateY(${b}deg)` },
+      { transform: `translateZ(0) rotate${axis}(${a}deg)` },
+      { transform: `translateZ(${reach * 0.62}px) rotate${axis}(${at(0.06)}deg)`, offset: 0.28, easing: "cubic-bezier(.45,0,.55,1)" },
+      { transform: `translateZ(${reach * 0.66}px) rotate${axis}(${at(0.94)}deg)`, offset: 0.72, easing: "cubic-bezier(.6,0,.9,.5)" },
+      { transform: `translateZ(0) rotate${axis}(${b}deg)` },
     ],
     { duration: 820, delay, easing: "cubic-bezier(.3,0,.3,1)", fill: "backwards" },
   );
   anim.id = "turn";
+  const done = () => el.classList.remove("fx-turning");
+  anim.finished.then(done, done);
+}
+
+/** 牌桌外面（入场的牌池等）直接翻一张牌：切换 .down，并播抬起再翻的弧线。 */
+export function turnCard(el: HTMLElement, toDown: boolean, delayMs = 0) {
+  if (el.classList.contains("down") === toDown) return;
+  el.classList.toggle("down", toDown);
+  if (!reducedMotion()) turnOver(el, !toDown, delayMs);
 }
 
 /**
