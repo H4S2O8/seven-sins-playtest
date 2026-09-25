@@ -82,6 +82,10 @@ small { color: var(--muted); font-weight: normal; }
 .top { display: flex; align-items: center; gap: 10px; height: 46px; }
 .brand { font-size: 18px; font-weight: 800; letter-spacing: 2px; color: var(--gold); white-space: nowrap; }
 .brand small { font-size: 11px; letter-spacing: 0; margin-left: 6px; }
+button.debug-chip { min-height: 26px; padding: 1px 8px; font-size: 12px; background: #5a2b6a; border-color: #b070d0; }
+.debug-form { display: flex; gap: 8px; flex-wrap: wrap; margin: 4px 0 10px; }
+.debug-form input { flex: 1 1 260px; font: 13px/1.4 ui-monospace, monospace; color: var(--ink); background: #0006; border: 1px solid var(--line); border-radius: 8px; padding: 8px; }
+code { background: #0005; border-radius: 4px; padding: 0 4px; font-size: 12px; }
 .hand-no { color: var(--muted); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .top nav { margin-left: auto; display: flex; gap: 5px; }
 .top nav button { min-height: 32px; padding: 3px 10px; font-size: 13px; background: #2a221a; }

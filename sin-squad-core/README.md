@@ -7,7 +7,7 @@
 
 ```sh
 npm install
-npm test                          # 37 个测试
+npm test                          # 39 个测试
 npm run typecheck
 npm run sim -- roster 60000       # 人物总胜率与最强 / 最弱情境
 npm run sim -- opening 400 120    # 开局胜率分布（验收标准：绝大多数落在 30%–80%）
@@ -36,6 +36,15 @@ npm run build:web                 # 打包到仓库根目录的 sin-squad-v3/
 
 `web/` 是网页界面的源码：你和电脑 1 对 1，规则全部由这里的核心驱动，界面只负责显示、点击和战斗回放。
 打包结果是纯静态文件，本地用任意静态服务器打开仓库根目录下的 `sin-squad-v3/` 即可，GitHub Pages 也能直接托管。
+
+**调试模式**：网址加 `?debug` 就会跳过开始画面直接开桌，并固定下面给出的项，没给的照常随机。开始画面的“调试开局”也能直接输入这些参数。
+
+```
+?debug&me=EN1,GL2,PR3,WR3&foe=LU1&rule=V02&arena=A08,A02&pe=P10&market=GL2,LU2,WR3&dealer=foe&seed=42&ai=bluff
+```
+
+`me` / `foe` 是每手固定发给你 / 电脑的人物（最多 4 名，不够的随机补）；`rule`、`pe`、`arena`、`market` 分别固定胜利规则、公共效果、两张候选场地、市场；`dealer` 是第一手的庄家（`me` / `foe`）；`seed` 固定随机种子；`ai` 是电脑风格（`cautious` / `aggressive` / `bluff`）。
+核心里对应的是 `new Table({ rig: { ... } })`，测试也用它固定发牌，不用靠换种子碰运气。
 
 人物立绘放在 `web/art/<人物编号>.webp`（透明背景，约 416×608），打包时自动带上；没有立绘的人物用罪的纹样代替。
 现有立绘用 NovelAI 的透明背景角色模式生成（只描述人物和姿势，不写背景），再按透明区域裁紧、缩放成 webp。

@@ -24,6 +24,24 @@ export interface TableOptions {
   initialPoolSize?: number;
   minPoolSize?: number;
   minBet?: number;
+  /** 调试用：固定发牌、规则、场地等，方便测试某张牌。不影响正常游戏。 */
+  rig?: TableRig;
+}
+
+/**
+ * 调试用的固定项。没给的项照常随机；给了的项每一手都生效。
+ * 随机数照常消耗，所以同一个种子下，没固定的部分和不开调试时一样。
+ */
+export interface TableRig {
+  /** 每手固定发给某一方的人物（最多 4 名，不够的从牌池随机补）；不需要在牌池里。 */
+  deal?: [string[] | null, string[] | null];
+  ruleId?: string;
+  publicEffectId?: string;
+  arenaOptions?: [string, string];
+  /** 第一手的庄家。 */
+  dealer?: Seat;
+  /** 每手市场翻出的人物。 */
+  market?: string[];
 }
 
 export interface Placement {
@@ -111,7 +129,8 @@ const PEEKER_ID = "EN1"; // 窥视者
 const CROWN_ID = "PR3"; // 冠冕者
 
 export class Table {
-  readonly options: Required<TableOptions>;
+  readonly options: Required<Omit<TableOptions, "rig">>;
+  readonly rig: TableRig;
   rng: Rng;
   stacks: [number, number];
   pools: [string[], string[]];
@@ -135,12 +154,15 @@ export class Table {
       minPoolSize: options.minPoolSize ?? 6,
       minBet: options.minBet ?? 5,
     };
+    this.rig = options.rig ?? {};
+    checkRig(this.rig);
     this.rng = new Rng(this.options.seed);
     this.stacks = [this.options.buyIn, this.options.buyIn];
     this.total = this.options.buyIn * 2;
     const ids = CHARACTERS.map((c) => c.id);
     this.pools = [this.rng.sample(ids, this.options.initialPoolSize), this.rng.sample(ids, this.options.initialPoolSize)];
-    this.startHand(this.rng.int(2) as Seat);
+    const dealer = this.rng.int(2) as Seat;
+    this.startHand(this.rig.dealer ?? dealer);
   }
 
   // ───────────────────────── 查询 ─────────────────────────
@@ -182,14 +204,14 @@ export class Table {
     this.handNo++;
     const level = Math.floor((this.handNo - 1) / this.options.blindEvery);
     const ante = this.options.baseAnte * 2 ** level;
-    const arenaOptions = this.rng.sample(ARENAS.map((a) => a.id), 2) as [string, string];
+    const arenaOptions = pickOr(this.rng.sample(ARENAS.map((a) => a.id), 2) as [string, string], this.rig.arenaOptions);
     const chooser: Seat =
       this.stacks[0] === this.stacks[1] ? other(dealer) : this.stacks[0] < this.stacks[1] ? 0 : 1;
     this.hand = {
       no: this.handNo, dealer, ante,
       arenaOptions, arenaChooser: chooser, arenaId: null,
-      ruleId: this.rng.pick(RULES).id,
-      publicEffectId: this.rng.pick(PUBLIC_EFFECTS).id,
+      ruleId: pickOr(this.rng.pick(RULES).id, this.rig.ruleId),
+      publicEffectId: pickOr(this.rng.pick(PUBLIC_EFFECTS).id, this.rig.publicEffectId),
       ruleRevealed: false, peRevealed: false, peActive: false,
       dealt: [[], []], placing: null, placement: [null, null],
       equipment: [[null, null, null], [null, null, null]],
@@ -251,6 +273,11 @@ export class Table {
     for (const s of SEATS) {
       const idx = this.rng.sample([...this.pools[s].keys()], 4);
       h.dealt[s] = idx.map((i) => this.pools[s][i]);
+      const forced = this.rig.deal?.[s];
+      if (forced?.length) {
+        const rest = h.dealt[s].filter((id) => !forced.includes(id));
+        h.dealt[s] = [...forced, ...rest].slice(0, 4);
+      }
     }
     h.placing = other(h.dealer);
     this.phase = "place";
@@ -630,7 +657,7 @@ export class Table {
     const stage = Table.marketStageFor(this.handNo, this.options.blindEvery);
     let ids = CHARACTERS.filter((c) => c.stage === stage).map((c) => c.id);
     if (ids.length < 3) ids = CHARACTERS.filter((c) => c.stage === 2).map((c) => c.id); // 罪王级还没设计
-    h.market = this.rng.sample(ids, 3);
+    h.market = pickOr(this.rng.sample(ids, 3), this.rig.market?.slice(0, 3));
     h.marketOrder = [firstPicker, other(firstPicker)];
     h.marketStep = 0;
     h.removeDone = [false, false];
@@ -674,6 +701,23 @@ export class Table {
     }
     this.startHand(other(h.dealer));
   }
+}
+
+/** 调试固定项：给了就用给的，没给就用随机结果（随机数照常消耗）。 */
+function pickOr<T>(random: T, fixed: T | undefined): T {
+  return fixed ?? random;
+}
+
+/** 调试固定项里的编号必须存在，写错了立刻报错。 */
+function checkRig(rig: TableRig) {
+  for (const list of rig.deal ?? []) {
+    if (list && list.length > 4) throw new Error("每手最多固定发 4 名");
+    for (const id of list ?? []) character(id);
+  }
+  for (const id of rig.market ?? []) character(id);
+  if (rig.ruleId && !RULES.some((r) => r.id === rig.ruleId)) throw new Error(`未知胜利规则：${rig.ruleId}`);
+  if (rig.publicEffectId && !PUBLIC_EFFECTS.some((p) => p.id === rig.publicEffectId)) throw new Error(`未知公共效果：${rig.publicEffectId}`);
+  for (const id of rig.arenaOptions ?? []) if (!ARENAS.some((a) => a.id === id)) throw new Error(`未知场地：${id}`);
 }
 
 /** 检查排位是否合法，返回排好的阵容。 */

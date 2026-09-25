@@ -4,7 +4,7 @@ import type { UnitSnapshot } from "../src/battle/unit.js";
 import { CHARACTERS, character } from "../src/content/characters.js";
 import { ARENAS, EQUIPMENT, PUBLIC_EFFECTS, RULES, arena, equipment, publicEffect, rule } from "../src/content/tables.js";
 import type { Action } from "../src/game/actions.js";
-import { Table, validatePlacement, type Placement } from "../src/game/table.js";
+import { Table, validatePlacement, type Placement, type TableRig } from "../src/game/table.js";
 import { legalActions, observe, type Observation } from "../src/game/view.js";
 import type { AttackShape, Seat } from "../src/types.js";
 import {
@@ -47,7 +47,8 @@ type Sheet =
   | { kind: "card"; id: string; equip: string | null }
   | { kind: "env"; which: "arena" | "rule" | "pe" }
   | { kind: "log" }
-  | { kind: "pool" };
+  | { kind: "pool" }
+  | { kind: "debug" };
 
 interface Ui {
   /** 排位：slots[i] = 放在 i 号位的发牌序号。 */
@@ -106,13 +107,55 @@ function resetInputs() {
   ui.error = null;
 }
 
+// ───────────────────────── 调试模式 ─────────────────────────
+//
+// 网址加 ?debug 打开，例如：?debug&me=EN1,GL2,PR3,WR3&foe=LU1&rule=V02&arena=A08,A02&pe=P10&dealer=foe&seed=42&ai=bluff
+//   me / foe   每手固定发给你 / 电脑的人物（最多 4 名，不够的随机补）
+//   rule / pe  固定胜利规则 / 公共效果；arena 固定两张候选场地；market 固定市场
+//   dealer     第一手谁坐庄（me / foe）；seed 固定随机种子；ai 电脑风格
+
+interface DebugConfig { rig: TableRig; seed: number | null; style: Style | null }
+
+function parseDebug(search: string): DebugConfig | null {
+  const q = new URLSearchParams(search);
+  if (!q.has("debug")) return null;
+  const list = (k: string) => q.get(k)?.split(",").map((x) => x.trim().toUpperCase()).filter(Boolean);
+  const rig: TableRig = {};
+  const me = list("me");
+  const foe = list("foe");
+  if (me || foe) rig.deal = [me ?? null, foe ?? null];
+  if (q.get("rule")) rig.ruleId = q.get("rule")!.toUpperCase();
+  if (q.get("pe")) rig.publicEffectId = q.get("pe")!.toUpperCase();
+  const arenas = list("arena");
+  if (arenas) rig.arenaOptions = [arenas[0], arenas[1] ?? arenas[0]];
+  if (list("market")) rig.market = list("market");
+  if (q.get("dealer")) rig.dealer = q.get("dealer") === "foe" ? AI : HUMAN;
+  const ai = q.get("ai");
+  return {
+    rig,
+    seed: q.get("seed") ? Number(q.get("seed")) : null,
+    style: ai === "cautious" || ai === "aggressive" || ai === "bluff" ? ai : null,
+  };
+}
+
+let debug = parseDebug(location.search);
+/** 调试面板里输入的参数（不带 ?debug）。 */
+let debugText = location.search.replace(/^\?/, "").replace(/(^|&)debug(=[^&]*)?/, "").replace(/^&/, "");
+
 function newTable(s: Style) {
   if (aiTimer !== null) clearTimeout(aiTimer);
   aiTimer = null;
   battleToken++;
   style = s;
-  seed = Math.floor(Math.random() * 1e9);
-  table = new Table({ seed });
+  seed = debug?.seed ?? Math.floor(Math.random() * 1e9);
+  try {
+    table = new Table({ seed, rig: debug?.rig });
+  } catch (err) {
+    // 调试参数写错了：提示出来，照常开一桌
+    alert(`调试参数有误：${err instanceof Error ? err.message : String(err)}`);
+    debug = null;
+    table = new Table({ seed });
+  }
   agent = new HeuristicAgent(style, seed + 1);
   logLines = [];
   logCursor = 0;
@@ -497,6 +540,7 @@ function shownMoney(o: Observation): { stacks: [number, number]; pot: number } {
 function topBar(o: Observation) {
   return `<header class="top">
     <div class="brand">七罪暗队<small>v0.3 试玩</small></div>
+    ${debug ? btn("调试", "sheet", "debug", "debug-chip") : ""}
     <div class="hand-no">第 ${o.handNo} 手 · 底注 ${o.ante}${o.handNo % 5 === 0 ? " · 下手升盲" : ""}</div>
     <nav>${btn("记录", "sheet", "log")}${btn("牌池", "sheet", "pool")}${btn("规则", "sheet", "help")}${btn("新桌", "sheet", "intro")}</nav>
   </header>`;
@@ -843,7 +887,7 @@ function sheetView(): string {
         <p>你和电脑各 100 筹码，赢光对方就赢下牌桌。</p>
         <div class="label">选择电脑对手</div>
         <div class="actions">${btn("谨慎", "start", "cautious", "primary big")}${btn("激进", "start", "aggressive", "big")}${btn("爱诈唬", "start", "bluff", "big")}</div>
-        <div class="actions">${btn("先看规则", "sheet", "help")}</div>`, !!table);
+        <div class="actions">${btn("先看规则", "sheet", "help")}${btn("调试开局", "sheet", "debug")}</div>`, !!table);
     case "help": {
       const tabs: Array<[Ui["helpTab"], string]> = [["play", "玩法"], ["chars", "人物"], ["equip", "装备"], ["rules", "胜利规则"], ["arenas", "场地"], ["effects", "公共效果"]];
       let body = "";
@@ -889,6 +933,27 @@ function sheetView(): string {
       }
       return wrap("env-sheet", `<div class="label">${title}</div>${body}`);
     }
+    case "debug": {
+      const r = debug?.rig ?? {};
+      const names = (ids?: string[] | null) => (ids?.length ? ids.map((id) => `${id} ${character(id).name}`).join("、") : "随机");
+      const rows: Array<[string, string]> = [
+        ["你的手牌", names(r.deal?.[HUMAN])], ["电脑手牌", names(r.deal?.[AI])],
+        ["胜利规则", r.ruleId ? `${r.ruleId} ${rule(r.ruleId).name}` : "随机"],
+        ["候选场地", r.arenaOptions ? r.arenaOptions.map((a) => `${a} ${arena(a).name}`).join(" / ") : "随机"],
+        ["公共效果", r.publicEffectId ? `${r.publicEffectId} ${publicEffect(r.publicEffectId).name}` : "随机"],
+        ["市场", names(r.market)], ["第一手庄家", r.dealer === undefined ? "随机" : r.dealer === HUMAN ? "你" : "电脑"],
+        ["种子", String(seed)],
+      ];
+      const ids = CHARACTERS.map((c) => `<code>${c.id}</code> ${c.name}`).join("　");
+      return wrap("help", `<h2>调试模式</h2>
+        <div class="debug-form"><input type="text" data-input="debugText" value="${esc(debugText)}" placeholder="me=EN1,GL2,PR3,WR3&amp;rule=V02&amp;dealer=foe" aria-label="调试参数">
+        ${btn("按这些参数开新桌", "applyDebug", undefined, "primary")}</div>
+        ${debug ? refTable(rows) : `<p class="muted">现在没有开调试。填上参数、点按钮，就会按这些固定项开一桌。</p>`}
+        <h3>用法</h3><p class="muted">在网址后面加参数，例如 <code>?debug&amp;me=EN1,GL2,PR3,WR3&amp;foe=LU1&amp;rule=V02&amp;arena=A08,A02&amp;pe=P10&amp;dealer=foe&amp;seed=42&amp;ai=bluff</code>。
+        me / foe 是每手固定发给你 / 电脑的人物（最多 4 名，不够的随机补）；rule、pe、arena、market 分别固定胜利规则、公共效果、两张候选场地、市场；dealer 是第一手庄家（me / foe）；seed 固定随机种子；ai 是电脑风格（cautious / aggressive / bluff）。</p>
+        <h3>人物编号</h3><p class="muted">${ids}</p>
+        <p class="muted">规则、场地、公共效果的编号见“规则”里的列表顺序：V01–V27、A01–A22、P01–P31。</p>`);
+    }
     case "log": {
       const lines = logLines.slice(-120).reverse();
       return wrap("drawer", `<h2>牌桌记录</h2><ol class="log">${lines.map((l) => `<li class="${l.startsWith("——") ? "sep" : ""}">${esc(l)}</li>`).join("")}</ol>`);
@@ -916,7 +981,7 @@ function onAct(name: string, arg: string | undefined) {
   switch (name) {
     case "sheet": {
       if (arg?.startsWith("env:")) ui.sheet = { kind: "env", which: arg.slice(4) as "arena" | "rule" | "pe" };
-      else ui.sheet = { kind: arg as "intro" | "help" | "log" | "pool" };
+      else ui.sheet = { kind: arg as "intro" | "help" | "log" | "pool" | "debug" };
       return render();
     }
     case "closeSheet": ui.sheet = table ? null : { kind: "intro" }; render(); return scheduleAi();
@@ -926,6 +991,10 @@ function onAct(name: string, arg: string | undefined) {
       return render();
     }
     case "tab": ui.helpTab = arg as Ui["helpTab"]; return render();
+    case "applyDebug": {
+      debug = parseDebug(`?debug&${debugText}`);
+      return newTable(debug?.style ?? style);
+    }
     case "start": return newTable(arg as Style);
     case "arena": return act({ type: "chooseArena", index: n as 0 | 1 });
     case "pick": {
@@ -1087,6 +1156,7 @@ app.addEventListener("input", (ev) => {
   const el = ev.target as HTMLInputElement;
   const key = el.dataset.input;
   if (!key) return;
+  if (key === "debugText") { debugText = el.value.trim().replace(/^\?/, ""); return; }
   const v = Math.round(Number(el.value));
   if (!Number.isFinite(v)) return;
   if (key === "bet") ui.betAmount = v;
@@ -1097,7 +1167,9 @@ app.addEventListener("input", (ev) => {
 });
 
 window.addEventListener("resize", () => render());
-render();
+// 调试模式：直接开桌，跳过开始画面
+if (debug) newTable(debug.style ?? "cautious");
+else render();
 
 // 给自动化测试用：读当前牌桌（不影响游戏）
 (window as unknown as { __sinSquad: unknown }).__sinSquad = {

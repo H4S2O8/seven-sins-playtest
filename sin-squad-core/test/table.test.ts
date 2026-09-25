@@ -97,43 +97,25 @@ describe("下注与操作费", () => {
   });
 
   it("冠冕者被亮出时，对手第 1 轮不能弃牌", () => {
-    for (let seed = 1; seed < 400; seed++) {
-      const t = new Table({ seed });
-      driveUntil(t, "place");
-      const placer = t.toAct()[0];
-      const crownIdx = t.hand.dealt[placer].indexOf("PR3");
-      if (crownIdx < 0) continue;
-      const rest = [0, 1, 2, 3].filter((i) => i !== crownIdx).slice(0, 2);
-      t.apply(placer, { type: "place", picks: [crownIdx, rest[0], rest[1]], eat: null, reveal: 0 });
-      driveUntil(t, "bet");
-      const foe: Seat = placer === 0 ? 1 : 0;
-      expect(t.canFold(foe)).toBe(false);
-      expect(legalActions(t, foe).some((a) => a.type === "fold")).toBe(false);
-      return;
-    }
-    throw new Error("没有找到发到冠冕者的种子");
+    const t = new Table({ seed: 1, rig: { dealer: 1, deal: [["PR3"], null] } }); // 你（座位 0）先排位
+    driveUntil(t, "place");
+    t.apply(0, { type: "place", picks: [0, 1, 2], eat: null, reveal: 0 }); // 冠冕者在 1 号位亮出
+    driveUntil(t, "bet");
+    expect(t.canFold(1)).toBe(false);
+    expect(legalActions(t, 1).some((a) => a.type === "fold")).toBe(false);
   });
 });
 
 describe("窥视者", () => {
-  /** 找一个非庄家发到窥视者的牌桌，把它暗置排上，双方排完位后进入窥视阶段。 */
+  /** 固定发牌：座位 0 先排位，把窥视者暗置在 2 号位；对手没有窥视者。 */
   function toPeek() {
-    for (let seed = 1; seed < 500; seed++) {
-      const t = new Table({ seed });
-      driveUntil(t, "place");
-      const placer = t.toAct()[0];
-      const idx = t.hand.dealt[placer].indexOf("EN1");
-      if (idx < 0) continue;
-      const rest = [0, 1, 2, 3].filter((i) => i !== idx).slice(0, 2);
-      t.apply(placer, { type: "place", picks: [rest[0], idx, rest[1]], eat: null, reveal: 0 }); // 窥视者暗置在 2 号位
-      const dealer: Seat = placer === 0 ? 1 : 0;
-      if (t.hand.dealt[dealer].includes("EN1")) continue; // 只要一方有窥视者
-      t.apply(dealer, { type: "place", picks: [0, 1, 2], eat: null, reveal: 0 });
-      expect(t.phase).toBe("peek");
-      expect(t.toAct()).toEqual([placer]);
-      return { t, seat: placer };
-    }
-    throw new Error("没有找到合适的种子");
+    const t = new Table({ seed: 3, rig: { dealer: 1, deal: [["WR3", "EN1", "GR2", "SL1"], ["LU1", "GR3", "PR1", "WR2"]] } });
+    driveUntil(t, "place");
+    t.apply(0, { type: "place", picks: [0, 1, 2], eat: null, reveal: 0 });
+    t.apply(1, { type: "place", picks: [0, 1, 2], eat: null, reveal: 0 });
+    expect(t.phase).toBe("peek");
+    expect(t.toAct()).toEqual([0]);
+    return { t, seat: 0 as Seat };
   }
 
   it("偷看是暗中进行的：不写进公开的牌桌记录", () => {
@@ -154,6 +136,26 @@ describe("窥视者", () => {
     t.apply(seat, { type: "peekSwap", swap: [1, 2] });
     expect(t.hand.placement[seat]!.slots).toEqual([slots[0], slots[2], slots[1]]);
     expect(t.phase).toBe("bet");
+  });
+});
+
+describe("调试固定项", () => {
+  it("固定发牌、规则、公共效果、场地、庄家；没固定的照常随机", () => {
+    const rig = { deal: [["EN1", "GL2"], null] as [string[], null], ruleId: "V02", publicEffectId: "P10", arenaOptions: ["A08", "A02"] as [string, string], dealer: 0 as Seat };
+    const t = new Table({ seed: 9, rig });
+    expect(t.hand.dealer).toBe(0);
+    expect(t.hand.arenaOptions).toEqual(["A08", "A02"]);
+    expect(t.hand.ruleId).toBe("V02");
+    expect(t.hand.publicEffectId).toBe("P10");
+    driveUntil(t, "place");
+    expect(t.hand.dealt[0].slice(0, 2)).toEqual(["EN1", "GL2"]);
+    expect(t.hand.dealt[0]).toHaveLength(4);
+    expect(new Table({ seed: 9 }).pools).toEqual(t.pools); // 随机数照常消耗
+  });
+
+  it("编号写错会立刻报错", () => {
+    expect(() => new Table({ rig: { deal: [["XX9"], null] } })).toThrow();
+    expect(() => new Table({ rig: { ruleId: "V99" } })).toThrow();
   });
 });
 
