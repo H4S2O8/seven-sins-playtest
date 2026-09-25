@@ -10,6 +10,8 @@ import type { AttackShape, Seat } from "../src/types.js";
 import {
   AI, CARD_TEXT, HOW_TO_PLAY, HUMAN, REASON_TEXT, SIN_COLOR, SIN_GLYPH, battleLine, esc, logLine, num, posName, shapeName,
 } from "./text.js";
+import { Gate, type Opening, type SaveInfo } from "./intro.js";
+import { disableTips, dismissTip, resetTips, tipHtml } from "./tips.js";
 
 /**
  * 网页 demo：你（座位 0）对电脑（座位 1）。
@@ -42,7 +44,6 @@ interface Playback {
 }
 
 type Sheet =
-  | { kind: "intro" }
   | { kind: "help" }
   | { kind: "card"; id: string; equip: string | null }
   | { kind: "env"; which: "arena" | "rule" | "pe" }
@@ -80,6 +81,8 @@ let logLines: string[] = [];
 let logCursor = 0;
 let aiTimer: number | null = null;
 let battleToken = 0;
+/** 本桌双方做过的每一步（存档用：同一个种子照着重放就回到原样）。 */
+let record: Array<[Seat, Action]> = [];
 
 const ui: Ui = {
   place: { slots: [null, null, null], reveal: null, eaten: null },
@@ -90,7 +93,7 @@ const ui: Ui = {
   notice: null,
   error: null,
   battle: null,
-  sheet: { kind: "intro" },
+  sheet: null,
   helpTab: "play",
   lastBattle: null,
 };
@@ -143,11 +146,19 @@ let debug = parseDebug(location.search);
 let debugText = location.search.replace(/^\?/, "").replace(/(^|&)debug(=[^&]*)?/, "").replace(/^&/, "");
 
 function newTable(s: Style) {
+  initTable(s, debug?.seed ?? Math.floor(Math.random() * 1e9));
+  saveGame();
+  afterApply();
+}
+
+/** 按种子开桌（新开或读档），不推进、不重画。 */
+function initTable(s: Style, tableSeed: number) {
   if (aiTimer !== null) clearTimeout(aiTimer);
   aiTimer = null;
   battleToken++;
   style = s;
-  seed = debug?.seed ?? Math.floor(Math.random() * 1e9);
+  seed = tableSeed;
+  record = [];
   try {
     table = new Table({ seed, rig: debug?.rig });
   } catch (err) {
@@ -164,13 +175,90 @@ function newTable(s: Style) {
   ui.lastBattle = null;
   ui.sheet = null;
   resetInputs();
-  afterApply();
+}
+
+// ───────────────────────── 存档 ─────────────────────────
+//
+// 牌桌完全由种子决定，所以只存种子、电脑风格、调试固定项和双方的每一步；读档时照着重放。
+
+const SAVE_KEY = "sinsquad.save.v1";
+interface SaveData { seed: number; style: Style; rig: TableRig | null; debugText: string; actions: Array<[Seat, Action]> }
+
+function saveGame() {
+  try {
+    if (!table || table.phase === "over") localStorage.removeItem(SAVE_KEY);
+    else localStorage.setItem(SAVE_KEY, JSON.stringify({ seed, style, rig: debug?.rig ?? null, debugText, actions: record } satisfies SaveData));
+  } catch { /* 存不了就算了：只是下次不能继续 */ }
+}
+
+function readSave(): SaveData | null {
+  try {
+    const v = JSON.parse(localStorage.getItem(SAVE_KEY) ?? "null") as SaveData | null;
+    return v && typeof v.seed === "number" && Array.isArray(v.actions) ? v : null;
+  } catch {
+    return null;
+  }
+}
+
+/** 读档：重开同一张桌，把记录的每一步照做一遍（电脑那边也照样“想”一遍，让它的随机数接得上）。 */
+function resumeGame(): boolean {
+  const sv = readSave();
+  if (!sv) return false;
+  debug = sv.rig ? { rig: sv.rig, seed: sv.seed, style: sv.style } : null;
+  debugText = sv.debugText ?? "";
+  try {
+    initTable(sv.style, sv.seed);
+    for (const [seat, a] of sv.actions) {
+      if (seat === AI) agent.act(table!, AI);
+      table!.apply(seat, a);
+      record.push([seat, a]);
+    }
+  } catch (err) {
+    // 规则改过、存档对不上了：丢掉存档
+    console.error(err);
+    try { localStorage.removeItem(SAVE_KEY); } catch { /* 无所谓 */ }
+    table = null;
+    return false;
+  }
+  consumeLog(false);
+  render();
+  scheduleAi();
+  return true;
+}
+
+function saveInfo(): SaveInfo | null {
+  const sv = readSave();
+  if (!sv) return null;
+  // 只为了显示“第几手、多少筹码”，在一张临时桌上重放
+  try {
+    const t = new Table({ seed: sv.seed, rig: sv.rig ?? undefined });
+    for (const [seat, a] of sv.actions) t.apply(seat, a);
+    if (t.phase === "over") return null;
+    return { handNo: t.handNo, stacks: [t.stacks[0], t.stacks[1]], style: sv.style };
+  } catch {
+    return null;
+  }
+}
+
+/** 双方提交动作都走这里：记下来、存档。 */
+function applyAction(seat: Seat, action: Action) {
+  table!.apply(seat, action);
+  record.push([seat, action]);
+  saveGame();
 }
 
 // ───────────────────────── 推进 ─────────────────────────
 
 /** 每次有人提交动作后：读新增的牌桌记录，必要时开始战斗动画，然后重画并安排电脑。 */
 function afterApply() {
+  consumeLog(true);
+  render();
+  if (ui.battle && !ui.battle.started) { ui.battle.started = true; void playBattle(ui.battle); }
+  scheduleAi();
+}
+
+/** 读新增的牌桌记录。play = false 时（读档）不播战斗，只把最后的样子摆在桌上。 */
+function consumeLog(play: boolean) {
   const t = table!;
   const fresh = t.log.slice(logCursor);
   logCursor = t.log.length;
@@ -185,7 +273,7 @@ function afterApply() {
     if (e.type === "battle" && t.hand.battle) {
       const h = t.hand;
       ui.lastBattle = { hand: h.no, result: h.battle!, teams: e.teams, equipment: e.equipment };
-      ui.battle = {
+      if (play) ui.battle = {
         result: h.battle!, teams: e.teams, equipment: e.equipment,
         ruleId: h.ruleId, arenaId: h.arenaId!, peId: h.peActive ? h.publicEffectId : null,
         snap: h.battle!.start, round: 0, actor: null, started: false,
@@ -202,25 +290,22 @@ function afterApply() {
       }
     }
   }
-  render();
-  if (ui.battle && !ui.battle.started) { ui.battle.started = true; void playBattle(ui.battle); }
-  scheduleAi();
 }
 
 function scheduleAi() {
   const t = table;
-  if (!t || aiTimer !== null || ui.battle || ui.sheet?.kind === "intro" || t.phase === "over") return;
+  if (!t || aiTimer !== null || ui.battle || gate.open || t.phase === "over") return;
   if (!t.toAct().includes(AI)) return;
   const delay = t.phase === "bet" ? 800 : t.phase === "place" ? 700 : 500;
   aiTimer = window.setTimeout(() => {
     aiTimer = null;
-    if (ui.battle || !t.toAct().includes(AI) || t !== table) return;
+    if (ui.battle || gate.open || !t.toAct().includes(AI) || t !== table) return;
     try {
-      t.apply(AI, agent.act(t, AI));
+      applyAction(AI, agent.act(t, AI));
     } catch (err) {
       // 电脑出错时退回第一个合法动作，保证牌桌能继续
       console.error(err);
-      t.apply(AI, legalActions(t, AI)[0]);
+      applyAction(AI, legalActions(t, AI)[0]);
     }
     afterApply();
   }, delay);
@@ -228,7 +313,7 @@ function scheduleAi() {
 
 function act(action: Action) {
   try {
-    table!.apply(HUMAN, action);
+    applyAction(HUMAN, action);
   } catch (err) {
     ui.error = err instanceof Error ? err.message : String(err);
     render();
@@ -547,7 +632,7 @@ function topBar(o: Observation) {
     <div class="brand">七罪暗队<small>v0.3 试玩</small></div>
     ${debug ? btn("调试", "sheet", "debug", "debug-chip") : ""}
     <div class="hand-no">第 ${o.handNo} 手 · 底注 ${o.ante}${o.handNo % 5 === 0 ? " · 下手升盲" : ""}</div>
-    <nav>${btn("记录", "sheet", "log")}${btn("牌池", "sheet", "pool")}${btn("规则", "sheet", "help")}${btn("新桌", "sheet", "intro")}</nav>
+    <nav>${btn("记录", "sheet", "log")}${btn("牌池", "sheet", "pool")}${btn("规则", "sheet", "help")}${btn("新桌", "newTable")}</nav>
   </header>`;
 }
 
@@ -699,11 +784,16 @@ function waiting(text: string) {
 
 function dock(o: Observation): string {
   const mine = o.toAct.includes(HUMAN);
+  const tip = mine && o.phase !== "over" ? tipHtml(o.phase) : "";
+  return tip + phaseDock(o, mine);
+}
+
+function phaseDock(o: Observation, mine: boolean): string {
   switch (o.phase) {
     case "over": {
       const won = table!.winner === HUMAN;
       return `<div class="result ${won ? "good" : "bad"}">${won ? "你赢下了这张牌桌！" : "对手赢下了这张牌桌"}<small>共 ${table!.handNo} 手</small></div>
-        <div class="actions">${btn("再开一桌", "sheet", "intro", "primary big")}</div>`;
+        <div class="actions">${btn("再开一桌", "newTable", undefined, "primary big")}</div>`;
     }
     case "arena": return arenaDock(o, mine);
     case "place": return placeDock(o, mine);
@@ -863,7 +953,8 @@ function removeDock(o: Observation) {
 function battleDock(b: Playback) {
   const r = b.result;
   const lines = b.caption;
-  const cap = `<div class="caption"><b>${lines[0]}</b>${lines.slice(1).map((l) => `<span>${esc(l)}</span>`).join("")}</div>`;
+  const tip = tipHtml("battle");
+  const cap = tip + `<div class="caption"><b>${lines[0]}</b>${lines.slice(1).map((l) => `<span>${esc(l)}</span>`).join("")}</div>`;
   if (b.done) {
     const cls = r.winner === HUMAN ? "good" : r.winner === null ? "" : "bad";
     const text = r.winner === null ? "平局" : r.winner === HUMAN ? "你赢了这场战斗" : "对手赢了这场战斗";
@@ -885,19 +976,11 @@ function sheetView(): string {
     `<div class="overlay" ${closable ? `data-act="closeSheet"` : ""}><div class="sheet ${cls}" data-stop="1" role="dialog">
       ${closable ? `<button class="close" data-act="closeSheet" aria-label="关闭">×</button>` : ""}${inner}</div></div>`;
   switch (s.kind) {
-    case "intro":
-      return wrap("intro", `<div class="intro-art">罪</div>
-        <h2>七罪暗队<small>v0.3 试玩</small></h2>
-        <p>德州扑克的下注 + 酒馆战棋的身材和自动战斗。每手从牌池排出 3 名人物、只亮 1 名，靠下注讲故事，揭开后自动开打。</p>
-        <p>你和电脑各 100 筹码，赢光对方就赢下牌桌。</p>
-        <div class="label">选择电脑对手</div>
-        <div class="actions">${btn("谨慎", "start", "cautious", "primary big")}${btn("激进", "start", "aggressive", "big")}${btn("爱诈唬", "start", "bluff", "big")}</div>
-        <div class="actions">${btn("先看规则", "sheet", "help")}${btn("调试开局", "sheet", "debug")}</div>`, !!table);
     case "help": {
       const tabs: Array<[Ui["helpTab"], string]> = [["play", "玩法"], ["chars", "人物"], ["equip", "装备"], ["rules", "胜利规则"], ["arenas", "场地"], ["effects", "公共效果"]];
       let body = "";
       switch (ui.helpTab) {
-        case "play": body = HOW_TO_PLAY; break;
+        case "play": body = HOW_TO_PLAY + `<div class="actions">${btn("重新显示新手提示", "tipsReset")}</div>`; break;
         case "chars": body = `<p class="muted">开桌时每人的牌池从全部人物里随机 8 名。市场里，第 1–5 手只出第一阶段人物，第 6 手起只出标“二”的人物。点卡上的 ? 看能力。</p>
           <div class="gallery">${CHARACTERS.map((c) => card(c.id, { cls: "small", flag: c.stage === 2 ? "二" : undefined })).join("")}</div>`; break;
         case "equip": body = refTable(EQUIPMENT.map((e) => [e.name, e.text])); break;
@@ -986,10 +1069,14 @@ function onAct(name: string, arg: string | undefined) {
   switch (name) {
     case "sheet": {
       if (arg?.startsWith("env:")) ui.sheet = { kind: "env", which: arg.slice(4) as "arena" | "rule" | "pe" };
-      else ui.sheet = { kind: arg as "intro" | "help" | "log" | "pool" | "debug" };
+      else ui.sheet = { kind: arg as "help" | "log" | "pool" | "debug" };
       return render();
     }
-    case "closeSheet": ui.sheet = table ? null : { kind: "intro" }; render(); return scheduleAi();
+    case "closeSheet": ui.sheet = null; render(); return scheduleAi();
+    case "newTable": ui.sheet = null; render(); return gate.show("opponent");
+    case "tipOk": dismissTip(arg ?? ""); return render();
+    case "tipOff": disableTips(); return render();
+    case "tipsReset": resetTips(); ui.sheet = null; return render();
     case "inspect": {
       const [id, eq] = (arg ?? "").split("|");
       ui.sheet = { kind: "card", id, equip: eq || null };
@@ -998,9 +1085,9 @@ function onAct(name: string, arg: string | undefined) {
     case "tab": ui.helpTab = arg as Ui["helpTab"]; return render();
     case "applyDebug": {
       debug = parseDebug(`?debug&${debugText}`);
+      gate.hide();
       return newTable(debug?.style ?? style);
     }
-    case "start": return newTable(arg as Style);
     case "arena": return act({ type: "chooseArena", index: n as 0 | 1 });
     case "pick": {
       const at = ui.place.slots.indexOf(n);
@@ -1171,10 +1258,37 @@ app.addEventListener("input", (ev) => {
   app.querySelectorAll<HTMLElement>(".chip-btn").forEach((x) => x.classList.toggle("on", Number(x.dataset.arg) === v));
 });
 
+// ───────────────────────── 入场 ─────────────────────────
+
+const gate = new Gate({
+  card: (id, cls) => card(id, { cls }),
+  back: (cls) => back({ cls }),
+  save: saveInfo,
+  start(s): Opening {
+    debug = parseDebug(location.search);
+    initTable(s, debug?.seed ?? Math.floor(Math.random() * 1e9));
+    saveGame();
+    consumeLog(true);
+    render();
+    const o = observe(table!, HUMAN);
+    return {
+      pool: o.me.pool.slice(), foePoolSize: o.opponent.poolSize, dealer: o.dealer, ante: o.ante,
+      buyIn: table!.options.buyIn, blindEvery: table!.options.blindEvery, style: s,
+    };
+  },
+  resume() { if (!resumeGame()) gate.show("title"); },
+  sheet(kind) {
+    if (kind === "chars") { ui.helpTab = "chars"; ui.sheet = { kind: "help" }; } else ui.sheet = { kind };
+    render();
+  },
+  done() { render(); scheduleAi(); },
+  canReturn: () => !!table && table.phase !== "over",
+}, ART);
+
 window.addEventListener("resize", () => render());
-// 调试模式：直接开桌，跳过开始画面
+// 调试模式：直接开桌，跳过入场
 if (debug) newTable(debug.style ?? "cautious");
-else render();
+else { render(); gate.show("title"); }
 
 // 给自动化测试用：读当前牌桌（不影响游戏）
 (window as unknown as { __sinSquad: unknown }).__sinSquad = {
