@@ -11,6 +11,7 @@ import {
   AI, CARD_TEXT, HOW_TO_PLAY, HUMAN, REASON_TEXT, SIN_COLOR, SIN_GLYPH, battleLine, esc, logLine, num, posName, shapeName,
 } from "./text.js";
 import { Gate, type Opening, type SaveInfo } from "./intro.js";
+import { isMuted, setScene, toggleMuted } from "./music.js";
 import { disableTips, dismissTip, resetTips, tipHtml } from "./tips.js";
 
 /**
@@ -83,6 +84,8 @@ let aiTimer: number | null = null;
 let battleToken = 0;
 /** 本桌双方做过的每一步（存档用：同一个种子照着重放就回到原样）。 */
 let record: Array<[Seat, Action]> = [];
+/** 这次打开页面后亲眼看过战斗动画的那一手（种子-手数）；读档摆出来的战斗不算，不放胜负曲。 */
+let watchedBattle: string | null = null;
 
 const ui: Ui = {
   place: { slots: [null, null, null], reveal: null, eaten: null },
@@ -273,6 +276,7 @@ function consumeLog(play: boolean) {
     if (e.type === "battle" && t.hand.battle) {
       const h = t.hand;
       ui.lastBattle = { hand: h.no, result: h.battle!, teams: e.teams, equipment: e.equipment };
+      if (play) watchedBattle = `${seed}-${h.no}`;
       if (play) ui.battle = {
         result: h.battle!, teams: e.teams, equipment: e.equipment,
         ruleId: h.ruleId, arenaId: h.arenaId!, peId: h.peActive ? h.publicEffectId : null,
@@ -581,6 +585,7 @@ function btn(label: string, act: string, arg?: string | number, cls = "") {
 // ───────────────────────── 画面 ─────────────────────────
 
 function render() {
+  musicScene();
   if (!table) {
     app.innerHTML = sheetView();
     return;
@@ -599,6 +604,20 @@ function render() {
     ${sheetView()}
   `;
   fitTable();
+}
+
+/** 按当前画面选背景音乐：入场各屏放菜单曲，牌桌 / 战斗 / 胜负各有一首。 */
+function musicScene() {
+  const t = table;
+  if (!t || gate.open) return setScene("menu");
+  const id = `${seed}`;
+  const b = ui.battle;
+  if (t.phase === "over" && (!b || b.done)) return setScene(t.winner === HUMAN ? "win" : "lose", `over-${id}`);
+  if (b && !b.done) return setScene("battle", `battle-${id}-${t.handNo}`);
+  const bet = { track: "bet" as const, key: `bet-${id}` };
+  const lb = ui.lastBattle && ui.lastBattle.hand === t.handNo ? ui.lastBattle : null;
+  if (lb && lb.result.winner !== null && watchedBattle === `${id}-${lb.hand}`) return setScene(lb.result.winner === HUMAN ? "win" : "lose", `result-${id}-${lb.hand}`, bet);
+  setScene(bet.track, bet.key);
 }
 
 /** 牌桌放不下时把卡缩小一点，保证一屏装下、不用滚动。 */
@@ -632,8 +651,13 @@ function topBar(o: Observation) {
     <div class="brand">七罪暗队<small>v0.3 试玩</small></div>
     ${debug ? btn("调试", "sheet", "debug", "debug-chip") : ""}
     <div class="hand-no">第 ${o.handNo} 手 · 底注 ${o.ante}${o.handNo % 5 === 0 ? " · 下手升盲" : ""}</div>
-    <nav>${btn("记录", "sheet", "log")}${btn("牌池", "sheet", "pool")}${btn("规则", "sheet", "help")}${btn("新桌", "newTable")}</nav>
+    <nav>${musicBtn()}${btn("记录", "sheet", "log")}${btn("牌池", "sheet", "pool")}${btn("规则", "sheet", "help")}${btn("新桌", "newTable")}</nav>
   </header>`;
+}
+
+function musicBtn() {
+  const off = isMuted();
+  return `<button data-act="music" class="music-btn ${off ? "" : "on"}" aria-pressed="${!off}" title="${off ? "打开音乐" : "关闭音乐"}">${off ? "♪ 关" : "♪ 开"}</button>`;
 }
 
 function chipStack(n: number) {
@@ -1072,8 +1096,9 @@ function onAct(name: string, arg: string | undefined) {
       else ui.sheet = { kind: arg as "help" | "log" | "pool" | "debug" };
       return render();
     }
+    case "music": toggleMuted(); return render();
     case "closeSheet": ui.sheet = null; render(); return scheduleAi();
-    case "newTable": ui.sheet = null; render(); return gate.show("opponent");
+    case "newTable": ui.sheet = null; render(); gate.show("opponent"); return musicScene();
     case "tipOk": dismissTip(arg ?? ""); return render();
     case "tipOff": disableTips(); return render();
     case "tipsReset": resetTips(); ui.sheet = null; return render();

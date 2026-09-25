@@ -1,6 +1,7 @@
 import type { Style } from "../src/ai/agents.js";
 import { character } from "../src/content/characters.js";
 import type { Seat } from "../src/types.js";
+import { isMuted, toggleMuted } from "./music.js";
 import { HUMAN, SIN_COLOR, SIN_GLYPH } from "./text.js";
 
 /**
@@ -112,6 +113,13 @@ export class Gate {
   }
 
   private go(what: string, arg?: string) {
+    if (what === "music") {
+      // 只换按钮本身：不清计时器、不重画（抛筹码转到一半重画会从头再转，入座横幅也会停住）
+      toggleMuted();
+      const b = this.root.querySelector<HTMLElement>(".gate-music");
+      if (b) b.outerHTML = this.musicButton();
+      return;
+    }
     this.clearTimer();
     const s = this.screen;
     switch (what) {
@@ -160,8 +168,13 @@ export class Gate {
     document.body.classList.toggle("gated", !!s);
     if (!s) { this.root.innerHTML = ""; return; }
     this.root.className = `gate-${s.kind}`;
-    this.root.innerHTML = this.view(s);
+    this.root.innerHTML = this.view(s) + this.musicButton();
     this.root.querySelector<HTMLElement>("[autofocus]")?.focus();
+  }
+
+  private musicButton() {
+    const off = isMuted();
+    return `<button class="gate-music music-btn ${off ? "" : "on"}" data-go="music" aria-pressed="${!off}" title="${off ? "打开音乐" : "关闭音乐"}">${off ? "♪ 关" : "♪ 开"}</button>`;
   }
 
   private portrait(id: string, cls = "") {

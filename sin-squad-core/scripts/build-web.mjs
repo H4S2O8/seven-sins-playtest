@@ -36,4 +36,10 @@ await writeFile(join(out, "style.css"), css);
 await writeFile(join(out, "index.html"), html);
 await mkdir(join(out, "art"), { recursive: true });
 for (const f of artFiles) await copyFile(join(artDir, f), join(out, "art", f));
-console.log(`已输出到 ${out}（版本 ${version}，app.js ${(js.length / 1024).toFixed(1)} KB，立绘 ${artIds.length} 张）`);
+
+// 背景音乐：web/audio/<曲名>.mp3（曲名见 web/music.ts）
+const audioDir = join(web, "audio");
+const audioFiles = (await readdir(audioDir).catch(() => [])).filter((f) => f.endsWith(".mp3"));
+await mkdir(join(out, "audio"), { recursive: true });
+for (const f of audioFiles) await copyFile(join(audioDir, f), join(out, "audio", f));
+console.log(`已输出到 ${out}（版本 ${version}，app.js ${(js.length / 1024).toFixed(1)} KB，立绘 ${artIds.length} 张，音乐 ${audioFiles.length} 首）`);
