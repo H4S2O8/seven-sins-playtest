@@ -1,6 +1,6 @@
 import { runBattle, type BattleResult } from "../battle/engine.js";
 import { CHARACTERS, character } from "../content/characters.js";
-import { ARENAS, EQUIPMENT, PUBLIC_EFFECTS, RULES } from "../content/tables.js";
+import { ARENAS, EQUIPMENT, PUBLIC_EFFECTS, RULES, SLOT_EFFECTS } from "../content/tables.js";
 import { Rng } from "../rng.js";
 import { other, SEATS, type EatChoice, type MarketStage, type Seat, type TeamSetup } from "../types.js";
 import type { Action, Phase } from "./actions.js";
@@ -35,6 +35,8 @@ export interface Placement {
   reveal: number;
 }
 
+type DraftCard = string;
+
 export interface BetStats {
   betOrRaise: number;
   checks: number;
@@ -58,6 +60,7 @@ export interface HandState {
   placing: Seat | null;
   placement: [Placement | null, Placement | null];
   equipment: [(string | null)[], (string | null)[]];
+  slotEffects: [(string | null)[], (string | null)[]];
   peekPending: [boolean, boolean];
   peek: [{ pos: number; characterId: string } | null, { pos: number; characterId: string } | null];
   pot: number;
@@ -94,7 +97,7 @@ export type TableEvent =
   | { type: "betAction"; seat: Seat; round: 1 | 2; action: string; amount: number; stack: number; pot: number }
   | { type: "refund"; seat: Seat; amount: number }
   | { type: "operate"; round: 1 | 2; fee: number; drafted: [boolean, boolean] }
-  | { type: "installed"; seat: Seat; pos: number; equipmentId: string }
+  | { type: "installed"; seat: Seat; pos: number; cardId: string; slotKind: "equipment" | "effect" }
   | { type: "reveal"; ruleId: string; publicEffectId: string | null }
   | { type: "votes"; votes: [boolean, boolean] }
   | { type: "bids"; bids: [number, number]; peActive: boolean }
@@ -194,6 +197,7 @@ export class Table {
       ruleRevealed: false, peRevealed: false, peActive: false,
       dealt: [[], []], placing: null, placement: [null, null],
       equipment: [[null, null, null], [null, null, null]],
+      slotEffects: [[null, null, null], [null, null, null]],
       peekPending: [false, false], peek: [null, null],
       pot: 0, invested: [0, 0],
       stats: [{ betOrRaise: 0, checks: 0, opsPaid: 0 }, { betOrRaise: 0, checks: 0, opsPaid: 0 }],
@@ -432,7 +436,7 @@ export class Table {
       if (!drafted[s]) continue;
       this.pay(s, h.opFee);
       h.stats[s].opsPaid++;
-      h.offers[s] = this.rng.sample(EQUIPMENT.map((e) => e.id), 3);
+      h.offers[s] = this.rng.sample([...EQUIPMENT.map((e) => e.id), ...SLOT_EFFECTS.map((e) => e.id)], 3);
     }
     this.checkInvariant();
     if (drafted[0] || drafted[1]) this.phase = "draft";
@@ -453,8 +457,9 @@ export class Table {
       const c = h.draftChoice[s];
       if (!c) continue;
       const id = h.offers[s]![c.offerIndex];
-      h.equipment[s][c.pos] = id;
-      this.log.push({ type: "installed", seat: s, pos: c.pos, equipmentId: id });
+      if (id.startsWith("FX")) h.slotEffects[s][c.pos] = id;
+      else h.equipment[s][c.pos] = id;
+      this.log.push({ type: "installed", seat: s, pos: c.pos, cardId: id, slotKind: id.startsWith("FX") ? "effect" : "equipment" });
     }
     h.offers = [null, null];
     if (this.stacks[0] === 0 || this.stacks[1] === 0) h.allIn = true;
@@ -533,7 +538,7 @@ export class Table {
     const h = this.hand;
     const p = h.placement[seat]!;
     return {
-      slots: p.slots.map((c, i) => ({ characterId: c, equipmentId: c ? h.equipment[seat][i] : null })),
+      slots: p.slots.map((c, i) => ({ characterId: c, equipmentId: c ? h.equipment[seat][i] : null, effectId: c ? h.slotEffects[seat][i] : null })),
       eat: null, // 吞噬已经体现在 slots 里：被吞的位置为空，吞噬加成见 battleTeams()
       bet: {
         invested: h.invested[seat],
@@ -552,7 +557,7 @@ export class Table {
       if (p.eat) {
         // 战斗引擎自己处理吞噬：把被吞的人物放回原位，交给引擎移除并加成
         const slots = t.slots.map((x) => ({ ...x }));
-        slots[p.eat.eaten] = { characterId: p.eatenId, equipmentId: null };
+        slots[p.eat.eaten] = { characterId: p.eatenId, equipmentId: null, effectId: null };
         return { ...t, slots, eat: p.eat };
       }
       return t;

@@ -1,4 +1,4 @@
-import type { ArenaDef, EquipmentDef, PublicEffectDef, RuleDef } from "../types.js";
+import type { ArenaDef, EquipmentDef, PublicEffectDef, RuleDef, SlotEffectDef } from "../types.js";
 
 /** 装备：约一半是身材牌，另一半改变攻击形状或防御。 */
 export const EQUIPMENT: readonly EquipmentDef[] = [
@@ -14,6 +14,39 @@ export const EQUIPMENT: readonly EquipmentDef[] = [
   { id: "E10", name: "链甲", text: "护甲 +1，血 +4", effect: { kind: "armor", armor: 1, hp: 4 } },
   { id: "E11", name: "护符", text: "屏障 +1", effect: { kind: "barrier", barrier: 1, atk: 0 } },
   { id: "E12", name: "镜符", text: "屏障 +1，攻 +1", effect: { kind: "barrier", barrier: 1, atk: 1 } },
+];
+
+/**
+ * 原设计 FX01-FX50 的减半版：保留前 25 张的识别度，先以新版攻/血/防御
+ * 模型可直接结算的静态修正落地。触发型原文仍保存在设计稿，不在这里冒充
+ * 已完成的事件引擎。
+ */
+export const SLOT_EFFECTS: readonly SlotEffectDef[] = [
+  { id: "FX01", name: "发令手", text: "攻 +2", effect: { kind: "stat", atk: 2, hp: 0 } },
+  { id: "FX02", name: "受伤报信", text: "血 +8", effect: { kind: "stat", atk: 0, hp: 8 } },
+  { id: "FX03", name: "碎壳回援", text: "护甲 +1，血 +3", effect: { kind: "armor", armor: 1, hp: 3 } },
+  { id: "FX04", name: "三拍接棒", text: "攻 +1，血 +3", effect: { kind: "stat", atk: 1, hp: 3 } },
+  { id: "FX05", name: "分一口", text: "血 +6", effect: { kind: "stat", atk: 0, hp: 6 } },
+  { id: "FX06", name: "盾边搭手", text: "屏障 +1", effect: { kind: "barrier", barrier: 1, atk: 0 } },
+  { id: "FX07", name: "替我出手", text: "攻 +3", effect: { kind: "stat", atk: 3, hp: 0 } },
+  { id: "FX08", name: "共担警讯", text: "血 +5，护甲 +1", effect: { kind: "armor", armor: 1, hp: 5 } },
+  { id: "FX09", name: "净身传递", text: "攻 +2，屏障 +1", effect: { kind: "barrier", barrier: 1, atk: 2 } },
+  { id: "FX10", name: "低血托底", text: "血 +10", effect: { kind: "stat", atk: 0, hp: 10 } },
+  { id: "FX11", name: "撞盾示意", text: "攻 +2，护甲 +1", effect: { kind: "armor", armor: 1, hp: 0 } },
+  { id: "FX12", name: "开口同饮", text: "血 +6，屏障 +1", effect: { kind: "barrier", barrier: 1, atk: 0 } },
+  { id: "FX13", name: "空击护送", text: "屏障 +2", effect: { kind: "barrier", barrier: 2, atk: 0 } },
+  { id: "FX14", name: "传火", text: "攻 +3", effect: { kind: "stat", atk: 3, hp: 0 } },
+  { id: "FX15", name: "踩着冷拍", text: "攻 +1，血 +5", effect: { kind: "stat", atk: 1, hp: 5 } },
+  { id: "FX16", name: "毒口回甘", text: "血 +8", effect: { kind: "stat", atk: 0, hp: 8 } },
+  { id: "FX17", name: "以战止血", text: "护甲 +1，血 +4", effect: { kind: "armor", armor: 1, hp: 4 } },
+  { id: "FX18", name: "无声接班", text: "攻 +2，血 +4", effect: { kind: "stat", atk: 2, hp: 4 } },
+  { id: "FX19", name: "绊住也有人接", text: "攻 +2", effect: { kind: "stat", atk: 2, hp: 0 } },
+  { id: "FX20", name: "双症救援", text: "血 +7，屏障 +1", effect: { kind: "barrier", barrier: 1, atk: 0 } },
+  { id: "FX21", name: "咬住一处", text: "攻 +2，血 +2", effect: { kind: "stat", atk: 2, hp: 2 } },
+  { id: "FX22", name: "过桥护送", text: "护甲 +1，血 +6", effect: { kind: "armor", armor: 1, hp: 6 } },
+  { id: "FX23", name: "胜势分盾", text: "屏障 +2", effect: { kind: "barrier", barrier: 2, atk: 0 } },
+  { id: "FX24", name: "最后一面帆", text: "血 +12", effect: { kind: "stat", atk: 0, hp: 12 } },
+  { id: "FX25", name: "留下一击", text: "攻 +3，血 +3", effect: { kind: "stat", atk: 3, hp: 3 } },
 ];
 
 /** 27 条胜利规则。没写回合数的最多打 8 轮。 */
@@ -116,6 +149,7 @@ function indexById<T extends { id: string }>(items: readonly T[], label: string)
 }
 
 export const equipment = indexById(EQUIPMENT, "装备");
+export const slotEffect = indexById(SLOT_EFFECTS, "槽位效果");
 export const rule = indexById(RULES, "胜利规则");
 export const arena = indexById(ARENAS, "场地");
 export const publicEffect = indexById(PUBLIC_EFFECTS, "公共效果");
