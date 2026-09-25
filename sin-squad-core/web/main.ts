@@ -118,7 +118,7 @@ function showReveal(ruleId: string, peId: string | null) {
           <div class="reveal-art"${artStyle(id)}></div>
           <div class="reveal-body"><span class="reveal-label">${label}</span><b>${name}</b><small>${sub}</small><p>${text}</p></div>
         </div>
-        <div class="face back"><div class="emblem"></div><div class="back-motto">SEPTEM · PECCATA</div></div>
+        <div class="face back"></div>
       </div></div>
     </div>`;
   revealLeaving = false;
@@ -751,7 +751,7 @@ function card(id: string | null, o: CardOpts = {}) {
     <div class="lift"><div class="flip">
       <i class="edge top"></i><i class="edge bottom"></i><i class="edge left"></i><i class="edge right"></i>
       <div class="face front">${id ? cardFront(id, o) : ""}</div>
-      <div class="face back"><div class="emblem"></div>${o.backText ? `<div class="back-text">${o.backText}</div>` : ""}${eq ? `<div class="equip" title="${esc(`${eq.name}：${eq.text}`)}">${eq.name}</div>` : ""}</div>
+      <div class="face back">${o.backText ? `<div class="back-text">${o.backText}</div>` : ""}${eq ? `<div class="equip" title="${esc(`${eq.name}：${eq.text}`)}">${eq.name}</div>` : ""}</div>
     </div>${o.flag ? `<span class="flag">${o.flag}</span>` : ""}${o.lane ? `<span class="lane-tag">${o.lane < 0 ? "← 转线" : "转线 →"}</span>` : ""}</div>
   </div>`;
 }
@@ -906,12 +906,12 @@ const TILE_LATIN = { arena: "ARENA", rule: "LEX", pe: "OMEN" } as const;
 function envTile(o: Observation, which: "arena" | "rule" | "pe", title: string, name: string | null, text: string, hint: string, state = "", art: string | null = null) {
   const down = !name;
   const pic = name ? artUrl(art) : null;
-  const cls = ["card", "tile", down ? "down" : "", state, pic ? "has-art" : ""].filter(Boolean).join(" ");
+  const cls = ["card", "tile", `t-${which}`, down ? "down" : "", state, pic ? "has-art" : ""].filter(Boolean).join(" ");
   return `<div class="${cls}" data-key="h${o.handNo}-env-${which}"${pic ? ` style="--art:url('${pic}')"` : ""} data-act="sheet" data-arg="env:${which}" role="button" tabindex="0">
     <div class="shade"></div>
     <div class="lift"><div class="flip">
       <i class="edge top"></i><i class="edge bottom"></i><i class="edge left"></i><i class="edge right"></i>
-      <div class="face front"><span class="env-title">${title}</span><span class="env-name">${name ?? ""}</span><span class="env-text">${text}</span></div>
+      <div class="face front"><span class="tile-icon"></span><span class="tile-text"><span class="env-title">${title}</span><span class="env-name">${name ?? ""}</span><span class="env-text">${text}</span></span></div>
       <div class="face back"><span class="tile-seal"></span><span class="tile-back"><span class="env-title">${title}<i class="tile-latin">${TILE_LATIN[which]}</i></span><span class="env-text">${hint}</span></span></div>
     </div></div>
   </div>`;
