@@ -246,3 +246,46 @@ describe("牌桌层", () => {
     expect(legalActions(t, seat)).toEqual([{ type: "marketRemove", poolIndex: null }]);
   });
 });
+
+describe("存档重放", () => {
+  it("同一个种子照着记录的动作重放，回到一模一样的局面", () => {
+    const seed = 2024;
+    const t = new Table({ seed });
+    const agents = [new HeuristicAgent("aggressive", 1), new HeuristicAgent("bluff", 2)];
+    const record: Array<[Seat, Action]> = [];
+    for (let i = 0; i < 400 && t.phase !== "over"; i++) {
+      const seat = t.toAct()[0];
+      const a = agents[seat].act(t, seat);
+      t.apply(seat, a);
+      record.push([seat, JSON.parse(JSON.stringify(a))]); // 和存进浏览器一样走一遍 JSON
+    }
+    const r = new Table({ seed });
+    for (const [seat, a] of record) r.apply(seat, a);
+    expect(r.handNo).toBe(t.handNo);
+    expect(r.phase).toBe(t.phase);
+    expect(r.stacks).toEqual(t.stacks);
+    expect(r.log).toEqual(t.log);
+    expect(observe(r, 0)).toEqual(observe(t, 0));
+  });
+});
+
+describe("牌桌结束", () => {
+  it("有人筹码输光，结算后立刻结束，不再进市场", () => {
+    for (let seed = 1; seed <= 30; seed++) {
+      const t = new Table({ seed });
+      const agents = [new HeuristicAgent("aggressive", seed), new HeuristicAgent("aggressive", seed + 100)];
+      for (let i = 0; i < 2000 && t.phase !== "over"; i++) {
+        const seat = t.toAct()[0];
+        t.apply(seat, agents[seat].act(t, seat));
+        if (t.phase === "marketPick" || t.phase === "marketRemove") {
+          expect(t.stacks[0]).toBeGreaterThan(0);
+          expect(t.stacks[1]).toBeGreaterThan(0);
+        }
+      }
+      expect(t.phase).toBe("over");
+      expect(t.stacks[t.winner!]).toBe(200);
+      const last = t.log.slice(-2).map((e) => e.type);
+      expect(last).toEqual(["settle", "tableOver"]);
+    }
+  });
+});

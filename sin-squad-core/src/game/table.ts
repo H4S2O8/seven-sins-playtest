@@ -635,6 +635,7 @@ export class Table {
     h.outcome = { winner: result.winner, by: "battle", pot };
     this.log.push({ type: "settle", winner: result.winner, pot, stacks: [this.stacks[0], this.stacks[1]] });
     this.checkInvariant();
+    if (this.endIfBroke()) return;
     this.openMarket(result.winner === null ? other(h.dealer) : other(result.winner));
   }
 
@@ -647,7 +648,17 @@ export class Table {
     h.outcome = { winner, by: "fold", pot };
     this.log.push({ type: "settle", winner, pot, stacks: [this.stacks[0], this.stacks[1]] });
     this.checkInvariant();
+    if (this.endIfBroke()) return;
     this.openMarket(folder);
+  }
+
+  /** 结算后有人筹码归零：牌桌当场结束，不再进市场。 */
+  private endIfBroke(): boolean {
+    if (this.stacks[0] > 0 && this.stacks[1] > 0) return false;
+    this.winner = this.stacks[0] === 0 ? 1 : 0;
+    this.phase = "over";
+    this.log.push({ type: "tableOver", winner: this.winner });
+    return true;
   }
 
   // ───────────────────────── 市场 ─────────────────────────
@@ -693,12 +704,6 @@ export class Table {
     h.removeDone[seat] = true;
     this.log.push({ type: "marketRemove", seat, removed: poolIndex !== null });
     if (!h.removeDone[0] || !h.removeDone[1]) return;
-    if (this.stacks[0] === 0 || this.stacks[1] === 0) {
-      this.winner = this.stacks[0] === 0 ? 1 : 0;
-      this.phase = "over";
-      this.log.push({ type: "tableOver", winner: this.winner });
-      return;
-    }
     this.startHand(other(h.dealer));
   }
 }

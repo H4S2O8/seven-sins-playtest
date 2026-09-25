@@ -1,4 +1,4 @@
-// 把网页 demo 打包成纯静态文件，输出到仓库根目录的 sin-squad-v3/（GitHub Pages 直接托管）。
+// 把网页 demo 打包成纯静态文件，输出到仓库根目录的 sin-squad-v3/（不进 git；GitHub Actions 在 main 上打包后发布到 Pages）。
 import { createHash } from "node:crypto";
 import { copyFile, mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
@@ -36,4 +36,10 @@ await writeFile(join(out, "style.css"), css);
 await writeFile(join(out, "index.html"), html);
 await mkdir(join(out, "art"), { recursive: true });
 for (const f of artFiles) await copyFile(join(artDir, f), join(out, "art", f));
-console.log(`已输出到 ${out}（版本 ${version}，app.js ${(js.length / 1024).toFixed(1)} KB，立绘 ${artIds.length} 张）`);
+
+// 背景音乐：web/audio/<曲名>.mp3（曲名见 web/music.ts）
+const audioDir = join(web, "audio");
+const audioFiles = (await readdir(audioDir).catch(() => [])).filter((f) => f.endsWith(".mp3"));
+await mkdir(join(out, "audio"), { recursive: true });
+for (const f of audioFiles) await copyFile(join(audioDir, f), join(out, "audio", f));
+console.log(`已输出到 ${out}（版本 ${version}，app.js ${(js.length / 1024).toFixed(1)} KB，立绘 ${artIds.length} 张，音乐 ${audioFiles.length} 首）`);
