@@ -576,15 +576,16 @@ class Battle {
     for (const [u, v] of dmg) this.loseHp(u, v);
     for (const [u, v] of dealt) this.dealtTotal[u.seat] += v;
 
-    // 吸血、蓄痛、裂甲
-    for (const [u, v] of dealt) {
-      if (u.hp <= 0 || !this.abilityOn(u, "嚼盾兽")) continue;
-      let heal = v;
+    // 吸血：只算自己主动攻击打出的伤害（反击不算），回复一半
+    const drained = dealt.get(a) ?? 0;
+    if (drained > 0 && a.hp > 0 && this.abilityOn(a, "嚼盾兽")) {
+      let heal = round1(drained / 2);
       if (this.has("P19")) heal /= 2;
       if (this.has("P18") && r >= 4) heal /= 2;
-      if (u.hp < u.maxHp) this.trig(u, "嚼盾兽", "吸血");
-      this.heal(u, heal);
+      if (a.hp < a.maxHp) this.trig(a, "嚼盾兽", "吸血");
+      this.heal(a, heal);
     }
+    // 蓄痛、裂甲
     for (const [u, n] of hits) {
       if (u.hp > 0 && this.abilityOn(u, "蓄痛拳手")) { u.atk += n; this.trig(u, "蓄痛拳手", `攻 +${n}`); }
     }

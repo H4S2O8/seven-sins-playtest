@@ -97,6 +97,16 @@ describe("轮流出手与碰撞", () => {
     expect(wake[1][0].hp).toBe(4 - 3);
   });
 
+  it("吸血只算自己主动攻击，回复一半；反击打出的伤害不回血", () => {
+    const r = battle(team(["GL1", null, null]), team(["LU1", null, null]));
+    // 嚼盾兽 3/8 连击打同行药袋 3/12：打出 3，回 1.5；同时吃药袋 3 点反击
+    expect(afterHit(r, 1)[0][0].hp).toBe(8 - 3 + 1.5);
+    expect(afterHit(r, 1)[1][0].hp).toBe(12 - 3);
+    // 药袋回打：嚼盾兽挨 3，它的反击也打出 3，但不回血
+    expect(afterHit(r, 2)[0][0].hp).toBe(6.5 - 3);
+    expect(afterHit(r, 2)[1][0].hp).toBe(9 - 3);
+  });
+
   it("每一帧都附带当时的快照，给回放用", () => {
     const r = battle(team(["GR3", null, null]), team(["SL1", null, null]));
     expect(r.frames.length).toBeGreaterThan(1);
