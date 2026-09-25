@@ -71,6 +71,10 @@ interface Ui {
 declare const __ART_IDS__: string[];
 const ART = new Set<string>(typeof __ART_IDS__ === "undefined" ? [] : __ART_IDS__);
 
+/** 场地 / 胜利规则 / 公共效果的插画（和立绘放在同一个目录，按编号命名）。 */
+const artUrl = (id: string | null | undefined) => (id && ART.has(id) ? `art/${id}.webp` : null);
+const artStyle = (id: string | null | undefined) => (artUrl(id) ? ` style="--art:url('${artUrl(id)}')"` : "");
+
 const STYLE_NAME: Record<Style, string> = { cautious: "谨慎", aggressive: "激进", bluff: "爱诈唬" };
 
 let table: Table | null = null;
@@ -81,6 +85,41 @@ let logLines: string[] = [];
 let logCursor = 0;
 let aiTimer: number | null = null;
 let battleToken = 0;
+/** 胜利规则 / 公共效果刚翻开时的揭晓卡（画在牌桌外面单独一层，重画牌桌不影响它的动画）。 */
+let revealTimer: number | null = null;
+const revealLayer = document.createElement("div");
+revealLayer.id = "reveal";
+document.body.appendChild(revealLayer);
+
+function showReveal(ruleId: string, peId: string | null) {
+  const r = rule(ruleId);
+  const pe = peId ? publicEffect(peId) : null;
+  const face = (label: string, id: string, name: string, sub: string, text: string, i: number) => `
+    <div class="reveal-card" style="--i:${i}">
+      <div class="reveal-art"${artStyle(id)}></div>
+      <div class="reveal-body"><span class="reveal-label">${label}</span><b>${name}</b><small>${sub}</small><p>${text}</p></div>
+    </div>`;
+  revealLayer.innerHTML = `<div class="reveal-pop" role="dialog" aria-label="规则揭晓">
+    <div class="reveal-title">翻开</div>
+    <div class="reveal-cards">
+      ${face("胜利规则", r.id, r.name, `${r.family} · 最多 ${r.maxRounds} 轮`, r.text, 0)}
+      ${pe ? face("公共效果", pe.id, pe.name, `${pe.kind} · 双方表决要不要生效`, pe.text, 1) : ""}
+    </div>
+    <small class="reveal-hint">点一下继续</small>
+  </div>`;
+  if (revealTimer !== null) clearTimeout(revealTimer);
+  revealTimer = window.setTimeout(hideReveal, 4200);
+}
+
+function hideReveal() {
+  if (revealTimer !== null) clearTimeout(revealTimer);
+  revealTimer = null;
+  if (!revealLayer.innerHTML) return;
+  revealLayer.innerHTML = "";
+  scheduleAi();
+}
+revealLayer.addEventListener("click", hideReveal);
+
 /** 本桌双方做过的每一步（存档用：同一个种子照着重放就回到原样）。 */
 let record: Array<[Seat, Action]> = [];
 
@@ -251,20 +290,24 @@ function applyAction(seat: Seat, action: Action) {
 
 /** 每次有人提交动作后：读新增的牌桌记录，必要时开始战斗动画，然后重画并安排电脑。 */
 function afterApply() {
-  consumeLog(true);
+  const pending = consumeLog(true);
+  // 全押直接开打时不弹揭晓卡，免得挡住战斗
+  if (pending.reveal && !ui.battle) showReveal(pending.reveal.ruleId, pending.reveal.publicEffectId);
   render();
   if (ui.battle && !ui.battle.started) { ui.battle.started = true; void playBattle(ui.battle); }
   scheduleAi();
 }
 
 /** 读新增的牌桌记录。play = false 时（读档）不播战斗，只把最后的样子摆在桌上。 */
-function consumeLog(play: boolean) {
+function consumeLog(play: boolean): { reveal: { ruleId: string; publicEffectId: string | null } | null } {
   const t = table!;
+  let reveal: { ruleId: string; publicEffectId: string | null } | null = null;
   const fresh = t.log.slice(logCursor);
   logCursor = t.log.length;
   for (const e of fresh) {
     const line = logLine(e);
     if (line) logLines.push(line);
+    if (e.type === "reveal" && play) reveal = { ruleId: e.ruleId, publicEffectId: e.publicEffectId };
     if (e.type === "handStart") {
       ui.notice = null;
       ui.lastBattle = null;
@@ -290,16 +333,17 @@ function consumeLog(play: boolean) {
       }
     }
   }
+  return { reveal };
 }
 
 function scheduleAi() {
   const t = table;
-  if (!t || aiTimer !== null || ui.battle || gate.open || t.phase === "over") return;
+  if (!t || aiTimer !== null || ui.battle || gate.open || revealTimer !== null || t.phase === "over") return;
   if (!t.toAct().includes(AI)) return;
   const delay = t.phase === "bet" ? 800 : t.phase === "place" ? 700 : 500;
   aiTimer = window.setTimeout(() => {
     aiTimer = null;
-    if (ui.battle || gate.open || !t.toAct().includes(AI) || t !== table) return;
+    if (ui.battle || gate.open || revealTimer !== null || !t.toAct().includes(AI) || t !== table) return;
     try {
       applyAction(AI, agent.act(t, AI));
     } catch (err) {
@@ -662,17 +706,17 @@ function seatBar(o: Observation, seat: Seat) {
 }
 
 function center(o: Observation) {
-  const tile = (which: "arena" | "rule" | "pe", title: string, name: string | null, text: string, state = "") =>
-    `<div class="env ${name ? "" : "down"} ${state}" data-act="sheet" data-arg="env:${which}" role="button" tabindex="0">
+  const tile = (which: "arena" | "rule" | "pe", title: string, name: string | null, text: string, state = "", art: string | null = null) =>
+    `<div class="env ${name ? "" : "down"} ${state} ${name && artUrl(art) ? "has-art" : ""}"${name ? artStyle(art) : ""} data-act="sheet" data-arg="env:${which}" role="button" tabindex="0">
       <span class="env-title">${title}</span><span class="env-name">${name ?? "未翻开"}</span><span class="env-text">${text}</span></div>`;
   const a = o.arenaId ? arena(o.arenaId) : null;
   const r = o.ruleId ? rule(o.ruleId) : null;
   const pe = o.publicEffectId ? publicEffect(o.publicEffectId) : null;
   const peState = o.publicEffectActive === null ? (pe ? "voting" : "") : o.publicEffectActive ? "on" : "off";
   const peLabel = pe ? `${pe.name}${o.publicEffectActive === null ? "" : o.publicEffectActive ? " ✓" : " ✗"}` : null;
-  const tiles = tile("arena", "场地", a?.name ?? null, a?.text ?? `候选：${o.arenaOptions.map((x) => arena(x).name).join(" / ")}`) +
-    tile("rule", "胜利规则", r ? r.name : null, r ? `${r.text}（最多 ${r.maxRounds} 轮）` : "第 1 轮下注后翻开") +
-    tile("pe", "公共效果", peLabel, pe ? pe.text : r ? "已全押，本手没有" : "和规则一起翻开", peState);
+  const tiles = tile("arena", "场地", a?.name ?? null, a?.text ?? `候选：${o.arenaOptions.map((x) => arena(x).name).join(" / ")}`, "", o.arenaId) +
+    tile("rule", "胜利规则", r ? r.name : null, r ? `${r.text}（最多 ${r.maxRounds} 轮）` : "第 1 轮下注后翻开", "", o.ruleId) +
+    tile("pe", "公共效果", peLabel, pe ? pe.text : r ? "已全押，本手没有" : "和规则一起翻开", peState, o.publicEffectId);
   let status = phaseLabel(o);
   if (ui.battle) {
     const b = ui.battle;
@@ -811,7 +855,8 @@ function phaseDock(o: Observation, mine: boolean): string {
 function arenaDock(o: Observation, mine: boolean) {
   const tiles = o.arenaOptions.map((id, i) => {
     const a = arena(id);
-    return `<div class="option ${mine ? "clickable" : ""}"${mine ? attrs({ act: "arena", arg: i }) : ""}><b>${a.name}</b><small>${a.kind}</small><p>${a.text}</p></div>`;
+    const pic = artUrl(id) ? `<div class="option-art"${artStyle(id)}></div>` : "";
+    return `<div class="option ${pic ? "with-art" : ""} ${mine ? "clickable" : ""}"${mine ? attrs({ act: "arena", arg: i }) : ""}>${pic}<b>${a.name}</b><small>${a.kind}</small><p>${a.text}</p></div>`;
   }).join("");
   return (mine ? prompt("选一张场地", "你筹码较少（或一样多且你不是庄家）") : waiting("对手在选场地")) + `<div class="tray options">${tiles}</div>`;
 }
@@ -984,9 +1029,9 @@ function sheetView(): string {
         case "chars": body = `<p class="muted">开桌时每人的牌池从全部人物里随机 8 名。市场里，第 1–5 手只出第一阶段人物，第 6 手起只出标“二”的人物。点卡上的 ? 看能力。</p>
           <div class="gallery">${CHARACTERS.map((c) => card(c.id, { cls: "small", flag: c.stage === 2 ? "二" : undefined })).join("")}</div>`; break;
         case "equip": body = refTable(EQUIPMENT.map((e) => [e.name, e.text])); break;
-        case "rules": body = refTable(RULES.map((r) => [`${r.name}<small>${r.family} · 最多 ${r.maxRounds} 轮</small>`, r.text])); break;
-        case "arenas": body = refTable(ARENAS.map((a) => [`${a.name}<small>${a.kind}</small>`, a.text])); break;
-        case "effects": body = refTable(PUBLIC_EFFECTS.map((p) => [`${p.name}<small>${p.kind}</small>`, p.text])); break;
+        case "rules": body = refTable(RULES.map((r) => [`${r.name}<small>${r.family} · 最多 ${r.maxRounds} 轮</small>`, r.text, r.id])); break;
+        case "arenas": body = refTable(ARENAS.map((a) => [`${a.name}<small>${a.kind}</small>`, a.text, a.id])); break;
+        case "effects": body = refTable(PUBLIC_EFFECTS.map((p) => [`${p.name}<small>${p.kind}</small>`, p.text, p.id])); break;
       }
       return wrap("help", `<div class="tabs">${tabs.map(([k, l]) => btn(l, "tab", k, ui.helpTab === k ? "on" : "")).join("")}</div>
         <div class="sheet-body">${body}</div>`);
@@ -1007,16 +1052,16 @@ function sheetView(): string {
       let body = "";
       if (s.which === "arena") {
         title = "场地";
-        body = o.arenaId ? `<h2>${arena(o.arenaId).name}</h2><p>${arena(o.arenaId).text}</p>`
-          : o.arenaOptions.map((id) => `<h3>${arena(id).name}</h3><p>${arena(id).text}</p>`).join("");
+        body = o.arenaId ? `${envArt(o.arenaId)}<h2>${arena(o.arenaId).name}</h2><p>${arena(o.arenaId).text}</p>`
+          : o.arenaOptions.map((id) => `${envArt(id, "small")}<h3>${arena(id).name}</h3><p>${arena(id).text}</p>`).join("");
       } else if (s.which === "rule") {
         title = "胜利规则";
         const r = o.ruleId ? rule(o.ruleId) : null;
-        body = r ? `<h2>${r.name}<small>${r.family} · 最多 ${r.maxRounds} 轮</small></h2><p>${r.text}</p>` : "<p>第 1 轮下注结束后翻开。</p>";
+        body = r ? `${envArt(r.id)}<h2>${r.name}<small>${r.family} · 最多 ${r.maxRounds} 轮</small></h2><p>${r.text}</p>` : "<p>第 1 轮下注结束后翻开。</p>";
       } else {
         title = "公共效果";
         const pe = o.publicEffectId ? publicEffect(o.publicEffectId) : null;
-        body = pe ? `<h2>${pe.name}<small>${o.publicEffectActive === null ? "表决中" : o.publicEffectActive ? "生效" : "不生效"}</small></h2><p>${pe.text}</p>`
+        body = pe ? `${envArt(pe.id)}<h2>${pe.name}<small>${o.publicEffectActive === null ? "表决中" : o.publicEffectActive ? "生效" : "不生效"}</small></h2><p>${pe.text}</p>`
           : "<p>和胜利规则一起翻开。双方暗投要不要生效，不一致就暗标。</p>";
       }
       return wrap("env-sheet", `<div class="label">${title}</div>${body}`);
@@ -1057,8 +1102,14 @@ function sheetView(): string {
   }
 }
 
-function refTable(rows: Array<[string, string]>) {
-  return `<table class="ref">${rows.map(([a, b]) => `<tr><th>${a}</th><td>${b}</td></tr>`).join("")}</table>`;
+function refTable(rows: Array<[string, string, string?]>) {
+  const pic = (id?: string) => (artUrl(id) ? `<td class="ref-pic"><img src="${artUrl(id)}" alt="" loading="lazy"></td>` : "");
+  return `<table class="ref">${rows.map(([a, b, id]) => `<tr>${pic(id)}<th>${a}</th><td>${b}</td></tr>`).join("")}</table>`;
+}
+
+/** 弹层里的大幅插画。 */
+function envArt(id: string, cls = "") {
+  return artUrl(id) ? `<img class="env-art ${cls}" src="${artUrl(id)}" alt="">` : "";
 }
 
 // ───────────────────────── 输入 ─────────────────────────
