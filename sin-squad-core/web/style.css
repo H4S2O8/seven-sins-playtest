@@ -12,6 +12,9 @@
   --good: #7fcf6a;
   --bad: #e06a52;
   --barrier: #7fd6e8;
+  /* 展示字体：七罪是西方的题材，标题、印记用粗宋 / 衬线，不用毛笔楷书；拉丁文装饰用罗马碑刻式的大写衬线 */
+  --display: "Songti SC", "STSong", "Noto Serif SC", "Source Han Serif SC", "Source Han Serif", "SimSun", serif;
+  --latin: "Cinzel", "Trajan Pro", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
   color-scheme: dark;
 }
 
@@ -90,7 +93,7 @@ small { color: var(--muted); font-weight: normal; }
 
 /* ───────── 顶栏 ───────── */
 .top { display: flex; align-items: center; gap: 10px; height: 46px; }
-.brand { font-size: 18px; font-weight: 800; letter-spacing: 2px; color: var(--gold); white-space: nowrap; }
+.brand { font-family: var(--display); font-size: 18px; font-weight: 900; letter-spacing: 2px; color: var(--gold); white-space: nowrap; }
 .brand small { font-size: 11px; letter-spacing: 0; margin-left: 6px; }
 button.debug-chip { min-height: 26px; padding: 1px 8px; font-size: 12px; background: #5a2b6a; border-color: #b070d0; }
 .debug-form { display: flex; gap: 8px; flex-wrap: wrap; margin: 4px 0 10px; }
@@ -331,19 +334,34 @@ code { background: #0005; border-radius: 4px; padding: 0 4px; font-size: 12px; }
   justify-content: center;
   align-items: center;
   gap: 6px;
+  /* 牌背：深绯红近黑的底，一层细金菱格，四周压暗；中间是七芒星纹章 */
   background:
-    radial-gradient(circle at 50% 50%, #0000 30%, #0006 100%),
-    repeating-linear-gradient(45deg, #ffffff07 0 1px, transparent 1px calc(var(--cw) * 0.09)),
-    repeating-linear-gradient(-45deg, #ffffff07 0 1px, transparent 1px calc(var(--cw) * 0.09)),
-    linear-gradient(160deg, #4a2418, #2a130d 60%, #1c0d09);
+    radial-gradient(circle at 50% 46%, #0000 28%, #000b 100%),
+    repeating-linear-gradient(45deg, #d9b25f16 0 1px, transparent 1px calc(var(--cw) * 0.085)),
+    repeating-linear-gradient(-45deg, #d9b25f16 0 1px, transparent 1px calc(var(--cw) * 0.085)),
+    radial-gradient(circle at 50% 42%, #54172b 0%, #2b0b17 55%, #13050b 100%);
+}
+/* 四角的哥特式金角 */
+.card .face.back::after {
+  --c: #e0bd72d0; --l: calc(var(--cw) * 0.13); --w: max(1px, calc(var(--cw) * 0.012));
+  content: ""; position: absolute; inset: calc(var(--cw) * 0.1); pointer-events: none;
+  background:
+    linear-gradient(var(--c), var(--c)) top left / var(--l) var(--w) no-repeat,
+    linear-gradient(var(--c), var(--c)) top left / var(--w) var(--l) no-repeat,
+    linear-gradient(var(--c), var(--c)) top right / var(--l) var(--w) no-repeat,
+    linear-gradient(var(--c), var(--c)) top right / var(--w) var(--l) no-repeat,
+    linear-gradient(var(--c), var(--c)) bottom left / var(--l) var(--w) no-repeat,
+    linear-gradient(var(--c), var(--c)) bottom left / var(--w) var(--l) no-repeat,
+    linear-gradient(var(--c), var(--c)) bottom right / var(--l) var(--w) no-repeat,
+    linear-gradient(var(--c), var(--c)) bottom right / var(--w) var(--l) no-repeat;
 }
 .card .face.back::before {
   box-shadow:
     inset 0 0 0 1px #0009,
-    inset 0 0 0 calc(var(--cw) * 0.035) #1c0d09,
-    inset 0 0 0 calc(var(--cw) * 0.045) #b8924e,
-    inset 0 0 0 calc(var(--cw) * 0.06) #1c0d09,
-    inset 0 0 0 calc(var(--cw) * 0.066) #b8924e88;
+    inset 0 0 0 calc(var(--cw) * 0.035) #13050b,
+    inset 0 0 0 calc(var(--cw) * 0.045) #c9a15a,
+    inset 0 0 0 calc(var(--cw) * 0.06) #13050b,
+    inset 0 0 0 calc(var(--cw) * 0.066) #c9a15a88;
 }
 .card.small { --cw: var(--tw); }
 .dock .card.small { --cw: calc(var(--tw) * var(--fit, 1)); }
@@ -396,10 +414,12 @@ code { background: #0005; border-radius: 4px; padding: 0 4px; font-size: 12px; }
   background: linear-gradient(transparent 55%, #0000004d 80%, #000000a0);
   box-shadow: inset 0 0 calc(var(--cw) * 0.08) #0008;
 }
+/* 立绘后面的水印：这名人物所属罪的拉丁名 */
 .card .glyph {
-  font-family: "STKaiti", "KaiTi", "Noto Serif SC", serif;
-  font-size: calc(var(--cw) * 0.4);
-  font-weight: 900;
+  font-family: var(--latin);
+  font-size: calc(var(--cw) * 0.12);
+  font-weight: 700;
+  letter-spacing: .14em;
   color: #ffffff55;
   text-shadow: 0 2px 6px #0008;
   line-height: 1;
@@ -538,16 +558,15 @@ code { background: #0005; border-radius: 4px; padding: 0 4px; font-size: 12px; }
   text-shadow: 0 2px 4px #000;
 }
 
+/* 七芒星纹章（web/sigil.ts 生成，挂在 --sigil 上） */
 .card .emblem {
-  width: calc(var(--cw) * 0.46); aspect-ratio: 1; border-radius: 50%;
-  display: grid; place-items: center;
-  background: radial-gradient(circle at 40% 35%, #5a3322, #2a140d 70%);
-  box-shadow: 0 0 0 1px #0009, 0 0 0 calc(var(--cw) * 0.02) #c9a466, 0 0 0 calc(var(--cw) * 0.032) #2a140d, 0 0 0 calc(var(--cw) * 0.038) #c9a46688, inset 0 2px 8px #000a;
+  width: calc(var(--cw) * 0.6); aspect-ratio: 1;
+  background: var(--sigil) center / contain no-repeat;
+  filter: drop-shadow(0 0 calc(var(--cw) * 0.04) #d9b25f55) drop-shadow(0 2px 3px #000c);
 }
-.card .emblem span {
-  font-family: "STKaiti", "KaiTi", "Noto Serif SC", serif;
-  font-size: calc(var(--cw) * 0.26); font-weight: 900; line-height: 1;
-  color: #e3c47e; text-shadow: 0 1px 0 #6b4a1c, 0 2px 4px #000;
+.card .back-motto {
+  font-family: var(--latin); font-size: max(8px, calc(var(--cw) * 0.055)); letter-spacing: .28em;
+  color: #d9b25fcc; text-shadow: 0 1px 2px #000;
 }
 .card .back-text { font-size: max(9px, calc(var(--cw) * 0.085)); color: #e8dcc0; text-align: center; padding: 0 8px; text-shadow: 0 1px 2px #000; }
 .card .face.back .equip { bottom: calc(var(--cw) * 0.1); }
@@ -581,12 +600,16 @@ code { background: #0005; border-radius: 4px; padding: 0 4px; font-size: 12px; }
   padding: 0 11px; text-align: left;
 }
 .card.tile .tile-seal {
-  flex: none; width: max(22px, calc(var(--cw) * 0.24)); aspect-ratio: 1; border-radius: 50%;
-  display: grid; place-items: center;
-  font-family: "STKaiti", "KaiTi", "Noto Serif SC", serif; font-weight: 900; font-size: max(12px, calc(var(--cw) * 0.13));
-  color: #e3c47e; background: radial-gradient(circle at 40% 35%, #5a3322, #2a140d 70%);
-  box-shadow: 0 0 0 1px #0009, 0 0 0 2px #c9a466, inset 0 2px 6px #000a;
+  flex: none; width: max(26px, calc(var(--cw) * 0.3)); aspect-ratio: 1;
+  background: var(--sigil) center / contain no-repeat;
+  filter: drop-shadow(0 0 4px #d9b25f55);
 }
+.card.tile .tile-latin {
+  display: block; font-style: normal; font-family: var(--latin); font-size: 8.5px; letter-spacing: .22em;
+  color: #c9a466; line-height: 1.3; white-space: nowrap; overflow: hidden;
+}
+/* 长条牌的金角小一些 */
+.card.tile .face.back::after { inset: 5px; --l: 12px; --w: 1px; }
 .card.tile .tile-back { min-width: 0; }
 .card.tile .face .env-text { -webkit-line-clamp: 1; }
 .card.tile .face .env-title { line-height: 1.25; }
@@ -829,7 +852,7 @@ code { background: #0005; border-radius: 4px; padding: 0 4px; font-size: 12px; }
 .intro-art {
   width: 90px; height: 90px; margin: 4px auto 10px; border-radius: 50%;
   display: grid; place-items: center; font-size: 52px; font-weight: 900; color: var(--gold);
-  font-family: "STKaiti", "KaiTi", "Noto Serif SC", serif;
+  font-family: var(--display);
   background: radial-gradient(#4a3624, #1d140c); border: 3px solid #8a6d44; box-shadow: 0 0 30px #d9b25f44;
 }
 .overlay:has(.drawer) { justify-content: flex-end; padding: 0; }
@@ -942,8 +965,8 @@ table.ref td.ref-pic img { display: block; width: 84px; aspect-ratio: 1216 / 832
 .coin-face .hero.bust { -webkit-mask-image: none; mask-image: none; }
 .coin-face .hero.bust img { width: 150%; top: 2%; }
 .hero-glyph {
-  font-family: "STKaiti", "KaiTi", "Noto Serif SC", serif; font-weight: 900; color: #ffffff30;
-  font-size: calc(clamp(76px, 14vw, 150px) * .5);
+  font-family: var(--latin); font-weight: 700; color: #ffffff30; letter-spacing: .12em;
+  font-size: calc(clamp(76px, 14vw, 150px) * .13);
 }
 .heroes .hero { --k: 0; margin: 0 calc(clamp(76px, 14vw, 150px) * -.16); transform-origin: 50% 120%;
   transform: rotate(calc(var(--k) * 7deg)) translateY(calc(var(--k) * var(--k) * 7px));
@@ -953,9 +976,23 @@ table.ref td.ref-pic img { display: block; width: 84px; aspect-ratio: 1216 / 832
 .heroes .h3 { --k: 0; --d: 3; z-index: 2; } .heroes .h4 { --k: 1; --d: 4; } .heroes .h5 { --k: 2; --d: 5; } .heroes .h6 { --k: 3; --d: 6; }
 .heroes .h3 { width: clamp(90px, 17vw, 180px); }
 @keyframes heroIn { from { opacity: 0; translate: 0 60px; } }
+/* 标题页背后一枚很大的七芒星纹章，慢慢转 */
+.title-stage::before {
+  content: ""; position: absolute; left: 50%; top: -2%; z-index: 0; pointer-events: none;
+  width: clamp(280px, 50vw, 560px); aspect-ratio: 1; margin-left: calc(clamp(280px, 50vw, 560px) / -2);
+  background: var(--sigil) center / contain no-repeat;
+  opacity: .16; filter: drop-shadow(0 0 30px #d9b25f55);
+  animation: sigilSpin 160s linear infinite;
+}
+@keyframes sigilSpin { to { transform: rotate(360deg); } }
+.logo-latin {
+  position: relative; z-index: 3; margin-top: 6px;
+  font-family: var(--latin); font-size: clamp(10px, 1.6vw, 14px); letter-spacing: .5em; color: #d9b25fbb;
+  animation: fade 1.2s .4s both;
+}
 .logo {
   position: relative; z-index: 3; margin: 0;
-  font-family: "STKaiti", "KaiTi", "Noto Serif SC", serif; font-weight: 900;
+  font-family: var(--display); font-weight: 900;
   font-size: clamp(46px, 11vw, 96px); letter-spacing: .12em; line-height: 1.1;
   background: linear-gradient(#fff3c8, #e0b75c 55%, #9a6e24); -webkit-background-clip: text; background-clip: text; color: transparent;
   filter: drop-shadow(0 3px 0 #3a2410) drop-shadow(0 0 22px #d9b25f55);
@@ -1031,8 +1068,8 @@ table.ref td.ref-pic img { display: block; width: 84px; aspect-ratio: 1216 / 832
 .foe-pool { display: flex; align-items: center; gap: 10px; font-size: 13px; color: #cfc4b4; }
 .mini-backs { display: inline-flex; padding-left: 8px; }
 .mini-backs i {
-  width: 16px; height: 23px; margin-left: -8px; border-radius: 3px; border: 1px solid #8a6d44;
-  background: repeating-linear-gradient(45deg, #3a2a1c 0 3px, #2e2116 3px 6px); box-shadow: 0 1px 2px #000;
+  width: 16px; height: 23px; margin-left: -8px; border-radius: 2px; border: 1px solid #c9a15a;
+  background: var(--sigil) center / 80% no-repeat, radial-gradient(circle at 50% 45%, #54172b, #13050b); box-shadow: 0 1px 2px #000;
 }
 
 /* 抛筹码 */
@@ -1051,7 +1088,7 @@ table.ref td.ref-pic img { display: block; width: 84px; aspect-ratio: 1216 / 832
 .coin-face {
   position: absolute; inset: 0; border-radius: 50%; display: grid; place-items: center; overflow: hidden;
   backface-visibility: hidden; -webkit-backface-visibility: hidden;
-  font-family: "STKaiti", "KaiTi", "Noto Serif SC", serif; font-size: 50px; font-weight: 900; color: #fff3c8;
+  font-family: var(--display); font-size: 50px; font-weight: 900; color: #fff3c8;
   background: radial-gradient(circle, #a8322a 0 52%, #f1e3c0 53% 57%, #a8322a 58%);
   border: 6px dashed #f1e3c0; box-shadow: inset 0 0 0 3px #6a1a14, 0 0 18px #0008;
   text-shadow: 0 2px 3px #0008;
@@ -1065,7 +1102,7 @@ table.ref td.ref-pic img { display: block; width: 84px; aspect-ratio: 1216 / 832
 }
 .coin-face.foe { transform: rotateY(180deg) translateZ(6px); background: radial-gradient(circle, #24466e 0 52%, #f1e3c0 53% 57%, #24466e 58%); box-shadow: inset 0 0 0 3px #10243a, 0 0 18px #0008; }
 .coin-face .hero { width: 74%; aspect-ratio: 1; border-radius: 50%; }
-.coin-face .hero-glyph { font-size: 40px; }
+.coin-face .hero-glyph { font-size: 11px; }
 .coin-shadow { position: absolute; bottom: 38px; width: 110px; height: 18px; border-radius: 50%; background: #0008; filter: blur(4px); animation: tossShadow 1.8s cubic-bezier(.25,.6,.35,1) both; }
 @keyframes tossMe {
   0% { transform: translateY(0) rotateX(10deg) rotateY(0); }
@@ -1092,7 +1129,7 @@ table.ref td.ref-pic img { display: block; width: 84px; aspect-ratio: 1216 / 832
   animation: seatIn .6s cubic-bezier(.2,.8,.3,1.2) both; outline: none;
 }
 .seat-hand {
-  font-family: "STKaiti", "KaiTi", "Noto Serif SC", serif; font-weight: 900; font-size: 54px; letter-spacing: .1em;
+  font-family: var(--display); font-weight: 900; font-size: 54px; letter-spacing: .1em;
   background: linear-gradient(#fff3c8, #d9b25f); -webkit-background-clip: text; background-clip: text; color: transparent;
 }
 .seat-lines { display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; margin: 6px 0 8px; color: #e8dcc0; }
@@ -1106,7 +1143,7 @@ table.ref td.ref-pic img { display: block; width: 84px; aspect-ratio: 1216 / 832
   .heroes { height: 30dvh; }
   .heroes .hero { width: 13.5vw; margin: 0 -2.2vw; }
   .heroes .h3 { width: 17vw; }
-  .hero-glyph { font-size: 8vw; }
+  .hero-glyph { font-size: 2vw; }
   .foe-list { grid-template-columns: 1fr; }
   .foe-card { flex-direction: row; text-align: left; padding: 10px; }
   .foe-card .hero { width: 76px; }
@@ -1135,8 +1172,11 @@ table.ref td.ref-pic img { display: block; width: 84px; aspect-ratio: 1216 / 832
 }
 .reveal-pop.leaving::before, .reveal-pop.leaving .reveal-title, .reveal-pop.leaving .reveal-hint { opacity: 0; transition: opacity .35s; }
 .reveal-title {
-  font-family: "STKaiti", "KaiTi", "Noto Serif SC", serif; font-weight: 900; font-size: 30px; letter-spacing: .3em; color: var(--gold);
-  text-shadow: 0 0 18px #d9b25f88; animation: pop .4s;
+  font-family: var(--display); font-weight: 900; font-size: 30px; letter-spacing: .3em; color: var(--gold);
+  text-shadow: 0 0 18px #d9b25f88; animation: pop .4s; text-align: center;
+}
+.reveal-title small {
+  display: block; margin-top: 2px; font-family: var(--latin); font-weight: 400; font-size: 12px; letter-spacing: .5em; color: #d9b25fbb;
 }
 .reveal-cards { display: flex; gap: 22px; justify-content: center; flex-wrap: wrap; perspective: 1100px; transform-style: preserve-3d; }
 .card.rv {
@@ -1203,3 +1243,5 @@ table.ref td.ref-pic img { display: block; width: 84px; aspect-ratio: 1216 / 832
   transform: rotate(calc(var(--k) * 5deg)) translateY(calc(var(--k) * var(--k) * 6px))
     translateZ(calc(var(--k) * var(--k) * -12px)) rotateY(calc(var(--k) * -10deg));
 }
+
+.card-info h2 small .latin { font-family: var(--latin); letter-spacing: .18em; color: #d9b25fcc; margin-right: 4px; }

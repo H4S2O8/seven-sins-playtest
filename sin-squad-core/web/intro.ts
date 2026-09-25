@@ -3,7 +3,8 @@ import { character } from "../src/content/characters.js";
 import type { Seat, Sin } from "../src/types.js";
 import { turnCard } from "./motion.js";
 import { isMuted, toggleMuted } from "./music.js";
-import { HUMAN, SIN_COLOR, SIN_GLYPH } from "./text.js";
+import { SIN_LATIN } from "./sigil.js";
+import { HUMAN, SIN_COLOR } from "./text.js";
 
 /**
  * 进入牌桌之前的几屏：标题 → 选对手 → 起始牌池 → 抛筹码定庄 → 入座。
@@ -195,7 +196,7 @@ export class Gate {
 
   private figure(art: string, sin: Sin, cls: string) {
     return `<div class="hero ${cls}" style="--sin:${SIN_COLOR[sin]}">
-      <span class="hero-glyph">${SIN_GLYPH[sin]}</span>
+      <span class="hero-glyph">${SIN_LATIN[sin]}</span>
       ${this.art.has(art) ? `<img src="art/${art}.webp" alt="" draggable="false">` : ""}
     </div>`;
   }
@@ -215,6 +216,7 @@ export class Gate {
     const heroes = HEROES.map((id, i) => this.portrait(id, `h${i}`)).join("");
     return `<div class="title-stage">
       <div class="heroes" data-tilt="5">${heroes}</div>
+      <div class="logo-latin">SEPTEM · PECCATA · MORTALIA</div>
       <h1 class="logo">七罪暗队</h1>
       <p class="tagline">德州扑克的下注 × 酒馆战棋的自动战斗<br><small>只亮一张牌，剩下的全靠你讲故事</small></p>
       <div class="gate-actions">

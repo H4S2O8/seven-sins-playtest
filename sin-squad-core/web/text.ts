@@ -24,17 +24,6 @@ export const SIN_COLOR: Record<Sin, string> = {
   色欲: "#b8547e",
 };
 
-/** 卡面上的大字纹样（暂代立绘）。 */
-export const SIN_GLYPH: Record<Sin, string> = {
-  愤怒: "怒",
-  贪婪: "贪",
-  暴食: "食",
-  嫉妒: "妒",
-  怠惰: "惰",
-  傲慢: "傲",
-  色欲: "欲",
-};
-
 export const esc = (s: string) =>
   s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 

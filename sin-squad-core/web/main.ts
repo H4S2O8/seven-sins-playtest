@@ -8,7 +8,7 @@ import { Table, validatePlacement, type Placement, type TableRig } from "../src/
 import { legalActions, observe, type Observation } from "../src/game/view.js";
 import type { AttackShape, Seat } from "../src/types.js";
 import {
-  AI, CARD_TEXT, HOW_TO_PLAY, HUMAN, REASON_TEXT, SIN_COLOR, SIN_GLYPH, battleLine, esc, logLine, num, posName, shapeName,
+  AI, CARD_TEXT, HOW_TO_PLAY, HUMAN, REASON_TEXT, SIN_COLOR, battleLine, esc, logLine, num, posName, shapeName,
 } from "./text.js";
 import { Gate, type Opening, type SaveInfo } from "./intro.js";
 import { morph } from "./morph.js";
@@ -16,6 +16,7 @@ import {
   bubble as hudBubble, crumble, flip, floater as hudFloater, laneShift, measure, pulse, reducedMotion, shake, shatter, strike, type Snapshot,
 } from "./motion.js";
 import { isMuted, setScene, toggleMuted } from "./music.js";
+import { SIN_LATIN, installSigil } from "./sigil.js";
 import { installTilt } from "./tilt.js";
 import { disableTips, dismissTip, resetTips, tipHtml } from "./tips.js";
 
@@ -117,12 +118,12 @@ function showReveal(ruleId: string, peId: string | null) {
           <div class="reveal-art"${artStyle(id)}></div>
           <div class="reveal-body"><span class="reveal-label">${label}</span><b>${name}</b><small>${sub}</small><p>${text}</p></div>
         </div>
-        <div class="face back"><div class="emblem"><span>罪</span></div></div>
+        <div class="face back"><div class="emblem"></div><div class="back-motto">SEPTEM · PECCATA</div></div>
       </div></div>
     </div>`;
   revealLeaving = false;
   revealLayer.innerHTML = `<div class="reveal-pop" role="dialog" aria-label="规则揭晓">
-    <div class="reveal-title">翻开</div>
+    <div class="reveal-title">翻开<small>REVELATIO</small></div>
     <div class="reveal-cards">
       ${face("胜利规则", "rule", r.id, r.name, `${r.family} · 最多 ${r.maxRounds} 轮`, r.text, 0)}
       ${pe ? face("公共效果", "pe", pe.id, pe.name, `${pe.kind} · 双方表决要不要生效`, pe.text, 1) : ""}
@@ -712,7 +713,7 @@ function cardFront(id: string, o: CardOpts) {
   const eqs = (o.equipList ?? (equip ? [equip] : [])).map((x) => equipment(x));
   const defs = (b.armor ? `<span class="def armor" title="护甲 ${b.armor}">${b.armor}</span>` : "") +
     (b.barrier ? `<span class="def barrier" title="屏障 ${b.barrier}">${b.barrier}</span>` : "");
-  return `<div class="art ${ART.has(id) ? "has-portrait" : ""}"><span class="glyph">${SIN_GLYPH[c.sin]}</span>${ART.has(id) ? `<img class="portrait" src="art/${id}.webp" alt="" draggable="false">` : ""}
+  return `<div class="art ${ART.has(id) ? "has-portrait" : ""}"><span class="glyph">${SIN_LATIN[c.sin]}</span>${ART.has(id) ? `<img class="portrait" src="art/${id}.webp" alt="" draggable="false">` : ""}
       ${defs ? `<div class="defs">${defs}</div>` : ""}
       ${eqs.length ? `<div class="equip" title="${esc(eqs.map((e) => `${e.name}：${e.text}`).join("；"))}">${eqs.map((e) => e.name).join("、")}</div>` : ""}
     </div>
@@ -750,7 +751,7 @@ function card(id: string | null, o: CardOpts = {}) {
     <div class="lift"><div class="flip">
       <i class="edge top"></i><i class="edge bottom"></i><i class="edge left"></i><i class="edge right"></i>
       <div class="face front">${id ? cardFront(id, o) : ""}</div>
-      <div class="face back"><div class="emblem"><span>罪</span></div>${o.backText ? `<div class="back-text">${o.backText}</div>` : ""}${eq ? `<div class="equip" title="${esc(`${eq.name}：${eq.text}`)}">${eq.name}</div>` : ""}</div>
+      <div class="face back"><div class="emblem"></div>${o.backText ? `<div class="back-text">${o.backText}</div>` : ""}${eq ? `<div class="equip" title="${esc(`${eq.name}：${eq.text}`)}">${eq.name}</div>` : ""}</div>
     </div>${o.flag ? `<span class="flag">${o.flag}</span>` : ""}${o.lane ? `<span class="lane-tag">${o.lane < 0 ? "← 转线" : "转线 →"}</span>` : ""}</div>
   </div>`;
 }
@@ -900,6 +901,8 @@ function seatBar(o: Observation, seat: Seat) {
  * 场地 / 胜利规则 / 公共效果：横放在桌上的三块有厚度的长条牌。没翻开时背面朝上，翻开时抬起来绕水平轴翻过去。
  * 每手一组新的（key 带手数），新一手会重新发到桌上。
  */
+const TILE_LATIN = { arena: "ARENA", rule: "LEX", pe: "OMEN" } as const;
+
 function envTile(o: Observation, which: "arena" | "rule" | "pe", title: string, name: string | null, text: string, hint: string, state = "", art: string | null = null) {
   const down = !name;
   const pic = name ? artUrl(art) : null;
@@ -909,7 +912,7 @@ function envTile(o: Observation, which: "arena" | "rule" | "pe", title: string, 
     <div class="lift"><div class="flip">
       <i class="edge top"></i><i class="edge bottom"></i><i class="edge left"></i><i class="edge right"></i>
       <div class="face front"><span class="env-title">${title}</span><span class="env-name">${name ?? ""}</span><span class="env-text">${text}</span></div>
-      <div class="face back"><span class="tile-seal">罪</span><span class="tile-back"><span class="env-title">${title}</span><span class="env-text">${hint}</span></span></div>
+      <div class="face back"><span class="tile-seal"></span><span class="tile-back"><span class="env-title">${title}<i class="tile-latin">${TILE_LATIN[which]}</i></span><span class="env-text">${hint}</span></span></div>
     </div></div>
   </div>`;
 }
@@ -1252,7 +1255,7 @@ function sheetView(): string {
       const c = character(s.id);
       const eq = s.equip ? equipment(s.equip) : null;
       return wrap("card-sheet", `${ART.has(s.id) ? `<img class="full-portrait" src="art/${s.id}.webp" alt="${c.name}立绘">` : ""}<div class="big-card">${card(s.id, { equip: s.equip, cls: "large" })}</div>
-        <div class="card-info"><h2>${c.name}<small>${c.sin} · ${c.tag}${c.stage === 2 ? " · 第二阶段" : ""}</small></h2>
+        <div class="card-info"><h2>${c.name}<small><span class="latin">${SIN_LATIN[c.sin]}</span> ${c.sin} · ${c.tag}${c.stage === 2 ? " · 第二阶段" : ""}</small></h2>
         <p class="stats">攻 <b>${c.atk}</b> · 血 <b>${c.hp}</b> · ${shapeLabel(c.shape, c.atk)}${c.armor ? ` · 护甲 ${c.armor}` : ""}${c.barrier ? ` · 屏障 ${c.barrier}` : ""}</p>
         <p class="ability">${esc(c.ability)}</p>
         ${eq ? `<p class="equip-line">⚙ ${eq.name}：${eq.text}</p>` : ""}
@@ -1559,6 +1562,7 @@ app.addEventListener("input", (ev) => {
 
 // ───────────────────────── 入场 ─────────────────────────
 
+installSigil();
 const gate = new Gate({
   card: (id, cls, down) => card(id, { cls, down }),
   back: (cls) => card(null, { cls }),
