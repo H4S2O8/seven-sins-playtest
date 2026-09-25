@@ -1,4 +1,4 @@
-// 把网页 demo 打包成纯静态文件，输出到仓库根目录的 sin-squad-v3/（GitHub Pages 直接托管）。
+// 把网页 demo 打包成纯静态文件，输出到仓库根目录的 sin-squad-v3/（不进 git；GitHub Actions 在 main 上打包后发布到 Pages）。
 import { createHash } from "node:crypto";
 import { copyFile, mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
