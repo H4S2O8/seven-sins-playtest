@@ -126,6 +126,10 @@ code { background: #0005; border-radius: 4px; padding: 0 4px; font-size: 12px; }
 }
 .seat .stack { display: flex; align-items: center; gap: 4px; }
 .seat .stack b { color: var(--gold); font-size: 16px; }
+.seat .allin-tag {
+  margin-left: 4px; padding: 0 7px; border-radius: 999px; font-size: 11.5px; font-weight: 800;
+  background: linear-gradient(#7a2c5a, #561c40); border: 1px solid #b0508a; color: #ffd8ee;
+}
 .seat .meta { color: #b8c9b8; font-size: 12px; white-space: nowrap; }
 .seat .status { color: var(--good); font-size: 12px; white-space: nowrap; }
 .seat.acting .status { animation: pulse 1.2s infinite; }
@@ -158,6 +162,13 @@ code { background: #0005; border-radius: 4px; padding: 0 4px; font-size: 12px; }
 .env.on { border-color: var(--good); }
 .env.off .env-name { color: var(--muted); }
 .env.voting { border-color: var(--gold); animation: pulse 1.4s infinite; }
+.env.has-art {
+  background:
+    linear-gradient(90deg, #0b0806f0 0%, #0b0806c0 50%, #0b080630 100%),
+    var(--art) center / cover;
+  border-color: #d9b25f99;
+}
+.env.has-art.off { filter: grayscale(.7) brightness(.8); }
 .env-title { display: block; font-size: 10.5px; color: #b8c9b8; }
 .env-name { display: block; font-weight: 700; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .env-text {
@@ -446,6 +457,8 @@ code { background: #0005; border-radius: 4px; padding: 0 4px; font-size: 12px; }
 .option.clickable:hover, .option.selected { border-color: var(--gold); }
 .option.selected { box-shadow: 0 0 12px #d9b25f66; }
 .option small { margin-left: 6px; }
+.option.with-art { overflow: hidden; padding-top: 0; }
+.option-art { height: clamp(56px, 11dvh, 110px); margin: 0 -10px 6px; background: var(--art) center / cover; box-shadow: inset 0 -24px 24px -12px var(--panel2); }
 .option p { margin: 2px 0 0; font-size: 12.5px; color: #d9d0c2; }
 .error { color: #ffc0b0; background: #4a221a; border-radius: 8px; padding: 5px 10px; text-align: center; font-size: 13px; }
 .result { text-align: center; font-size: 18px; font-weight: 900; }
@@ -506,7 +519,11 @@ table.ref tr { border-bottom: 1px solid #ffffff12; }
 .card-info .stats b { color: var(--gold); }
 .card-info .ability { font-size: 15px; background: #0004; border-left: 3px solid var(--gold); padding: 8px 10px; border-radius: 6px; }
 .card-info .equip-line { color: #d8f0b8; }
-.sheet.env-sheet { max-width: 420px; }
+.sheet.env-sheet { max-width: 480px; }
+.env-art { display: block; width: 100%; aspect-ratio: 1216 / 832; object-fit: cover; border-radius: 12px; margin: 4px 0 12px; box-shadow: 0 6px 20px #000a; }
+.env-art.small { width: 60%; margin: 10px 0 4px; }
+table.ref td.ref-pic { width: 84px; padding: 6px 10px 6px 0; }
+table.ref td.ref-pic img { display: block; width: 84px; aspect-ratio: 1216 / 832; object-fit: cover; border-radius: 6px; }
 
 /* ───────── 手机 ───────── */
 @media (max-width: 699px) {
@@ -582,6 +599,9 @@ table.ref tr { border-bottom: 1px solid #ffffff12; }
 }
 .hero { -webkit-mask-image: linear-gradient(#000 72%, #0000); mask-image: linear-gradient(#000 72%, #0000); }
 .hero img { position: absolute; left: 50%; top: 4%; width: 120%; transform: translateX(-50%); filter: drop-shadow(0 4px 6px #000c); pointer-events: none; }
+.hero.bust img { width: 100%; top: 3%; }
+.coin-face .hero.bust { -webkit-mask-image: none; mask-image: none; }
+.coin-face .hero.bust img { width: 150%; top: 2%; }
 .hero-glyph {
   font-family: "STKaiti", "KaiTi", "Noto Serif SC", serif; font-weight: 900; color: #ffffff30;
   font-size: calc(clamp(76px, 14vw, 150px) * .5);
@@ -735,4 +755,42 @@ table.ref tr { border-bottom: 1px solid #ffffff12; }
   .tip { gap: 8px; padding: 6px 8px; }
   .tip-mark { display: none; }
   .tip-body { font-size: 12.5px; }
+}
+
+/* ───────── 规则揭晓 ───────── */
+#reveal:empty { display: none; }
+#reveal { position: fixed; inset: 0; z-index: 18; cursor: pointer; }
+.reveal-pop {
+  position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+  padding: 16px; background: radial-gradient(ellipse at 50% 50%, #000a 0%, #000d 70%); animation: fade .25s;
+}
+.reveal-title {
+  font-family: "STKaiti", "KaiTi", "Noto Serif SC", serif; font-weight: 900; font-size: 30px; letter-spacing: .3em; color: var(--gold);
+  text-shadow: 0 0 18px #d9b25f88; animation: pop .4s;
+}
+.reveal-cards { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; perspective: 1000px; }
+.reveal-card {
+  width: min(320px, 44vw); border-radius: 14px; overflow: hidden; background: var(--panel);
+  border: 2px solid var(--gold); box-shadow: 0 14px 40px #000, 0 0 30px #d9b25f44;
+  animation: revealFlip .8s cubic-bezier(.3,.7,.3,1.2) both; animation-delay: calc(var(--i) * 260ms + 120ms);
+}
+@keyframes revealFlip {
+  from { transform: rotateY(-100deg) translateY(30px) scale(.8); opacity: 0; filter: brightness(2); }
+  60% { opacity: 1; }
+  to { transform: none; filter: none; }
+}
+.reveal-art { aspect-ratio: 1216 / 832; background: var(--art, linear-gradient(#3a2f1c, #1d1712)) center / cover; box-shadow: inset 0 -30px 30px -14px var(--panel); }
+.reveal-body { padding: 4px 14px 14px; text-align: center; }
+.reveal-label { display: block; font-size: 12px; color: var(--muted); }
+.reveal-body b { display: block; font-size: 20px; color: var(--gold); }
+.reveal-body small { display: block; font-size: 12px; }
+.reveal-body p { margin: 6px 0 0; font-size: 14px; color: #efe6d8; }
+.reveal-hint { animation: fade 1s 1.2s both; }
+@media (max-width: 699px) {
+  .reveal-cards { flex-direction: column; align-items: center; gap: 10px; }
+  .reveal-card { width: min(300px, 82vw); display: flex; }
+  .reveal-art { width: 42%; aspect-ratio: auto; box-shadow: inset -20px 0 20px -10px var(--panel); }
+  .reveal-body { flex: 1; text-align: left; padding: 8px 10px; }
+  .reveal-body b { font-size: 17px; }
+  .reveal-body p { font-size: 13px; }
 }

@@ -268,3 +268,24 @@ describe("存档重放", () => {
     expect(observe(r, 0)).toEqual(observe(t, 0));
   });
 });
+
+describe("牌桌结束", () => {
+  it("有人筹码输光，结算后立刻结束，不再进市场", () => {
+    for (let seed = 1; seed <= 30; seed++) {
+      const t = new Table({ seed });
+      const agents = [new HeuristicAgent("aggressive", seed), new HeuristicAgent("aggressive", seed + 100)];
+      for (let i = 0; i < 2000 && t.phase !== "over"; i++) {
+        const seat = t.toAct()[0];
+        t.apply(seat, agents[seat].act(t, seat));
+        if (t.phase === "marketPick" || t.phase === "marketRemove") {
+          expect(t.stacks[0]).toBeGreaterThan(0);
+          expect(t.stacks[1]).toBeGreaterThan(0);
+        }
+      }
+      expect(t.phase).toBe("over");
+      expect(t.stacks[t.winner!]).toBe(200);
+      const last = t.log.slice(-2).map((e) => e.type);
+      expect(last).toEqual(["settle", "tableOver"]);
+    }
+  });
+});
