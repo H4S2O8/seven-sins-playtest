@@ -30,6 +30,9 @@ html, body {
 }
 
 #app {
+  /* 桌面倾斜：电脑横屏斜得多一些，手机竖屏只斜一点，保证一屏放得下 */
+  --tilt: 9deg;
+  --persp: 900px;
   /* 卡牌尺寸：手机按屏高压缩，保证整张桌子一屏放下 */
   --cwb: clamp(72px, min(28vw, 13.6dvh), 128px);
   --cw: var(--cwb);
@@ -43,6 +46,13 @@ html, body {
 }
 @media (min-width: 700px) {
   #app { --cwb: clamp(96px, 19dvh, 190px); --tw: calc(var(--cwb) * 0.66); padding: 0 18px; }
+}
+@media (min-width: 700px) and (min-aspect-ratio: 1/1) {
+  #app { --tilt: 22deg; --persp: 1500px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #app { --tilt: 0deg; }
+  *, *::before, *::after { transition-duration: 0s !important; animation-duration: 0s !important; }
 }
 
 .loading { color: var(--muted); text-align: center; margin-top: 40vh; }
@@ -91,10 +101,23 @@ code { background: #0005; border-radius: 4px; padding: 0 4px; font-size: 12px; }
 .top nav button { min-height: 32px; padding: 3px 10px; font-size: 13px; background: #2a221a; }
 
 /* ───────── 牌桌 ───────── */
+/* stage 给桌面透视（震屏也震它）；table 本身斜放，里面的牌保持 3D，可以抬起、翻面、冲出去 */
+.stage {
+  position: relative;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  perspective: var(--persp);
+  perspective-origin: 50% 25%;
+}
 .table {
   --cw: calc(var(--cwb) * var(--fit, 1));
   position: relative;
+  flex: 1 1 auto;
   min-height: 0;
+  transform: rotateX(var(--tilt));
+  transform-origin: 50% 100%;
+  transform-style: preserve-3d;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -104,12 +127,11 @@ code { background: #0005; border-radius: 4px; padding: 0 4px; font-size: 12px; }
   background:
     radial-gradient(ellipse at 50% 50%, #336446 0%, var(--felt) 45%, var(--felt-dark) 100%);
   border: 7px solid var(--rim);
-  box-shadow: inset 0 0 50px #000a, 0 0 0 1px #8a6d44, 0 10px 30px #000c;
-  overflow-x: hidden;
-  overflow-y: auto;
-  scrollbar-width: none;
+  box-shadow: inset 0 0 50px #000a, 0 0 0 1px #8a6d44, 0 3px 0 #2e1f13, 0 6px 0 #1f150d, 0 18px 40px #000c;
 }
-.table::-webkit-scrollbar { display: none; }
+/* 只有摆牌的两行需要留在 3D 里；其余（座位、场地、奖池）直接画在桌面上。
+ * 两行稍微离开桌面 1px：和桌面完全重合的平面在 3D 排序里会互相抢前后，画面就会闪 */
+.table .row { transform-style: preserve-3d; transform: translateZ(1px); }
 
 .seat { display: flex; align-items: center; gap: 8px; min-height: 30px; font-size: 13px; flex-wrap: nowrap; }
 .seat .avatar {
@@ -175,46 +197,188 @@ code { background: #0005; border-radius: 4px; padding: 0 4px; font-size: 12px; }
 .notice.bad { color: #ffc2b4; border-color: var(--bad); background: #3a1f1a; }
 @keyframes pop { from { transform: scale(.6); opacity: 0; } }
 
-/* ───────── 卡牌 ───────── */
+/* ───────── 卡牌 ─────────
+ * .card   在桌上的位置：换位置滑动、出手冲撞都动这一层（Web Animations）
+ * .shade  落在桌面上的影子，也是悬停区域
+ * .lift   抬起 / 扇形 / 悬停 / 受击
+ * .flip   翻面（.card.down 背面朝上）；里面是一块有厚度的长方形：
+ *         正面在 +厚度/2，背面在 -厚度/2，四条 .edge 是鎏金的侧边
+ */
 .card {
   --h: calc(var(--cw) * 1.42);
+  --r: max(3px, calc(var(--cw) * 0.045));
+  /* 牌的厚度 */
+  --t: max(4px, calc(var(--cw) * 0.055));
+  --edge: 0 0 0 0 transparent;
+  --sin-d: color-mix(in srgb, var(--sin, #6a5640) 60%, #0b0806);
+  --gild: #d9b25f;
   position: relative;
   flex: none;
   width: var(--cw);
   height: var(--h);
+  transform-style: preserve-3d;
+  user-select: none;
+  /* 让每张牌一直有自己的合成层：否则第一次有牌开始动（翻面、抬起）时，浏览器要把整个 3D 桌面的层重新建一遍，
+   * 每张牌都会空白一帧，看起来就是“对手放牌后每张牌都闪一下” */
+  will-change: transform;
+}
+.card > .lift, .card .flip { will-change: transform; }
+/* 影子留在牌原来的位置不动，同时当作悬停区域：牌抬起来离开鼠标时，鼠标仍在影子上，
+ * 不会“抬起 → 鼠标移出 → 落下 → 鼠标移入”来回跳 */
+.card > .shade {
+  position: absolute; inset: 0;
+  border-radius: var(--r);
+  background: #000a;
+  box-shadow: 0 3px 8px 1px #000c;
+  transition: box-shadow .25s, opacity .25s;
+}
+/* 牌底面离影子还有 2px：同一平面上的两层在 3D 排序里会闪 */
+.card > .lift {
+  --z0: calc(var(--t) / 2 + 2px);
+  position: absolute; inset: 0;
+  transform: translateZ(var(--z0));
+  transform-style: preserve-3d;
+  transition: transform .22s cubic-bezier(.3, .7, .4, 1.25);
+  pointer-events: none;
+}
+.card > .lift > * { pointer-events: auto; }
+/* 翻面没有 CSS 过渡：由 motion.ts 的 turnOver 先抬起再翻，免得转到侧面时插进桌面 */
+.card .flip {
+  position: absolute; inset: 0;
+  transform-style: preserve-3d;
+}
+.card.down .flip { transform: rotateY(180deg); }
+
+/* 侧边：鎏金切口，中间一道暗线像纸芯 */
+.card .edge {
+  position: absolute;
+  background: linear-gradient(var(--edge-dir, 180deg), #f3dc9c 0%, #b88a3e 40%, #5a3f1a 50%, #b88a3e 60%, #e9cc86 100%);
+}
+.card .edge.top, .card .edge.bottom { left: var(--r); right: var(--r); height: var(--t); transform: rotateX(90deg); }
+/* 远端的上沿不画：玩家坐在桌前永远看不到牌远端的那条边，画出来反而像是从桌子另一头往回看 */
+.card .edge.top { top: calc(var(--t) / -2); display: none; }
+.card .edge.bottom { top: calc(100% - var(--t) / 2); filter: brightness(.8); }
+.card .edge.left, .card .edge.right { --edge-dir: 90deg; top: var(--r); bottom: var(--r); width: var(--t); transform: rotateY(90deg); }
+.card .edge.left { left: calc(var(--t) / -2); filter: brightness(.9); }
+.card .edge.right { left: calc(100% - var(--t) / 2); filter: brightness(.7); }
+
+.card .face {
+  position: absolute; inset: 0;
   display: flex;
   flex-direction: column;
+  align-items: stretch;
+  border-radius: var(--r);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transition: box-shadow .15s, filter .3s;
+}
+/* 正面：深色底 + 三道框（外暗、中金、内罪色） */
+.card .face.front {
+  transform: translateZ(calc(var(--t) / 2));
+  padding: calc(var(--cw) * 0.055) calc(var(--cw) * 0.055) calc(var(--cw) * 0.04);
+  background:
+    radial-gradient(120% 60% at 50% 0%, color-mix(in srgb, var(--sin-d) 55%, transparent), transparent 70%),
+    linear-gradient(170deg, #2c231b, #17110c 60%, #120d09);
+}
+/* 牌框的几道线画在 ::before 上，这样选中 / 屏障 / 可点的外发光（box-shadow）不会把牌框盖掉 */
+.card .face::before {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+}
+.card .face.front::before {
+  box-shadow:
+    inset 0 0 0 1px #0009,
+    inset 0 0 0 calc(var(--cw) * 0.018) color-mix(in srgb, var(--gild) 85%, #fff 10%),
+    inset 0 0 0 calc(var(--cw) * 0.026) #120c08,
+    inset 0 0 0 calc(var(--cw) * 0.034) var(--sin-d);
+}
+/* 小卡（桌上缩小后、手机）：能力只留两行，连击只写分段，名牌去掉菱形 */
+.card .face.front { container: face / inline-size; }
+@container face (max-width: 80px) {
+  .text { -webkit-line-clamp: 2 !important; }
+  .shape .shape-name { display: none; }
+  .plate::before, .plate::after { display: none; }
+  .info-btn { width: 14px !important; height: 14px !important; font-size: 8px !important; }
+}
+/* 很小的卡（手机手牌区）：只留立绘、名字和数值，能力看详情 */
+@container face (max-width: 52px) {
+  .text { display: none !important; }
+  .plate span { letter-spacing: 0; }
+}
+.card .face.front::after {
+  /* 一层斜向的高光 */
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(125deg, #ffffff18 0%, #ffffff00 34%, #ffffff00 72%, #ffffff0c 100%);
+}
+/* 背面：暗红皮面、菱格暗纹、双金框、中间一枚罪印 */
+.card .face.back {
+  transform: rotateY(180deg) translateZ(calc(var(--t) / 2));
+  justify-content: center;
   align-items: center;
-  border-radius: calc(var(--cw) * 0.11);
-  background: linear-gradient(180deg, #33291f, #1c1611);
-  border: 2px solid color-mix(in srgb, var(--sin, #6a5640) 75%, #000);
-  box-shadow: 0 5px 12px #000a;
-  transition: transform .15s, box-shadow .15s, filter .3s;
-  user-select: none;
+  gap: 6px;
+  background:
+    radial-gradient(circle at 50% 50%, #0000 30%, #0006 100%),
+    repeating-linear-gradient(45deg, #ffffff07 0 1px, transparent 1px calc(var(--cw) * 0.09)),
+    repeating-linear-gradient(-45deg, #ffffff07 0 1px, transparent 1px calc(var(--cw) * 0.09)),
+    linear-gradient(160deg, #4a2418, #2a130d 60%, #1c0d09);
+}
+.card .face.back::before {
+  box-shadow:
+    inset 0 0 0 1px #0009,
+    inset 0 0 0 calc(var(--cw) * 0.035) #1c0d09,
+    inset 0 0 0 calc(var(--cw) * 0.045) #b8924e,
+    inset 0 0 0 calc(var(--cw) * 0.06) #1c0d09,
+    inset 0 0 0 calc(var(--cw) * 0.066) #b8924e88;
 }
 .card.small { --cw: var(--tw); }
 .dock .card.small { --cw: calc(var(--tw) * var(--fit, 1)); }
 .card.large { --cw: 190px; }
 .card.clickable { cursor: pointer; }
-.card.clickable:hover { transform: translateY(-4px); }
-.card.selected { box-shadow: 0 0 0 3px var(--gold), 0 0 18px var(--gold); }
-.card.target { animation: glow 1.5s infinite; }
-@keyframes glow { 50% { box-shadow: 0 0 0 3px #7fcf6aaa, 0 0 16px #7fcf6a88; } }
-.card.used { opacity: .4; }
-.card.shielded { box-shadow: 0 0 0 3px #7fd6e8aa, 0 0 16px #7fd6e8aa, 0 5px 12px #000a; }
+.card.selected .face.front { box-shadow: 0 0 0 2px var(--gold), 0 0 18px var(--gold); }
+/* 可以点的牌：一圈安静的绿边，鼠标移上去才亮（不再一直闪） */
+.card.target .face { box-shadow: 0 0 0 1.5px #7fcf6a88, 0 0 6px #7fcf6a44; }
+@media (hover: hover) { .card.target:hover .face { box-shadow: 0 0 0 2px #7fcf6acc, 0 0 16px #7fcf6a88; } }
+.card.shielded .face.front { box-shadow: 0 0 0 2px #9fe6f4cc, 0 0 16px #7fd6e8aa, inset 0 0 14px #7fd6e866; }
 
+/* 抬起：悬停、正在出手。桌面是斜的，translateZ 让牌朝玩家浮起来，影子留在桌上 */
+@media (hover: hover) {
+  .card.clickable:hover > .lift, .table .card:not(.slot):hover > .lift { transform: translateZ(calc(var(--cw) * 0.14)); }
+  .card.clickable:hover > .shade, .table .card:not(.slot):hover > .shade { box-shadow: 0 10px 22px 4px #0009; opacity: .6; }
+}
+.table .card[data-acting] > .lift { transform: translateZ(calc(var(--cw) * 0.3)) scale(1.04); }
+.table .card[data-acting] > .shade { box-shadow: 0 14px 28px 6px #0008; opacity: .45; }
+/* 转线中：侧身偏向要去的那一边，底下挂一个“转线”签，出手时回位 */
+/* 牌的“前方”对着对面：我方是牌的上沿，对手是牌的下沿。
+ * 所以往同一边转线时，两边平移方向相同，旋转方向相反（--facing），都是让前沿指向要去打的那条线 */
+.table .card.switching > .lift {
+  --facing: 1;
+  transform: translateZ(calc(var(--z0) + var(--cw) * 0.06)) translateX(calc(var(--lane) * var(--cw) * 0.16)) rotate(calc(var(--lane) * var(--facing) * 6deg));
+  transition-duration: .55s;
+}
+.table .row.foe .card.switching > .lift { --facing: -1; }
+.card .lane-tag {
+  position: absolute; left: 50%; bottom: 0; z-index: 3; white-space: nowrap; pointer-events: none;
+  transform: translate(-50%, 60%) translateZ(calc(var(--t) / 2 + 1px));
+  font-size: max(9px, calc(var(--cw) * 0.08)); font-weight: 800; line-height: 1.5; padding: 0 6px; border-radius: 3px;
+  color: #eaf6ff; background: linear-gradient(#5d7fa8, #354e70); box-shadow: 0 0 0 1px #1c2a3c, 0 1px 3px #000a;
+}
+.card[data-acting] .face.front { box-shadow: 0 0 0 2px #ffe7a8, 0 0 22px #ffd27a; }
+
+/* 立绘窗：长方形，一道金线，底部渐暗接名牌 */
 .card .art {
   position: relative;
-  width: calc(100% - 8px);
-  margin-top: 4px;
-  flex: 0 0 40%;
-  border-radius: 46% 46% 8px 8px / 36% 36% 8px 8px;
+  flex: 0 0 calc(var(--cw) * 0.6);
+  border-radius: 2px;
   background:
-    radial-gradient(circle at 50% 30%, color-mix(in srgb, var(--sin) 70%, #fff 18%) 0%, color-mix(in srgb, var(--sin) 75%, #000) 72%);
+    radial-gradient(circle at 50% 32%, color-mix(in srgb, var(--sin) 72%, #fff 16%) 0%, color-mix(in srgb, var(--sin) 70%, #000) 78%);
   display: grid;
   place-items: center;
   overflow: hidden;
-  box-shadow: inset 0 -6px 12px #0007;
+  box-shadow: 0 0 0 1px #d9b25f99, 0 1px 3px #000c;
+}
+.card .art::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(transparent 55%, #0000004d 80%, #000000a0);
+  box-shadow: inset 0 0 calc(var(--cw) * 0.08) #0008;
 }
 .card .glyph {
   font-family: "STKaiti", "KaiTi", "Noto Serif SC", serif;
@@ -226,187 +390,313 @@ code { background: #0005; border-radius: 4px; padding: 0 4px; font-size: 12px; }
 }
 /* 立绘：透明背景的人物叠在罪的底色上，只露出上半身 */
 .card .art .portrait {
-  position: absolute; left: 50%; top: 0; width: 118%; transform: translateX(-50%);
+  position: absolute; left: 50%; top: 0; width: 112%; transform: translateX(-50%);
   pointer-events: none; user-select: none;
   filter: drop-shadow(0 3px 4px #000a);
 }
 .card .art.has-portrait .glyph { opacity: .15; }
-.card.large .art .portrait { width: 110%; }
-.card .ribbon {
+.card.large .art .portrait { width: 106%; }
+
+/* 名牌：压在立绘下沿，上下各一道金线，两端一颗罪色菱形 */
+.card .plate {
   position: relative; z-index: 1;
-  width: calc(100% + 6px);
-  margin-top: calc(var(--cw) * -0.07);
-  text-align: center;
-  font-weight: 800;
-  font-size: calc(var(--cw) * 0.125);
-  line-height: 1.5;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  background: linear-gradient(#6a5238, #3b2d20);
-  border: 1px solid #a0804e;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px #0008;
+  margin: calc(var(--cw) * -0.07) calc(var(--cw) * -0.02) 0;
+  height: calc(var(--cw) * 0.15);
+  display: flex; align-items: center; justify-content: center; gap: calc(var(--cw) * 0.04);
+  background: linear-gradient(#2e241b, #1a130d);
+  border-top: 1px solid #e0bf74;
+  border-bottom: 1px solid #8a6a36;
+  box-shadow: 0 2px 5px #000c, inset 0 1px 0 #ffffff14;
 }
+.card .plate::before, .card .plate::after {
+  content: ""; flex: none;
+  width: calc(var(--cw) * 0.05); aspect-ratio: 1;
+  transform: rotate(45deg);
+  background: var(--sin);
+  box-shadow: 0 0 0 1px #d9b25fcc;
+}
+.card .plate span {
+  min-width: 0;
+  font-weight: 800;
+  font-size: max(10px, calc(var(--cw) * 0.112));
+  letter-spacing: .08em;
+  color: #f4e6c4;
+  text-shadow: 0 1px 2px #000;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+/* 能力文字：高度就是整行数（不被拉高），放不下的行整行省略，不会露出半行 */
 .card .text {
-  flex: 1 1 auto; min-height: 0; overflow: hidden;
-  margin: 3px 0 calc(var(--cw) * 0.2); padding: 0 7%;
+  flex: 0 1 auto; min-height: 0; overflow: hidden;
+  margin: calc(var(--cw) * 0.035) calc(var(--cw) * 0.02) 0;
   text-align: center;
-  font-size: max(9px, calc(var(--cw) * 0.092)); line-height: 1.25; color: #efe4d0;
-  display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical;
+  font-size: max(8.5px, calc(var(--cw) * 0.086)); line-height: 1.28; color: #e6d8bd;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
 }
 .card .text b { color: var(--gold); }
-.card .equip {
-  position: absolute; z-index: 2; left: 50%; top: calc(var(--h) * 0.27); transform: translateX(-50%);
-  max-width: 92%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  font-size: calc(var(--cw) * 0.088); background: #1c2a14e6; color: #d8f0b8;
-  border: 1px solid #8ab060; border-radius: 6px; padding: 0 5px;
+
+/* 底栏：左攻、右血，两枚小徽记嵌在牌框里；中间写攻击形状 */
+.card .stats {
+  flex: none;
+  margin-top: auto !important;
+  height: calc(var(--cw) * 0.2);
+  margin: 0 calc(var(--cw) * -0.015);
+  display: flex; align-items: center; justify-content: space-between; gap: 2px;
+  border-top: 1px solid #d9b25f55;
+  padding-top: calc(var(--cw) * 0.012);
 }
-.card .shape-badge {
-  position: absolute; z-index: 3; bottom: 1px; left: 50%; transform: translateX(-50%); white-space: nowrap;
-  font-size: max(9px, calc(var(--cw) * 0.085)); font-weight: 800; padding: 0 5px; border-radius: 5px;
-  background: #000c; border: 1px solid currentColor;
-}
-.shape-badge.heavy { color: #f0c27a; }
-.shape-badge.multi { color: #eaa6d0; }
-.card .armor-badge, .card .barrier-badge {
-  position: absolute; z-index: 2; top: calc(var(--h) * 0.3);
-  width: calc(var(--cw) * 0.24); height: calc(var(--cw) * 0.27);
-  display: grid; place-items: center; font-weight: 900; font-size: calc(var(--cw) * 0.12);
-}
-.card .armor-badge {
-  left: -7px; color: #1b2530;
-  background: linear-gradient(#e0e8ef, #7a8b9b);
-  clip-path: polygon(50% 0, 100% 15%, 92% 65%, 50% 100%, 8% 65%, 0 15%);
-}
-.card .barrier-badge {
-  right: -7px; color: #07313a; height: calc(var(--cw) * 0.24);
-  background: radial-gradient(circle at 35% 30%, #e0fbff, #5ac2d8);
-  border-radius: 50%; box-shadow: 0 0 8px var(--barrier);
-}
-.card .gem {
-  position: absolute; bottom: -7px; z-index: 2;
-  width: calc(var(--cw) * 0.31); height: calc(var(--cw) * 0.31);
+.card .stat {
+  flex: none;
+  width: max(16px, calc(var(--cw) * 0.2)); height: max(16px, calc(var(--cw) * 0.2));
   display: grid; place-items: center;
-  font-weight: 900; font-size: calc(var(--cw) * 0.175); color: #fff;
-  text-shadow: 0 0 2px #000, 0 1px 2px #000, 0 0 3px #000;
-  border: 2px solid #1a1108;
-  box-shadow: 0 2px 4px #000a;
+  font-weight: 900; font-size: max(10px, calc(var(--cw) * 0.13)); line-height: 1;
+  color: #fff;
+  text-shadow: 0 1px 1px #000, 0 0 2px #000;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px #0009, inset 0 1px 1px #ffffff55, inset 0 -2px 3px #0006;
 }
-.card .gem.atk { left: -7px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #ffd98a, #c07a12 70%); }
-.card .gem.hp { right: -7px; border-radius: 50% 50% 50% 50% / 58% 58% 42% 42%; background: radial-gradient(circle at 35% 30%, #ff9a84, #b02c1c 70%); }
-.card .gem.up { color: #b8ffa0; }
-.card .gem.down { color: #ffb0a0; }
-.card .gem.hp.hurt { background: radial-gradient(circle at 35% 30%, #a8463a, #5a1a12 75%); color: #ffc0b4; }
+.card .stat.atk { background: radial-gradient(circle at 35% 30%, #f6d58c, #b9821f 60%, #6e4a10); }
+.card .stat.hp { background: radial-gradient(circle at 35% 30%, #f29a86, #b23a26 60%, #5e170d); }
+.card .stat.up { color: #c8ffae; }
+.card .stat.down { color: #ffc2b4; }
+.card .stat.hp.hurt { background: radial-gradient(circle at 35% 30%, #9c4a3e, #5c1d14 70%); color: #ffc6ba; }
+.card .shape {
+  min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font-size: max(8.5px, calc(var(--cw) * 0.078)); font-weight: 700; letter-spacing: .06em;
+}
+.card .shape i { font-style: normal; }
+.card .shape.heavy { color: #e8c688; }
+.card .shape.multi { color: #e8b0cf; }
+
+/* 护甲、屏障：立绘左上角的小标 */
+.card .defs {
+  position: absolute; z-index: 2; left: calc(var(--cw) * 0.03); top: calc(var(--cw) * 0.03);
+  display: flex; flex-direction: column; gap: 2px;
+}
+.card .def {
+  width: max(14px, calc(var(--cw) * 0.15)); height: max(15px, calc(var(--cw) * 0.16));
+  display: grid; place-items: center;
+  font-weight: 900; font-size: max(9px, calc(var(--cw) * 0.09)); line-height: 1;
+  filter: drop-shadow(0 1px 1px #000c);
+}
+.card .def.armor {
+  color: #1b2530;
+  background: linear-gradient(#eef3f7, #8795a3);
+  clip-path: polygon(50% 0, 100% 14%, 92% 64%, 50% 100%, 8% 64%, 0 14%);
+}
+.card .def.barrier {
+  color: #07313a; border-radius: 50%; height: max(14px, calc(var(--cw) * 0.15));
+  background: radial-gradient(circle at 35% 30%, #effdff, #5ac2d8);
+  box-shadow: 0 0 6px var(--barrier);
+}
+/* 装备：立绘下沿的一条细签 */
+.card .equip {
+  position: absolute; z-index: 2; left: 50%; bottom: calc(var(--cw) * 0.085); transform: translateX(-50%);
+  max-width: 88%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  font-size: max(8px, calc(var(--cw) * 0.075)); line-height: 1.5;
+  background: #142010e8; color: #d8f0b8;
+  border: 1px solid #8ab06099; border-radius: 3px; padding: 0 5px;
+}
 .card .flag {
-  position: absolute; top: -10px; left: 50%; transform: translateX(-50%); z-index: 3; white-space: nowrap;
-  background: var(--gold); color: #21180c; font-size: 11px; font-weight: 800; padding: 0 7px; border-radius: 7px;
-  box-shadow: 0 1px 3px #000a;
+  position: absolute; top: 0; left: 50%; transform: translate(-50%, -55%) translateZ(calc(var(--t) / 2 + 1px)); z-index: 3; white-space: nowrap;
+  background: linear-gradient(#f0d48e, #c49a48); color: #21180c;
+  font-size: max(9px, calc(var(--cw) * 0.08)); font-weight: 800; line-height: 1.5; padding: 0 6px; border-radius: 3px;
+  box-shadow: 0 0 0 1px #5a3f1a, 0 1px 3px #000a;
 }
 .card .info-btn {
-  position: absolute; top: 3px; right: 3px; z-index: 3;
-  width: 20px; height: 20px; min-height: 0; padding: 0; border-radius: 50%;
-  font-size: 11px; font-weight: 800; line-height: 1;
-  background: #000a; border: 1px solid #ffffff55; color: #fff;
+  position: absolute; z-index: 3;
+  top: calc(var(--cw) * 0.075); right: calc(var(--cw) * 0.075);
+  width: 18px; height: 18px; min-height: 0; padding: 0; border-radius: 50%;
+  font-size: 10px; font-weight: 800; line-height: 1;
+  background: #000a; border: 1px solid #d9b25f88; color: #f4e6c4;
+  opacity: .75;
 }
-.card.dead { filter: grayscale(1) brightness(.5); }
-.card .dead-mark, .card .flag, .card .gem, .card .armor-badge, .card .barrier-badge, .card .shape-badge { pointer-events: none; }
+.card .info-btn:hover { opacity: 1; }
+.card.dead .face.front { filter: grayscale(1) brightness(.5); }
+/* 牌不能沉到桌面以下（负的 translateZ 会被桌面盖住），倒下只是变暗、变小一点 */
+.card.dead > .lift { transform: translateZ(var(--z0)) scale(.96); }
+.card.dead > .shade { opacity: .3; }
+.card .dead-mark, .card .flag, .card .stat, .card .shape, .card .def, .card .edge { pointer-events: none; }
 .card .dead-mark {
-  position: absolute; z-index: 4; top: 12%; left: 0; right: 0; text-align: center;
+  position: absolute; z-index: 4; top: 18%; left: 0; right: 0; text-align: center;
   font-weight: 900; font-size: calc(var(--cw) * 0.17); color: #ff8a74; transform: rotate(-12deg);
   text-shadow: 0 2px 4px #000;
 }
 
-.card.back {
-  background: repeating-linear-gradient(45deg, #3a2a1c 0 7px, #2e2116 7px 14px);
-  border-color: #8a6d44;
-  justify-content: center;
-  gap: 6px;
-}
 .card .emblem {
-  width: calc(var(--cw) * 0.56); aspect-ratio: 1; border-radius: 50%;
+  width: calc(var(--cw) * 0.46); aspect-ratio: 1; border-radius: 50%;
   display: grid; place-items: center;
-  font-family: "STKaiti", "KaiTi", "Noto Serif SC", serif;
-  font-size: calc(var(--cw) * 0.32); font-weight: 900; color: #c9a466;
-  border: 2px solid #8a6d44; background: radial-gradient(#4a3624, #2a1d12);
-  box-shadow: inset 0 0 8px #000;
+  background: radial-gradient(circle at 40% 35%, #5a3322, #2a140d 70%);
+  box-shadow: 0 0 0 1px #0009, 0 0 0 calc(var(--cw) * 0.02) #c9a466, 0 0 0 calc(var(--cw) * 0.032) #2a140d, 0 0 0 calc(var(--cw) * 0.038) #c9a46688, inset 0 2px 8px #000a;
 }
-.card .back-text { font-size: 11.5px; color: #e8dcc0; text-align: center; padding: 0 4px; }
-.card.back .equip { top: auto; bottom: 6px; }
+.card .emblem span {
+  font-family: "STKaiti", "KaiTi", "Noto Serif SC", serif;
+  font-size: calc(var(--cw) * 0.26); font-weight: 900; line-height: 1;
+  color: #e3c47e; text-shadow: 0 1px 0 #6b4a1c, 0 2px 4px #000;
+}
+.card .back-text { font-size: max(9px, calc(var(--cw) * 0.085)); color: #e8dcc0; text-align: center; padding: 0 8px; text-shadow: 0 1px 2px #000; }
+.card .face.back .equip { bottom: calc(var(--cw) * 0.1); }
 .card.slot {
-  background: #00000030; border: 2px dashed #ffffff35; box-shadow: none;
+  display: flex; align-items: center;
+  border-radius: var(--r);
+  background: #00000030; border: 2px dashed #ffffff35;
   justify-content: center; text-align: center; color: #c8d8c8; font-size: 12.5px; padding: 6px;
 }
 
-/* 拖动排位 */
+/* 手牌：扇形排开，悬停时抬起、摆正、放大 */
+.tray.fan { gap: 0; perspective: 900px; padding-top: 16px; }
+.tray.fan .card { margin: 0 calc(var(--cw) * -0.04); }
+.tray.fan .card.fanned > .lift {
+  transform-origin: 50% 130%;
+  transform: rotate(calc(var(--fan) * 5deg)) translateY(calc(var(--fan) * var(--fan) * 3px)) translateZ(var(--z0));
+}
+.tray.fan .card.fanned > .shade { transform-origin: 50% 130%; transform: rotate(calc(var(--fan) * 5deg)) translateY(calc(var(--fan) * var(--fan) * 3px + 4px)); }
+@media (hover: hover) {
+  .tray.fan .card.fanned:hover { z-index: 5; }
+  .tray.fan .card.fanned:hover > .lift { transform: translateY(-16%) translateZ(30px) scale(1.12); }
+  .tray.fan .card.fanned:hover > .shade { opacity: .5; }
+}
+
+/* 拖动布阵 */
 .card[data-drag] { touch-action: none; cursor: grab; }
 .drag-ghost {
-  position: fixed !important; left: 0; top: 0; z-index: 60; margin: 0;
+  position: fixed !important; left: 0; top: 0; z-index: 60; margin: 0 !important;
   pointer-events: none; cursor: grabbing; transition: none !important; animation: none !important;
-  box-shadow: 0 18px 40px #000c, 0 0 0 2px var(--gold) !important;
+  will-change: transform;
 }
-.card.drag-src { opacity: .3; }
+.drag-ghost, .drag-ghost * { pointer-events: none !important; }
+.drag-ghost > .lift { transform: translateZ(var(--z0)) !important; }
+.drag-ghost > .shade { transform: translate(10%, 18%) scale(1.05) !important; opacity: .5; }
+.drag-ghost .face { animation: none !important; }
+/* 半透明加在两面和侧边上，不加在 .card 上（.card 改 opacity 会压平 3D，拖起时闪一下） */
+.card.fx-drag-src .face, .card.fx-drag-src .edge { opacity: .25; }
 #app.dragging [data-drop] { outline: 2px dashed #d9b25f88; outline-offset: 3px; }
 #app.dragging .tray[data-drop] { border-radius: 12px; }
-[data-drop].drop-hover { outline: 3px solid var(--gold) !important; box-shadow: 0 0 18px #d9b25faa; }
-.tray.hand[data-drop] { min-height: calc(var(--tw) * var(--fit, 1) * 1.42 + 22px); }
+[data-drop].fx-drop-hover { outline: 3px solid var(--gold) !important; box-shadow: 0 0 18px #d9b25faa; }
+.tray.hand[data-drop] { min-height: calc(var(--tw) * var(--fit, 1) * 1.42 + 30px); }
 
-/* 战斗效果 */
-.card.flip-in { animation: flip .8s both; }
-@keyframes flip { from { transform: perspective(600px) rotateY(90deg); filter: brightness(2); } }
-.card.hit { animation: shake .45s; }
-@keyframes shake { 20% { transform: translateX(-5px); } 40% { transform: translateX(5px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(2px); } }
-.card.dying { animation: die 1s forwards; }
-@keyframes die { from { filter: none; } to { filter: grayscale(1) brightness(.5); } }
+/* 受击：往后一晃、闪白 */
+.card.fx-hit > .lift { animation: hit .45s ease-out; }
+.card.fx-hit .face.front { animation: hitflash .45s ease-out; }
+@keyframes hit {
+  15% { transform: translateZ(var(--z0)) translate(-5px, 3px) rotate(-3deg) scale(.97); }
+  35% { transform: translateZ(var(--z0)) translate(5px, -2px) rotate(2.5deg); }
+  55% { transform: translateZ(var(--z0)) translate(-3px, 1px) rotate(-1deg); }
+  75% { transform: translateZ(var(--z0)) translate(2px, 0); }
+}
+@keyframes hitflash { 12% { filter: brightness(2.2) saturate(.4); } 40% { filter: brightness(1.2) sepia(.4) saturate(2) hue-rotate(-20deg); } }
+
+/* 能力生效：卡片抬起一下、金光一闪 */
+.card.fx-proc > .lift { animation: proc .9s; }
+.card.fx-proc .face.front { animation: procglow .9s; }
+@keyframes proc { 30% { transform: translateZ(calc(var(--cw) * 0.2)) scale(1.08); } }
+@keyframes procglow { 30% { box-shadow: 0 0 0 3px var(--gold), 0 0 26px var(--gold), var(--edge); filter: brightness(1.25); } }
+
+/* 倒下：一震，砸回桌面，变灰 */
+.card.fx-dying > .lift { animation: die 1.1s cubic-bezier(.3, 0, .3, 1); }
+@keyframes die {
+  0% { transform: translateZ(var(--z0)); }
+  12% { transform: translateZ(18px) rotate(-4deg); }
+  24% { transform: translateZ(14px) rotate(4deg); }
+  55% { transform: translateZ(var(--z0)) rotate(-2deg) scale(.92); }
+  100% { transform: translateZ(var(--z0)) scale(.96); }
+}
+
+/* ───────── 平面特效层：跟着牌的位置，但不跟着桌面倾斜 ───────── */
+.fx-layer { position: fixed; inset: 0; z-index: 40; pointer-events: none; overflow: hidden; }
+.fx-layer > * { position: absolute; translate: -50% -50%; }
 .floater {
-  position: absolute; z-index: 6; left: 50%; top: 30%;
-  font-weight: 900; font-size: calc(var(--cw) * 0.24); white-space: nowrap; pointer-events: none;
-  text-shadow: 0 2px 3px #000, 0 0 2px #000;
-  animation: floatUp 1.2s ease-out both;
+  font-weight: 900; font-size: max(14px, calc(var(--cw) * 0.2)); white-space: nowrap;
+  text-shadow: 0 2px 3px #000, 0 0 2px #000, 0 0 6px #000;
+  animation: floatUp 1.3s ease-out both;
 }
-.floater.dmg { color: #ff5a44; }
+.floater.dmg { animation: dmgPop 1.35s cubic-bezier(.2, .9, .3, 1) both; }
+.floater.dmg b {
+  display: grid; place-items: center;
+  width: max(46px, calc(var(--cw) * 0.62)); aspect-ratio: 1;
+  font-size: max(18px, calc(var(--cw) * 0.26)); color: #fff;
+  text-shadow: 0 0 3px #400, 0 2px 2px #400, 0 0 1px #000;
+  background: radial-gradient(circle at 45% 40%, #ff9a5a, #d8341e 55%, #8a130a 80%);
+  clip-path: polygon(50% 0%, 61% 18%, 80% 10%, 78% 31%, 98% 35%, 84% 51%, 97% 68%, 76% 70%, 79% 91%, 60% 83%, 50% 100%, 40% 83%, 21% 91%, 24% 70%, 3% 68%, 16% 51%, 2% 35%, 22% 31%, 20% 10%, 39% 18%);
+}
 .floater.heal { color: #9dff84; }
-.floater.block { color: #b8f2ff; font-size: calc(var(--cw) * 0.13); top: 50%; }
-.floater.switch { color: #f2ead8; font-size: calc(var(--cw) * 0.13); top: 50%; }
-.floater.recoil { color: #ffd27a; font-size: calc(var(--cw) * 0.14); top: 58%; }
-
-/* 正在出手的人：往前探一点，金色描边 */
-.card[data-acting] { box-shadow: 0 0 0 3px #ffe7a8, 0 0 20px #ffd27a, 0 5px 12px #000a; z-index: 4; }
-.row.me .card[data-acting] { transform: translateY(-8px); }
-.row.foe .card[data-acting] { transform: translateY(8px); }
-
-/* 能力生效：卡片金光一闪，头上冒气泡 */
-.card.proc { animation: proc .9s; }
-@keyframes proc {
-  30% { transform: scale(1.08); box-shadow: 0 0 0 3px var(--gold), 0 0 26px var(--gold); filter: brightness(1.25); }
+.floater.block { color: #b8f2ff; font-size: max(12px, calc(var(--cw) * 0.12)); translate: -50% 40%; }
+.floater.switch { color: #f2ead8; font-size: max(12px, calc(var(--cw) * 0.12)); }
+.floater.recoil { color: #ffd27a; font-size: max(12px, calc(var(--cw) * 0.13)); translate: -50% 110%; }
+@keyframes floatUp {
+  from { transform: translateY(10px) scale(.6); opacity: 0; }
+  20% { transform: translateY(0) scale(1.15); opacity: 1; }
+  to { transform: translateY(-38px) scale(1); opacity: 0; }
 }
+@keyframes dmgPop {
+  from { transform: scale(.2) rotate(-20deg); opacity: 0; }
+  14% { transform: scale(1.3) rotate(4deg); opacity: 1; }
+  26% { transform: scale(1) rotate(0); }
+  70% { transform: translateY(-6px) scale(1); opacity: 1; }
+  to { transform: translateY(-30px) scale(.9); opacity: 0; }
+}
+
 .bubble {
-  position: absolute; z-index: 8; left: 50%; bottom: calc(100% + 6px);
-  transform: translateX(-50%); width: max-content; max-width: calc(var(--cw) * 1.9);
+  width: max-content; max-width: calc(var(--cw) * 1.9);
   padding: 4px 9px; border-radius: 10px; text-align: center;
   font-size: 12.5px; font-weight: 800; line-height: 1.3; color: #21180c;
   background: linear-gradient(#ffe7a8, #e0b75c); box-shadow: 0 3px 10px #000c;
-  pointer-events: none; animation: bubble 1.8s ease-out both;
+  animation: bubble 1.8s ease-out both;
 }
+.bubble.above { translate: -50% calc(-100% - 8px); }
+.bubble.below { translate: -50% 8px; }
 .bubble::after {
   content: ""; position: absolute; left: 50%; top: 100%; transform: translateX(-50%);
   border: 6px solid transparent; border-top-color: #e0b75c;
 }
+.bubble.below::after { top: auto; bottom: 100%; border-top-color: transparent; border-bottom-color: #e0b75c; }
 .bubble.env { background: linear-gradient(#c9f0ff, #7cc6de); }
 .bubble.env::after { border-top-color: #7cc6de; }
+.bubble.env.below::after { border-top-color: transparent; border-bottom-color: #7cc6de; }
 .bubble small { display: block; font-size: 10.5px; color: #1d3a44; font-weight: 700; }
-.row.foe .bubble { bottom: auto; top: calc(100% + 6px); }
-.row.foe .bubble::after { top: auto; bottom: 100%; border-top-color: transparent; border-bottom-color: #e0b75c; }
-.row.foe .bubble.env::after { border-bottom-color: #7cc6de; }
 @keyframes bubble {
-  from { opacity: 0; transform: translate(-50%, 8px) scale(.7); }
-  12% { opacity: 1; transform: translate(-50%, 0) scale(1.05); }
-  20% { transform: translate(-50%, 0) scale(1); }
+  from { opacity: 0; transform: translateY(8px) scale(.7); }
+  12% { opacity: 1; transform: translateY(0) scale(1.05); }
+  20% { transform: none; }
   80% { opacity: 1; }
   to { opacity: 0; }
 }
-@keyframes floatUp {
-  from { transform: translate(-50%, 10px) scale(.6); opacity: 0; }
-  20% { transform: translate(-50%, 0) scale(1.15); opacity: 1; }
-  to { transform: translate(-50%, -38px) scale(1); opacity: 0; }
+
+/* 屏障碎裂：光环炸开，碎片四散 */
+.shatter { width: 0; height: 0; }
+.shatter .ring {
+  position: absolute; left: 0; top: 0; width: var(--cw); aspect-ratio: 1; translate: -50% -50%;
+  border-radius: 50%; border: 3px solid #d8fbff; box-shadow: 0 0 18px #7fd6e8, inset 0 0 18px #7fd6e8;
+  animation: ring .55s ease-out both;
+}
+.shatter i {
+  position: absolute; left: 0; top: 0; width: 12px; height: 16px;
+  background: linear-gradient(135deg, #f4feff, #7fd6e8 60%, #3a9ab0);
+  clip-path: polygon(50% 0, 100% 100%, 0 75%);
+  animation: shard .8s cubic-bezier(.2, .8, .4, 1) both;
+}
+@keyframes ring { from { transform: scale(.55); opacity: 1; } to { transform: scale(1.5); opacity: 0; } }
+@keyframes shard {
+  from { transform: translate(-50%, -50%) scale(var(--s)); opacity: 1; }
+  to { transform: translate(var(--x), var(--y)) rotate(var(--r)) scale(var(--s)); opacity: 0; }
+}
+
+/* 倒下：碎块往下掉 */
+.crumble { width: 0; height: 0; }
+.crumble i {
+  position: absolute; left: 0; top: 0; width: calc(var(--cw) * 0.16); aspect-ratio: 1;
+  background: #5a4a3a; border-radius: 3px; box-shadow: inset 0 0 4px #000;
+  animation: chunk 1s cubic-bezier(.5, 0, .9, .6) both;
+}
+.crumble i:nth-child(1) { --x: -40px; --r: -140deg; }
+.crumble i:nth-child(2) { --x: -18px; --r: 90deg; animation-delay: .05s; }
+.crumble i:nth-child(3) { --x: 6px; --r: -60deg; animation-delay: .1s; }
+.crumble i:nth-child(4) { --x: 26px; --r: 160deg; animation-delay: .03s; }
+.crumble i:nth-child(5) { --x: 44px; --r: -200deg; animation-delay: .08s; }
+.crumble i:nth-child(6) { --x: -4px; --r: 220deg; animation-delay: .12s; }
+@keyframes chunk {
+  from { transform: translate(-50%, -30%) scale(.4); opacity: 0; }
+  15% { opacity: 1; }
+  to { transform: translate(var(--x), 90px) rotate(var(--r)) scale(1); opacity: 0; }
 }
 
 /* ───────── 操作栏 ───────── */
@@ -500,7 +790,11 @@ table.ref td { padding: 6px 0; }
 table.ref tr { border-bottom: 1px solid #ffffff12; }
 .sheet.card-sheet { display: flex; gap: 22px; align-items: center; max-width: 760px; }
 .full-portrait { flex: none; height: min(60dvh, 420px); filter: drop-shadow(0 6px 14px #000c); }
-.big-card { padding: 12px 8px; flex: none; }
+.big-card { padding: 12px 8px; flex: none; perspective: 900px; }
+/* 详情里的大卡斜过来一点，露出牌的厚度 */
+.big-card .card > .lift { transform: translateZ(var(--z0)) rotateY(-16deg) rotateX(5deg); transition: transform .4s; }
+.big-card .card:hover > .lift { transform: translateZ(var(--z0)) rotateY(-4deg) rotateX(2deg); }
+.big-card .card > .shade { transform: translateX(8px) skewY(-4deg); opacity: .5; }
 .card-info .stats b { color: var(--gold); }
 .card-info .ability { font-size: 15px; background: #0004; border-left: 3px solid var(--gold); padding: 8px 10px; border-radius: 6px; }
 .card-info .equip-line { color: #d8f0b8; }

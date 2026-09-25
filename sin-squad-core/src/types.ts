@@ -73,7 +73,7 @@ export interface SlotSetup {
   equipmentId: string | null;
 }
 
-/** 饕餮在排位时吞掉队友：eater、eaten 都是位置编号。 */
+/** 饕餮在布阵时吞掉队友：eater、eaten 都是位置编号。 */
 export interface EatChoice {
   eater: number;
   eaten: number;

@@ -10,7 +10,7 @@ import type { Action, Phase } from "./actions.js";
  *
  * 一手的顺序：
  *   底注 → 翻 2 张场地，筹码少的一方选 1 张 → 从各自牌池发 4 张
- *   → 非庄家排位并亮 1 名 → 庄家排位并亮 1 名 →（窥视者偷看）
+ *   → 非庄家布阵并亮 1 名 → 庄家布阵并亮 1 名 →（窥视者偷看）
  *   → 第 1 轮下注 →（操作：拿装备）→ 翻胜利规则 + 1 张公共效果 → 表决 /（暗标）
  *   → 第 2 轮下注 →（操作）→ 揭队战斗 → 结算 → 输家先挑人进牌池 → 各自可移除 1 名。
  */
@@ -618,7 +618,7 @@ export class Table {
       arenaId: h.arenaId!,
       publicEffectId: h.peActive ? h.publicEffectId : null,
       pot: h.pot,
-      firstSeat: other(h.dealer), // 非庄家先手：庄家排位后手、有信息优势
+      firstSeat: other(h.dealer), // 非庄家先手：庄家后布阵、有信息优势
     });
     h.battle = result;
     this.log.push({
@@ -720,7 +720,7 @@ function checkRig(rig: TableRig) {
   for (const id of rig.arenaOptions ?? []) if (!ARENAS.some((a) => a.id === id)) throw new Error(`未知场地：${id}`);
 }
 
-/** 检查排位是否合法，返回排好的阵容。 */
+/** 检查布阵是否合法，返回布好的阵容。 */
 export function validatePlacement(dealt: string[], picks: number[], eat: EatChoice | null, reveal: number): Placement {
   if (!Array.isArray(picks) || picks.length !== 3) throw new Error("要挑 3 名排到 1、2、3 号位");
   if (new Set(picks).size !== 3 || picks.some((i) => !Number.isInteger(i) || i < 0 || i >= dealt.length)) {

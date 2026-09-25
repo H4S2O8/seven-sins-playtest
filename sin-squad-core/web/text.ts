@@ -50,7 +50,7 @@ export function logLine(e: TableEvent): string | null {
     case "arenaChosen":
       return `${who(e.seat)}选了场地「${arena(e.arenaId).name}」`;
     case "placed":
-      return `${who(e.seat)}排好了位，亮出 ${posName(e.revealPos)} ${name(e.characterId)}` +
+      return `${who(e.seat)}布好了阵，亮出 ${posName(e.revealPos)} ${name(e.characterId)}` +
         (e.eaten !== null ? `；饕餮吞掉了 ${posName(e.eaten)} 的队友` : "");
     case "betAction": {
       const label = BET_LABEL[e.action] ?? e.action;
@@ -133,7 +133,7 @@ export const CARD_TEXT: Record<string, string> = {
   GR2: "你每付一次操作费，<b>开战</b>得 1 层屏障",
   GR3: "<b>击倒</b>敌人：攻 +2，夺走它的装备加成",
   GL1: "<b>吸血</b>：自己攻击每打中一段，回 1 血",
-  GL2: "排位时可以<b>吞掉</b>一名队友，获得它的攻和血",
+  GL2: "布阵时可以<b>吞掉</b>一名队友，获得它的攻和血",
   GL3: "每有一人倒下（不论敌我），+1/+3",
   EN1: "亮牌后<b>暗中偷看</b>对手一张暗牌，再可交换自己两张暗牌的位置",
   EN2: "<b>开战</b>：攻和形状变得和对位一样（取高）",
@@ -163,7 +163,7 @@ export const HOW_TO_PLAY = `
 <ol>
   <li><b>底注</b>：双方各交底注进奖池。</li>
   <li><b>场地</b>：翻两张场地，筹码少的一方选一张（一样多时非庄家选）。</li>
-  <li><b>排位</b>：从自己牌池随机发 4 名，挑 3 名排到 1、2、3 号位，并亮出其中 1 名。非庄家先排、先亮，庄家看到后再排。其余两名对手看不到。</li>
+  <li><b>布阵</b>：从自己牌池随机发 4 名，挑 3 名放到 1、2、3 号位，并亮出其中 1 名。非庄家先布阵、先亮，庄家看到后再布阵。其余两名对手看不到。</li>
   <li><b>第 1 轮下注</b>：过牌、下注、跟注、加注、全押、弃牌，和德州扑克一样。</li>
   <li><b>操作</b>：下注匹配后，双方各自决定要不要付操作费（等于这一轮的下注额，最多不超过双方较少的筹码），付了就从 3 件装备里挑 1 件装到自己人身上。装备是公开的。</li>
   <li><b>翻牌</b>：翻开本手的胜利规则和 1 张公共效果。双方暗中表决公共效果要不要生效；意见不一致就暗标，出价高的一方说了算，只付自己的出价；出价相同则不生效。</li>

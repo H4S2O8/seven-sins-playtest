@@ -10,6 +10,8 @@ import type { AttackShape, Seat } from "../src/types.js";
 import {
   AI, CARD_TEXT, HOW_TO_PLAY, HUMAN, REASON_TEXT, SIN_COLOR, SIN_GLYPH, battleLine, esc, logLine, num, posName, shapeName,
 } from "./text.js";
+import { morph } from "./morph.js";
+import { bubble as hudBubble, crumble, flip, floater as hudFloater, laneShift, measure, pulse, shake, shatter, strike, type Snapshot } from "./motion.js";
 
 /**
  * 网页 demo：你（座位 0）对电脑（座位 1）。
@@ -17,6 +19,9 @@ import {
  *
  * 画面是一张固定在一屏里的牌桌：上面对手，中间桌面（场地 / 规则 / 公共效果、奖池），下面我方，
  * 最底下是操作栏。战斗直接在桌面上演。
+ *
+ * 每次状态变化都重新生成整页 HTML，但不是整页替换：morph 只改变化的部分，带 data-key 的牌是持久的元素，
+ * 换位置时滑过去、翻面时真的翻过去、出手时冲出去再落回来。桌面用 CSS 3D 斜放。
  */
 
 // ───────────────────────── 状态 ─────────────────────────
@@ -39,6 +44,8 @@ interface Playback {
   speed: 1 | 2;
   caption: string[];
   done: boolean;
+  /** 转线中、还没出手的人（seat-pos → 往哪边转：-1 左、1 右）。 */
+  switching: Map<string, number>;
 }
 
 type Sheet =
@@ -51,7 +58,7 @@ type Sheet =
   | { kind: "debug" };
 
 interface Ui {
-  /** 排位：slots[i] = 放在 i 号位的发牌序号。 */
+  /** 布阵：slots[i] = 放在 i 号位的发牌序号。 */
   place: { slots: (number | null)[]; reveal: number | null; eaten: number | null };
   betAmount: number | null;
   draft: { offer: number | null; pos: number | null };
@@ -189,7 +196,7 @@ function afterApply() {
         result: h.battle!, teams: e.teams, equipment: e.equipment,
         ruleId: h.ruleId, arenaId: h.arenaId!, peId: h.peActive ? h.publicEffectId : null,
         snap: h.battle!.start, round: 0, actor: null, started: false,
-        paused: false, speed: 1, caption: ["揭开双方队伍"], done: false,
+        paused: false, speed: 1, caption: ["揭开双方队伍"], done: false, switching: new Map(),
       };
     }
     if (e.type === "settle") {
@@ -241,27 +248,10 @@ function act(action: Action) {
 // ───────────────────────── 战斗动画 ─────────────────────────
 
 const unitEl = (seat: Seat, pos: number) => app.querySelector<HTMLElement>(`[data-unit="${seat}-${pos}"]`);
+const stageEl = () => app.querySelector<HTMLElement>(".stage");
 
 function floater(seat: Seat, pos: number, text: string, cls: string, delay = 0) {
-  const el = unitEl(seat, pos);
-  if (!el) return;
-  const f = document.createElement("span");
-  f.className = `floater ${cls}`;
-  f.textContent = text;
-  f.style.animationDelay = `${delay}ms`;
-  el.appendChild(f);
-}
-
-function lunge(from: HTMLElement | null, to: HTMLElement | null, ms: number) {
-  if (!from || !to || !from.animate) return;
-  const a = from.getBoundingClientRect();
-  const b = to.getBoundingClientRect();
-  const dx = (b.left + b.width / 2 - (a.left + a.width / 2)) * 0.42;
-  const dy = (b.top + b.height / 2 - (a.top + a.height / 2)) * 0.42;
-  from.animate(
-    [{ transform: "none", zIndex: 5 }, { transform: `translate(${dx}px, ${dy}px) scale(1.06)`, zIndex: 5 }, { transform: "none", zIndex: 5 }],
-    { duration: ms, easing: "ease-in-out" },
-  );
+  hudFloater(unitEl(seat, pos), text, cls, delay);
 }
 
 function unitNames(b: Playback) {
@@ -278,17 +268,28 @@ function frameCaption(b: Playback, evs: BattleEvent[]): string[] {
   return shown.map((e) => battleLine(e, names));
 }
 
-/** 能力 / 场地 / 公共效果生效：卡片闪一下，头上冒出说明气泡。 */
+/** 能力 / 场地 / 公共效果生效：卡片抬起闪一下，头上冒出说明气泡。 */
 function bubble(e: Extract<BattleEvent, { type: "trigger" }>, own: boolean) {
   const el = unitEl(e.seat, e.pos);
   if (!el) return;
-  el.classList.remove("proc");
-  void el.offsetWidth; // 让闪光动画可以重播
-  el.classList.add("proc");
-  const d = document.createElement("div");
-  d.className = `bubble ${own ? "own" : "env"}`;
-  d.innerHTML = own ? esc(e.text) : `<small>${esc(e.name)}</small>${esc(e.text)}`;
-  el.appendChild(d);
+  pulse(el, "fx-proc", 900);
+  hudBubble(el, own ? esc(e.text) : `<small>${esc(e.name)}</small>${esc(e.text)}`, !own, e.seat === AI);
+}
+
+/**
+ * 转线往哪边：往后找这个人下一次出手打的是谁（引擎在出手那一刻才选目标，血量到时可能已经变了，所以不能现在猜）。
+ * 转线之后没再出手（战斗先结束、先倒下）就退回猜法：敌方活着的人里血最少的那一个。
+ */
+function laneDir(b: Playback, seat: Seat, pos: number, frame: number): number {
+  for (const f of b.result.frames.slice(frame + 1)) {
+    const hit = f.events.find((e) => e.type === "attack" && e.seat === seat && e.pos === pos);
+    if (hit?.type === "attack" && hit.targetPos !== pos) return Math.sign(hit.targetPos - pos);
+    if (f.events.some((e) => e.type === "death" && e.seat === seat && e.pos === pos)) break;
+  }
+  const foes = b.snap[seat === HUMAN ? AI : HUMAN].filter((u) => u.alive && u.characterId);
+  if (!foes.length) return pos === 0 ? 1 : -1;
+  const t = foes.reduce((best, u) => (u.hp < best.hp ? u : best));
+  return t.pos === pos ? (pos === 0 ? 1 : -1) : Math.sign(t.pos - pos);
 }
 
 /** 第 r 轮谁先手。 */
@@ -298,7 +299,8 @@ function firstOf(b: Playback, r: number): Seat {
 
 /**
  * 逐帧播放：每一帧是一次出手（或轮初、轮末的效果）。
- * 先播出手前的提示和冲撞，再换成这一帧结束时的样子，飘伤害数字，最后播结算后才生效的能力。
+ * 出手的人先抬起来，冲向目标；撞上的一刻双方受击、屏障碎裂、震屏，同时换成这一帧结束时的样子、飘伤害数字；
+ * 最后播结算后才生效的能力。
  */
 async function playBattle(b: Playback) {
   const token = ++battleToken;
@@ -312,7 +314,7 @@ async function playBattle(b: Playback) {
   render();
   await wait(1000); // 翻牌
 
-  for (const f of b.result.frames) {
+  for (const [fi, f] of b.result.frames.entries()) {
     if (!alive()) return;
     const setup = f.round === 0;
     if (f.round !== b.round) {
@@ -331,37 +333,69 @@ async function playBattle(b: Playback) {
 
     const firstHit = f.events.findIndex((e) => e.type === "damage" || e.type === "death" || e.type === "heal");
     const cut = firstHit < 0 ? f.events.length : firstHit;
+    let struck = false;
     for (const e of f.events.slice(0, cut)) {
       if (!alive()) return;
-      if (e.type === "trigger") { bubble(e, isOwn(e)); await wait(setup ? 850 : 380); }
-      if (e.type === "attack") { lunge(unitEl(e.seat, e.pos), unitEl(e.targetSeat, e.targetPos), 460 / b.speed); await wait(260); }
-      if (e.type === "recoil") {
-        lunge(unitEl(e.seat, e.pos), unitEl(e.targetSeat, e.targetPos), 320 / b.speed);
-        floater(e.seat, e.pos, "反击", "recoil");
-        await wait(180);
+      if (e.type === "trigger") {
+        bubble(e, isOwn(e));
+        if (!struck) await wait(setup ? 850 : 380);
       }
-      if (e.type === "blocked") floater(e.seat, e.pos, "屏障破碎", "block");
-      if (e.type === "switch") { floater(e.seat, e.pos, "转线", "switch"); await wait(300); }
+      if (e.type === "attack") {
+        // 转过线的人出手时回到自己的位置再冲出去
+        if (b.switching.delete(`${e.seat}-${e.pos}`)) render();
+        // 抬起 → 蓄力 → 冲过去；await 在撞上的那一刻返回
+        await strike(unitEl(e.seat, e.pos), unitEl(e.targetSeat, e.targetPos), 680 / b.speed);
+        if (!alive()) return;
+        struck = true;
+        pulse(unitEl(e.targetSeat, e.targetPos), "fx-hit", 500);
+      }
+      if (e.type === "recoil") {
+        // 碰撞：被打的人顶回去
+        void strike(unitEl(e.seat, e.pos), unitEl(e.targetSeat, e.targetPos), 300 / b.speed, 0.14);
+        pulse(unitEl(e.targetSeat, e.targetPos), "fx-hit", 500);
+        floater(e.seat, e.pos, "反击", "recoil");
+      }
+      if (e.type === "blocked") {
+        shatter(unitEl(e.seat, e.pos));
+        floater(e.seat, e.pos, "屏障破碎", "block");
+      }
+      if (e.type === "switch") {
+        // 对位倒下：侧身滑向要去打的那一边（敌方血最少的人），停在偏出去的位置，直到出手
+        const dir = laneDir(b, e.seat, e.pos, fi);
+        b.switching.set(`${e.seat}-${e.pos}`, dir);
+        render();
+        laneShift(unitEl(e.seat, e.pos), dir, 650 / b.speed, e.seat === AI ? -1 : 1);
+        floater(e.seat, e.pos, dir < 0 ? "← 转线" : "转线 →", "switch");
+        await wait(650);
+      }
       if (e.type === "note") await wait(600);
     }
     if (!alive()) return;
 
-    // 换成这一帧结束时的样子，再飘数字
+    // 换成这一帧结束时的样子，再飘数字、震屏
     b.snap = f.after;
     render();
     const dmg = new Map<string, number>();
     for (const e of f.events) {
       if (e.type === "damage") dmg.set(`${e.seat}-${e.pos}`, (dmg.get(`${e.seat}-${e.pos}`) ?? 0) + e.amount);
     }
+    let total = 0;
     for (const [k, v] of dmg) {
       const [s, p] = k.split("-").map(Number);
-      floater(s as Seat, p, `-${num(Math.round(v * 10) / 10)}`, "dmg");
-      unitEl(s as Seat, p)?.classList.add("hit");
+      floater(s as Seat, p, `-${num(v)}`, "dmg");
+      if (!struck) pulse(unitEl(s as Seat, p), "fx-hit", 500);
+      total = Math.max(total, v);
     }
+    const deaths = f.events.filter((e) => e.type === "death");
     for (const e of f.events) {
       if (e.type === "heal") floater(e.seat, e.pos, `+${num(e.amount)}`, "heal", 250);
-      if (e.type === "death") unitEl(e.seat, e.pos)?.classList.add("dying");
+      if (e.type === "death") {
+        b.switching.delete(`${e.seat}-${e.pos}`);
+        pulse(unitEl(e.seat, e.pos), "fx-dying", 1100);
+        crumble(unitEl(e.seat, e.pos));
+      }
     }
+    if (total > 0 || deaths.length) shake(stageEl(), deaths.length ? 2 : Math.min(1.6, 0.5 + total / 5));
     const after = f.events.slice(cut).filter((e): e is Extract<BattleEvent, { type: "trigger" }> => e.type === "trigger");
     await wait(dmg.size ? 650 : 300);
     for (const e of after) {
@@ -384,6 +418,7 @@ function skipBattle() {
   b.snap = b.result.final;
   b.round = b.result.rounds;
   b.actor = null;
+  b.switching.clear();
   const last = b.result.frames.at(-1);
   b.caption = [`第 ${b.round} 轮`, ...(last ? frameCaption(b, last.events) : [])];
   b.done = true;
@@ -436,6 +471,20 @@ interface CardOpts {
   act?: string;
   arg?: string | number;
   unit?: string;
+  /** 持久元素的 key：同一张牌在各次重画之间是同一个元素（换位置滑过去、翻面真的翻）。 */
+  key?: string | null;
+  /** 背面朝上。 */
+  down?: boolean;
+  /** 背面上的说明文字。 */
+  backText?: string;
+  /** 正在出手：抬起来。 */
+  acting?: boolean;
+  /** 手牌扇形里的位置（相对中间，可以是小数）。 */
+  fan?: number;
+  /** 翻面延迟（毫秒），几张牌依次翻开。 */
+  flipDelay?: number;
+  /** 转线中：往哪边偏（-1 左、1 右）。 */
+  lane?: number;
   /** 可以拖动：hand:发牌序号 / slot:位置。 */
   drag?: string;
   /** 可以放下：hand / slot:位置。 */
@@ -452,42 +501,83 @@ function shapeLabel(shape: AttackShape, atk: number): string {
   return shape === "multi" ? `${shapeName(shape)} ${splitMulti(Math.max(0, atk)).join("+")}` : shapeName(shape);
 }
 
-function card(id: string, o: CardOpts = {}) {
+/** 卡面底栏用：小卡上连击只写分段（“1+2”），名字可以藏起来。 */
+function shapeTag(shape: AttackShape, atk: number): string {
+  return shape === "multi"
+    ? `<i class="shape-name">${shapeName(shape)} </i>${splitMulti(Math.max(0, atk)).join("+")}`
+    : shapeName(shape);
+}
+
+/** 正面：立绘窗、名牌、能力、底栏（攻 · 攻击形状 · 血），护甲和屏障是立绘左上角的小标。 */
+function cardFront(id: string, o: CardOpts) {
   const c = character(id);
   const equip = o.equip ?? null;
   const b = o.body ?? bodyOf(id, equip);
   const atkCls = b.atk > c.atk ? "up" : b.atk < c.atk ? "down" : "";
   const hpCls = b.hp < b.startHp ? "hurt" : b.hp > c.hp ? "up" : "";
   const eqs = (o.equipList ?? (equip ? [equip] : [])).map((x) => equipment(x));
-  return `<div class="card ${o.cls ?? ""} ${o.dead ? "dead" : ""} ${o.act ? "clickable" : ""} ${b.barrier ? "shielded" : ""}"
-      style="--sin:${SIN_COLOR[c.sin]}"${o.unit ? ` data-unit="${o.unit}"` : ""}${attrs(o)} title="${esc(`${c.name}（${c.sin}）：${c.ability}`)}">
-    <div class="art ${ART.has(id) ? "has-portrait" : ""}"><span class="glyph">${SIN_GLYPH[c.sin]}</span>${ART.has(id) ? `<img class="portrait" src="art/${id}.webp" alt="" draggable="false">` : ""}</div>
-    <div class="ribbon">${c.name}</div>
+  const defs = (b.armor ? `<span class="def armor" title="护甲 ${b.armor}">${b.armor}</span>` : "") +
+    (b.barrier ? `<span class="def barrier" title="屏障 ${b.barrier}">${b.barrier}</span>` : "");
+  return `<div class="art ${ART.has(id) ? "has-portrait" : ""}"><span class="glyph">${SIN_GLYPH[c.sin]}</span>${ART.has(id) ? `<img class="portrait" src="art/${id}.webp" alt="" draggable="false">` : ""}
+      ${defs ? `<div class="defs">${defs}</div>` : ""}
+      ${eqs.length ? `<div class="equip" title="${esc(eqs.map((e) => `${e.name}：${e.text}`).join("；"))}">${eqs.map((e) => e.name).join("、")}</div>` : ""}
+    </div>
+    <div class="plate"><span>${c.name}</span></div>
     <div class="text">${CARD_TEXT[id] ?? esc(c.ability)}</div>
-    ${eqs.length ? `<div class="equip" title="${esc(eqs.map((e) => `${e.name}：${e.text}`).join("；"))}">⚙ ${eqs.map((e) => e.name).join("、")}</div>` : ""}
-    <span class="shape-badge ${b.shape}">${shapeLabel(b.shape, b.atk)}</span>
-    ${b.armor ? `<span class="armor-badge" title="护甲 ${b.armor}">${b.armor}</span>` : ""}
-    ${b.barrier ? `<span class="barrier-badge" title="屏障 ${b.barrier}">${b.barrier}</span>` : ""}
-    <span class="gem atk ${atkCls}">${num(b.atk)}</span>
-    <span class="gem hp ${hpCls}">${num(Math.max(0, b.hp))}</span>
-    ${o.flag ? `<span class="flag">${o.flag}</span>` : ""}
+    <div class="stats">
+      <span class="stat atk ${atkCls}" title="攻">${num(b.atk)}</span>
+      <span class="shape ${b.shape}" title="${shapeLabel(b.shape, b.atk)}">${shapeTag(b.shape, b.atk)}</span>
+      <span class="stat hp ${hpCls}" title="血">${num(Math.max(0, b.hp))}</span>
+    </div>
     ${o.dead ? `<span class="dead-mark">倒下</span>` : ""}
-    <button class="info-btn" data-act="inspect" data-arg="${id}|${equip ?? ""}" aria-label="查看${c.name}">?</button>
-  </div>`;
+    <button class="info-btn" data-act="inspect" data-arg="${id}|${equip ?? ""}" aria-label="查看${c.name}">?</button>`;
 }
 
-function back(o: CardOpts & { text?: string } = {}) {
+/**
+ * 一张牌：外层负责在桌上的位置（滑动、冲撞），shade 是落在桌面上的影子，
+ * lift 负责抬起 / 扇形 / 悬停，flip 负责翻面。flip 里是一块有厚度的长方形：正反两面隔着牌的厚度，四条鎏金侧边围起来。
+ * id 为 null 是看不到正面的暗牌。
+ */
+function card(id: string | null, o: CardOpts = {}) {
+  const c = id ? character(id) : null;
+  const down = o.down ?? !id;
+  const b = id ? (o.body ?? bodyOf(id, o.equip ?? null)) : null;
   const eq = o.equip ? equipment(o.equip) : null;
-  return `<div class="card back ${o.cls ?? ""} ${o.act ? "clickable" : ""}"${o.unit ? ` data-unit="${o.unit}"` : ""}${attrs(o)}>
-    <div class="emblem">罪</div>
-    ${o.text ? `<div class="back-text">${o.text}</div>` : ""}
-    ${eq ? `<div class="equip" title="${esc(`${eq.name}：${eq.text}`)}">⚙ ${eq.name}</div>` : ""}
+  const style = [
+    c ? `--sin:${SIN_COLOR[c.sin]}` : "", o.fan !== undefined ? `--fan:${o.fan}` : "", o.flipDelay ? `--flip-delay:${o.flipDelay}ms` : "",
+    o.lane ? `--lane:${o.lane}` : "",
+  ].filter(Boolean).join(";");
+  const cls = [
+    "card", o.cls ?? "", down ? "down" : "", o.dead ? "dead" : "", o.act ? "clickable" : "", b?.barrier && !down ? "shielded" : "",
+    o.fan !== undefined ? "fanned" : "", o.lane ? "switching" : "",
+  ].filter(Boolean).join(" ");
+  return `<div class="${cls}"${style ? ` style="${style}"` : ""}${o.key ? ` data-key="${o.key}"` : ""}${o.unit ? ` data-unit="${o.unit}"` : ""}${o.acting ? " data-acting" : ""}${attrs(o)}${c && !down ? ` title="${esc(`${c.name}（${c.sin}）：${c.ability}`)}"` : ""}>
+    <div class="shade"></div>
+    <div class="lift"><div class="flip">
+      <i class="edge top"></i><i class="edge bottom"></i><i class="edge left"></i><i class="edge right"></i>
+      <div class="face front">${id ? cardFront(id, o) : ""}</div>
+      <div class="face back"><div class="emblem"><span>罪</span></div>${o.backText ? `<div class="back-text">${o.backText}</div>` : ""}${eq ? `<div class="equip" title="${esc(`${eq.name}：${eq.text}`)}">${eq.name}</div>` : ""}</div>
+    </div>${o.flag ? `<span class="flag">${o.flag}</span>` : ""}${o.lane ? `<span class="lane-tag">${o.lane < 0 ? "← 转线" : "转线 →"}</span>` : ""}</div>
   </div>`;
 }
 
 function slot(text: string, o: CardOpts = {}) {
-  return `<div class="card slot ${o.cls ?? ""} ${o.act ? "clickable" : ""}"${o.unit ? ` data-unit="${o.unit}"` : ""}${attrs(o)}><span>${text}</span></div>`;
+  return `<div class="card slot ${o.cls ?? ""} ${o.act ? "clickable" : ""}"${o.key ? ` data-key="${o.key}"` : ""}${o.unit ? ` data-unit="${o.unit}"` : ""}${attrs(o)}><span>${text}</span></div>`;
 }
+
+/** 本手我方每张发到的牌的 key（按发牌序号）；同名人物也能分开。 */
+const dealtKey = (o: Observation, i: number) => `h${o.handNo}-d${i}`;
+/** 场上 / 战斗里我方各位置对应的发牌 key。 */
+function myKeys(o: Observation, ids: (string | null)[]): (string | null)[] {
+  const used = new Set<number>();
+  return ids.map((id) => {
+    const i = id ? o.me.dealt.findIndex((d, j) => d === id && !used.has(j)) : -1;
+    if (i < 0) return null;
+    used.add(i);
+    return dealtKey(o, i);
+  });
+}
+const foeKey = (o: Observation, pos: number) => `h${o.handNo}-f${pos}`;
 
 function btn(label: string, act: string, arg?: string | number, cls = "") {
   return `<button data-act="${act}"${arg !== undefined ? ` data-arg="${arg}"` : ""} class="${cls}">${label}</button>`;
@@ -495,34 +585,50 @@ function btn(label: string, act: string, arg?: string | number, cls = "") {
 
 // ───────────────────────── 画面 ─────────────────────────
 
-function render() {
+/** 下一次重画时某些牌的起点（拖动松手时牌在鼠标下，而不是在原来的位置）。 */
+let flipFrom = new Map<string, DOMRect>();
+
+/** animate = false 时不播滑动和发牌（例如窗口改变大小，牌只是跟着布局变位置）。 */
+function render(animate = true) {
+  const before: Snapshot = animate ? measure(app) : new Map();
   if (!table) {
-    app.innerHTML = sheetView();
+    morph(app, sheetView());
     return;
   }
   const o = observe(table, HUMAN);
-  app.innerHTML = `
+  morph(app, `
     ${topBar(o)}
-    <section class="table">
+    <section class="stage"><div class="table">
       ${seatBar(o, AI)}
-      <div class="row foe">${ui.battle ? battleRow(ui.battle, AI) : foeRow(o)}</div>
+      <div class="row foe">${ui.battle ? battleRow(ui.battle, AI, o) : foeRow(o)}</div>
       ${center(o)}
-      <div class="row me">${ui.battle ? battleRow(ui.battle, HUMAN) : myRow(o)}</div>
+      <div class="row me">${ui.battle ? battleRow(ui.battle, HUMAN, o) : myRow(o)}</div>
       ${seatBar(o, HUMAN)}
-    </section>
+    </div></section>
     <section class="dock">${ui.error ? `<div class="error">${esc(ui.error)}</div>` : ""}${ui.battle ? battleDock(ui.battle) : dock(o)}</section>
     ${sheetView()}
-  `;
+  `);
   fitTable();
+  if (animate) flip(app, before, flipFrom);
+  flipFrom = new Map();
 }
 
-/** 牌桌放不下时把卡缩小一点，保证一屏装下、不用滚动。 */
+/**
+ * 牌桌放不下时把卡缩小一点，保证一屏装下、不用滚动。
+ * 按各行的布局高度算，不用 scrollHeight：正在播的动画（发牌、滑动、3D 侧边）会把 scrollHeight 撑大，卡就被无故缩小。
+ */
 function fitTable() {
   const tb = app.querySelector<HTMLElement>(".table");
   if (!tb) return;
+  const need = () => {
+    const cs = getComputedStyle(tb);
+    const kids = [...tb.children] as HTMLElement[];
+    return kids.reduce((sum, k) => sum + k.offsetHeight, 0) + (parseFloat(cs.rowGap) || 0) * (kids.length - 1) +
+      parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+  };
   let f = 1;
   app.style.setProperty("--fit", "1");
-  while (f > 0.6 && tb.scrollHeight > tb.clientHeight + 1) {
+  while (f > 0.5 && need() > tb.clientHeight + 1) {
     f -= 0.05;
     app.style.setProperty("--fit", f.toFixed(2));
   }
@@ -605,8 +711,8 @@ function center(o: Observation) {
 function phaseLabel(o: Observation): string {
   switch (o.phase) {
     case "arena": return "选场地";
-    case "place": return "排位";
-    case "peek": return o.toAct.includes(HUMAN) ? "窥视" : "排位完成";
+    case "place": return "布阵";
+    case "peek": return o.toAct.includes(HUMAN) ? "窥视" : "布阵完成";
     case "bet": return `第 ${o.betting.round} 轮下注`;
     case "operate": return "操作：拿装备？";
     case "draft": return "挑装备";
@@ -621,23 +727,23 @@ function phaseLabel(o: Observation): string {
 function foeRow(o: Observation): string {
   const opp = o.opponent;
   const lb = ui.lastBattle && ui.lastBattle.hand === o.handNo ? ui.lastBattle : null;
-  if (lb) return battleUnits(lb.result.final[AI], lb.teams[AI].reveal);
+  if (lb) return battleUnits(lb.result.final[AI], lb.teams[AI].reveal, o);
   const peeking = o.phase === "peek" && o.toAct.includes(HUMAN);
   return [0, 1, 2].map((pos) => {
     const eq = opp.equipment[pos];
-    const unit = `${AI}-${pos}`;
-    if (!opp.placed) return back({ text: o.phase === "arena" ? "" : "排位中…", unit });
-    if (opp.emptyPositions.includes(pos)) return slot("空位<br><small>被饕餮吞掉</small>", { unit });
-    if (opp.revealed?.pos === pos) return card(opp.revealed.characterId, { equip: eq, flag: "亮", unit });
-    if (o.me.peek?.pos === pos) return card(o.me.peek.characterId, { equip: eq, flag: "偷看", unit });
-    if (peeking) return back({ equip: eq, text: "点这里偷看", act: "peek", arg: pos, cls: "target", unit });
-    return back({ equip: eq, unit });
+    const base = { unit: `${AI}-${pos}`, key: foeKey(o, pos) };
+    if (!opp.placed) return card(null, { ...base, backText: o.phase === "arena" ? "" : "布阵中…" });
+    if (opp.emptyPositions.includes(pos)) return slot("空位<br><small>被饕餮吞掉</small>", { unit: base.unit });
+    if (opp.revealed?.pos === pos) return card(opp.revealed.characterId, { ...base, equip: eq, flag: "亮" });
+    if (o.me.peek?.pos === pos) return card(o.me.peek.characterId, { ...base, equip: eq, flag: "偷看" });
+    if (peeking) return card(null, { ...base, equip: eq, backText: "点这里偷看", act: "peek", arg: pos, cls: "target" });
+    return card(null, { ...base, equip: eq });
   }).join("");
 }
 
 function myRow(o: Observation): string {
   const lb = ui.lastBattle && ui.lastBattle.hand === o.handNo ? ui.lastBattle : null;
-  if (lb) return battleUnits(lb.result.final[HUMAN], lb.teams[HUMAN].reveal);
+  if (lb) return battleUnits(lb.result.final[HUMAN], lb.teams[HUMAN].reveal, o);
   const placing = o.phase === "place" && o.toAct.includes(HUMAN);
   if (placing) {
     const dealt = o.me.dealt;
@@ -647,12 +753,13 @@ function myRow(o: Observation): string {
       if (i === null) return slot(`${posName(pos)}<br><small>拖到这里</small>`, { drop });
       if (ui.place.eaten === pos) return slot(`被饕餮吞掉<br><small>${character(dealt[i]).name}</small>`, { act: "eat", arg: -1, drop });
       const rev = ui.place.reveal === pos;
-      return card(dealt[i], { flag: rev ? "亮" : "暗", act: "reveal", arg: pos, cls: rev ? "selected" : "target", drag: drop, drop });
+      return card(dealt[i], { key: dealtKey(o, i), flag: rev ? "亮" : "暗", act: "reveal", arg: pos, cls: rev ? "selected" : "target", drag: drop, drop });
     }).join("");
   }
   const pl = o.me.placement;
   if (!pl) return [0, 1, 2].map((pos) => slot(posName(pos))).join("");
   const drafting = o.phase === "draft" && !!o.me.offers && o.toAct.includes(HUMAN) && ui.draft.offer !== null;
+  const keys = myKeys(o, pl.slots);
   return pl.slots.map((id, pos) => {
     if (!id) return slot("空位<br><small>被吞掉</small>");
     let equip = o.me.equipment[pos];
@@ -662,29 +769,28 @@ function myRow(o: Observation): string {
       if (ui.draft.pos === pos) equip = o.me.offers![ui.draft.offer!];
     }
     return card(id, {
-      equip, flag: pos === pl.reveal ? "亮" : "暗", cls,
+      key: keys[pos], unit: `${HUMAN}-${pos}`, equip, flag: pos === pl.reveal ? "亮" : "暗", cls,
       act: drafting ? "draftPos" : undefined, arg: pos,
     });
   }).join("");
 }
 
-function battleUnits(snaps: UnitSnapshot[], reveal: number) {
-  return snaps.map((u) => {
-    const key = `${u.seat}-${u.pos}`;
-    if (!u.characterId) return slot("空位", { unit: key });
+function battleUnits(snaps: UnitSnapshot[], reveal: number, o: Observation, acting: string | null = null, lanes: Map<string, number> = new Map()) {
+  const seat = snaps[0]?.seat ?? HUMAN;
+  const keys = seat === HUMAN ? myKeys(o, snaps.map((u) => u.characterId)) : snaps.map((u) => foeKey(o, u.pos));
+  return snaps.map((u, i) => {
+    const unit = `${u.seat}-${u.pos}`;
+    if (!u.characterId) return slot("空位", { unit });
     const body: Body = { atk: u.atk, hp: u.hp, startHp: u.startHp, shape: u.shape, armor: u.armor, barrier: u.barrier };
-    return card(u.characterId, { equipList: u.equipment, body, dead: !u.alive, unit: key, flag: u.pos === reveal ? "亮" : undefined });
+    return card(u.characterId, {
+      key: keys[i], equipList: u.equipment, body, dead: !u.alive, unit, acting: acting === unit, lane: u.alive ? lanes.get(unit) : undefined,
+      flag: u.pos === reveal ? "亮" : undefined, flipDelay: seat === AI ? 150 + 260 * u.pos : 0,
+    });
   }).join("");
 }
 
-function battleRow(b: Playback, seat: Seat) {
-  let html = battleUnits(b.snap[seat], b.teams[seat].reveal);
-  if (b.actor) html = html.replace(`data-unit="${b.actor}"`, `data-unit="${b.actor}" data-acting="1"`);
-  if (seat === AI && b.caption[0] === "揭开双方队伍") {
-    html = html.replaceAll('class="card ', 'class="card flip-in ');
-  }
-  return html;
-  return html;
+function battleRow(b: Playback, seat: Seat, o: Observation) {
+  return battleUnits(b.snap[seat], b.teams[seat].reveal, o, b.actor, b.switching);
 }
 
 // ───────────────────────── 操作栏 ─────────────────────────
@@ -729,13 +835,18 @@ function arenaDock(o: Observation, mine: boolean) {
 function placeDock(o: Observation, mine: boolean) {
   const dealt = o.me.dealt;
   // 手牌：已经放上场的牌离开手牌；可以拖到场上，也可以点一下放到第一个空位
+  const placedKeys = new Set(o.me.placement ? myKeys(o, o.me.placement.slots) : []);
   const tray = (mineNow: boolean) => {
-    const inHand = dealt.map((id, i) => [id, i] as const).filter(([, i]) => !mineNow || !ui.place.slots.includes(i));
-    const cards = inHand.map(([id, i]) => card(id, { cls: "small", act: mineNow ? "pick" : undefined, arg: i, drag: mineNow ? `hand:${i}` : undefined }));
-    return `<div class="tray hand"${mineNow ? ` data-drop="hand"` : ""}>${cards.join("")}</div>`;
+    const inHand = dealt.map((id, i) => [id, i] as const)
+      .filter(([, i]) => (mineNow ? !ui.place.slots.includes(i) : !placedKeys.has(dealtKey(o, i))));
+    const mid = (inHand.length - 1) / 2;
+    const cards = inHand.map(([id, i], k) => card(id, {
+      key: dealtKey(o, i), cls: "small", fan: k - mid, act: mineNow ? "pick" : undefined, arg: i, drag: mineNow ? `hand:${i}` : undefined,
+    }));
+    return `<div class="tray hand fan"${mineNow ? ` data-drop="hand"` : ""}>${cards.join("")}</div>`;
   };
   if (!mine) {
-    return waiting(o.dealer === HUMAN ? "对手先排位、先亮牌" : "对手是庄家，看过你亮的牌再排") + tray(false);
+    return waiting(o.dealer === HUMAN ? "对手先布阵、先亮牌" : "对手是庄家，看过你亮的牌再布阵") + tray(false);
   }
   const filled = ui.place.slots.every((x) => x !== null);
   const ids = ui.place.slots.map((i) => (i === null ? null : dealt[i]));
@@ -754,7 +865,7 @@ function placeDock(o: Observation, mine: boolean) {
   }
   const head = ok
     ? prompt(`亮出 ${posName(ui.place.reveal!)} ${character(ids[ui.place.reveal!]!).name}`, "点场上的牌换一名亮出；拖动可以换位，手里剩下的那张本手不上场")
-    : prompt(o.dealer === HUMAN ? "你是庄家，后排位" : "你先排位：对手会看到你亮的那一名", why);
+    : prompt(o.dealer === HUMAN ? "你是庄家，后布阵" : "你先布阵：对手会看到你亮的那一名", why);
   let eat = "";
   if (gl2 >= 0 && filled) {
     eat = `<div class="actions compact"><span class="label">饕餮吞队友：</span>${btn("不吞", "eat", -1, ui.place.eaten === null ? "on" : "")}
@@ -762,7 +873,7 @@ function placeDock(o: Observation, mine: boolean) {
   }
   return head + tray(true) + eat + `<div class="actions">
     ${btn("清空", "clearPlace", undefined, ui.place.slots.some((x) => x !== null) ? "big" : "big disabled")}
-    ${btn("确认排位", "place", undefined, `primary big ${ok ? "" : "disabled"}`)}</div>`;
+    ${btn("确认布阵", "place", undefined, `primary big ${ok ? "" : "disabled"}`)}</div>`;
 }
 
 /** 窥视者：先暗中偷看，再决定要不要交换自己两名暗置人物。 */
@@ -845,7 +956,8 @@ function bidDock(o: Observation) {
 
 function marketDock(o: Observation, mine: boolean) {
   const stage = Table.marketStageFor(o.handNo, table!.options.blindEvery);
-  const tray = `<div class="tray hand">${o.market.map((id, i) => card(id, { cls: "small", act: mine ? "marketPick" : undefined, arg: i })).join("")}</div>`;
+  const mid = (o.market.length - 1) / 2;
+  const tray = `<div class="tray hand fan">${o.market.map((id, i) => card(id, { key: `h${o.handNo}-mk${i}-${id}`, cls: "small", fan: i - mid, act: mine ? "marketPick" : undefined, arg: i })).join("")}</div>`;
   return (mine ? prompt("市场：挑一名放进你的牌池", `本手输家先挑，挑了谁对手看得到 · 市场阶段 ${stage}`) : waiting("对手在市场挑人")) + tray;
 }
 
@@ -888,7 +1000,7 @@ function sheetView(): string {
     case "intro":
       return wrap("intro", `<div class="intro-art">罪</div>
         <h2>七罪暗队<small>v0.3 试玩</small></h2>
-        <p>德州扑克的下注 + 酒馆战棋的身材和自动战斗。每手从牌池排出 3 名人物、只亮 1 名，靠下注讲故事，揭开后自动开打。</p>
+        <p>德州扑克的下注 + 酒馆战棋的身材和自动战斗。每手从牌池挑出 3 名人物、只亮 1 名，靠下注讲故事，揭开后自动开打。</p>
         <p>你和电脑各 100 筹码，赢光对方就赢下牌桌。</p>
         <div class="label">选择电脑对手</div>
         <div class="actions">${btn("谨慎", "start", "cautious", "primary big")}${btn("激进", "start", "aggressive", "big")}${btn("爱诈唬", "start", "bluff", "big")}</div>
@@ -1009,7 +1121,7 @@ function onAct(name: string, arg: string | undefined) {
         if (ui.place.reveal === at) ui.place.reveal = null;
       } else {
         const free = ui.place.slots.indexOf(null);
-        if (free < 0) { ui.error = "3 个位置都排满了，先点一张已排的牌取回"; return render(); }
+        if (free < 0) { ui.error = "3 个位置都放满了，先点一张已放上去的牌取回"; return render(); }
         ui.place.slots[free] = n;
       }
       ui.place.eaten = null;
@@ -1059,7 +1171,7 @@ function onAct(name: string, arg: string | undefined) {
   }
 }
 
-// ───────────────────────── 拖动排位 ─────────────────────────
+// ───────────────────────── 拖动布阵 ─────────────────────────
 
 /** 手牌 → 场上：放进那个位置（原来在那儿的牌回到手牌）；场上 → 场上：互换；场上 → 手牌：收回。亮出跟着牌走。 */
 function dropCard(src: string, dst: string) {
@@ -1086,7 +1198,11 @@ function dropCard(src: string, dst: string) {
   render();
 }
 
-interface Drag { src: string; el: HTMLElement; ghost: HTMLElement | null; x0: number; y0: number; dx: number; dy: number; over: HTMLElement | null }
+interface Drag {
+  src: string; el: HTMLElement; ghost: HTMLElement | null; x0: number; y0: number; dx: number; dy: number; over: HTMLElement | null;
+  /** 跟手倾斜：上一次的位置、时间和平滑后的速度。 */
+  x: number; y: number; t: number; vx: number; vy: number; raf: number;
+}
 let dragging: Drag | null = null;
 let suppressClickAt = 0;
 
@@ -1096,8 +1212,23 @@ app.addEventListener("pointerdown", (ev) => {
   const el = t.closest<HTMLElement>("[data-drag]");
   if (!el) return;
   const r = el.getBoundingClientRect();
-  dragging = { src: el.dataset.drag!, el, ghost: null, x0: ev.clientX, y0: ev.clientY, dx: ev.clientX - r.left, dy: ev.clientY - r.top, over: null };
+  dragging = {
+    src: el.dataset.drag!, el, ghost: null, x0: ev.clientX, y0: ev.clientY, dx: ev.clientX - r.left, dy: ev.clientY - r.top, over: null,
+    x: ev.clientX, y: ev.clientY, t: performance.now(), vx: 0, vy: 0, raf: 0,
+  };
 });
+
+/** 拖着的牌：跟着手移动，按手的速度往移动方向倾斜，停下来慢慢摆正。 */
+function poseGhost(d: Drag) {
+  if (!d.ghost) return;
+  const clamp = (v: number) => Math.max(-22, Math.min(22, v));
+  const ry = clamp(d.vx * 1.6);
+  const rx = clamp(-d.vy * 1.6);
+  d.ghost.style.transform = `translate(${d.x - d.dx}px, ${d.y - d.dy}px) perspective(700px) rotateX(${rx}deg) rotateY(${ry}deg) rotate(${clamp(d.vx * 0.6)}deg) scale(1.1)`;
+  d.vx *= 0.86;
+  d.vy *= 0.86;
+  d.raf = requestAnimationFrame(() => poseGhost(d));
+}
 
 window.addEventListener("pointermove", (ev) => {
   const d = dragging;
@@ -1106,19 +1237,30 @@ window.addEventListener("pointermove", (ev) => {
     if (Math.hypot(ev.clientX - d.x0, ev.clientY - d.y0) < 6) return; // 没动就当成点击
     const r = d.el.getBoundingClientRect();
     const g = d.el.cloneNode(true) as HTMLElement;
+    for (const k of ["data-key", "data-unit", "data-drag", "data-drop", "data-act", "data-acting"]) g.removeAttribute(k);
+    g.setAttribute("data-fx", "");
     g.classList.add("drag-ghost");
     g.style.setProperty("--cw", `${r.width}px`);
+    g.style.transformOrigin = `${d.dx}px ${d.dy}px`;
     app.appendChild(g);
     d.ghost = g;
-    d.el.classList.add("drag-src");
+    d.el.classList.add("fx-drag-src");
     app.classList.add("dragging");
+    poseGhost(d);
   }
   ev.preventDefault();
-  d.ghost.style.transform = `translate(${ev.clientX - d.dx}px, ${ev.clientY - d.dy}px) rotate(-3deg) scale(1.06)`;
+  const now = performance.now();
+  const dt = Math.max(8, now - d.t);
+  // 速度按每 16ms 的位移算，再和之前的平滑一下
+  d.vx = d.vx * 0.6 + ((ev.clientX - d.x) / dt) * 16 * 0.4;
+  d.vy = d.vy * 0.6 + ((ev.clientY - d.y) / dt) * 16 * 0.4;
+  d.x = ev.clientX;
+  d.y = ev.clientY;
+  d.t = now;
   const under = document.elementFromPoint(ev.clientX, ev.clientY)?.closest<HTMLElement>("[data-drop]") ?? null;
   if (under !== d.over) {
-    d.over?.classList.remove("drop-hover");
-    under?.classList.add("drop-hover");
+    d.over?.classList.remove("fx-drop-hover");
+    under?.classList.add("fx-drop-hover");
     d.over = under;
   }
 });
@@ -1127,12 +1269,17 @@ function endDrag(commit: boolean) {
   const d = dragging;
   dragging = null;
   if (!d || !d.ghost) return;
+  cancelAnimationFrame(d.raf);
+  // 松手后，牌从手上的位置飞到落点（或者飞回原处）
+  const key = d.el.dataset.key;
+  if (key) flipFrom.set(key, d.ghost.getBoundingClientRect());
   d.ghost.remove();
-  d.el.classList.remove("drag-src");
-  d.over?.classList.remove("drop-hover");
+  d.el.classList.remove("fx-drag-src");
+  d.over?.classList.remove("fx-drop-hover");
   app.classList.remove("dragging");
   suppressClickAt = Date.now();
   if (commit && d.over && d.over.dataset.drop && d.over.dataset.drop !== d.src) dropCard(d.src, d.over.dataset.drop);
+  else render();
 }
 window.addEventListener("pointerup", () => endDrag(true));
 window.addEventListener("pointercancel", () => endDrag(false));
@@ -1171,7 +1318,7 @@ app.addEventListener("input", (ev) => {
   app.querySelectorAll<HTMLElement>(".chip-btn").forEach((x) => x.classList.toggle("on", Number(x.dataset.arg) === v));
 });
 
-window.addEventListener("resize", () => render());
+window.addEventListener("resize", () => render(false));
 // 调试模式：直接开桌，跳过开始画面
 if (debug) newTable(debug.style ?? "cautious");
 else render();

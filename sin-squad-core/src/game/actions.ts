@@ -4,7 +4,7 @@ import type { EatChoice } from "../types.js";
 export type Action =
   /** 落后方从两张场地里选一张。 */
   | { type: "chooseArena"; index: 0 | 1 }
-  /** 从发到的 4 名里挑 3 名排位：picks[i] 是放在 i 号位的那张（发牌序号）。 */
+  /** 从发到的 4 名里挑 3 名布阵：picks[i] 是放在 i 号位的那张（发牌序号）。 */
   | { type: "place"; picks: [number, number, number]; eat: EatChoice | null; reveal: number }
   /** 窥视者：暗中查看对手一个暗置位置。 */
   | { type: "peek"; pos: number }

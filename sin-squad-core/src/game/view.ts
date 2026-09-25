@@ -37,7 +37,7 @@ export interface Observation {
     publicPicks: string[];
     removedCount: number;
     placed: boolean;
-    /** 亮出的那名（排完位才有）。 */
+    /** 亮出的那名（布完阵才有）。 */
     revealed: { pos: number; characterId: string } | null;
     /** 空出来的位置（被饕餮吞掉）是公开的。 */
     emptyPositions: number[];
