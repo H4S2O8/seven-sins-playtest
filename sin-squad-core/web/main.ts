@@ -28,8 +28,13 @@ interface Playback {
   ruleId: string;
   arenaId: string;
   peId: string | null;
-  /** 0 = 开战前，r = 第 r 轮结束后。 */
-  step: number;
+  /** 画面上此刻显示的双方样子。 */
+  snap: [UnitSnapshot[], UnitSnapshot[]];
+  /** 当前播到第几轮（0 = 开战前）。 */
+  round: number;
+  /** 正在出手的人（seat-pos），高亮用。 */
+  actor: string | null;
+  started: boolean;
   paused: boolean;
   speed: 1 | 2;
   caption: string[];
@@ -136,7 +141,8 @@ function afterApply() {
       ui.battle = {
         result: h.battle!, teams: e.teams, equipment: e.equipment,
         ruleId: h.ruleId, arenaId: h.arenaId!, peId: h.peActive ? h.publicEffectId : null,
-        step: 0, paused: false, speed: 1, caption: ["揭开双方队伍"], done: false,
+        snap: h.battle!.start, round: 0, actor: null, started: false,
+        paused: false, speed: 1, caption: ["揭开双方队伍"], done: false,
       };
     }
     if (e.type === "settle") {
@@ -150,7 +156,7 @@ function afterApply() {
     }
   }
   render();
-  if (ui.battle && ui.battle.step === 0 && !ui.battle.done) void playBattle(ui.battle);
+  if (ui.battle && !ui.battle.started) { ui.battle.started = true; void playBattle(ui.battle); }
   scheduleAi();
 }
 
@@ -218,11 +224,11 @@ function unitNames(b: Playback) {
   };
 }
 
-function roundCaption(b: Playback, evs: BattleEvent[]): string[] {
+/** 一帧的字幕：出手、反击、屏障、转线、能力生效、倒下。 */
+function frameCaption(b: Playback, evs: BattleEvent[]): string[] {
   const names = unitNames(b);
-  const key = evs.filter((e) => ["death", "switch", "blocked", "note", "trigger", "recoil"].includes(e.type));
-  const lines = (key.length ? key : evs.filter((e) => e.type === "attack")).map((e) => battleLine(e, names));
-  return lines.length ? lines : ["这一轮没有人出手"];
+  const shown = evs.filter((e) => ["attack", "recoil", "blocked", "switch", "trigger", "death", "note"].includes(e.type));
+  return shown.map((e) => battleLine(e, names));
 }
 
 /** 能力 / 场地 / 公共效果生效：卡片闪一下，头上冒出说明气泡。 */
@@ -238,6 +244,15 @@ function bubble(e: Extract<BattleEvent, { type: "trigger" }>, own: boolean) {
   el.appendChild(d);
 }
 
+/** 第 r 轮谁先手。 */
+function firstOf(b: Playback, r: number): Seat {
+  return r % 2 === 1 ? b.result.first : (b.result.first === 0 ? 1 : 0);
+}
+
+/**
+ * 逐帧播放：每一帧是一次出手（或轮初、轮末的效果）。
+ * 先播出手前的提示和冲撞，再换成这一帧结束时的样子，飘伤害数字，最后播结算后才生效的能力。
+ */
 async function playBattle(b: Playback) {
   const token = ++battleToken;
   const alive = () => token === battleToken && ui.battle === b;
@@ -247,45 +262,48 @@ async function playBattle(b: Playback) {
   };
   const names = unitNames(b);
   const isOwn = (e: Extract<BattleEvent, { type: "trigger" }>) => names(e.seat, e.pos) === e.name;
+  render();
   await wait(1000); // 翻牌
 
-  // 开战时：逐个播放生效的能力、场地、公共效果
-  for (const e of b.result.events.filter((x) => x.round === 0)) {
+  for (const f of b.result.frames) {
     if (!alive()) return;
-    b.caption = ["开战", battleLine(e, names)];
+    const setup = f.round === 0;
+    if (f.round !== b.round) {
+      b.round = f.round;
+      if (!setup) {
+        b.caption = [`第 ${f.round} 轮 · ${firstOf(b, f.round) === HUMAN ? "你" : "对手"}先手`];
+        b.actor = null;
+        render();
+        await wait(650);
+      }
+    }
+    const attack = f.events.find((e) => e.type === "attack" || e.type === "switch");
+    b.actor = attack ? `${attack.seat}-${attack.pos}` : null;
+    b.caption = [setup ? "开战" : `第 ${f.round} 轮`, ...frameCaption(b, f.events)];
     render();
-    if (e.type === "trigger") bubble(e, isOwn(e));
-    await wait(900);
-  }
 
-  const total = b.result.timeline.length;
-  while (alive() && b.step < total) {
-    const r = b.step + 1;
-    const evs = b.result.events.filter((e) => e.round === r);
-    const firstHit = evs.findIndex((e) => e.type === "damage" || e.type === "death");
-    const cut = firstHit < 0 ? evs.length : firstHit;
-    b.caption = [`第 ${r} 轮`, ...roundCaption(b, evs)];
-    render();
-    // 出手前：沉睡、魅惑、守护、翻倍等提示，然后依次冲向目标；反击的一方撞回去
-    for (const e of evs.slice(0, cut)) {
+    const firstHit = f.events.findIndex((e) => e.type === "damage" || e.type === "death" || e.type === "heal");
+    const cut = firstHit < 0 ? f.events.length : firstHit;
+    for (const e of f.events.slice(0, cut)) {
       if (!alive()) return;
-      if (e.type === "trigger") { bubble(e, isOwn(e)); await wait(260); }
-      if (e.type === "attack") { lunge(unitEl(e.seat, e.pos), unitEl(e.targetSeat, e.targetPos), 380 / b.speed); await wait(170); }
+      if (e.type === "trigger") { bubble(e, isOwn(e)); await wait(setup ? 850 : 380); }
+      if (e.type === "attack") { lunge(unitEl(e.seat, e.pos), unitEl(e.targetSeat, e.targetPos), 460 / b.speed); await wait(260); }
       if (e.type === "recoil") {
-        lunge(unitEl(e.seat, e.pos), unitEl(e.targetSeat, e.targetPos), 300 / b.speed);
+        lunge(unitEl(e.seat, e.pos), unitEl(e.targetSeat, e.targetPos), 320 / b.speed);
         floater(e.seat, e.pos, "反击", "recoil");
-        await wait(140);
+        await wait(180);
       }
       if (e.type === "blocked") floater(e.seat, e.pos, "屏障破碎", "block");
-      if (e.type === "switch") floater(e.seat, e.pos, "转线", "switch");
+      if (e.type === "switch") { floater(e.seat, e.pos, "转线", "switch"); await wait(300); }
+      if (e.type === "note") await wait(600);
     }
-    await wait(330);
     if (!alive()) return;
-    // 同时结算：更新到这一轮结束的样子，再飘伤害数字
-    b.step = r;
+
+    // 换成这一帧结束时的样子，再飘数字
+    b.snap = f.after;
     render();
     const dmg = new Map<string, number>();
-    for (const e of evs) {
+    for (const e of f.events) {
       if (e.type === "damage") dmg.set(`${e.seat}-${e.pos}`, (dmg.get(`${e.seat}-${e.pos}`) ?? 0) + e.amount);
     }
     for (const [k, v] of dmg) {
@@ -293,21 +311,21 @@ async function playBattle(b: Playback) {
       floater(s as Seat, p, `-${num(Math.round(v * 10) / 10)}`, "dmg");
       unitEl(s as Seat, p)?.classList.add("hit");
     }
-    for (const e of evs) {
+    for (const e of f.events) {
       if (e.type === "heal") floater(e.seat, e.pos, `+${num(e.amount)}`, "heal", 250);
       if (e.type === "death") unitEl(e.seat, e.pos)?.classList.add("dying");
     }
-    // 结算后生效的：蓄痛、残羹客、收藏家、吸血……
-    const after = evs.slice(cut).filter((e): e is Extract<BattleEvent, { type: "trigger" }> => e.type === "trigger");
-    await wait(after.length ? 450 : 1000);
+    const after = f.events.slice(cut).filter((e): e is Extract<BattleEvent, { type: "trigger" }> => e.type === "trigger");
+    await wait(dmg.size ? 650 : 300);
     for (const e of after) {
       if (!alive()) return;
       bubble(e, isOwn(e));
-      await wait(420);
+      await wait(500);
     }
-    if (after.length) await wait(500);
+    if (f.events.some((e) => e.type === "death")) await wait(400);
   }
   if (!alive()) return;
+  b.actor = null;
   b.done = true;
   render();
 }
@@ -316,8 +334,11 @@ function skipBattle() {
   const b = ui.battle;
   if (!b) return;
   battleToken++;
-  b.step = b.result.timeline.length;
-  b.caption = [`第 ${b.step} 轮`, ...roundCaption(b, b.result.events.filter((e) => e.round === b.step))];
+  b.snap = b.result.final;
+  b.round = b.result.rounds;
+  b.actor = null;
+  const last = b.result.frames.at(-1);
+  b.caption = [`第 ${b.round} 轮`, ...(last ? frameCaption(b, last.events) : [])];
   b.done = true;
   render();
 }
@@ -512,7 +533,7 @@ function center(o: Observation) {
   let status = phaseLabel(o);
   if (ui.battle) {
     const b = ui.battle;
-    status = b.step === 0 ? "揭开队伍" : `战斗 · 第 ${b.step} 轮 / 最多 ${rule(b.ruleId).maxRounds} 轮`;
+    status = b.round === 0 ? "揭开队伍" : `战斗 · 第 ${b.round} 轮 / 最多 ${rule(b.ruleId).maxRounds} 轮 · ${firstOf(b, b.round) === HUMAN ? "你" : "对手"}先手`;
   }
   return `<div class="center">
     <div class="envs">${tiles}</div>
@@ -598,9 +619,12 @@ function battleUnits(snaps: UnitSnapshot[], reveal: number) {
 }
 
 function battleRow(b: Playback, seat: Seat) {
-  const snaps = b.step === 0 ? b.result.start[seat] : b.result.timeline[b.step - 1][seat];
-  const html = battleUnits(snaps, b.teams[seat].reveal);
-  if (seat === AI && b.step === 0) return html.replaceAll('class="card ', 'class="card flip-in ');
+  let html = battleUnits(b.snap[seat], b.teams[seat].reveal);
+  if (b.actor) html = html.replace(`data-unit="${b.actor}"`, `data-unit="${b.actor}" data-acting="1"`);
+  if (seat === AI && b.caption[0] === "揭开双方队伍") {
+    html = html.replaceAll('class="card ', 'class="card flip-in ');
+  }
+  return html;
   return html;
 }
 

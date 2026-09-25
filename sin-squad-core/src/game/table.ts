@@ -567,6 +567,7 @@ export class Table {
       arenaId: h.arenaId!,
       publicEffectId: h.peActive ? h.publicEffectId : null,
       pot: h.pot,
+      firstSeat: other(h.dealer), // 非庄家先手：庄家排位后手、有信息优势
     });
     h.battle = result;
     this.log.push({

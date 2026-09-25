@@ -343,6 +343,11 @@ small { color: var(--muted); font-weight: normal; }
 .floater.switch { color: #f2ead8; font-size: calc(var(--cw) * 0.13); top: 50%; }
 .floater.recoil { color: #ffd27a; font-size: calc(var(--cw) * 0.14); top: 58%; }
 
+/* 正在出手的人：往前探一点，金色描边 */
+.card[data-acting] { box-shadow: 0 0 0 3px #ffe7a8, 0 0 20px #ffd27a, 0 5px 12px #000a; z-index: 4; }
+.row.me .card[data-acting] { transform: translateY(-8px); }
+.row.foe .card[data-acting] { transform: translateY(8px); }
+
 /* 能力生效：卡片金光一闪，头上冒气泡 */
 .card.proc { animation: proc .9s; }
 @keyframes proc {

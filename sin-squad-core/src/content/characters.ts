@@ -24,7 +24,7 @@ export const CHARACTERS: readonly CharacterDef[] = [
     ability: "吸血", tag: "破盾续航", stage: 1 },
   { id: "GL2", name: "饕餮", sin: "暴食", atk: 3, hp: 8, shape: "heavy", armor: 0, barrier: 0,
     ability: "排位时可以吞掉一名队友，获得它的攻和血（该位置空出）", tag: "三合一", stage: 2 },
-  { id: "GL3", name: "残羹客", sin: "暴食", atk: 2, hp: 8, shape: "heavy", armor: 0, barrier: 0,
+  { id: "GL3", name: "残羹客", sin: "暴食", atk: 2, hp: 7, shape: "heavy", armor: 0, barrier: 0,
     ability: "每有一名人物倒下（不论敌我），+1/+3", tag: "血战养成", stage: 1 },
   // 嫉妒
   { id: "EN1", name: "窥视者", sin: "嫉妒", atk: 3, hp: 8, shape: "multi", armor: 0, barrier: 0,
@@ -48,7 +48,7 @@ export const CHARACTERS: readonly CharacterDef[] = [
   { id: "PR3", name: "冠冕者", sin: "傲慢", atk: 3, hp: 7, shape: "heavy", armor: 1, barrier: 0,
     ability: "被亮出时，对手在第 1 轮下注不能弃牌", tag: "逼对手摊牌", stage: 2 },
   // 色欲
-  { id: "LU1", name: "同行药袋", sin: "色欲", atk: 2, hp: 12, shape: "heavy", armor: 0, barrier: 0,
+  { id: "LU1", name: "同行药袋", sin: "色欲", atk: 3, hp: 12, shape: "heavy", armor: 0, barrier: 0,
     ability: "守护：相邻队友受到的攻击改由它承受", tag: "保镖", stage: 1 },
   { id: "LU2", name: "牵线人", sin: "色欲", atk: 2, hp: 7, shape: "heavy", armor: 0, barrier: 0,
     ability: "开战时与对位敌人缔结，两者本场都不出手（仍可被攻击）", tag: "一换一", stage: 2 },
