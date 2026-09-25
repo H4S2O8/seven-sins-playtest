@@ -1,0 +1,15 @@
+# 对手行走与坐下关键姿态参考 v1
+
+使用内置图像工具生成，非完成的动画，不覆盖既有来源。透明源保存在同目录。
+
+- opponent-walk-keyframes-v1.png：四个行走姿态。左右接触/经过姿态的差别仍不足，不能直接四帧循环宣称完成步态；须校准脚底、关节与重心，并在实际4.8秒入场中验收。
+- opponent-sit-keyframes-v1.png：站立、屈膝、落座、坐稳四姿态。各格比例与基线须归一，必须表现屈膝/髋部后移；不能用整图下降代替坐下。无椅子，椅子由场景提供。
+
+## 原始提示词：行走
+
+Use case identity-preserve game-animation sprite atlas. Image1 is CHARACTER IDENTITY reference: the exact sinister thin pale man with swept black hair, amber eyes, sharp cheekbones, high black Victorian collar, double-breasted blackcoat with brassbuttons and small chain, long coat tails, black boots. Image2 is LINE/TEXTURE PALETTE reference. Generate the same man in FOUR DISTINCT WALK KEYFRAMES arranged 2x2, view ALWAYS three-quarter towards viewer's right. All four occupy identical cell scale, same head level and sole baseline, fullbody headtotoe. TopLeft left foot forward heelcontact/righttoe back, rightarm forward; topRight passingpose weightonleftleg rightknee visibly bent lifted movingpast, arms near sides; bottomLeft rightfoot forward/rightheelcontact lefttoe back,leftarm forward; bottomRight passingpose weightonrightleg leftkneebent lifted movingpast. Hands relaxed not clasped, torso stays upright with subtle countertwist and genuinely differing coat-tail folds. This is a WALK CYCLE not four staticturnarounds. Show clear anatomical knee/elbow articulation. Dry bonewhite crosshatching blackbrown ink like reference, notphotoreal,3DPBR,chibi,pixel. Transparent alpha background,no ground,no shadow,noextraobjects,nochair, no text,no panels. 10percent safe padding all sides eachcell, feet and coatnotclipped. 1536square preferred.
+
+## 原始提示词：坐下
+
+Use case identity-preserve animation keyframe atlas. Image1 exactcharacter reference of pale narrow-faced blackhaired sinisterman in high-collar doublebreasted long blackcoat with brassbuttons/chain blackpants andboots; keep exact identity/outfit. Image2 is texturelineworkreference. Four chronological SITTING-DOWN fullbody keyposes in a2x2atlas, looking FRONT but slightly towards viewer's right10degrees, SAME CAMERA AND SCALE, eachfigure fit with10percentpadding. TopLeft: fullystanding kneesstraight, body slightforwardlean hands lowered near thighs. TopRight: hips pushedback, knees bent45degrees, torso leaning forward naturally, forearms forward hovering ready for armrests. BottomLeft: hips low, knees bent90degrees, thighs nearlyhorizontal, feetfirm, body still leaningforward. BottomRight: comfortably SEATED UPRIGHT thighs horizontal knees90degrees, bothforearms restingforward at imagined tableheight. NO CHAIR drawn, no table, no ground; chairwillbe separateengineobject. Blank below figure is transparent space, notframes. Centerhip y should lower acrossposes realistically while shoe soles all have samebaseline ineachcell. Feet completely visible. Thisisarticulatedsitting, notscalingtheman. Same dark bonewhite dryinketch blackbrownpalette, tight handdrawnlinework, nophoto,PBR,pixel,chibi. Transparentalpha, no shadows,no text,noborders.1536squarepreferred.
+

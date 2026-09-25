@@ -1,0 +1,21 @@
+; 七罪暗队 W01/W02 logic foundation
+config_version=5
+
+[application]
+config/name="七罪暗队"
+config/description="Godot 4 pure-logic and content-index foundation"
+config/features=PackedStringArray("4.7", "GL Compatibility")
+run/main_scene="res://presentation/table/table_stage.tscn"
+
+[display]
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+
+[rendering]
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+
+[audio]
+driver/enable_input=false

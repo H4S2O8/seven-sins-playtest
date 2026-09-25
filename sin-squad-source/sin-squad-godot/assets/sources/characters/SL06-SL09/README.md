@@ -1,0 +1,9 @@
+# SL06-SL09四向源图
+
+内置image_gen生成；原始alpha保留。四行ID升序，各行正面/背面/前3Q/后3Q。
+这是静态源图，不是动画验收。动作需独立分件/关键姿势，不能整图拉伸伪装动作。
+目视记录：四人轮廓与工具可辨；石像比方形设定略圆，需在实际小尺寸上判断是否仍可辨。行间足点不齐需独立标定。
+
+## 完整提示
+
+Use case: stylized-concept. Four-character production turnaround atlas on genuine transparent alpha, four rows each with four whole-body views: FRONT, BACK, FRONT THREE-QUARTER facing right, BACK THREE-QUARTER facing right. Image1 is STYLE REFERENCE only (dark ink etched tabletop), Image2 is cutout STYLE only. Match dry crosshatching, worn bone-white cloth, black-brown ink contour, small dull brass accents. No photograph, PBR, cartoon chibi, pixel art or unrelated scenery. ROW1 SL06 quiet apothecary: medium adult wrapped in THICK layered CLOTH with a TEAPOT at belt, fine NEEDLE in hand, THREE-SECTION quiet meter on BACK, bowed head with plain cap. ROW2 SL07 bench nurse: large stocky caregiver with a SHORT BENCH strapped diagonally to shoulders, SHORT BATON, BACK shows tied wooden bench legs and rolled blanket; tired gentle yet severe face, no modern hospital costume. ROW3 SL08 refusing stone statue: huge FOUR-SQUARE STONE BODY, short blunt arms, NO sharp ornaments, broad solid stone BACK, a tiny recessed faceless face, heavy squat stance, cracked ink-hatched stone; must not reuse human armor silhouette. ROW4 SL09 slow-waking monk: medium rotund monk standing with knees slightly bent, beads, short sleeves with wrapped hands, layered cloak folds on BACK, bald bowed head, ragged cream and brown cloth, no halo. Same identity/proportions/tools in each row across views. All feet/heads/tools fully inside image with generous transparent outer margin and clear gaps. Each figure occupies only 78% of its cell height; never crop silhouette or share props across adjacent cells. No text/numbers, no shadow discs, no background, no frame, no effects. 2048 square requested.

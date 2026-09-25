@@ -1,0 +1,11 @@
+# 卡面空框源图
+
+card-frames-v1.png，1060×1484，内置image_gen输出exec-057ebb3d-ce61-46ad-a2eb-af09e58a1c49.png。参考execution-v1/reference/table-approved-A.png。已实际检查透明角/间隙和完整边缘；原图保留，不重采样覆盖。
+
+3列×2行。上排人物/装备/槽效，下排胜利规则/场地/牌背。近似独立区域x=8..338、364..696、719..1052；上排y=110..711，下排y=762..1360，需实现时读取alpha复核，不直接把宽度三等分当紧边界。比提示的5:7更瘦长，选择保留塔罗式比例并等比显示，不能横向拉花纹；文字区域按实际图重排。中文由Godot字体渲染，图上无生成文字。
+
+Astra源图检查：牌边、旧纸和月徽符合墨刻风；可作为UI素材，不代表接入后的可读性已通过。正式卡片仍须看真字号和长文溢出，不能用透明图成功载入当验收。
+
+最终提示词（内置工具，不是CLI）：
+
+Use case: stylized-concept. Asset: real playing-card blank face templates atlas, dark ink-engraved worn paper to MATCH the reference game's cards in the player's left hand. Use reference ONLY for tactile ink style and restrained warm bone/charcoal/dried-red palette. Generate exactly six evenly spaced upright portrait cards in a THREE COLUMNS by TWO ROWS grid, genuine transparent background between cards. All card rectangles same size and ratio 5:7, NOT perspective foreshortened. Cards are separated by generous 8% gutters, intact corners, no overlap. Row1 left CHARACTER frame: double worn engraved edge, large empty upper illustration aperture filled plain bone paper, small blank name ribbon above, roomy blank lower parchment text panel. Row1 center EQUIPMENT frame: same family, modest dark iron bracket corners. Row1 right SLOT EFFECT frame: same family with three small linked circle symbols in the top border. Row2 left VICTORY RULE frame: same family with tiny unlettered crown crest at top, roomy almost entirely blank face for legible typeset text. Row2 center ARENA frame: same family with modest architectural arch around empty upper art window, blank lower text area. Row2 right CARD BACK: very dark worn charcoal leather with fine bone engraved concentric circles around a crescent emblem like the reference, subtle muted red edge. Illustration apertures on the five fronts MUST stay empty pale paper, no portraits, no drawings in them; no fake text, no numbers, no runes masquerading as words. The frame is only decoration; all real Chinese text will be rendered by code. Keep decoration sparse enough to leave large text areas and thick readable silhouette at small size. Organic uneven ink strokes, scratched printmaking lines, worn edges, not rounded glossy mobile UI, not photo, not modern neon, no drop shadows outside cards. Entire atlas original transparent cutouts.

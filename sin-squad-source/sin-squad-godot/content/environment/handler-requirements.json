@@ -1,0 +1,1005 @@
+{
+  "schema_version": 1,
+  "source": {
+    "file": "sin-squad-design/04-场地与公共效果.md",
+    "sha256": "CCA7D70FDE065E63707D590F6D8272B8CCF81CB55007822FADF49CC8E7B7FFD9"
+  },
+  "formal_pool_blocked": true,
+  "note": "逐项处理器需求表；只有实现并通过真实BattleEngine正例、反例及到期/退场测试后，才可从blocked改为implemented。",
+  "bindings": [
+    {
+      "content_id": "AR01",
+      "logic_handler": "environment_AR01",
+      "required_binding_kind": "arena",
+      "required_owner_key": "",
+      "required_source_key": "global:AR01",
+      "subscribes": [
+        "prepare_attack"
+      ],
+      "required_engine_capabilities": [
+        "melee_cross_prep_override"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "content_id": "AR02",
+      "logic_handler": "environment_AR02",
+      "required_binding_kind": "arena",
+      "required_owner_key": "",
+      "required_source_key": "global:AR02",
+      "subscribes": [
+        "prepare_attack"
+      ],
+      "required_engine_capabilities": [
+        "melee_cross_prep_override"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "content_id": "AR03",
+      "logic_handler": "environment_AR03",
+      "required_binding_kind": "arena",
+      "required_owner_key": "",
+      "required_source_key": "global:AR03",
+      "subscribes": [
+        "before_hit"
+      ],
+      "required_engine_capabilities": [
+        "attack_damage_type_target_multiplier"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "content_id": "AR04",
+      "logic_handler": "environment_AR04",
+      "required_binding_kind": "arena",
+      "required_owner_key": "",
+      "required_source_key": "global:AR04",
+      "subscribes": [
+        "battle_start",
+        "before_hit"
+      ],
+      "required_engine_capabilities": [
+        "per_unit_ranged_attack_cover"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "content_id": "AR05",
+      "logic_handler": "environment_AR05",
+      "required_binding_kind": "arena",
+      "required_owner_key": "",
+      "required_source_key": "global:AR05",
+      "subscribes": [
+        "prepare_attack"
+      ],
+      "required_engine_capabilities": [
+        "armor_kind_and_first_natural_attack_counters"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "content_id": "AR06",
+      "logic_handler": "environment_AR06",
+      "required_binding_kind": "arena",
+      "required_owner_key": "",
+      "required_source_key": "global:AR06",
+      "subscribes": [
+        "hit"
+      ],
+      "required_engine_capabilities": [
+        "cross_melee_attack_completion_status"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "content_id": "AR07",
+      "logic_handler": "environment_AR07",
+      "required_binding_kind": "arena",
+      "required_owner_key": "",
+      "required_source_key": "global:AR07",
+      "subscribes": [
+        "hp_lost"
+      ],
+      "required_engine_capabilities": [
+        "same_event_actual_loss_fanout_no_chain"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "content_id": "AR08",
+      "logic_handler": "environment_AR08",
+      "required_binding_kind": "arena",
+      "required_owner_key": "",
+      "required_source_key": "global:AR08",
+      "subscribes": [
+        "periodic"
+      ],
+      "required_engine_capabilities": [
+        "independent_tick_root_and_global_tick_event"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "content_id": "AR09",
+      "logic_handler": "environment_AR09",
+      "required_binding_kind": "arena",
+      "required_owner_key": "",
+      "required_source_key": "global:AR09",
+      "subscribes": [
+        "hit"
+      ],
+      "required_engine_capabilities": [
+        "natural_melee_attack_completion_counter",
+        "self_loss"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "content_id": "AR10",
+      "logic_handler": "environment_AR10",
+      "required_binding_kind": "arena",
+      "required_owner_key": "",
+      "required_source_key": "global:AR10",
+      "subscribes": [
+        "prepare_attack"
+      ],
+      "required_engine_capabilities": [
+        "flight_armor_kind_timed_prep_multiplier"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "content_id": "AR11",
+      "logic_handler": "environment_AR11",
+      "required_binding_kind": "arena",
+      "required_owner_key": "",
+      "required_source_key": "global:AR11",
+      "subscribes": [
+        "before_hit",
+        "hit"
+      ],
+      "required_engine_capabilities": [
+        "per_unit_first_attack_reduction_and_removal"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "content_id": "AR12",
+      "logic_handler": "environment_AR12",
+      "required_binding_kind": "arena",
+      "required_owner_key": "",
+      "required_source_key": "global:AR12",
+      "subscribes": [
+        "hit"
+      ],
+      "required_engine_capabilities": [
+        "extra_attack_identity_actual_loss_capture"
+      ],
+      "implementation_status": "not_implemented"
+    },
+    {
+      "content_id": "AR13",
+      "logic_handler": "environment_AR13",
+      "required_binding_kind": "arena",
+      "required_owner_key": "",
+      "required_source_key": "global:AR13",
+      "subscribes": [
+        "periodic"
+      ],
+      "required_engine_capabilities": [
+        "base_armor_vs_temporary_armor_modifier"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "content_id": "AR14",
+      "logic_handler": "environment_AR14",
+      "required_binding_kind": "arena",
+      "required_owner_key": "",
+      "required_source_key": "global:AR14",
+      "subscribes": [
+        "battle_start"
+      ],
+      "required_engine_capabilities": [
+        "base_T_ticks_deterministic_argmax_and_barrier"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "content_id": "AR15",
+      "logic_handler": "environment_AR15",
+      "required_binding_kind": "arena",
+      "required_owner_key": "",
+      "required_source_key": "global:AR15",
+      "subscribes": [
+        "hp_lost"
+      ],
+      "required_engine_capabilities": [
+        "exact_health_ratio_threshold_and_one_shot_shield"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "content_id": "AR16",
+      "logic_handler": "environment_AR16",
+      "required_binding_kind": "arena",
+      "required_owner_key": "",
+      "required_source_key": "global:AR16",
+      "subscribes": [
+        "pre_battle"
+      ],
+      "required_engine_capabilities": [
+        "talent_pause_window_without_replay"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "content_id": "AR17",
+      "logic_handler": "environment_AR17",
+      "required_binding_kind": "arena",
+      "required_owner_key": "",
+      "required_source_key": "global:AR17",
+      "subscribes": [
+        "prepare_attack"
+      ],
+      "required_engine_capabilities": [
+        "slot_sensitive_melee_cross_prep_delta"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "content_id": "AR18",
+      "logic_handler": "environment_AR18",
+      "required_binding_kind": "arena",
+      "required_owner_key": "",
+      "required_source_key": "global:AR18",
+      "subscribes": [
+        "before_hit"
+      ],
+      "required_engine_capabilities": [
+        "per_packet_post_shield_actual_hp_loss_cap"
+      ],
+      "implementation_status": "not_implemented"
+    },
+    {
+      "content_id": "AR19",
+      "logic_handler": "environment_AR19",
+      "required_binding_kind": "arena",
+      "required_owner_key": "",
+      "required_source_key": "global:AR19",
+      "subscribes": [
+        "final_departure"
+      ],
+      "required_engine_capabilities": [
+        "first_team_final_departure_and_timed_shield"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "content_id": "AR20",
+      "logic_handler": "environment_AR20",
+      "required_binding_kind": "arena",
+      "required_owner_key": "",
+      "required_source_key": "global:AR20",
+      "subscribes": [
+        "prepare_attack"
+      ],
+      "required_engine_capabilities": [
+        "per_target_first_attacker_and_one_shot_shield"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "content_id": "PE01",
+      "logic_handler": "environment_PE01",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE01",
+      "subscribes": [
+        "before_hit"
+      ],
+      "required_engine_capabilities": [
+        "damage_type_multiplier_before_defense"
+      ],
+      "implementation_status": "not_implemented"
+    },
+    {
+      "content_id": "PE02",
+      "logic_handler": "environment_PE02",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE02",
+      "subscribes": [
+        "periodic"
+      ],
+      "required_engine_capabilities": [
+        "burn_tick_amount_override"
+      ],
+      "implementation_status": "not_implemented"
+    },
+    {
+      "content_id": "PE03",
+      "logic_handler": "environment_PE03",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE03",
+      "subscribes": [
+        "before_hit"
+      ],
+      "required_engine_capabilities": [
+        "first_lightning_hit_current_shield_fractional_consume"
+      ],
+      "implementation_status": "not_implemented"
+    },
+    {
+      "content_id": "PE04",
+      "logic_handler": "environment_PE04",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE04",
+      "subscribes": [
+        "status_applied",
+        "expiry"
+      ],
+      "required_engine_capabilities": [
+        "status_expiry_suppression_by_status_id"
+      ],
+      "implementation_status": "not_implemented"
+    },
+    {
+      "content_id": "PE05",
+      "logic_handler": "environment_PE05",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE05",
+      "subscribes": [
+        "periodic"
+      ],
+      "required_engine_capabilities": [
+        "global_interval_event_and_shield_presence_snapshot"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "content_id": "PE06",
+      "logic_handler": "environment_PE06",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE06",
+      "subscribes": [
+        "status_removed",
+        "expiry"
+      ],
+      "required_engine_capabilities": [
+        "chill_cycle_identity_and_once_per_cycle_damage"
+      ],
+      "implementation_status": "not_implemented"
+    },
+    {
+      "content_id": "PE07",
+      "logic_handler": "environment_PE07",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE07",
+      "subscribes": [
+        "before_hit"
+      ],
+      "required_engine_capabilities": [
+        "fire_hit_chill_consume_before_damage_and_bonus"
+      ],
+      "implementation_status": "not_implemented"
+    },
+    {
+      "content_id": "PE08",
+      "logic_handler": "environment_PE08",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE08",
+      "subscribes": [
+        "hit"
+      ],
+      "required_engine_capabilities": [
+        "attack_segment_append_damage_packet"
+      ],
+      "implementation_status": "not_implemented"
+    },
+    {
+      "content_id": "PE09",
+      "logic_handler": "environment_PE09",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE09",
+      "subscribes": [
+        "prepare_attack"
+      ],
+      "required_engine_capabilities": [
+        "ranged_cross_prep_delta"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "content_id": "PE10",
+      "logic_handler": "environment_PE10",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE10",
+      "subscribes": [
+        "prepare_attack"
+      ],
+      "required_engine_capabilities": [
+        "melee_cross_and_light_armor_prep_deltas"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "content_id": "PE11",
+      "logic_handler": "environment_PE11",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE11",
+      "subscribes": [
+        "shield_broken"
+      ],
+      "required_engine_capabilities": [
+        "enemy_damage_broke_all_shields_then_next_attack_bonus"
+      ],
+      "implementation_status": "not_implemented"
+    },
+    {
+      "content_id": "PE12",
+      "logic_handler": "environment_PE12",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE12",
+      "subscribes": [
+        "pre_battle"
+      ],
+      "required_engine_capabilities": [
+        "base_armor_modifier_and_elemental_exclusion"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "content_id": "PE13",
+      "logic_handler": "environment_PE13",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE13",
+      "subscribes": [
+        "hp_lost"
+      ],
+      "required_engine_capabilities": [
+        "single_attack_segment_actual_loss_threshold_and_armor_break"
+      ],
+      "implementation_status": "not_implemented"
+    },
+    {
+      "content_id": "PE14",
+      "logic_handler": "environment_PE14",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE14",
+      "subscribes": [
+        "before_hit"
+      ],
+      "required_engine_capabilities": [
+        "post_armor_pre_transfer_physical_loss_cap"
+      ],
+      "implementation_status": "not_implemented"
+    },
+    {
+      "content_id": "PE15",
+      "logic_handler": "environment_PE15",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE15",
+      "subscribes": [
+        "before_hit"
+      ],
+      "required_engine_capabilities": [
+        "exact_health_ratio_threshold_and_fractional_armor_ignore"
+      ],
+      "implementation_status": "not_implemented"
+    },
+    {
+      "content_id": "PE16",
+      "logic_handler": "environment_PE16",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE16",
+      "subscribes": [
+        "hit"
+      ],
+      "required_engine_capabilities": [
+        "barrier_absorbed_positive_packet_then_self_loss"
+      ],
+      "implementation_status": "not_implemented"
+    },
+    {
+      "content_id": "PE17",
+      "logic_handler": "environment_PE17",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE17",
+      "subscribes": [
+        "periodic"
+      ],
+      "required_engine_capabilities": [
+        "per_team_exact_health_minimum_tie_by_slot"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "content_id": "PE18",
+      "logic_handler": "environment_PE18",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE18",
+      "subscribes": [
+        "shield_gained"
+      ],
+      "required_engine_capabilities": [
+        "numeric_shield_first_gain_and_nonrecursive_grant"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "content_id": "PE19",
+      "logic_handler": "environment_PE19",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE19",
+      "subscribes": [
+        "hit"
+      ],
+      "required_engine_capabilities": [
+        "barrier_full_absorb_delayed_damage_same_target"
+      ],
+      "implementation_status": "not_implemented"
+    },
+    {
+      "content_id": "PE20",
+      "logic_handler": "environment_PE20",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE20",
+      "subscribes": [
+        "hp_lost",
+        "before_hit"
+      ],
+      "required_engine_capabilities": [
+        "heavy_armor_next_physical_damage_reduction_token"
+      ],
+      "implementation_status": "not_implemented"
+    },
+    {
+      "content_id": "PE21",
+      "logic_handler": "environment_PE21",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE21",
+      "subscribes": [
+        "prepare_attack"
+      ],
+      "required_engine_capabilities": [
+        "per_unit_first_natural_prep_multiplier_only"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "content_id": "PE22",
+      "logic_handler": "environment_PE22",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE22",
+      "subscribes": [
+        "prepare_attack"
+      ],
+      "required_engine_capabilities": [
+        "per_unit_first_natural_prep_delay_only"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "content_id": "PE23",
+      "logic_handler": "environment_PE23",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE23",
+      "subscribes": [
+        "prepare_attack"
+      ],
+      "required_engine_capabilities": [
+        "natural_attack_count_next_prep_multiplier"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "content_id": "PE24",
+      "logic_handler": "environment_PE24",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE24",
+      "subscribes": [
+        "hp_lost",
+        "prepare_attack"
+      ],
+      "required_engine_capabilities": [
+        "per_attack_actual_loss_threshold_next_prep_delay"
+      ],
+      "implementation_status": "not_implemented"
+    },
+    {
+      "content_id": "PE25",
+      "logic_handler": "environment_PE25",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE25",
+      "subscribes": [
+        "periodic"
+      ],
+      "required_engine_capabilities": [
+        "global_exact_tick_and_extra_natural_attack_schedule"
+      ],
+      "implementation_status": "not_implemented"
+    },
+    {
+      "content_id": "PE26",
+      "logic_handler": "environment_PE26",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE26",
+      "subscribes": [
+        "hit"
+      ],
+      "required_engine_capabilities": [
+        "distinct_enemy_attacker_window_and_one_shot_shield"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "content_id": "PE27",
+      "logic_handler": "environment_PE27",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE27",
+      "subscribes": [
+        "before_hit"
+      ],
+      "required_engine_capabilities": [
+        "reciprocal_public_targeting_attack_multiplier"
+      ],
+      "implementation_status": "not_implemented"
+    },
+    {
+      "content_id": "PE28",
+      "logic_handler": "environment_PE28",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE28",
+      "subscribes": [
+        "before_hit",
+        "prepare_attack"
+      ],
+      "required_engine_capabilities": [
+        "prehit_health_threshold_next_attack_prep_multiplier"
+      ],
+      "implementation_status": "not_implemented"
+    },
+    {
+      "content_id": "PE29",
+      "logic_handler": "environment_PE29",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE29",
+      "subscribes": [
+        "final_departure",
+        "prepare_attack"
+      ],
+      "required_engine_capabilities": [
+        "team_first_departure_next_natural_prep_adjustment"
+      ],
+      "implementation_status": "not_implemented"
+    },
+    {
+      "content_id": "PE30",
+      "logic_handler": "environment_PE30",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE30",
+      "subscribes": [
+        "periodic",
+        "prepare_attack",
+        "healed"
+      ],
+      "required_engine_capabilities": [
+        "timed_attack_prep_and_actual_healing_multiplier"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "content_id": "PE31",
+      "logic_handler": "environment_PE31",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE31",
+      "subscribes": [
+        "pre_battle"
+      ],
+      "required_engine_capabilities": [
+        "healing_reduction_modifier_before_application"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "content_id": "PE32",
+      "logic_handler": "environment_PE32",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE32",
+      "subscribes": [
+        "healed"
+      ],
+      "required_engine_capabilities": [
+        "actual_overheal_to_shield_without_recursive_heal"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "content_id": "PE33",
+      "logic_handler": "environment_PE33",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE33",
+      "subscribes": [
+        "hp_lost"
+      ],
+      "required_engine_capabilities": [
+        "per_unit_actual_loss_accumulator_and_post_batch_heal"
+      ],
+      "implementation_status": "not_implemented"
+    },
+    {
+      "content_id": "PE34",
+      "logic_handler": "environment_PE34",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE34",
+      "subscribes": [
+        "hit",
+        "prepare_attack"
+      ],
+      "required_engine_capabilities": [
+        "natural_attack_count_self_loss_next_attack_bonus"
+      ],
+      "implementation_status": "not_implemented"
+    },
+    {
+      "content_id": "PE35",
+      "logic_handler": "environment_PE35",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE35",
+      "subscribes": [
+        "final_departure"
+      ],
+      "required_engine_capabilities": [
+        "enemy_final_departure_credit_and_alive_snapshot_heal"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "content_id": "PE36",
+      "logic_handler": "environment_PE36",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE36",
+      "subscribes": [
+        "before_hit"
+      ],
+      "required_engine_capabilities": [
+        "exact_health_ratio_strict_below_threshold_attack_multiplier"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "content_id": "PE37",
+      "logic_handler": "environment_PE37",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE37",
+      "subscribes": [
+        "healed"
+      ],
+      "required_engine_capabilities": [
+        "actual_heal_accumulator_per_second_targeted_fixed_damage"
+      ],
+      "implementation_status": "not_implemented"
+    },
+    {
+      "content_id": "PE38",
+      "logic_handler": "environment_PE38",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE38",
+      "subscribes": [
+        "final_departure",
+        "periodic"
+      ],
+      "required_engine_capabilities": [
+        "first_solo_transition_one_shield_and_four_heal_ticks"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "content_id": "PE39",
+      "logic_handler": "environment_PE39",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE39",
+      "subscribes": [
+        "periodic"
+      ],
+      "required_engine_capabilities": [
+        "global_exact_tick_shield_fraction_consume_to_heal_no_overflow_shield"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "content_id": "PE40",
+      "logic_handler": "environment_PE40",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE40",
+      "subscribes": [
+        "before_hit"
+      ],
+      "required_engine_capabilities": [
+        "dot_per_packet_flat_reduction_floor_zero"
+      ],
+      "implementation_status": "not_implemented"
+    },
+    {
+      "content_id": "PE41",
+      "logic_handler": "environment_PE41",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE41",
+      "subscribes": [
+        "before_hit"
+      ],
+      "required_engine_capabilities": [
+        "slot_two_attack_dealt_and_received_multiplier"
+      ],
+      "implementation_status": "not_implemented"
+    },
+    {
+      "content_id": "PE42",
+      "logic_handler": "environment_PE42",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE42",
+      "subscribes": [
+        "before_hit"
+      ],
+      "required_engine_capabilities": [
+        "first_attack_from_enemy_slot_two_side_slot_reduction"
+      ],
+      "implementation_status": "not_implemented"
+    },
+    {
+      "content_id": "PE43",
+      "logic_handler": "environment_PE43",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE43",
+      "subscribes": [
+        "hp_lost"
+      ],
+      "required_engine_capabilities": [
+        "melee_cross_attack_actual_loss_next_ally_same_target_bonus"
+      ],
+      "implementation_status": "not_implemented"
+    },
+    {
+      "content_id": "PE44",
+      "logic_handler": "environment_PE44",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE44",
+      "subscribes": [
+        "before_hit"
+      ],
+      "required_engine_capabilities": [
+        "attached_lightning_damage_one_time_pre_redirect_lane_change"
+      ],
+      "implementation_status": "not_implemented"
+    },
+    {
+      "content_id": "PE45",
+      "logic_handler": "environment_PE45",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE45",
+      "subscribes": [
+        "prepare_attack"
+      ],
+      "required_engine_capabilities": [
+        "reciprocal_slot_one_three_melee_prep_override"
+      ],
+      "implementation_status": "not_implemented"
+    },
+    {
+      "content_id": "PE46",
+      "logic_handler": "environment_PE46",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE46",
+      "subscribes": [
+        "shield_broken"
+      ],
+      "required_engine_capabilities": [
+        "first_side_shield_break_alive_opposite_side_shield"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "content_id": "PE47",
+      "logic_handler": "environment_PE47",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE47",
+      "subscribes": [
+        "periodic"
+      ],
+      "required_engine_capabilities": [
+        "global_exact_tick_per_team_base_armor_argmax_lightning_damage"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "content_id": "PE48",
+      "logic_handler": "environment_PE48",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE48",
+      "subscribes": [
+        "periodic"
+      ],
+      "required_engine_capabilities": [
+        "global_exact_tick_full_hp_one_shot_barrier"
+      ],
+      "implementation_status": "implemented"
+    },
+    {
+      "content_id": "PE49",
+      "logic_handler": "environment_PE49",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE49",
+      "subscribes": [
+        "final_departure"
+      ],
+      "required_engine_capabilities": [
+        "deadline_gate_current_attack_target_fixed_damage_no_chain"
+      ],
+      "implementation_status": "not_implemented"
+    },
+    {
+      "content_id": "PE50",
+      "logic_handler": "environment_PE50",
+      "required_binding_kind": "public",
+      "required_owner_key": "",
+      "required_source_key": "global:PE50",
+      "subscribes": [
+        "battle_start",
+        "hit"
+      ],
+      "required_engine_capabilities": [
+        "per_unit_first_attack_mark_reciprocal_heal_or_fixed_damage"
+      ],
+      "implementation_status": "implemented"
+    }
+  ]
+}
