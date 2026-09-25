@@ -393,10 +393,15 @@ interface CardOpts {
   act?: string;
   arg?: string | number;
   unit?: string;
+  /** 可以拖动：hand:发牌序号 / slot:位置。 */
+  drag?: string;
+  /** 可以放下：hand / slot:位置。 */
+  drop?: string;
 }
 
-function attrs(o: { act?: string; arg?: string | number }) {
-  return o.act ? ` data-act="${o.act}"${o.arg !== undefined ? ` data-arg="${o.arg}"` : ""} role="button" tabindex="0"` : "";
+function attrs(o: { act?: string; arg?: string | number; drag?: string; drop?: string }) {
+  const dnd = (o.drag ? ` data-drag="${o.drag}"` : "") + (o.drop ? ` data-drop="${o.drop}"` : "");
+  return dnd + (o.act ? ` data-act="${o.act}"${o.arg !== undefined ? ` data-arg="${o.arg}"` : ""} role="button" tabindex="0"` : "");
 }
 
 function card(id: string, o: CardOpts = {}) {
@@ -589,10 +594,11 @@ function myRow(o: Observation): string {
     const dealt = o.me.dealt;
     return [0, 1, 2].map((pos) => {
       const i = ui.place.slots[pos];
-      if (i === null) return slot(posName(pos));
-      if (ui.place.eaten === pos) return slot(`被饕餮吞掉<br><small>${character(dealt[i]).name}</small>`, { act: "eat", arg: -1 });
+      const drop = `slot:${pos}`;
+      if (i === null) return slot(`${posName(pos)}<br><small>拖到这里</small>`, { drop });
+      if (ui.place.eaten === pos) return slot(`被饕餮吞掉<br><small>${character(dealt[i]).name}</small>`, { act: "eat", arg: -1, drop });
       const rev = ui.place.reveal === pos;
-      return card(dealt[i], { flag: rev ? "亮" : "暗", act: "reveal", arg: pos, cls: rev ? "selected" : "target" });
+      return card(dealt[i], { flag: rev ? "亮" : "暗", act: "reveal", arg: pos, cls: rev ? "selected" : "target", drag: drop, drop });
     }).join("");
   }
   const pl = o.me.placement;
@@ -673,13 +679,12 @@ function arenaDock(o: Observation, mine: boolean) {
 
 function placeDock(o: Observation, mine: boolean) {
   const dealt = o.me.dealt;
-  const tray = (clickable: boolean) => `<div class="tray hand">${dealt.map((id, i) => {
-    const at = ui.place.slots.indexOf(i);
-    return card(id, {
-      cls: `small ${clickable && at >= 0 ? "used" : ""}`, flag: clickable && at >= 0 ? posName(at) : undefined,
-      act: clickable ? "pick" : undefined, arg: i,
-    });
-  }).join("")}</div>`;
+  // 手牌：已经放上场的牌离开手牌；可以拖到场上，也可以点一下放到第一个空位
+  const tray = (mineNow: boolean) => {
+    const inHand = dealt.map((id, i) => [id, i] as const).filter(([, i]) => !mineNow || !ui.place.slots.includes(i));
+    const cards = inHand.map(([id, i]) => card(id, { cls: "small", act: mineNow ? "pick" : undefined, arg: i, drag: mineNow ? `hand:${i}` : undefined }));
+    return `<div class="tray hand"${mineNow ? ` data-drop="hand"` : ""}>${cards.join("")}</div>`;
+  };
   if (!mine) {
     return waiting(o.dealer === HUMAN ? "对手先排位、先亮牌" : "对手是庄家，看过你亮的牌再排") + tray(false);
   }
@@ -688,8 +693,8 @@ function placeDock(o: Observation, mine: boolean) {
   const gl2 = ids.indexOf("GL2");
   let ok = false;
   let why = "";
-  if (!filled) why = "点下面的牌依次放到 1、2、3 号位（再点一次取回）";
-  else if (ui.place.reveal === null) why = "点上面你的一张牌，把它设为亮出";
+  if (!filled) why = "把手牌拖到 1、2、3 号位（点一下也能放上去；拖回手牌区就收回）";
+  else if (ui.place.reveal === null) why = "点场上你的一张牌，把它设为亮出";
   else {
     try {
       validatePlacement(dealt, ui.place.slots as number[], ui.place.eaten !== null ? { eater: gl2, eaten: ui.place.eaten } : null, ui.place.reveal);
@@ -699,7 +704,7 @@ function placeDock(o: Observation, mine: boolean) {
     }
   }
   const head = ok
-    ? prompt(`亮出 ${posName(ui.place.reveal!)} ${character(ids[ui.place.reveal!]!).name}`, "点上面的牌可以换一名亮出")
+    ? prompt(`亮出 ${posName(ui.place.reveal!)} ${character(ids[ui.place.reveal!]!).name}`, "点场上的牌换一名亮出；拖动可以换位，手里剩下的那张本手不上场")
     : prompt(o.dealer === HUMAN ? "你是庄家，后排位" : "你先排位：对手会看到你亮的那一名", why);
   let eat = "";
   if (gl2 >= 0 && filled) {
@@ -963,7 +968,86 @@ function onAct(name: string, arg: string | undefined) {
   }
 }
 
+// ───────────────────────── 拖动排位 ─────────────────────────
+
+/** 手牌 → 场上：放进那个位置（原来在那儿的牌回到手牌）；场上 → 场上：互换；场上 → 手牌：收回。亮出跟着牌走。 */
+function dropCard(src: string, dst: string) {
+  const [sk, sv] = src.split(":");
+  const [dk, dv] = dst.split(":");
+  const slots = ui.place.slots;
+  const p = Number(dv);
+  const q = Number(sv);
+  if (sk === "hand" && dk === "slot") {
+    slots[p] = q;
+    if (ui.place.reveal === p) ui.place.reveal = null;
+  } else if (sk === "slot" && dk === "slot") {
+    [slots[q], slots[p]] = [slots[p], slots[q]];
+    if (ui.place.reveal === q) ui.place.reveal = p;
+    else if (ui.place.reveal === p) ui.place.reveal = q;
+  } else if (sk === "slot" && dk === "hand") {
+    slots[q] = null;
+    if (ui.place.reveal === q) ui.place.reveal = null;
+  } else {
+    return;
+  }
+  ui.place.eaten = null;
+  ui.error = null;
+  render();
+}
+
+interface Drag { src: string; el: HTMLElement; ghost: HTMLElement | null; x0: number; y0: number; dx: number; dy: number; over: HTMLElement | null }
+let dragging: Drag | null = null;
+let suppressClickAt = 0;
+
+app.addEventListener("pointerdown", (ev) => {
+  const t = ev.target as HTMLElement;
+  if (ev.button !== 0 || t.closest(".info-btn")) return;
+  const el = t.closest<HTMLElement>("[data-drag]");
+  if (!el) return;
+  const r = el.getBoundingClientRect();
+  dragging = { src: el.dataset.drag!, el, ghost: null, x0: ev.clientX, y0: ev.clientY, dx: ev.clientX - r.left, dy: ev.clientY - r.top, over: null };
+});
+
+window.addEventListener("pointermove", (ev) => {
+  const d = dragging;
+  if (!d) return;
+  if (!d.ghost) {
+    if (Math.hypot(ev.clientX - d.x0, ev.clientY - d.y0) < 6) return; // 没动就当成点击
+    const r = d.el.getBoundingClientRect();
+    const g = d.el.cloneNode(true) as HTMLElement;
+    g.classList.add("drag-ghost");
+    g.style.setProperty("--cw", `${r.width}px`);
+    app.appendChild(g);
+    d.ghost = g;
+    d.el.classList.add("drag-src");
+    app.classList.add("dragging");
+  }
+  ev.preventDefault();
+  d.ghost.style.transform = `translate(${ev.clientX - d.dx}px, ${ev.clientY - d.dy}px) rotate(-3deg) scale(1.06)`;
+  const under = document.elementFromPoint(ev.clientX, ev.clientY)?.closest<HTMLElement>("[data-drop]") ?? null;
+  if (under !== d.over) {
+    d.over?.classList.remove("drop-hover");
+    under?.classList.add("drop-hover");
+    d.over = under;
+  }
+});
+
+function endDrag(commit: boolean) {
+  const d = dragging;
+  dragging = null;
+  if (!d || !d.ghost) return;
+  d.ghost.remove();
+  d.el.classList.remove("drag-src");
+  d.over?.classList.remove("drop-hover");
+  app.classList.remove("dragging");
+  suppressClickAt = Date.now();
+  if (commit && d.over && d.over.dataset.drop && d.over.dataset.drop !== d.src) dropCard(d.src, d.over.dataset.drop);
+}
+window.addEventListener("pointerup", () => endDrag(true));
+window.addEventListener("pointercancel", () => endDrag(false));
+
 app.addEventListener("click", (ev) => {
+  if (Date.now() - suppressClickAt < 300) return; // 刚拖完，不算点击
   const target = ev.target as HTMLElement;
   const el = target.closest<HTMLElement>("[data-act]");
   if (!el || el.classList.contains("disabled")) return;

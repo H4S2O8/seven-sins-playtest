@@ -332,6 +332,19 @@ small { color: var(--muted); font-weight: normal; }
   justify-content: center; text-align: center; color: #c8d8c8; font-size: 12.5px; padding: 6px;
 }
 
+/* 拖动排位 */
+.card[data-drag] { touch-action: none; cursor: grab; }
+.drag-ghost {
+  position: fixed !important; left: 0; top: 0; z-index: 60; margin: 0;
+  pointer-events: none; cursor: grabbing; transition: none !important; animation: none !important;
+  box-shadow: 0 18px 40px #000c, 0 0 0 2px var(--gold) !important;
+}
+.card.drag-src { opacity: .3; }
+#app.dragging [data-drop] { outline: 2px dashed #d9b25f88; outline-offset: 3px; }
+#app.dragging .tray[data-drop] { border-radius: 12px; }
+[data-drop].drop-hover { outline: 3px solid var(--gold) !important; box-shadow: 0 0 18px #d9b25faa; }
+.tray.hand[data-drop] { min-height: calc(var(--tw) * var(--fit, 1) * 1.42 + 22px); }
+
 /* 战斗效果 */
 .card.flip-in { animation: flip .8s both; }
 @keyframes flip { from { transform: perspective(600px) rotateY(90deg); filter: brightness(2); } }
