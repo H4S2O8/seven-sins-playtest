@@ -611,6 +611,14 @@ code { background: #0005; border-radius: 4px; padding: 0 4px; font-size: 12px; }
 .card.tile.voting .face.front::before { box-shadow: inset 0 0 0 1px #000c, inset 0 0 0 3px var(--gold), inset 0 0 14px #d9b25f99; }
 .card.tile.on .face.front::before { box-shadow: inset 0 0 0 1px #000c, inset 0 0 0 3px #7fcf6a, inset 0 0 12px #7fcf6a77; }
 .card.tile.off .face.front { filter: grayscale(.7) brightness(.75); }
+/* 收牌后中间留下的空位（和长条牌一样大，排版不跳） */
+.tile-slot {
+  flex: 1 1 0; min-width: 0; max-width: 250px; height: max(46px, calc(var(--cw) * 0.5));
+  border: 1px dashed #ffffff22; border-radius: 4px;
+}
+/* 正在被收走的牌：不挡点击 */
+.card.fx-collect { pointer-events: none; z-index: 5; }
+.card.fx-collect * { pointer-events: none !important; }
 /* 翻面时远端那条边会转到眼前 */
 .card.fx-turning .edge.top { display: block; }
 

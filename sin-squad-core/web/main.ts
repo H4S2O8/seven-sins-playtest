@@ -13,7 +13,7 @@ import {
 import { Gate, type Opening, type SaveInfo } from "./intro.js";
 import { morph } from "./morph.js";
 import {
-  bubble as hudBubble, crumble, flip, floater as hudFloater, laneShift, measure, pulse, reducedMotion, shake, shatter, strike, type Snapshot,
+  bubble as hudBubble, collect, crumble, flip, floater as hudFloater, laneShift, measure, pulse, reducedMotion, shake, shatter, strike, type Snapshot,
 } from "./motion.js";
 import { isMuted, setScene, toggleMuted } from "./music.js";
 import { SIN_LATIN, installSigil } from "./sigil.js";
@@ -780,6 +780,16 @@ function btn(label: string, act: string, arg?: string | number, cls = "") {
 
 // ───────────────────────── 画面 ─────────────────────────
 
+/** 这次重画里被收走的第几张牌（收牌动画一张接一张）。 */
+let leaving = 0;
+
+/**
+ * 一手结束、进入市场（挑新人物、整理牌池）时，桌上的牌全部收走，只留空位。
+ * 战斗一算完牌桌就已经在市场阶段了，但战斗还要播：播完、点“继续”关掉之后才收。
+ */
+const tableCleared = (o: Observation) => !ui.battle && (o.phase === "marketPick" || o.phase === "marketRemove");
+const emptyRow = () => [0, 1, 2].map(() => slot("")).join("");
+
 /** 下一次重画时某些牌的起点（拖动松手时牌在鼠标下，而不是在原来的位置）。 */
 let flipFrom = new Map<string, DOMRect>();
 
@@ -803,7 +813,8 @@ function render(animate = true) {
     </div></section>
     <section class="dock">${ui.error ? `<div class="error">${esc(ui.error)}</div>` : ""}${ui.battle ? battleDock(ui.battle) : dock(o)}</section>
     ${sheetView()}
-  `);
+  `, (el) => animate && collect(el as HTMLElement, before.get((el as HTMLElement).dataset.key!), leaving++));
+  leaving = 0;
   fitTable();
   if (animate) flip(app, before, flipFrom);
   flipFrom = new Map();
@@ -923,7 +934,7 @@ function center(o: Observation) {
   const pe = o.publicEffectId ? publicEffect(o.publicEffectId) : null;
   const peState = o.publicEffectActive === null ? (pe ? "voting" : "") : o.publicEffectActive ? "on" : "off";
   const peLabel = pe ? `${pe.name}${o.publicEffectActive === null ? "" : o.publicEffectActive ? " ✓" : " ✗"}` : null;
-  const tiles = envTile(o, "arena", "场地", a?.name ?? null, a?.text ?? "", `候选：${o.arenaOptions.map((x) => arena(x).name).join(" / ")}`, "", o.arenaId) +
+  const tiles = tableCleared(o) ? `<div class="tile-slot"></div>`.repeat(3) : envTile(o, "arena", "场地", a?.name ?? null, a?.text ?? "", `候选：${o.arenaOptions.map((x) => arena(x).name).join(" / ")}`, "", o.arenaId) +
     envTile(o, "rule", "胜利规则", r ? r.name : null, r ? `${r.text}（最多 ${r.maxRounds} 轮）` : "", "第 1 轮下注后翻开", "", o.ruleId) +
     envTile(o, "pe", "公共效果", peLabel, pe ? pe.text : "", r ? "已全押，本手没有" : "和规则一起翻开", peState, o.publicEffectId);
   let status = phaseLabel(o);
@@ -957,6 +968,7 @@ function phaseLabel(o: Observation): string {
 }
 
 function foeRow(o: Observation): string {
+  if (tableCleared(o)) return emptyRow();
   const opp = o.opponent;
   const lb = ui.lastBattle && ui.lastBattle.hand === o.handNo ? ui.lastBattle : null;
   if (lb) return battleUnits(lb.result.final[AI], lb.teams[AI].reveal, o);
@@ -974,6 +986,7 @@ function foeRow(o: Observation): string {
 }
 
 function myRow(o: Observation): string {
+  if (tableCleared(o)) return emptyRow();
   const lb = ui.lastBattle && ui.lastBattle.hand === o.handNo ? ui.lastBattle : null;
   if (lb) return battleUnits(lb.result.final[HUMAN], lb.teams[HUMAN].reveal, o);
   const placing = o.phase === "place" && o.toAct.includes(HUMAN);

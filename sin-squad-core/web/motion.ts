@@ -9,8 +9,9 @@ export const reducedMotion = () => matchMedia("(prefers-reduced-motion: reduce)"
 
 type Rects = Map<string, DOMRect>;
 
-/** 重画前每张牌的样子：屏幕位置、在哪个父元素的第几个、是不是背面朝上。 */
-interface Seen { rect: DOMRect; parent: Element | null; index: number; down: boolean }
+/** 重画前每张牌的样子：屏幕位置、在哪个父元素的第几个、是不是背面朝上；桌上的牌还记下它在桌面坐标里的位置（收牌用）。 */
+interface Seen { rect: DOMRect; parent: Element | null; index: number; down: boolean; box: Box | null }
+interface Box { left: number; top: number; w: number; h: number }
 export type Snapshot = Map<string, Seen>;
 
 const indexIn = (el: Element) => (el.parentElement ? [...el.parentElement.children].indexOf(el) : -1);
@@ -19,9 +20,28 @@ const indexIn = (el: Element) => (el.parentElement ? [...el.parentElement.childr
 export function measure(root: Element): Snapshot {
   const m: Snapshot = new Map();
   for (const el of root.querySelectorAll<HTMLElement>("[data-key]")) {
-    m.set(el.dataset.key!, { rect: el.getBoundingClientRect(), parent: el.parentElement, index: indexIn(el), down: el.classList.contains("down") });
+    m.set(el.dataset.key!, {
+      rect: el.getBoundingClientRect(), parent: el.parentElement, index: indexIn(el), down: el.classList.contains("down"),
+      box: tableBox(el),
+    });
   }
   return m;
+}
+
+/**
+ * 牌在桌面坐标里的位置（不含任何 transform）；不在桌上就是 null。
+ * 带 3D 变换的行（.row、.center）在 Chrome 里也算 offsetParent，所以一层层往上加到 .table 为止。
+ */
+function tableBox(el: HTMLElement): Box | null {
+  let left = 0;
+  let top = 0;
+  let n: HTMLElement | null = el;
+  while (n && !n.classList.contains("table")) {
+    left += n.offsetLeft;
+    top += n.offsetTop;
+    n = n.offsetParent as HTMLElement | null;
+  }
+  return n ? { left, top, w: el.offsetWidth, h: el.offsetHeight } : null;
 }
 
 const center = (r: DOMRect) => [r.left + r.width / 2, r.top + r.height / 2] as const;
@@ -284,4 +304,37 @@ export function shatter(target: Element | null) {
 export function crumble(target: Element | null) {
   if (!target) return;
   place(target, "crumble", "<i></i><i></i><i></i><i></i><i></i><i></i>", 1100);
+}
+
+/**
+ * 收牌：一手结束后，桌上的牌（两排人物和中间三块）一张接一张抬起来、在空中翻到背面，滑到桌子右边摞起来后消失。
+ * 牌从原来那一行里拿出来，直接挂在桌面上、钉在原来的位置，所以动画还在斜桌的 3D 里，也不影响新画面的排版。
+ * 返回 false 表示不收（不在桌上、或者系统要求减少动态效果），调用方直接删掉。
+ */
+export function collect(el: HTMLElement, seen: Seen | undefined, order: number): boolean {
+  const table = el.closest<HTMLElement>(".table");
+  if (!table || !seen?.box || reducedMotion()) return false;
+  const b = seen.box;
+  el.removeAttribute("data-key");
+  for (const k of ["data-act", "data-arg", "data-drag", "data-drop", "data-unit", "role", "tabindex"]) el.removeAttribute(k);
+  el.setAttribute("data-fx", "");
+  el.classList.add("fx-collect");
+  Object.assign(el.style, { position: "absolute", left: `${b.left}px`, top: `${b.top}px`, width: `${b.w}px`, height: `${b.h}px`, margin: "0" });
+  table.appendChild(el);
+  const delay = order * 70;
+  if (!el.classList.contains("down")) {
+    el.classList.add("down");
+    turnOver(el, false, delay);
+  }
+  // 桌面坐标里直接算：牌挂在 .table 上，平移就是沿着斜放的桌面走
+  const dx = table.clientWidth - 34 - (b.left + b.w / 2);
+  const dy = table.clientHeight * 0.5 - (b.top + b.h / 2);
+  const spin = (order % 2 ? 1 : -1) * (6 + (order % 3) * 4);
+  el.animate([
+    { transform: "none" },
+    { transform: "translateZ(30px)", offset: 0.4, easing: "cubic-bezier(.4,0,.2,1)" },
+    { transform: `translate(${dx}px, ${dy}px) translateZ(${14 + order}px) rotate(${spin}deg) scale(.62)`, offset: 0.88 },
+    { transform: `translate(${dx}px, ${dy}px) translateZ(${14 + order}px) rotate(${spin}deg) scale(.6)`, visibility: "hidden" },
+  ], { duration: 1150, delay, easing: "cubic-bezier(.45,0,.3,1)", fill: "forwards" }).finished.then(() => el.remove(), () => el.remove());
+  return true;
 }

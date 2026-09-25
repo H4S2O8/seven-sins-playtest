@@ -6,6 +6,7 @@
  * - 不带 key 的元素按位置和标签名复用。
  * - 带 data-fx 的元素是动画临时挂上去的（伤害数字、气泡、碎片），morph 不碰它们，由动画自己删除。
  * - class 里以 fx- 开头的是动画临时加的，morph 保留它们。
+ * - 这次没人认领、要删掉的带 key 元素先交给 onExit：它返回 true 就由它自己播完退场动画再删（例如对局结束把牌收走）。
  */
 
 const isFx = (n: Node | null): boolean => n instanceof Element && n.hasAttribute("data-fx");
@@ -15,7 +16,7 @@ const skipFx = (n: ChildNode | null): ChildNode | null => {
 };
 const keyOf = (n: Node): string | null => (n instanceof Element ? n.getAttribute("data-key") : null);
 
-export function morph(root: Element, html: string) {
+export function morph(root: Element, html: string, onExit?: (el: Element) => boolean) {
   const tpl = document.createElement("template");
   tpl.innerHTML = html;
   const pool = new Map<string, Element>();
@@ -89,5 +90,8 @@ export function morph(root: Element, html: string) {
   }
 
   patch(root, tpl.content as unknown as Element);
-  for (const el of leftovers) if (pool.has(el.getAttribute("data-key")!)) el.remove();
+  for (const el of leftovers) {
+    if (!pool.has(el.getAttribute("data-key")!)) continue;
+    if (!onExit?.(el)) el.remove();
+  }
 }
