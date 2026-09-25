@@ -97,13 +97,15 @@ export interface UnitSnapshot {
   shape: AttackShape;
   armor: number;
   barrier: number;
+  /** 身上的装备（夺装者会改变它）。 */
+  equipment: string[];
 }
 
 export function snapshot(u: Unit): UnitSnapshot {
   return {
     seat: u.seat, pos: u.pos, characterId: u.def?.id ?? null, alive: u.alive,
     atk: u.atk, hp: round1(u.hp), startHp: u.startHp, shape: u.shape,
-    armor: armorOf(u), barrier: u.barrier,
+    armor: armorOf(u), barrier: u.barrier, equipment: u.equipmentIds.slice(),
   };
 }
 

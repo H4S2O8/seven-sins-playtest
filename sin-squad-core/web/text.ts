@@ -115,10 +115,41 @@ export function battleLine(ev: BattleEvent, names: (seat: Seat, pos: number) => 
         : `${u(ev.seat, ev.pos)} 对位已倒下，这一轮用来转线`;
     case "death":
       return `${u(ev.seat, ev.pos)} 倒下`;
+    case "recoil":
+      return `${u(ev.seat, ev.pos)} 反击 ${u(ev.targetSeat, ev.targetPos)}（${num(ev.amount)}）`;
+    case "trigger":
+      return names(ev.seat, ev.pos) === ev.name
+        ? `${u(ev.seat, ev.pos)}：${ev.text}`
+        : `${u(ev.seat, ev.pos)}【${ev.name}】${ev.text}`;
     case "note":
       return ev.text;
   }
 }
+
+/** 卡面上的效果文字（完整说明点卡上的 ? 查看）。 */
+export const CARD_TEXT: Record<string, string> = {
+  WR1: "对手每下注或加注一次，攻 +2",
+  WR2: "每受到一段伤害，攻 +1",
+  WR3: "对手加过注：<b>第一轮</b>攻击翻倍",
+  GR1: "你每投入 10 筹码，+1/+1（最多 +4/+4）",
+  GR2: "你每付一次操作费，<b>开战</b>得 1 层屏障",
+  GR3: "<b>击倒</b>敌人：攻 +2，夺走它的装备加成",
+  GL1: "<b>吸血</b>：造成多少伤害就回多少血",
+  GL2: "排位时可以<b>吞掉</b>一名队友，获得它的攻和血",
+  GL3: "每有一人倒下（不论敌我），+1/+3",
+  EN1: "亮牌后，<b>偷看</b>对手一张暗牌",
+  EN2: "<b>开战</b>：攻和形状变得和对位一样（取高）",
+  EN3: "<b>开战</b>：夺走对位的装备",
+  SL1: "你每过牌一次，+0/+4",
+  SL2: "<b>第一轮沉睡</b>；你每过牌一次，攻 +2",
+  SL3: "你没付过操作费：<b>开战</b>全队 +0/+5",
+  PR1: "<b>被亮出</b>：+3/+4",
+  PR2: "<b>满血</b>时攻击翻倍",
+  PR3: "<b>被亮出</b>：对手第 1 轮下注不能弃牌",
+  LU1: "<b>守护</b>：相邻队友被攻击时，改由它承受",
+  LU2: "<b>开战</b>：与对位缔结，两人本场都不出手",
+  LU3: "<b>开战</b>：对位第一轮改打它自己的队友",
+};
 
 export const REASON_TEXT: Record<BattleResult["reason"], string> = {
   达成规则: "达成胜利规则",
@@ -146,6 +177,7 @@ export const HOW_TO_PLAY = `
 <h3>战斗</h3>
 <ul>
   <li>双方同时出手，每人打自己的<b>对位</b>（同号位的敌人）。对位倒下后，要花一轮转线，然后改打敌方血最少的人。</li>
+  <li><b>碰撞</b>：每次攻击都是一次碰撞。对位互打时双方各吃对方一次；如果你打的人没在打你（转线后去收人头、两人打一个），它会把自己的攻打回来。这一轮不出手的人（沉睡、缔结、转线中）不反击。</li>
   <li><b>形状克制环</b>：重击 → 护甲 → 连击 → 屏障 → 重击。
     重击是一整段伤害，护甲每次只减一点，所以重击克护甲；
     连击把伤害分成两段，护甲每段都减，所以护甲克连击；

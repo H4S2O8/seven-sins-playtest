@@ -8,7 +8,7 @@ import { Table, validatePlacement, type Placement } from "../src/game/table.js";
 import { legalActions, observe, type Observation } from "../src/game/view.js";
 import type { AttackShape, Seat } from "../src/types.js";
 import {
-  AI, HOW_TO_PLAY, HUMAN, REASON_TEXT, SIN_COLOR, SIN_GLYPH, battleLine, esc, logLine, num, posName, shapeName,
+  AI, CARD_TEXT, HOW_TO_PLAY, HUMAN, REASON_TEXT, SIN_COLOR, SIN_GLYPH, battleLine, esc, logLine, num, posName, shapeName,
 } from "./text.js";
 
 /**
@@ -211,14 +211,31 @@ function lunge(from: HTMLElement | null, to: HTMLElement | null, ms: number) {
   );
 }
 
-function roundCaption(b: Playback, evs: BattleEvent[]): string[] {
-  const names = (seat: Seat, pos: number) => {
+function unitNames(b: Playback) {
+  return (seat: Seat, pos: number) => {
     const id = b.result.start[seat][pos].characterId;
     return id ? character(id).name : "空位";
   };
-  const key = evs.filter((e) => e.type === "death" || e.type === "switch" || e.type === "blocked" || e.type === "note");
+}
+
+function roundCaption(b: Playback, evs: BattleEvent[]): string[] {
+  const names = unitNames(b);
+  const key = evs.filter((e) => ["death", "switch", "blocked", "note", "trigger", "recoil"].includes(e.type));
   const lines = (key.length ? key : evs.filter((e) => e.type === "attack")).map((e) => battleLine(e, names));
   return lines.length ? lines : ["这一轮没有人出手"];
+}
+
+/** 能力 / 场地 / 公共效果生效：卡片闪一下，头上冒出说明气泡。 */
+function bubble(e: Extract<BattleEvent, { type: "trigger" }>, own: boolean) {
+  const el = unitEl(e.seat, e.pos);
+  if (!el) return;
+  el.classList.remove("proc");
+  void el.offsetWidth; // 让闪光动画可以重播
+  el.classList.add("proc");
+  const d = document.createElement("div");
+  d.className = `bubble ${own ? "own" : "env"}`;
+  d.innerHTML = own ? esc(e.text) : `<small>${esc(e.name)}</small>${esc(e.text)}`;
+  el.appendChild(d);
 }
 
 async function playBattle(b: Playback) {
@@ -228,19 +245,37 @@ async function playBattle(b: Playback) {
     await sleep(ms / b.speed);
     while (alive() && b.paused) await sleep(100);
   };
-  await wait(1100); // 翻牌
+  const names = unitNames(b);
+  const isOwn = (e: Extract<BattleEvent, { type: "trigger" }>) => names(e.seat, e.pos) === e.name;
+  await wait(1000); // 翻牌
+
+  // 开战时：逐个播放生效的能力、场地、公共效果
+  for (const e of b.result.events.filter((x) => x.round === 0)) {
+    if (!alive()) return;
+    b.caption = ["开战", battleLine(e, names)];
+    render();
+    if (e.type === "trigger") bubble(e, isOwn(e));
+    await wait(900);
+  }
+
   const total = b.result.timeline.length;
   while (alive() && b.step < total) {
     const r = b.step + 1;
     const evs = b.result.events.filter((e) => e.round === r);
-    // 出手：依次冲向目标
-    const attacks = evs.filter((e): e is Extract<BattleEvent, { type: "attack" }> => e.type === "attack");
-    for (const e of attacks) {
+    const firstHit = evs.findIndex((e) => e.type === "damage" || e.type === "death");
+    const cut = firstHit < 0 ? evs.length : firstHit;
+    b.caption = [`第 ${r} 轮`, ...roundCaption(b, evs)];
+    render();
+    // 出手前：沉睡、魅惑、守护、翻倍等提示，然后依次冲向目标；反击的一方撞回去
+    for (const e of evs.slice(0, cut)) {
       if (!alive()) return;
-      lunge(unitEl(e.seat, e.pos), unitEl(e.targetSeat, e.targetPos), 380 / b.speed);
-      await wait(170);
-    }
-    for (const e of evs) {
+      if (e.type === "trigger") { bubble(e, isOwn(e)); await wait(260); }
+      if (e.type === "attack") { lunge(unitEl(e.seat, e.pos), unitEl(e.targetSeat, e.targetPos), 380 / b.speed); await wait(170); }
+      if (e.type === "recoil") {
+        lunge(unitEl(e.seat, e.pos), unitEl(e.targetSeat, e.targetPos), 300 / b.speed);
+        floater(e.seat, e.pos, "反击", "recoil");
+        await wait(140);
+      }
       if (e.type === "blocked") floater(e.seat, e.pos, "屏障破碎", "block");
       if (e.type === "switch") floater(e.seat, e.pos, "转线", "switch");
     }
@@ -248,7 +283,6 @@ async function playBattle(b: Playback) {
     if (!alive()) return;
     // 同时结算：更新到这一轮结束的样子，再飘伤害数字
     b.step = r;
-    b.caption = [`第 ${r} 轮`, ...roundCaption(b, evs)];
     render();
     const dmg = new Map<string, number>();
     for (const e of evs) {
@@ -263,7 +297,15 @@ async function playBattle(b: Playback) {
       if (e.type === "heal") floater(e.seat, e.pos, `+${num(e.amount)}`, "heal", 250);
       if (e.type === "death") unitEl(e.seat, e.pos)?.classList.add("dying");
     }
-    await wait(1000);
+    // 结算后生效的：蓄痛、残羹客、收藏家、吸血……
+    const after = evs.slice(cut).filter((e): e is Extract<BattleEvent, { type: "trigger" }> => e.type === "trigger");
+    await wait(after.length ? 450 : 1000);
+    for (const e of after) {
+      if (!alive()) return;
+      bubble(e, isOwn(e));
+      await wait(420);
+    }
+    if (after.length) await wait(500);
   }
   if (!alive()) return;
   b.done = true;
@@ -317,6 +359,8 @@ function bodyOf(id: string, equip: string | null): Body {
 
 interface CardOpts {
   equip?: string | null;
+  /** 战斗中身上的全部装备（夺装者可能让一人带两件）；给了就不看 equip。 */
+  equipList?: string[];
   body?: Body;
   dead?: boolean;
   flag?: string;
@@ -336,14 +380,14 @@ function card(id: string, o: CardOpts = {}) {
   const b = o.body ?? bodyOf(id, equip);
   const atkCls = b.atk > c.atk ? "up" : b.atk < c.atk ? "down" : "";
   const hpCls = b.hp < b.startHp ? "hurt" : b.hp > c.hp ? "up" : "";
-  const eq = equip ? equipment(equip) : null;
+  const eqs = (o.equipList ?? (equip ? [equip] : [])).map((x) => equipment(x));
   return `<div class="card ${o.cls ?? ""} ${o.dead ? "dead" : ""} ${o.act ? "clickable" : ""} ${b.barrier ? "shielded" : ""}"
       style="--sin:${SIN_COLOR[c.sin]}"${o.unit ? ` data-unit="${o.unit}"` : ""}${attrs(o)} title="${esc(`${c.name}（${c.sin}）：${c.ability}`)}">
     <div class="art"><span class="glyph">${SIN_GLYPH[c.sin]}</span></div>
     <div class="ribbon">${c.name}</div>
-    <div class="tag">${c.tag}</div>
-    ${eq ? `<div class="equip" title="${esc(`${eq.name}：${eq.text}`)}">⚙ ${eq.name}</div>` : ""}
-    <span class="shape-badge ${b.shape}" title="${shapeName(b.shape)}">${b.shape === "heavy" ? "重" : "连"}</span>
+    <div class="text">${CARD_TEXT[id] ?? esc(c.ability)}</div>
+    ${eqs.length ? `<div class="equip" title="${esc(eqs.map((e) => `${e.name}：${e.text}`).join("；"))}">⚙ ${eqs.map((e) => e.name).join("、")}</div>` : ""}
+    <span class="shape-badge ${b.shape}" title="${shapeName(b.shape)}">${shapeName(b.shape)}</span>
     ${b.armor ? `<span class="armor-badge" title="护甲 ${b.armor}">${b.armor}</span>` : ""}
     ${b.barrier ? `<span class="barrier-badge" title="屏障 ${b.barrier}">${b.barrier}</span>` : ""}
     <span class="gem atk ${atkCls}">${num(b.atk)}</span>
@@ -498,7 +542,7 @@ function phaseLabel(o: Observation): string {
 function foeRow(o: Observation): string {
   const opp = o.opponent;
   const lb = ui.lastBattle && ui.lastBattle.hand === o.handNo ? ui.lastBattle : null;
-  if (lb) return battleUnits(lb.result.final[AI], lb.equipment[AI], lb.teams[AI].reveal);
+  if (lb) return battleUnits(lb.result.final[AI], lb.teams[AI].reveal);
   const peeking = o.phase === "peek" && o.toAct.includes(HUMAN);
   return [0, 1, 2].map((pos) => {
     const eq = opp.equipment[pos];
@@ -514,7 +558,7 @@ function foeRow(o: Observation): string {
 
 function myRow(o: Observation): string {
   const lb = ui.lastBattle && ui.lastBattle.hand === o.handNo ? ui.lastBattle : null;
-  if (lb) return battleUnits(lb.result.final[HUMAN], lb.equipment[HUMAN], lb.teams[HUMAN].reveal);
+  if (lb) return battleUnits(lb.result.final[HUMAN], lb.teams[HUMAN].reveal);
   const placing = o.phase === "place" && o.toAct.includes(HUMAN);
   if (placing) {
     const dealt = o.me.dealt;
@@ -544,18 +588,18 @@ function myRow(o: Observation): string {
   }).join("");
 }
 
-function battleUnits(snaps: UnitSnapshot[], equip: (string | null)[], reveal: number) {
+function battleUnits(snaps: UnitSnapshot[], reveal: number) {
   return snaps.map((u) => {
     const key = `${u.seat}-${u.pos}`;
     if (!u.characterId) return slot("空位", { unit: key });
     const body: Body = { atk: u.atk, hp: u.hp, startHp: u.startHp, shape: u.shape, armor: u.armor, barrier: u.barrier };
-    return card(u.characterId, { equip: equip[u.pos], body, dead: !u.alive, unit: key, flag: u.pos === reveal ? "亮" : undefined });
+    return card(u.characterId, { equipList: u.equipment, body, dead: !u.alive, unit: key, flag: u.pos === reveal ? "亮" : undefined });
   }).join("");
 }
 
 function battleRow(b: Playback, seat: Seat) {
   const snaps = b.step === 0 ? b.result.start[seat] : b.result.timeline[b.step - 1][seat];
-  const html = battleUnits(snaps, b.equipment[seat], b.teams[seat].reveal);
+  const html = battleUnits(snaps, b.teams[seat].reveal);
   if (seat === AI && b.step === 0) return html.replaceAll('class="card ', 'class="card flip-in ');
   return html;
 }

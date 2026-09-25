@@ -10,7 +10,7 @@ import { roundEndClaims, setupVictory, timeoutWinner, type VictoryState } from "
 /**
  * 回合制战斗。完全确定：同样的输入永远得到同样的结果。
  *
- * 每轮：确定出手者和目标 → 守护改写目标 → 连击分两段 → 屏障挡段、护甲减段
+ * 每轮：确定出手者和目标 → 守护改写目标 → 连击分两段 → 碰撞反伤 → 屏障挡段、护甲减段
  * → 双方同时扣血 → 吸血 → 轮末效果 → 移除倒下的人 → 触发“有人倒下”的能力 → 判定胜负。
  */
 
@@ -26,11 +26,15 @@ export interface BattleInput {
 
 export type BattleEvent =
   | { round: number; type: "attack"; seat: Seat; pos: number; targetSeat: Seat; targetPos: number; segments: number[] }
+  /** 碰撞：被单向攻击的人把自己的攻打回攻击者。 */
+  | { round: number; type: "recoil"; seat: Seat; pos: number; targetSeat: Seat; targetPos: number; amount: number }
   | { round: number; type: "blocked"; seat: Seat; pos: number }
   | { round: number; type: "damage"; seat: Seat; pos: number; amount: number; hpAfter: number }
   | { round: number; type: "heal"; seat: Seat; pos: number; amount: number }
   | { round: number; type: "switch"; seat: Seat; pos: number; remaining: number }
   | { round: number; type: "death"; seat: Seat; pos: number }
+  /** 能力、场地、公共效果在某人身上生效（给画面播放用；round 0 = 开战时）。 */
+  | { round: number; type: "trigger"; seat: Seat; pos: number; name: string; text: string }
   | { round: number; type: "note"; text: string };
 
 export interface BattleResult {
@@ -80,6 +84,11 @@ class Battle {
     return this.env.has(id);
   }
 
+  /** 记一条“某人身上有东西生效了”，给画面播放用。 */
+  private trig(u: Unit, name: string, text: string) {
+    this.events.push({ round: this.round, type: "trigger", seat: u.seat, pos: u.pos, name, text });
+  }
+
   /** 静默书库：第 1 轮所有人物能力失效，开战时能力也不发动。 */
   private abilityOn(u: Unit, name: string): boolean {
     if (!u.def || u.def.name !== name) return false;
@@ -104,6 +113,7 @@ class Battle {
       }
       eater.atk += eaten.def!.atk;
       eater.hp += eaten.def!.hp;
+      this.trig(eater, "饕餮", `吞掉${eaten.def!.name}：+${eaten.def!.atk}/+${eaten.def!.hp}`);
       team[setup.eat.eaten] = emptyUnit(seat, setup.eat.eaten);
     }
     return team;
@@ -114,6 +124,7 @@ class Battle {
     const all = [...A, ...B].filter((u) => u.exists);
     const startAbilities = !this.has("A08");
     const opp = (u: Unit) => this.teams[other(u.seat)][u.pos];
+    if (!startAbilities) this.events.push({ round: 0, type: "note", text: "静默书库：开战时的能力都不发动" });
 
     // 夺装者：同时拿走对位的装备
     if (startAbilities) {
@@ -123,6 +134,10 @@ class Battle {
         if (u.def?.name === "夺装者" && o.exists) {
           u.equipmentIds.push(...before.get(o)!);
           o.equipmentIds = o.equipmentIds.filter((id) => !before.get(o)!.includes(id));
+          if (before.get(o)!.length) {
+            this.trig(u, "夺装者", `夺走「${before.get(o)!.map((id) => equipment(id).name).join("、")}」`);
+            this.trig(o, "夺装者", "装备被夺走");
+          }
         }
       }
     }
@@ -134,52 +149,92 @@ class Battle {
         const me = this.bet[seat];
         const foe = this.bet[other(seat)];
         for (const u of this.teams[seat].filter((x) => x.exists)) {
-          switch (u.def!.name) {
-            case "挑衅者": u.atk += 2 * foe.betOrRaiseCount; break;
-            case "金主": { const k = Math.min(4, Math.floor(me.invested / 10)); u.atk += k; u.hp += 2 * k; break; }
-            case "盾税官": this.addBarrier(u, Math.min(2, me.opsPaid), false); break;
-            case "瞌睡客": u.hp += 6 * me.checkCount; break;
-            case "沉眠巨像": u.atk += 2 * me.checkCount; break;
-            case "炫耀者": if (me.revealedPos === u.pos) { u.atk += 2; u.hp += 6; } break;
+          const name = u.def!.name;
+          switch (name) {
+            case "挑衅者": {
+              const n = foe.betOrRaiseCount;
+              if (n) { u.atk += 2 * n; this.trig(u, name, `对手加注 ${n} 次：攻 +${2 * n}`); }
+              break;
+            }
+            case "金主": {
+              const k = Math.min(4, Math.floor(me.invested / 10));
+              if (k) { u.atk += k; u.hp += k; this.trig(u, name, `投入 ${me.invested}：+${k}/+${k}`); }
+              break;
+            }
+            case "盾税官": {
+              const n = Math.min(2, me.opsPaid);
+              if (n) { this.addBarrier(u, n, false); this.trig(u, name, `付过 ${me.opsPaid} 次操作费：屏障 +${n}`); }
+              break;
+            }
+            case "瞌睡客":
+              if (me.checkCount) { u.hp += 4 * me.checkCount; this.trig(u, name, `过牌 ${me.checkCount} 次：血 +${4 * me.checkCount}`); }
+              break;
+            case "沉眠巨像":
+              if (me.checkCount) { u.atk += 2 * me.checkCount; this.trig(u, name, `过牌 ${me.checkCount} 次：攻 +${2 * me.checkCount}`); }
+              break;
+            case "炫耀者":
+              if (me.revealedPos === u.pos) { u.atk += 3; u.hp += 4; this.trig(u, name, "被亮出：+3/+4"); }
+              break;
           }
         }
-        if (me.opsPaid === 0 && this.teams[seat].some((u) => u.exists && u.def!.name === "静息药师")) {
-          for (const u of this.teams[seat]) if (u.exists) u.hp += 8;
+        const healer = this.teams[seat].find((u) => u.exists && u.def!.name === "静息药师");
+        if (me.opsPaid === 0 && healer) {
+          for (const u of this.teams[seat]) if (u.exists) u.hp += 5;
+          this.trig(healer, "静息药师", "没付操作费：全队血 +5");
         }
       }
       // 摹拳客：看的是对位此刻的攻和形状
       const copy = all.filter((u) => u.def!.name === "摹拳客" && opp(u).exists).map((u) => [u, opp(u).atk, opp(u).shape] as const);
-      for (const [u, atk, shape] of copy) { u.atk = Math.max(u.atk, atk); u.shape = shape; }
+      for (const [u, atk, shape] of copy) {
+        u.atk = Math.max(u.atk, atk);
+        u.shape = shape;
+        this.trig(u, "摹拳客", `复制对位：攻 ${u.atk}，${shape === "heavy" ? "重击" : "连击"}`);
+      }
     }
 
     // 场地的开战效果
     for (const team of this.teams) {
       const here = team.filter((u) => u.exists);
       if (here.length === 0) continue;
-      if (this.has("A19")) { const lo = minBy(here, (u) => u.hp); lo.atk += 2; lo.hp += 4; }
-      if (this.has("A20")) { const hi = maxBy(here, (u) => u.atk); hi.atk = Math.max(0, hi.atk - 3); }
-      if (this.has("A13")) for (const u of here) u.atk += Math.floor(this.input.pot / 40);
-      if (this.has("A22")) { const avg = Math.floor(here.reduce((s, u) => s + u.hp, 0) / here.length); for (const u of here) u.hp = avg; }
-      if (this.has("A14")) for (const u of here) this.addBarrier(u, 1, false);
-      if (this.has("A16")) this.addBarrier(maxBy(here, (u) => u.atk), 1, false);
-      if (this.has("P02")) for (const u of here) u.armorBase += 2;
+      if (this.has("A19")) { const lo = minBy(here, (u) => u.hp); lo.atk += 2; lo.hp += 3; this.trig(lo, "陋巷", "血最低：+2/+3"); }
+      if (this.has("A20")) { const hi = maxBy(here, (u) => u.atk); hi.atk = Math.max(0, hi.atk - 3); this.trig(hi, "高塔倾覆", "攻最高：攻 -3"); }
+      if (this.has("A13")) {
+        const b = Math.floor(this.input.pot / 40);
+        if (b) for (const u of here) { u.atk += b; this.trig(u, "赌徒酒窖", `攻 +${b}`); }
+      }
+      if (this.has("A22")) {
+        const avg = Math.floor(here.reduce((s, u) => s + u.hp, 0) / here.length);
+        for (const u of here) { u.hp = avg; this.trig(u, "均摊之厅", `血改为 ${avg}`); }
+      }
+      if (this.has("A14")) for (const u of here) { this.addBarrier(u, 1, false); this.trig(u, "石柱庭院", "屏障 +1"); }
+      if (this.has("A16")) { const hi = maxBy(here, (u) => u.atk); this.addBarrier(hi, 1, false); this.trig(hi, "镜面冷库", "攻最高：屏障 +1"); }
+      if (this.has("P02")) for (const u of here) { u.armorBase += 2; this.trig(u, "铁幕", "护甲 +2"); }
     }
     for (const u of all) { u.startHp = u.hp; u.maxHp = u.hp; }
     // 开场审判是开战后的伤害，不改变开战血量
     if (this.has("P29")) {
       for (const team of this.teams) {
         const here = team.filter((u) => u.exists);
-        if (here.length) maxBy(here, (u) => armorOf(u)).hp -= 4;
+        if (here.length) {
+          const u = maxBy(here, (x) => armorOf(x));
+          u.hp -= 3;
+          this.trig(u, "开场审判", "护甲最高：受到 3 伤害");
+        }
       }
     }
 
     // 缔结、魅惑、沉眠
     for (const u of all) {
       const o = opp(u);
-      if (u.def!.name === "沉眠巨像") u.skipRounds = 2;
+      if (u.def!.name === "沉眠巨像") u.skipRounds = 1;
       if (!startAbilities || !o.exists) continue;
-      if (u.def!.name === "牵线人") { u.bonded = true; o.bonded = true; }
-      if (u.def!.name === "魅惑者") o.charmed = true;
+      if (u.def!.name === "牵线人") {
+        u.bonded = true;
+        o.bonded = true;
+        this.trig(u, "牵线人", "与对位缔结：双方本场都不出手");
+        this.trig(o, "牵线人", "被缔结：本场不出手");
+      }
+      if (u.def!.name === "魅惑者") { o.charmed = true; this.trig(o, "魅惑者", "被魅惑：第一轮打自己人"); }
     }
 
     // 屏障回声：开战就带屏障的人也算“第一次获得”
@@ -210,6 +265,7 @@ class Battle {
       if (t !== u && t.alive) {
         t.barrierEchoed = true;
         t.barrier = Math.min(MAX_BARRIER, t.barrier + 1);
+        this.trig(t, "屏障回声", "屏障 +1");
       }
     }
   }
@@ -254,11 +310,13 @@ class Battle {
     if (this.has("P06") && (r === 2 || r === 4 || r === 6)) {
       for (const seat of [0, 1] as Seat[]) {
         const al = this.alive(seat);
-        if (al.length) this.addBarrier(minBy(al, health), 1);
+        if (al.length) { const u = minBy(al, health); this.addBarrier(u, 1); this.trig(u, "庇护潮", "屏障 +1"); }
       }
     }
-    if (this.has("P30") && r === 3) {
-      for (const u of [...this.alive(0), ...this.alive(1)]) if (u.lostTotal === 0) this.addBarrier(u, 1);
+    if (this.has("P30") && r === 2) {
+      for (const u of [...this.alive(0), ...this.alive(1)]) {
+        if (u.lostTotal === 0) { this.addBarrier(u, 1); this.trig(u, "迟到的庇护", "屏障 +1"); }
+      }
     }
 
     // 1. 确定出手者和目标
@@ -269,17 +327,17 @@ class Battle {
       const lowest = actors.length ? minBy(actors, (u) => u.hp) : null;
       for (const u of actors) {
         if (u.bonded) continue;
-        if (r <= u.skipRounds) continue;
+        if (r <= u.skipRounds) { this.trig(u, "沉眠巨像", "沉睡中，不出手"); continue; }
         if (this.has("A06") && r === 1) continue;
         if (this.has("A21") && r === 1 && u !== lowest) continue;
-        if (u.skipNext) { u.skipNext = false; continue; }
+        if (u.skipNext) { u.skipNext = false; this.trig(u, "沉重后坐", "这一轮不出手"); continue; }
 
         let target: Unit | null = null;
         let opposite = false;
         const o = this.teams[other(seat)][u.pos];
         if (u.charmed && r === 1) {
           const adj = this.teams[seat].filter((x) => x.alive && Math.abs(x.pos - u.pos) === 1);
-          if (adj.length) target = minBy(adj, (x) => x.hp);
+          if (adj.length) { target = minBy(adj, (x) => x.hp); this.trig(u, "魅惑者", "被魅惑：攻击队友"); }
         }
         if (!target) {
           if (o.alive) {
@@ -299,7 +357,7 @@ class Battle {
             target = minBy(foes, (x) => x.hp);
           }
         }
-        const times = this.has("P13") && r === 4 && u.attacks < 3 ? 2 : 1;
+        const times = this.has("P13") && r === 3 && u.attacks < 2 ? 2 : 1;
         for (let k = 0; k < times; k++) attacks.push({ a: u, t: target, opposite, no: 0 });
       }
     }
@@ -310,20 +368,27 @@ class Battle {
       const guards = this.teams[atk.t.seat].filter(
         (g) => g.alive && g !== atk.t && Math.abs(g.pos - atk.t.pos) === 1 && this.abilityOn(g, "同行药袋"),
       );
-      if (guards.length) { atk.t = guards[0]; atk.opposite = false; }
+      if (guards.length) {
+        this.trig(guards[0], "同行药袋", `守护：替${atk.t.def!.name}挡下`);
+        atk.t = guards[0];
+        atk.opposite = false;
+      }
     }
 
     // 集火回响：同一轮被两人以上攻击，先得一层屏障
     if (this.has("P14")) {
       const by = new Map<Unit, Set<Unit>>();
       for (const { a, t } of attacks) if (a.seat !== t.seat) (by.get(t) ?? by.set(t, new Set()).get(t)!).add(a);
-      for (const [t, set] of by) if (set.size >= 2 && !t.focusEchoUsed) { t.focusEchoUsed = true; this.addBarrier(t, 1); }
+      for (const [t, set] of by) {
+        if (set.size >= 2 && !t.focusEchoUsed) { t.focusEchoUsed = true; this.addBarrier(t, 1); this.trig(t, "集火回响", "屏障 +1"); }
+      }
     }
 
     // 3. 算出每次攻击的伤害并拆段
     /** 一次攻击：护甲按段减到 0 为止，但整次攻击只要有一段打中，至少扣 1。 */
     interface Hit { a: Unit; t: Unit; sum: number; landed: boolean; minOne: boolean }
-    interface Seg { a: Unit; t: Unit; amount: number; hit: Hit }
+    /** 一段伤害：a 是伤害来源，t 是承受者；recoil = 碰撞反伤。 */
+    interface Seg { a: Unit; t: Unit; amount: number; hit: Hit; recoil: boolean }
     const segs: Seg[] = [];
     const hitList: Hit[] = [];
     for (const atk of attacks) {
@@ -335,24 +400,36 @@ class Battle {
       if (this.has("P10") && r === 1) d += 2;
       if (this.has("P16") && opposite) d += 1;
       if (this.has("A05") && opposite) d += 1;
-      if (this.has("P18") && r >= 5) d += 1;
+      if (this.has("P18") && r >= 4) d += 1;
       if (this.has("A01") && a.switched && !opposite) d = Math.max(1, d - 2);
       if (this.has("P23") && health(a) < 0.3) d += Math.max(1, Math.floor(d * 0.25));
-      if (this.abilityOn(a, "无瑕刺客") && a.hp >= a.maxHp) d *= 2;
-      if (this.abilityOn(a, "清算者") && r === 1 && this.bet[other(a.seat)].betOrRaiseCount > 0) d *= 2;
+      if (this.abilityOn(a, "无瑕刺客") && a.hp >= a.maxHp) { d *= 2; this.trig(a, "无瑕刺客", "满血：攻击翻倍"); }
+      if (this.abilityOn(a, "清算者") && r === 1 && this.bet[other(a.seat)].betOrRaiseCount > 0) { d *= 2; this.trig(a, "清算者", "对手加过注：首轮翻倍"); }
       if (this.has("P11") && (atk.no === 3 || atk.no === 6)) d *= 2;
       if (this.has("P26") && a.pos === 1) d = Math.floor(d * 1.25 * 2) / 2;
       const parts = a.shape === "multi" ? [d / 2, d / 2] : [d];
       this.events.push({ round: r, type: "attack", seat: a.seat, pos: a.pos, targetSeat: t.seat, targetPos: t.pos, segments: parts });
       const hit: Hit = { a, t, sum: 0, landed: false, minOne: true };
       hitList.push(hit);
-      for (const p of parts) segs.push({ a, t, amount: p, hit });
-      if (this.has("P09") && r >= 3) {
+      for (const p of parts) segs.push({ a, t, amount: p, hit, recoil: false });
+      if (this.has("P09") && r >= 2) {
         // 深夜霜降：独立的一段 1 点伤害，护甲可以挡掉
         const frost: Hit = { a, t, sum: 0, landed: false, minOne: false };
         hitList.push(frost);
-        segs.push({ a, t, amount: 1, hit: frost });
+        segs.push({ a, t, amount: 1, hit: frost, recoil: false });
       }
+    }
+    // 碰撞：攻击都是一次碰撞。对位互打时双方各吃对方一次，已经在上面算过；
+    // 单向攻击（转线、集火、被守护改写、被魅惑打队友）时，被打的人把自己的攻整段打回攻击者。
+    // 这一轮不出手的人（沉睡、缔结、转线中、被定住）也不反击。
+    const acting = new Set(attacks.map((x) => x.a));
+    for (const { a, t } of attacks) {
+      if (attacks.some((x) => x.a === t && x.t === a)) continue;
+      if (!acting.has(t) || t.atk <= 0) continue;
+      this.events.push({ round: r, type: "recoil", seat: t.seat, pos: t.pos, targetSeat: a.seat, targetPos: a.pos, amount: t.atk });
+      const hit: Hit = { a: t, t: a, sum: 0, landed: false, minOne: true };
+      hitList.push(hit);
+      segs.push({ a: t, t: a, amount: t.atk, hit, recoil: true });
     }
     // 屏障按攻击者位置 1→2→3 的顺序决定哪一段先到
     segs.sort((x, y) => x.a.pos - y.a.pos || x.a.seat - y.a.seat);
@@ -389,7 +466,7 @@ class Battle {
       add(hits, t, 1);
       (hitters.get(t) ?? hitters.set(t, new Set()).get(t)!).add(a);
       if (this.has("P03") && real >= 6) add(armorBreaks, t, 1);
-      if (this.has("P12") && real >= 8) a.skipNext = true;
+      if (this.has("P12") && real >= 8 && !s.recoil) a.skipNext = true;
       if (this.has("A10")) {
         for (const x of this.teams[t.seat]) if (x.alive && Math.abs(x.pos - t.pos) === 1) add(dmg, x, 1);
       }
@@ -415,21 +492,24 @@ class Battle {
       if (u.hp <= 0 || !this.abilityOn(u, "嚼盾兽")) continue;
       let heal = v;
       if (this.has("P19")) heal /= 2;
-      if (this.has("P18") && r >= 5) heal /= 2;
+      if (this.has("P18") && r >= 4) heal /= 2;
+      if (u.hp < u.maxHp) this.trig(u, "嚼盾兽", "吸血");
       this.heal(u, heal);
     }
-    for (const [u, n] of hits) if (u.hp > 0 && this.abilityOn(u, "蓄痛拳手")) u.atk += n;
+    for (const [u, n] of hits) {
+      if (u.hp > 0 && this.abilityOn(u, "蓄痛拳手")) { u.atk += n; this.trig(u, "蓄痛拳手", `攻 +${n}`); }
+    }
     for (const [u, n] of armorBreaks) u.armorBase = Math.max(0, u.armorBase - n);
 
     // 7. 攻击带来的自损
     for (const { a, no } of attacks) {
-      if (this.has("A12") && no % 3 === 0) this.loseHp(a, 4);
+      if (this.has("A12") && no % 3 === 0) this.loseHp(a, 3);
       if (this.has("P22") && (no === 2 || no === 4 || no === 6)) { this.loseHp(a, 2); a.pendingBonus += 3; }
     }
 
     // 8. 轮末效果
     if (this.has("A11") && (r === 2 || r === 4 || r === 6)) for (const u of this.livingAll()) this.loseHp(u, 2);
-    if (this.has("A15") && (r === 3 || r === 6)) for (const u of this.livingAll()) u.armorBase = Math.max(0, u.armorBase - 1);
+    if (this.has("A15") && (r === 2 || r === 4)) for (const u of this.livingAll()) u.armorBase = Math.max(0, u.armorBase - 1);
     if (this.has("P24")) for (const u of this.livingAll()) if (u.regenRounds > 0 && u.hp > 0) { u.regenRounds--; this.heal(u, 2); }
 
     // 9. 移除倒下的人，并处理“有人倒下”
@@ -457,7 +537,7 @@ class Battle {
     this.events.push({ round: this.round, type: "damage", seat: u.seat, pos: u.pos, amount: round1(v), hpAfter: u.hp });
     if (this.has("P21") && u.hp > 0) {
       u.bloodSpringAcc += v;
-      while (u.bloodSpringAcc >= 8) { u.bloodSpringAcc -= 8; this.heal(u, 2); }
+      while (u.bloodSpringAcc >= 5) { u.bloodSpringAcc -= 5; this.heal(u, 2); }
     }
   }
 
@@ -472,8 +552,8 @@ class Battle {
     if (this.has("P20") && v - real > 0 && u.barrier < 1) this.addBarrier(u, 1);
     if (this.has("P25") && real > 0) {
       u.healAcc += real;
-      while (u.healAcc >= 6) {
-        u.healAcc -= 6;
+      while (u.healAcc >= 4) {
+        u.healAcc -= 4;
         const o = this.teams[other(u.seat)][u.pos];
         if (o.alive) this.loseHp(o, 2);
       }
@@ -496,10 +576,10 @@ class Battle {
     for (const u of newlyDead) { u.alive = false; u.deathRound = r; }
 
     // 碎裂终章：只触发一次，不连锁
-    if (this.has("P31") && r >= 5) {
+    if (this.has("P31") && r >= 3) {
       for (const u of newlyDead) {
         const o = this.teams[other(u.seat)][u.pos];
-        if (o.alive) this.loseHp(o, 4);
+        if (o.alive) this.loseHp(o, 3);
       }
       const extra = [...this.teams[0], ...this.teams[1]].filter((u) => u.alive && u.hp <= 0);
       for (const u of extra) { u.alive = false; u.deathRound = r; }
@@ -511,13 +591,15 @@ class Battle {
       for (const u of this.livingAll()) {
         if (this.abilityOn(u, "残羹客")) {
           const n = newlyDead.length;
-          u.atk += 2 * n; u.hp += 4 * n; u.maxHp += 4 * n;
+          u.atk += n; u.hp += 3 * n; u.maxHp += 3 * n;
+          this.trig(u, "残羹客", `+${n}/+${3 * n}`);
         }
       }
       for (const v of newlyDead) {
         for (const k of hitters.get(v) ?? []) {
           if (k.alive && k.seat !== v.seat && this.abilityOn(k, "收藏家")) {
             k.atk += 2 + v.eqAtk; k.hp += v.eqHp; k.maxHp += v.eqHp;
+            this.trig(k, "收藏家", `击倒${v.def!.name}：攻 +${2 + v.eqAtk}${v.eqHp ? `，血 +${v.eqHp}` : ""}`);
           }
         }
       }
@@ -525,8 +607,8 @@ class Battle {
         if (this.firstDeathDone[seat] || !newlyDead.some((u) => u.seat === seat)) continue;
         this.firstDeathDone[seat] = true;
         for (const u of this.alive(seat)) {
-          if (this.has("A18")) this.addBarrier(u, 1);
-          if (this.has("P15")) u.pendingBonus += 2;
+          if (this.has("A18")) { this.addBarrier(u, 1); this.trig(u, "余光站台", "队友倒下：屏障 +1"); }
+          if (this.has("P15")) { u.pendingBonus += 2; this.trig(u, "重整", "下一次攻击 +2"); }
         }
       }
     }
@@ -537,11 +619,14 @@ class Battle {
           this.loneTriggered[seat] = true;
           this.addBarrier(al[0], 1);
           al[0].regenRounds = 2;
+          this.trig(al[0], "孤身余粮", "屏障 +1，接下来 2 轮回血");
         }
       }
     }
     if (this.has("A17")) {
-      for (const u of this.livingAll()) if (!u.halfHealthTriggered && health(u) <= 0.5) { u.halfHealthTriggered = true; this.addBarrier(u, 1); }
+      for (const u of this.livingAll()) {
+        if (!u.halfHealthTriggered && health(u) <= 0.5) { u.halfHealthTriggered = true; this.addBarrier(u, 1); this.trig(u, "渗血祭台", "屏障 +1"); }
+      }
     }
     if (this.has("P17")) {
       for (const [t, set] of hitters) {
