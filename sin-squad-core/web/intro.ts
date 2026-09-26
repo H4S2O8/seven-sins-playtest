@@ -1,6 +1,12 @@
 import type { Style } from "../src/ai/agents.js";
 import { character } from "../src/content/characters.js";
 import type { Seat, Sin } from "../src/types.js";
+import {
+  adultConfirmed, ageView, briefView, campaignView, confirmAdult, poolView, resultView, rewardLabel, rewardView,
+  type CampaignCtx, type StageResult, type StageSave,
+} from "./campaign.js";
+import type { CampaignProgress } from "../src/campaign/progress.js";
+import { STAGES } from "../src/campaign/stages.js";
 import { turnCard } from "./motion.js";
 import { isMuted, toggleMuted } from "./music.js";
 import { SIN_LATIN } from "./sigil.js";
@@ -38,6 +44,16 @@ export interface GateHooks {
   done(): void;
   /** 从牌桌里点“新桌”进来时，可以回到原来的牌桌。 */
   canReturn(): boolean;
+  /** 战役：进度和没打完的那一关。 */
+  campaign(): { progress: CampaignProgress; saved: StageSave | null };
+  /** 开这一关的牌桌（重新开始）。 */
+  startStage(no: number): void;
+  /** 继续没打完的那一关。 */
+  resumeStage(): void;
+  /** 一关刚打完的结果（没有就是 null）。 */
+  stageResult(): StageResult | null;
+  /** 挑人、移除。 */
+  pickReward(pick: string, remove: string | null): void;
 }
 
 /** 对手：每种电脑风格一名，立绘是 web/art/foe-<风格>.webp 的半身像。 */
@@ -60,6 +76,12 @@ export const OPPONENTS: Record<Style, { title: string; sin: Sin; quote: string; 
 const HEROES = ["WR3", "GR3", "GL2", "EN1", "SL2", "PR3", "LU3"];
 
 type Screen =
+  | { kind: "age"; refused: boolean }
+  | { kind: "campaign" }
+  | { kind: "brief"; no: number }
+  | { kind: "result" }
+  | { kind: "reward"; pick: string | null; remove: string | null }
+  | { kind: "cpool" }
   | { kind: "title" }
   | { kind: "opponent" }
   | { kind: "pool"; open: Opening }
@@ -91,7 +113,7 @@ export class Gate {
       if (el) this.go(el.dataset.go!, el.dataset.arg);
     });
     this.root.addEventListener("keydown", (ev) => {
-      if (ev.key === "Escape" && this.screen?.kind === "opponent") return this.go("back");
+      if (ev.key === "Escape" && (this.screen?.kind === "opponent" || this.screen?.kind === "campaign")) return this.go("back");
       if (ev.key !== "Enter" && ev.key !== " ") return;
       const el = (ev.target as HTMLElement).closest<HTMLElement>("[data-go][role=button]");
       if (el) { ev.preventDefault(); this.go(el.dataset.go!, el.dataset.arg); }
@@ -100,8 +122,9 @@ export class Gate {
 
   get open(): boolean { return this.screen !== null; }
 
-  show(kind: "title" | "opponent") {
-    this.screen = { kind };
+  show(kind: "title" | "opponent" | "campaign" | "result") {
+    // 没确认过 18+ 之前哪儿也去不了
+    this.screen = adultConfirmed() ? { kind } : { kind: "age", refused: false };
     this.draw();
   }
 
@@ -128,10 +151,29 @@ export class Gate {
     const s = this.screen;
     switch (what) {
       case "play": this.screen = { kind: "opponent" }; break;
+      case "age": this.screen = { kind: "age", refused: false }; break;
+      case "refuse": this.screen = { kind: "age", refused: true }; break;
+      case "adult": confirmAdult(); this.screen = { kind: "title" }; break;
+      case "campaign": this.screen = { kind: "campaign" }; break;
+      case "brief": this.screen = { kind: "brief", no: Number(arg) }; break;
+      case "pool": this.screen = { kind: "cpool" }; break;
+      case "enter": this.hide(); this.hooks.startStage(Number(arg)); return;
+      case "resumeStage": this.hide(); this.hooks.resumeStage(); return;
+      case "reward": this.screen = { kind: "reward", pick: null, remove: null }; break;
+      // 挑人、划掉：只改选中状态，不重画（重画会让候选牌从头再升起来一遍）
+      case "rpick": if (s?.kind === "reward") { s.pick = arg ?? null; this.patchReward(s); } return;
+      case "rremove": if (s?.kind === "reward") { s.remove = s.remove === arg ? null : arg ?? null; this.patchReward(s); } return;
+      case "rdone": {
+        if (s?.kind !== "reward" || !s.pick) return;
+        this.hooks.pickReward(s.pick, s.remove);
+        const next = this.hooks.campaign().progress.cleared;
+        this.screen = next < STAGES.length ? { kind: "brief", no: next } : { kind: "campaign" };
+        break;
+      }
       case "resume": this.hide(); this.hooks.resume(); return;
       case "help": case "chars": case "frames": case "debug": this.hooks.sheet(what); return;
       case "back":
-        if (this.hooks.canReturn()) { this.hide(); this.hooks.done(); return; }
+        if (s?.kind === "opponent" && this.hooks.canReturn()) { this.hide(); this.hooks.done(); return; }
         this.screen = { kind: "title" };
         break;
       case "fast": this.fast = !this.fast; writeFast(this.fast); break;
@@ -173,6 +215,16 @@ export class Gate {
     }
   }
 
+  private patchReward(s: { pick: string | null; remove: string | null }) {
+    this.root.querySelectorAll<HTMLElement>(".reward-opt").forEach((el) => el.classList.toggle("on", el.dataset.arg === s.pick));
+    this.root.querySelectorAll<HTMLElement>(".reward-pool").forEach((el) => el.classList.toggle("on", el.dataset.arg === s.remove));
+    const done = this.root.querySelector<HTMLElement>("[data-go=rdone]");
+    if (!done) return;
+    done.classList.toggle("disabled", !s.pick);
+    done.toggleAttribute("aria-disabled", !s.pick);
+    done.textContent = rewardLabel(s.pick, s.remove);
+  }
+
   private draw() {
     const s = this.screen;
     document.body.classList.toggle("gated", !!s);
@@ -202,8 +254,21 @@ export class Gate {
     </div>`;
   }
 
+  private ctx(): CampaignCtx {
+    return { ...this.hooks.campaign(), art: this.art, card: (id, cls, down) => this.hooks.card(id, cls, down) };
+  }
+
   private view(s: Screen): string {
     switch (s.kind) {
+      case "age": return ageView(s.refused);
+      case "campaign": return campaignView(this.ctx());
+      case "brief": return briefView(this.ctx(), s.no);
+      case "cpool": return poolView(this.ctx());
+      case "reward": return rewardView(this.ctx(), s.pick, s.remove);
+      case "result": {
+        const r = this.hooks.stageResult();
+        return r ? resultView(this.ctx(), r) : campaignView(this.ctx());
+      }
       case "title": return this.titleView();
       case "opponent": return this.opponentView();
       case "pool": return this.poolView(s.open);
@@ -214,6 +279,9 @@ export class Gate {
 
   private titleView() {
     const save = this.hooks.save();
+    const cp = this.hooks.campaign();
+    const done = cp.progress.cleared >= STAGES.length;
+    const floor = done ? "已通关 · 可以回去再打" : cp.progress.cleared === 0 ? "从酒馆开始" : `下一层：${STAGES[cp.progress.cleared].foe}`;
     const heroes = HEROES.map((id, i) => this.portrait(id, `h${i}`)).join("");
     return `<div class="title-stage">
       <div class="heroes" data-tilt="5">${heroes}</div>
@@ -221,8 +289,9 @@ export class Gate {
       <h1 class="logo">七罪暗队</h1>
       <p class="tagline">德州扑克的下注 × 酒馆战棋的自动战斗<br><small>只亮一张牌，剩下的全靠你讲故事</small></p>
       <div class="gate-actions">
-        ${save ? `<button class="primary big" data-go="resume" autofocus>继续牌桌<small>第 ${save.handNo} 手 · 你 ${save.stacks[HUMAN]} 筹码 · 对手${OPPONENTS[save.style].title}</small></button>` : ""}
-        <button class="${save ? "" : "primary"} big" data-go="play" ${save ? "" : "autofocus"}>${save ? "开一张新桌" : "开始对局"}</button>
+        <button class="primary big" data-go="campaign" autofocus>炼狱战役<small>${cp.saved ? `第 ${cp.saved.handNo} 手没打完 · ` : ""}${floor}</small></button>
+        ${save ? `<button class="big" data-go="resume">继续自由牌桌<small>第 ${save.handNo} 手 · 你 ${save.stacks[HUMAN]} 筹码 · 对手${OPPONENTS[save.style].title}</small></button>` : ""}
+        <button class="big" data-go="play">${save ? "开一张新的自由牌桌" : "自由牌桌"}<small>完整规则，随机牌池</small></button>
         <div class="gate-row">
           <button data-go="help">规则</button>
           <button data-go="chars">人物图鉴</button>
