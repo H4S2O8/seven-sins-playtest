@@ -848,7 +848,8 @@ function fitTable() {
   if (!tb) return;
   const need = () => {
     const cs = getComputedStyle(tb);
-    const kids = [...tb.children] as HTMLElement[];
+    // 只算排版里的几行：正在收走的牌（data-fx，绝对定位挂在桌面上）不占位置，算进去会让整桌一下缩到最小
+    const kids = ([...tb.children] as HTMLElement[]).filter((k) => !k.hasAttribute("data-fx"));
     return kids.reduce((sum, k) => sum + k.offsetHeight, 0) + (parseFloat(cs.rowGap) || 0) * (kids.length - 1) +
       parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
   };
