@@ -141,3 +141,68 @@ describe("魔神降临", () => {
     expect(character("DM6").name).toBe("万蝇之王");
   });
 });
+
+describe("七张魔神牌", () => {
+  // 我方 1 号位空着，魔神第 2 轮开始时降临到 1 号位；对面三人都在
+  const vs = (demon: string, foes: (string | null)[] = ["WR2", "GL3", "LU1"], mine: (string | null)[] = [null, "LU2", "LU2"]) =>
+    battle(team(mine), team(foes), { campaign: { demons: [demon, null], nearest: true } });
+  const after = (r: ReturnType<typeof battle>) => {
+    const i = r.frames.findIndex((f) => f.events.some((e) => e.type === "demon"));
+    return r.frames[i].after;
+  };
+
+  it("晨星：向攻最高的敌人下战书，只打它，守护也拦不住", () => {
+    // 对面：狂战士 1 攻、清算者 5 攻、痴情骑士守护清算者
+    const r = vs("DM1", ["WR2", "WR3", "LU1"]);
+    expect(r.events.some((e) => e.type === "trigger" && e.name === "晨星" && e.text.includes("清算者"))).toBe(true);
+    // 打倒清算者之前，她只打清算者；痴情骑士就在旁边也替不了
+    const hits = r.events.filter((e) => e.type === "attack" && e.seat === 0 && e.pos === 0);
+    const kill = r.events.findIndex((e) => e.type === "death" && e.seat === 1 && e.pos === 1);
+    const before = hits.filter((h) => r.events.indexOf(h) < kill);
+    expect(before.length).toBeGreaterThan(0);
+    for (const h of before) expect(h.type === "attack" && h.targetPos).toBe(1);
+    expect(r.events.slice(0, kill).some((e) => e.type === "trigger" && e.name === "痴情骑士")).toBe(false);
+  });
+
+  it("深渊之眼：降临时从每名敌人身上抢 1 点攻，最低留 1", () => {
+    const snap = after(vs("DM2", ["WR2", "GL3", "LU1"]));
+    expect(snap[1].map((u) => u.atk)).toEqual([1, 1, 2]); // 狂战士 1 攻不再减
+    expect(snap[0][0].atk).toBe(2 + 2);
+  });
+
+  it("焚怒：出手打到所有敌人", () => {
+    const r = vs("DM3");
+    // 第 2 轮她出手一次：对三名敌人各打一下（打食腐鸦那一下被痴情骑士守护接走）
+    const turn = r.events.filter((e) => e.type === "attack" && e.seat === 0 && e.pos === 0 && e.round === 2);
+    expect(turn).toHaveLength(3);
+  });
+
+  it("永眠：从不出手，反击双倍", () => {
+    const r = vs("DM4");
+    expect(r.events.some((e) => e.type === "attack" && e.seat === 0 && e.pos === 0)).toBe(false);
+    const back = r.events.find((e) => e.type === "recoil" && e.seat === 0 && e.pos === 0);
+    expect(back && back.type === "recoil" && back.amount).toBe(6);
+  });
+
+  it("金山：降临收利息，每手最多 20", () => {
+    const r = vs("DM5");
+    expect(r.interest[0]).toBeGreaterThanOrEqual(5);
+    expect(r.interest[0]).toBeLessThanOrEqual(20);
+    expect(r.interest[1]).toBe(0);
+    const quiet = battle(team(["WR2", null, null]), team(["WR2", null, null]));
+    expect(quiet.interest).toEqual([0, 0]);
+  });
+
+  it("万蝇之王：降临后马上出手一次", () => {
+    const r = vs("DM6");
+    const i = r.events.findIndex((e) => e.type === "demon");
+    const next = r.events.slice(i + 1).find((e) => e.type === "attack");
+    expect(next).toMatchObject({ seat: 0, pos: 0 });
+  });
+
+  it("欲之王：和敌方血最多的人交换当前血量", () => {
+    const snap = after(vs("DM7", ["WR2", "GL3", "LU1"]));
+    expect(snap[0][0].hp).toBe(12); // 痴情骑士的 12 血
+    expect(snap[1][2].hp).toBe(3);
+  });
+});
