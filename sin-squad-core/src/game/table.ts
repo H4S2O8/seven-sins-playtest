@@ -592,6 +592,7 @@ export class Table {
         checkCount: h.stats[seat].checks,
         opsPaid: h.stats[seat].opsPaid,
         revealedPos: p.reveal,
+        stack: this.stacks[seat],
       },
     };
   }

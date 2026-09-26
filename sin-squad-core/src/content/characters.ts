@@ -54,6 +54,24 @@ export const CHARACTERS: readonly CharacterDef[] = [
     ability: "开战时与对位敌人缔结，两者本场都不出手（仍可被攻击）", tag: "一换一", stage: 2 },
   { id: "LU3", name: "塞壬", sin: "色欲", atk: 3, hp: 5, shape: "heavy", armor: 0, barrier: 0,
     ability: "开战时，对位敌人第一轮改打它自己的相邻队友", tag: "让敌人内讧", stage: 2 },
+
+  // 第二批：每罪补一两名，能力都和原有 21 人不重复（破盾、筹码领先、腐蚀护甲、终局收割、看穿亮牌、后期发力、嘲讽、布阵站位）
+  { id: "WR4", name: "破阵者", sin: "愤怒", atk: 4, hp: 6, shape: "heavy", armor: 0, barrier: 0,
+    ability: "第一次打破敌人的屏障后，攻 +2", tag: "破盾", stage: 1 },
+  { id: "GR4", name: "金库守卫", sin: "贪婪", atk: 2, hp: 9, shape: "heavy", armor: 1, barrier: 0,
+    ability: "开战时筹码领先：屏障 +1", tag: "守财", stage: 1 },
+  { id: "GL4", name: "酸液兽", sin: "暴食", atk: 3, hp: 8, shape: "multi", armor: 0, barrier: 0,
+    ability: "打中带护甲的敌人时，使它护甲 -1（每个敌人一次）", tag: "腐蚀", stage: 1 },
+  { id: "GL5", name: "终餐者", sin: "暴食", atk: 4, hp: 7, shape: "multi", armor: 0, barrier: 0,
+    ability: "敌方只剩一人时攻 +4", tag: "收割", stage: 2 },
+  { id: "EN4", name: "窥伺刀", sin: "嫉妒", atk: 4, hp: 7, shape: "heavy", armor: 0, barrier: 0,
+    ability: "攻击被亮出的敌人时攻 +2", tag: "看穿亮牌", stage: 1 },
+  { id: "SL4", name: "终止符", sin: "怠惰", atk: 4, hp: 8, shape: "heavy", armor: 0, barrier: 0,
+    ability: "第三轮起攻 +3", tag: "后期发力", stage: 2 },
+  { id: "LU4", name: "诱导者", sin: "色欲", atk: 3, hp: 6, shape: "heavy", armor: 0, barrier: 1,
+    ability: "嘲讽：转线后的敌人优先攻击它", tag: "嘲讽", stage: 2 },
+  { id: "LU5", name: "双生誓", sin: "色欲", atk: 3, hp: 9, shape: "multi", armor: 0, barrier: 0,
+    ability: "站在 2 号位、两侧都有队友时，开战全队血 +2", tag: "布阵", stage: 2 },
 ];
 
 const BY_ID = new Map(CHARACTERS.map((c) => [c.id, c]));
