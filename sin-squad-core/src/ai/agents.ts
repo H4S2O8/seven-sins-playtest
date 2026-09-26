@@ -93,6 +93,7 @@ export class HeuristicAgent implements Agent {
       checkCount: obs.betting.checkCount[seat],
       opsPaid: obs.betting.opsPaid[seat],
       revealedPos,
+      stack: obs.stacks[seat],
     };
   }
 

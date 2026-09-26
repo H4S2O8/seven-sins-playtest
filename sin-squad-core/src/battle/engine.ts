@@ -198,7 +198,16 @@ class Battle {
             case "炫耀者":
               if (me.revealedPos === u.pos) { u.atk += 3; u.hp += 4; this.trig(u, name, "被亮出：+3/+4"); }
               break;
+            case "金库守卫":
+              if ((me.stack ?? 0) > (foe.stack ?? 0)) { this.addBarrier(u, 1, false); this.trig(u, name, "筹码领先：屏障 +1"); }
+              break;
           }
+        }
+        // 双生誓：站在 2 号位、两侧都有队友，全队血 +2
+        const twin = this.teams[seat][1];
+        if (twin.exists && twin.def!.name === "双生誓" && this.teams[seat][0].exists && this.teams[seat][2].exists) {
+          for (const x of this.teams[seat]) if (x.exists) x.hp += 2;
+          this.trig(twin, "双生誓", "两侧都有队友：全队血 +2");
         }
         const healer = this.teams[seat].find((u) => u.exists && u.def!.name === "静息药师");
         if (me.opsPaid === 0 && healer) {
@@ -438,7 +447,10 @@ class Battle {
         u.switched = true;
         const foes = this.alive(other(seat));
         if (!foes.length) return;
-        target = minBy(foes, (x) => x.hp);
+        // 诱导者嘲讽：转线过来的敌人先打它，否则打血最少的
+        const taunt = foes.find((x) => this.abilityOn(x, "诱导者"));
+        if (taunt) this.trig(taunt, "诱导者", "嘲讽：转线的敌人改打它");
+        target = taunt ?? minBy(foes, (x) => x.hp);
       }
     }
     const times = this.has("P13") && r === 3 && u.attacks < 2 ? 2 : 1;
@@ -493,6 +505,11 @@ class Battle {
     if (this.has("P18") && r >= 4) d += 1;
     if (this.has("A01") && a.switched && !opposite) d = Math.max(1, d - 2);
     if (this.has("P23") && health(a) < 0.3) d += Math.max(1, Math.floor(d * 0.25));
+    // 人物能力的攻击加值（先加，再按下面的翻倍类效果乘）
+    const bonus = (name: string, n: number, text: string) => { d += n; this.trig(a, name, text); };
+    if (this.abilityOn(a, "终餐者") && this.alive(other(a.seat)).length === 1) bonus("终餐者", 4, "收割：攻 +4");
+    if (t.seat !== a.seat && this.abilityOn(a, "窥伺刀") && this.bet[t.seat].revealedPos === t.pos) bonus("窥伺刀", 2, "看穿亮牌：攻 +2");
+    if (this.abilityOn(a, "终止符") && r >= 3) bonus("终止符", 3, "后期发力：攻 +3");
     if (this.abilityOn(a, "无瑕刺客") && a.hp >= a.maxHp) { d *= 2; this.trig(a, "无瑕刺客", "满血：攻击翻倍"); }
     if (this.abilityOn(a, "清算者") && r === 1 && this.bet[other(a.seat)].betOrRaiseCount > 0) { d *= 2; this.trig(a, "清算者", "对手加过注：首轮翻倍"); }
     if (this.has("P11") && (no === 3 || no === 6)) d *= 2;
@@ -535,6 +552,13 @@ class Battle {
       if (this.has("P04") && health(dst) > 0.75) armor = Math.floor(armor / 2);
       let real = Math.max(0, s.amount - armor);
       s.hit.landed = true;
+      // 酸液兽：打中带护甲的敌人，腐蚀掉它 1 点护甲（每人只被腐蚀一次；这一段还按原来的护甲算）
+      if (src.seat !== dst.seat && armorOf(dst) > 0 && !dst.flags.has("酸蚀") && this.abilityOn(src, "酸液兽")) {
+        dst.flags.add("酸蚀");
+        if (dst.armorBase > 0) dst.armorBase--;
+        else dst.armorEquip--;
+        this.trig(src, "酸液兽", `腐蚀：${dst.def!.name}护甲 -1`);
+      }
       // 所有伤害都是整数：减半向下取整，+25% 四舍五入
       if (this.has("A07") && dst.attacks === 0) real = Math.floor(real / 2);
       if (this.has("A09") && r <= 2) real = Math.min(real, Math.max(1, Math.floor(dst.startHp / 4)));
@@ -635,6 +659,12 @@ class Battle {
   }
 
   private onBarrierBroken(t: Unit, attacker: Unit, dmg: Map<Unit, number>) {
+    // 破阵者：第一次打破敌人的屏障，攻 +2
+    if (attacker.seat !== t.seat && !attacker.flags.has("破阵") && this.abilityOn(attacker, "破阵者")) {
+      attacker.flags.add("破阵");
+      attacker.atk += 2;
+      this.trig(attacker, "破阵者", "破盾：攻 +2");
+    }
     if (this.has("P01")) t.pendingBonus += 3;
     if (this.has("P05")) dmg.set(t, (dmg.get(t) ?? 0) + 1);
     if (this.has("P07") && attacker.seat !== t.seat) dmg.set(t, (dmg.get(t) ?? 0) + 2);

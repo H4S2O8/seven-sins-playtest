@@ -81,7 +81,8 @@ export function flip(root: Element, before: Snapshot, from: Rects = new Map(), d
     if (stayed && !from.has(key)) continue;
     const old = from.get(key) ?? seen?.rect;
     if (!old) {
-      if (!deal) continue;
+      // “发现”里的牌有自己的出场动画（CSS），不走发牌
+      if (!deal || el.closest(".discover")) continue;
       cancel(el, "flip");
       // 不用 opacity 淡入：3D 里的牌一改 opacity 就会被压平，动画结束再恢复立体，整桌会闪一下。
       // 用 visibility（等待期间藏着，开始飞时出现），它不影响 3D。
@@ -336,5 +337,43 @@ export function collect(el: HTMLElement, seen: Seen | undefined, order: number):
     { transform: `translate(${dx}px, ${dy}px) translateZ(${14 + order}px) rotate(${spin}deg) scale(.62)`, offset: 0.88 },
     { transform: `translate(${dx}px, ${dy}px) translateZ(${14 + order}px) rotate(${spin}deg) scale(.6)`, visibility: "hidden" },
   ], { duration: 1150, delay, easing: "cubic-bezier(.45,0,.3,1)", fill: "forwards" }).finished.then(() => el.remove(), () => el.remove());
+  return true;
+}
+
+/**
+ * “发现”里的牌退场：被挑走的那张先抬起来一亮，再缩小飞向挑它的人（target 是座位头像）；
+ * 没人要的沉下去消失。牌从原来的格子里拿出来钉在发现层上，不影响剩下的牌重新排开。
+ */
+export function discoverExit(el: HTMLElement, rect: DOMRect | undefined, target: Element | null, order: number): boolean {
+  const layer = el.closest<HTMLElement>(".discover");
+  if (!layer || !rect || reducedMotion()) return false;
+  const L = layer.getBoundingClientRect();
+  el.removeAttribute("data-key");
+  for (const k of ["data-act", "data-arg", "role", "tabindex"]) el.removeAttribute(k);
+  el.setAttribute("data-fx", "");
+  el.classList.add("fx-leave");
+  Object.assign(el.style, {
+    position: "absolute", left: `${rect.left - L.left}px`, top: `${rect.top - L.top}px`,
+    width: `${rect.width}px`, height: `${rect.height}px`, margin: "0", animation: "none",
+  });
+  layer.appendChild(el);
+  let anim: Animation;
+  if (target) {
+    const t = target.getBoundingClientRect();
+    const dx = t.left + t.width / 2 - (rect.left + rect.width / 2);
+    const dy = t.top + t.height / 2 - (rect.top + rect.height / 2);
+    anim = el.animate([
+      { transform: "none" },
+      { transform: "translateZ(60px) scale(1.12)", offset: 0.3, easing: "cubic-bezier(.4,0,.2,1)" },
+      { transform: `translate(${dx * 0.4}px, ${dy * 0.4}px) translateZ(40px) scale(.7) rotate(${dx > 0 ? 8 : -8}deg)`, offset: 0.6 },
+      { transform: `translate(${dx}px, ${dy}px) scale(.16)`, visibility: "hidden" },
+    ], { duration: 900, easing: "cubic-bezier(.5,0,.3,1)", fill: "forwards" });
+  } else {
+    anim = el.animate([
+      { transform: "none" },
+      { transform: "translateY(70px) scale(.7) rotateX(30deg)", visibility: "hidden" },
+    ], { duration: 480, delay: order * 70, easing: "cubic-bezier(.5,0,.8,.4)", fill: "forwards" });
+  }
+  anim.finished.then(() => el.remove(), () => el.remove());
   return true;
 }

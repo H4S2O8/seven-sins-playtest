@@ -15,6 +15,8 @@ const skipFx = (n: ChildNode | null): ChildNode | null => {
   return n;
 };
 const keyOf = (n: Node): string | null => (n instanceof Element ? n.getAttribute("data-key") : null);
+/** a 在 b 后面（同一个父元素里）。 */
+const isAfter = (a: Node, b: Node) => !!(b.compareDocumentPosition(a) & Node.DOCUMENT_POSITION_FOLLOWING);
 
 export function morph(root: Element, html: string, onExit?: (el: Element) => boolean) {
   const tpl = document.createElement("template");
@@ -69,6 +71,16 @@ export function morph(root: Element, html: string, onExit?: (el: Element) => boo
         }
       } else if (cursor && compatible(cursor, n)) {
         match = cursor;
+      }
+      if (match && match !== cursor && match.parentNode === from && cursor && isAfter(match, cursor)) {
+        // 认领到的是同一行里更靠后的元素（中间有元素被拿走了）：跳过中间那些，不去搬动它。
+        // 搬动 DOM 会让元素上的 CSS 动画从头重播（例如“发现”里剩下的牌又从隐藏开始出场一遍）
+        while (cursor && cursor !== match) {
+          const nx = skipFx(cursor.nextSibling);
+          if (keyOf(cursor)) leftovers.push(cursor as Element);
+          else cursor.remove();
+          cursor = nx;
+        }
       }
       if (match) {
         if (match === cursor) cursor = skipFx(cursor.nextSibling);
