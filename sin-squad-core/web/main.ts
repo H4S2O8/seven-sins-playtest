@@ -2,19 +2,20 @@ import { HeuristicAgent, RandomAgent, type Agent, type Style } from "../src/ai/a
 import { applyReward, checkProgress, newProgress, recordLoss, recordWin, stageTable, type CampaignProgress } from "../src/campaign/progress.js";
 import { stage } from "../src/campaign/stages.js";
 import { Rng } from "../src/rng.js";
-import { splitMulti, type BattleEvent, type BattleResult } from "../src/battle/engine.js";
+import { splitMulti, type BattleEvent, type BattleFrame, type BattleResult } from "../src/battle/engine.js";
 import type { UnitSnapshot } from "../src/battle/unit.js";
 import { CHARACTERS, character } from "../src/content/characters.js";
+import { campaignCard } from "../src/content/campaign-cards.js";
 import { ARENAS, EQUIPMENT, PUBLIC_EFFECTS, RULES, arena, equipment, publicEffect, rule } from "../src/content/tables.js";
 import type { Action } from "../src/game/actions.js";
 import { MAX_RAISES, Table, validatePlacement, type Placement, type TableRig } from "../src/game/table.js";
 import { legalActions, observe, type Observation } from "../src/game/view.js";
-import type { AttackShape, Seat } from "../src/types.js";
+import { other, type AttackShape, type CharacterDef, type Seat } from "../src/types.js";
 import {
   AI, CARD_TEXT, HOW_TO_PLAY, HUMAN, REASON_TEXT, SIN_COLOR, battleLine, esc, logLine, num, posName, shapeName,
 } from "./text.js";
 import { Gate, type Opening, type SaveInfo } from "./intro.js";
-import { adultConfirmed, stageRuleName, stageRuleText, type StageResult, type StageSave } from "./campaign.js";
+import { adultConfirmed, cardArt, stageRuleName, stageRuleText, type StageResult, type StageSave } from "./campaign.js";
 import { morph } from "./morph.js";
 import {
   bubble as hudBubble, collect, crumble, discoverExit, flip, floater as hudFloater, laneShift, measure, pulse, reducedMotion, shake, shatter, strike, type Snapshot,
@@ -65,7 +66,7 @@ interface Playback {
 type Sheet =
   | { kind: "help" }
   | { kind: "card"; id: string; equip: string | null }
-  | { kind: "env"; which: "arena" | "rule" | "pe" }
+  | { kind: "env"; which: EnvKind }
   | { kind: "log" }
   | { kind: "pool" }
   | { kind: "frames" }
@@ -220,6 +221,8 @@ let progress = loadProgress();
 let campaignStage: number | null = null;
 /** 开这一关时你的牌池。 */
 let stagePool: string[] = [];
+/** 战役：你这一关带的魔神牌（名字；null = 不带）。 */
+let stageDemon: string | null = null;
 /** 这一关的输赢已经记进进度了（每张牌桌只记一次）。 */
 let settled = false;
 let stageResult: StageResult | null = null;
@@ -318,7 +321,7 @@ function newTable(s: Style) {
  * 按种子开桌（新开或读档），不推进、不重画。
  * stageNo 不为 null 时开的是战役那一关（pool 是开这一关时你的牌池，读档时用存档里的，保证重放一致）。
  */
-function initTable(s: Style, tableSeed: number, stageNo: number | null = null, pool: string[] = progress.pool) {
+function initTable(s: Style, tableSeed: number, stageNo: number | null = null, pool: string[] = progress.pool, demon: string | null = null) {
   if (aiTimer !== null) clearTimeout(aiTimer);
   aiTimer = null;
   battleToken++;
@@ -327,10 +330,11 @@ function initTable(s: Style, tableSeed: number, stageNo: number | null = null, p
   record = [];
   campaignStage = stageNo;
   stagePool = pool.slice();
+  stageDemon = stageNo === null ? null : demon;
   settled = false;
   if (stageNo !== null) {
     const st = stage(stageNo);
-    table = new Table(stageTable({ ...progress, pool: stagePool }, stageNo, seed));
+    table = new Table(stageTable({ ...progress, pool: stagePool }, stageNo, seed, stageDemon));
     agent = st.style === "novice" ? new RandomAgent(seed + 1) : new HeuristicAgent(st.style, seed + 1, st.samples);
   } else {
     try {
@@ -366,8 +370,8 @@ const STAGE_SAVE_KEY = "sinsquad.campaign.table.v1";
 try { localStorage.removeItem("sinsquad.save.v1"); localStorage.removeItem("sinsquad.save.v2"); localStorage.removeItem("sinsquad.save.v3"); } catch { /* 无所谓 */ }
 interface SaveData {
   seed: number; style: Style; rig: TableRig | null; debugText: string; actions: Array<[Seat, Action]>;
-  /** 战役：第几关、开这一关时你的牌池。 */
-  stage?: number; pool?: string[];
+  /** 战役：第几关、开这一关时你的牌池、带的魔神牌。 */
+  stage?: number; pool?: string[]; demon?: string | null;
 }
 
 function saveGame() {
@@ -375,7 +379,7 @@ function saveGame() {
   try {
     if (!table || table.phase === "over") localStorage.removeItem(key);
     else if (campaignStage === null) localStorage.setItem(key, JSON.stringify({ seed, style, rig: debug?.rig ?? null, debugText, actions: record } satisfies SaveData));
-    else localStorage.setItem(key, JSON.stringify({ seed, style, rig: null, debugText: "", actions: record, stage: campaignStage, pool: stagePool } satisfies SaveData));
+    else localStorage.setItem(key, JSON.stringify({ seed, style, rig: null, debugText: "", actions: record, stage: campaignStage, pool: stagePool, demon: stageDemon } satisfies SaveData));
   } catch { /* 存不了就算了：只是下次不能继续 */ }
 }
 
@@ -397,7 +401,7 @@ function resumeGame(key = SAVE_KEY): boolean {
   debug = sv.rig ? { rig: sv.rig, seed: sv.seed, style: sv.style } : null;
   debugText = sv.debugText ?? "";
   try {
-    if (key === STAGE_SAVE_KEY) initTable(sv.style, sv.seed, sv.stage!, sv.pool!);
+    if (key === STAGE_SAVE_KEY) initTable(sv.style, sv.seed, sv.stage!, sv.pool!, sv.demon ?? null);
     else initTable(sv.style, sv.seed);
     for (const [seat, a] of sv.actions) {
       if (seat === AI) agent.act(table!, AI);
@@ -423,10 +427,10 @@ function stageSaveInfo(): StageSave | null {
   const sv = readSave(STAGE_SAVE_KEY);
   if (!sv) return null;
   try {
-    const t = new Table(stageTable({ ...progress, pool: sv.pool! }, sv.stage!, sv.seed));
+    const t = new Table(stageTable({ ...progress, pool: sv.pool! }, sv.stage!, sv.seed, sv.demon ?? null));
     for (const [seat, a] of sv.actions) t.apply(seat, a);
     if (t.phase === "over") return null;
-    return { stage: sv.stage!, handNo: t.handNo, stacks: [t.stacks[0], t.stacks[1]] };
+    return { stage: sv.stage!, handNo: t.handNo, stacks: [t.stacks[0], t.stacks[1]], demon: sv.demon ?? null };
   } catch {
     return null;
   }
@@ -547,18 +551,39 @@ function floater(seat: Seat, pos: number, text: string, cls: string, delay = 0) 
   hudFloater(unitEl(seat, pos), text, cls, delay);
 }
 
+/** 这一帧开始时每个位置上是谁（魔神降临会把倒下的人换掉）。 */
 function unitNames(b: Playback) {
   return (seat: Seat, pos: number) => {
-    const id = b.result.start[seat][pos].characterId;
+    const id = b.snap[seat][pos]?.characterId;
     return id ? character(id).name : "空位";
   };
 }
 
-/** 一帧的字幕：出手、反击、屏障、转线、能力生效、倒下。 */
+/** 一帧的字幕：出手、反击、屏障、转线、能力生效、倒下、业火、魔神降临。按事件顺序跟着降临换名字。 */
 function frameCaption(b: Playback, evs: BattleEvent[]): string[] {
-  const names = unitNames(b);
-  const shown = evs.filter((e) => ["attack", "recoil", "blocked", "switch", "trigger", "death", "note"].includes(e.type));
-  return shown.map((e) => battleLine(e, names));
+  const base = unitNames(b);
+  const arrived = new Map<string, string>();
+  const names = (seat: Seat, pos: number) => {
+    const id = arrived.get(`${seat}-${pos}`);
+    return id ? character(id).name : base(seat, pos);
+  };
+  const out: string[] = [];
+  for (const e of evs) {
+    if (e.type === "demon") arrived.set(`${e.seat}-${e.pos}`, e.characterId);
+    if (["attack", "recoil", "blocked", "switch", "trigger", "death", "note", "hellfire", "demon"].includes(e.type)) out.push(battleLine(e, names));
+  }
+  return out;
+}
+
+/** 这一帧有魔神降临：先把她换上场（带着降临那一刻的样子），再播这一帧的出手。 */
+function withDemons(snap: [UnitSnapshot[], UnitSnapshot[]], f: BattleFrame): [UnitSnapshot[], UnitSnapshot[]] {
+  const out: [UnitSnapshot[], UnitSnapshot[]] = [snap[0].slice(), snap[1].slice()];
+  for (const e of f.events) {
+    if (e.type !== "demon") continue;
+    const u = f.after[e.seat][e.pos];
+    out[e.seat][e.pos] = { ...u, hp: u.startHp, alive: true };
+  }
+  return out;
 }
 
 /** 能力 / 场地 / 公共效果生效：卡片抬起闪一下，头上冒出说明气泡。 */
@@ -622,6 +647,7 @@ async function playBattle(b: Playback) {
     const attack = f.events.find((e) => e.type === "attack" || e.type === "switch");
     b.actor = attack ? `${attack.seat}-${attack.pos}` : null;
     b.caption = [setup ? "开战" : `第 ${f.round} 轮`, ...frameCaption(b, f.events)];
+    if (f.events.some((e) => e.type === "demon")) b.snap = withDemons(b.snap, f);
     render();
 
     const firstHit = f.events.findIndex((e) => e.type === "damage" || e.type === "death" || e.type === "heal");
@@ -738,8 +764,19 @@ interface Body {
 }
 
 /** 卡面数值：人物面板 + 装备（和战斗引擎的装备结算一致）。开战时的能力加成要等战斗里才看得到。 */
-function bodyOf(id: string, equip: string | null): Body {
-  const c = character(id);
+/** 卡面数据：战役里用战役版（护甲换血、改写的能力），自由牌桌用原版。 */
+function face(id: string, campaign = campaignStage !== null): CharacterDef {
+  return campaign ? campaignCard(id) : character(id);
+}
+
+/** 能力文字：战役改写过的直接用新文字，其余照旧（带高亮的排版）。 */
+function abilityHtml(id: string, campaign: boolean): string {
+  const c = face(id, campaign);
+  return campaign && c.ability !== character(id).ability ? esc(c.ability) : CARD_TEXT[id] ?? esc(c.ability);
+}
+
+function bodyOf(id: string, equip: string | null, campaign = campaignStage !== null): Body {
+  const c = face(id, campaign);
   const b: Body = { atk: c.atk, hp: c.hp, startHp: c.hp, shape: c.shape, armor: c.armor, barrier: c.barrier };
   if (equip) {
     const e = equipment(equip).effect;
@@ -773,6 +810,8 @@ interface CardOpts {
   down?: boolean;
   /** 背面上的说明文字。 */
   backText?: string;
+  /** 用战役版卡面（默认看当前是不是战役牌桌）。 */
+  campaign?: boolean;
   /** 正在出手：抬起来。 */
   acting?: boolean;
   /** 手牌扇形里的位置（相对中间，可以是小数）。 */
@@ -806,22 +845,24 @@ function shapeTag(shape: AttackShape, atk: number): string {
 
 /** 正面：立绘窗、名牌、能力、底栏（攻 · 攻击形状 · 血），护甲和屏障是立绘左上角的小标。 */
 function cardFront(id: string, o: CardOpts) {
-  const c = character(id);
+  const camp = o.campaign ?? campaignStage !== null;
+  const c = face(id, camp);
+  const art = cardArt(id);
   const equip = o.equip ?? null;
-  const b = o.body ?? bodyOf(id, equip);
+  const b = o.body ?? bodyOf(id, equip, camp);
   const atkCls = b.atk > c.atk ? "up" : b.atk < c.atk ? "down" : "";
   const hpCls = b.hp < b.startHp ? "hurt" : b.hp > c.hp ? "up" : "";
   const eqs = (o.equipList ?? (equip ? [equip] : [])).map((x) => equipment(x));
   const defs = (b.armor ? `<span class="def armor" title="护甲 ${b.armor}">${b.armor}</span>` : "") +
     (b.barrier ? `<span class="def barrier" title="屏障 ${b.barrier}">${b.barrier}</span>` : "");
-  return `<div class="art ${ART.has(id) ? "has-portrait" : ""}"><span class="glyph">${SIN_LATIN[c.sin]}</span>${ART.has(id) ? `<img class="portrait" src="art/${id}.webp" alt="" draggable="false">` : ""}
+  return `<div class="art ${ART.has(art) ? "has-portrait" : ""}"><span class="glyph">${SIN_LATIN[c.sin]}</span>${ART.has(art) ? `<img class="portrait" src="art/${art}.webp" alt="" draggable="false">` : ""}
       ${defs ? `<div class="defs">${defs}</div>` : ""}
       <i class="varnish"></i>
       ${eqs.length ? `<div class="equip" title="${esc(eqs.map((e) => `${e.name}：${e.text}`).join("；"))}">${eqs.map((e) => e.name).join("、")}</div>` : ""}
     </div>
     <i class="orn"></i><span class="sin-tag">${SIN_LATIN[c.sin]}</span>
     <div class="plate"><span>${c.name}</span></div>
-    <div class="text">${CARD_TEXT[id] ?? esc(c.ability)}</div>
+    <div class="text">${abilityHtml(id, camp)}</div>
     <div class="stats">
       <span class="stat atk ${atkCls}" title="攻">${num(b.atk)}</span>
       <span class="shape ${b.shape}" title="${shapeLabel(b.shape, b.atk)}">${shapeTag(b.shape, b.atk)}</span>
@@ -838,9 +879,10 @@ function cardFront(id: string, o: CardOpts) {
  * id 为 null 是看不到正面的暗牌。
  */
 function card(id: string | null, o: CardOpts = {}) {
-  const c = id ? character(id) : null;
+  const camp = o.campaign ?? campaignStage !== null;
+  const c = id ? face(id, camp) : null;
   const down = o.down ?? !id;
-  const b = id ? (o.body ?? bodyOf(id, o.equip ?? null)) : null;
+  const b = id ? (o.body ?? bodyOf(id, o.equip ?? null, camp)) : null;
   const eq = o.equip ? equipment(o.equip) : null;
   const style = [
     c ? `--sin:${SIN_COLOR[c.sin]}` : "", o.fan !== undefined ? `--fan:${o.fan}` : "", o.flipDelay ? `--flip-delay:${o.flipDelay}ms` : "",
@@ -1070,6 +1112,12 @@ function shownMoney(o: Observation): { stacks: [number, number]; pot: number } {
   } else {
     stacks[out.winner] -= out.pot;
   }
+  // 金山的利息也是战斗之后才付的
+  const log = table!.log;
+  for (let i = log.length - 1; i >= 0 && log[i].type !== "battle"; i--) {
+    const e = log[i];
+    if (e.type === "interest") { stacks[e.seat] -= e.amount; stacks[other(e.seat)] += e.amount; }
+  }
   return { stacks, pot: out.pot };
 }
 
@@ -1115,7 +1163,7 @@ function seatBar(o: Observation, seat: Seat) {
   const submitted = seat === AI && o.opponent.submitted && ["operate", "draft", "vote", "bid", "marketRemove"].includes(o.phase);
   return `<div class="seat ${seat === AI ? "top" : "bottom"} ${acting ? "acting" : ""}">
     ${seat === AI && face
-      ? `<span class="avatar portrait" style="--face:url('art/${face}.webp')"></span>`
+      ? `<span class="avatar portrait${campaignStage === null ? "" : " close"}" style="--face:url('art/${face}.webp')"></span>`
       : `<span class="avatar">${seat === HUMAN ? "你" : campaignStage === null ? "机" : stage(campaignStage).foe[0]}</span>`}
     <span class="who">${name}</span>
     ${o.dealer === seat ? `<span class="dealer" title="庄家">庄</span>` : ""}
@@ -1130,9 +1178,10 @@ function seatBar(o: Observation, seat: Seat) {
  * 场地 / 胜利规则 / 公共效果：横放在桌上的三块有厚度的长条牌。没翻开时背面朝上，翻开时抬起来绕水平轴翻过去。
  * 每手一组新的（key 带手数），新一手会重新发到桌上。
  */
-const TILE_LATIN = { arena: "ARENA", rule: "LEX", pe: "OMEN" } as const;
+const TILE_LATIN = { arena: "ARENA", rule: "LEX", pe: "OMEN", demon: "DAEMON" } as const;
+type EnvKind = keyof typeof TILE_LATIN;
 
-function envTile(o: Observation, which: "arena" | "rule" | "pe", title: string, name: string | null, text: string, hint: string, state = "", art: string | null = null) {
+function envTile(o: Observation, which: EnvKind, title: string, name: string | null, text: string, hint: string, state = "", art: string | null = null) {
   const down = !name;
   const pic = name ? artUrl(art) : null;
   const cls = ["card", "tile", `t-${which}`, down ? "down" : "", state, pic ? "has-art" : ""].filter(Boolean).join(" ");
@@ -1176,7 +1225,20 @@ function campaignTiles(o: Observation): string {
   const r = rule(o.ruleId!);
   return envTile(o, "arena", "主场", a.name, o.arenaActive ? a.text : "只当背景，不生效", "", o.arenaActive ? "" : "off", o.arenaId) +
     envTile(o, "rule", "专属规则", stageRuleName(no, r.id), `${stageRuleText(no, r.id)}（最多 ${r.maxRounds} 轮）`, "", "", r.id) +
-    `<div class="tile-slot"></div>`;
+    demonTile(o);
+}
+
+/** 双方带的魔神牌：[你, 她]（编号；null = 没带）。 */
+function tableDemons(o: Observation): [string | null, string | null] {
+  return o.battleRules?.demons ?? [null, null];
+}
+
+/** 第三块牌：这一桌的魔神牌（插画用她那张）。都没带就留空位。 */
+function demonTile(o: Observation): string {
+  const [mine, hers] = tableDemons(o);
+  if (!mine && !hers) return `<div class="tile-slot"></div>`;
+  const name = (id: string | null) => (id ? character(id).name : "没带");
+  return envTile(o, "demon", "魔神牌", `你「${name(mine)}」 · 她「${name(hers)}」`, "第 2 轮起，本方一有空位就降临", "", "", cardArt(hers ?? mine!));
 }
 
 function phaseLabel(o: Observation): string {
@@ -1530,12 +1592,13 @@ function sheetView(): string {
         <div class="sheet-body">${body}</div>`);
     }
     case "card": {
-      const c = character(s.id);
+      const c = face(s.id);
+      const art = cardArt(s.id);
       const eq = s.equip ? equipment(s.equip) : null;
-      return wrap("card-sheet", `${ART.has(s.id) ? `<img class="full-portrait" src="art/${s.id}.webp" alt="${c.name}立绘">` : ""}<div class="big-card" data-tilt="18">${card(s.id, { equip: s.equip, cls: "large" })}</div>
+      return wrap("card-sheet", `${ART.has(art) ? `<img class="full-portrait" src="art/${art}.webp" alt="${c.name}立绘">` : ""}<div class="big-card" data-tilt="18">${card(s.id, { equip: s.equip, cls: "large" })}</div>
         <div class="card-info"><h2>${c.name}<small><span class="latin">${SIN_LATIN[c.sin]}</span> ${c.sin} · ${c.tag}${c.stage === 2 ? " · 第二阶段" : ""}</small></h2>
         <p class="stats">攻 <b>${c.atk}</b> · 血 <b>${c.hp}</b> · ${shapeLabel(c.shape, c.atk)}${c.armor ? ` · 护甲 ${c.armor}` : ""}${c.barrier ? ` · 屏障 ${c.barrier}` : ""}</p>
-        <p class="ability">${esc(c.ability)}</p>
+        <p class="ability">${abilityHtml(s.id, campaignStage !== null)}</p>
         ${eq ? `<p class="equip-line">⚙ ${eq.name}：${eq.text}</p>` : ""}
         <p class="muted">重击 → 护甲 → 连击 → 屏障 → 重击：前者克后者。</p></div>`);
     }
@@ -1551,6 +1614,14 @@ function sheetView(): string {
         title = "胜利规则";
         const r = o.ruleId ? rule(o.ruleId) : null;
         body = r ? `${envArt(r.id)}<h2>${r.name}<small>${r.family} · 最多 ${r.maxRounds} 轮</small></h2><p>${r.text}</p>` : "<p>第 1 轮下注结束后翻开。</p>";
+      } else if (s.which === "demon") {
+        title = "魔神牌";
+        const [mine, hers] = tableDemons(o);
+        const one = (who: string, id: string | null) => `<div class="demon-side"><h3>${who}</h3>${id
+          ? `${card(id, { cls: "large" })}<p><b>${character(id).name}</b> 攻 ${character(id).atk} · 血 ${character(id).hp}</p><p>${esc(character(id).ability)}</p>`
+          : "<p>没带魔神牌</p>"}</div>`;
+        body = `<p>从第 2 轮起，本方一有空位，魔神就降临到编号最小的空位上（每场一次），当轮就能出手。</p>
+          <div class="demon-pair">${one("你", mine)}${one(stage(campaignStage!).foe, hers)}</div>`;
       } else {
         title = "公共效果";
         const pe = o.publicEffectId ? publicEffect(o.publicEffectId) : null;
@@ -1612,7 +1683,7 @@ function onAct(name: string, arg: string | undefined) {
   const o = table && table.phase !== "over" ? observe(table, HUMAN) : null;
   switch (name) {
     case "sheet": {
-      if (arg?.startsWith("env:")) ui.sheet = { kind: "env", which: arg.slice(4) as "arena" | "rule" | "pe" };
+      if (arg?.startsWith("env:")) ui.sheet = { kind: "env", which: arg.slice(4) as EnvKind };
       else ui.sheet = { kind: arg as "help" | "log" | "pool" | "frames" | "debug" };
       return render();
     }
@@ -1850,7 +1921,7 @@ installSigil();
 installFrames();
 const gallery = new URLSearchParams(location.search).has("frames");
 const gate = new Gate({
-  card: (id, cls, down) => card(id, { cls, down }),
+  card: (id, cls, down, campaign) => card(id, { cls, down, campaign }),
   back: (cls) => card(null, { cls }),
   save: saveInfo,
   start(s): Opening {
@@ -1873,10 +1944,10 @@ const gate = new Gate({
   done() { render(); scheduleAi(); },
   canReturn: () => !!table && table.phase !== "over" && campaignStage === null,
   campaign: () => ({ progress, saved: stageSaveInfo() }),
-  startStage(no) {
+  startStage(no, demon) {
     debug = null;
     stageResult = null;
-    initTable("cautious", Math.floor(Math.random() * 1e9), no);
+    initTable("cautious", Math.floor(Math.random() * 1e9), no, progress.pool, demon);
     saveGame();
     consumeLog(true);
     render();

@@ -1,4 +1,5 @@
 import { CHARACTERS } from "../content/characters.js";
+import { campaignRoster } from "../content/campaign-cards.js";
 import { demonId } from "../content/demons.js";
 import type { TableOptions } from "../game/table.js";
 import { Rng } from "../rng.js";
@@ -120,12 +121,16 @@ export function recordWin(p: CampaignProgress, no: number, seed: number): string
   return ids;
 }
 
-/** 3 名候选：优先她那一罪的招牌人物，不够的从同罪、再从全体里补；已经在牌池里的不出。 */
+/**
+ * 3 名候选：优先她那一罪的招牌人物，不够的从同罪、再从全体里补；已经在牌池里的不出。
+ * 只从下一关起能用的人物里挑（战役移出的、机制还没教到的不出）。
+ */
 export function rewardOffer(p: CampaignProgress, no: number, seed: number): string[] {
   const s = stage(no);
   const rng = new Rng(seed);
   const have = new Set(p.pool);
-  const fresh = (ids: readonly string[]) => ids.filter((id) => !have.has(id));
+  const roster = new Set(campaignRoster(Math.min(no + 1, STAGES.length - 1)));
+  const fresh = (ids: readonly string[]) => ids.filter((id) => roster.has(id) && !have.has(id));
   const out: string[] = [];
   const take = (ids: string[]) => {
     for (const id of rng.shuffle(ids)) if (out.length < 3 && !out.includes(id)) out.push(id);
