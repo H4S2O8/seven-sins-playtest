@@ -6,7 +6,7 @@ import type { CharacterDef } from "../types.js";
  */
 export const CHARACTERS: readonly CharacterDef[] = [
   // 愤怒
-  { id: "WR1", name: "叫阵骑士", sin: "愤怒", atk: 2, hp: 7, shape: "multi", armor: 0, barrier: 0,
+  { id: "WR1", name: "小红帽", sin: "愤怒", atk: 2, hp: 7, shape: "multi", armor: 0, barrier: 0,
     ability: "对手本手每下注或加注一次，攻 +2", tag: "反加注", stage: 1 },
   { id: "WR2", name: "狂战士", sin: "愤怒", atk: 1, hp: 10, shape: "heavy", armor: 0, barrier: 0,
     ability: "战斗中每受到一段伤害，攻 +1", tag: "越打越痛", stage: 1 },

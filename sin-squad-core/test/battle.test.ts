@@ -178,7 +178,7 @@ describe("开战时的能力", () => {
     expect(me[1].characterId).toBeNull();
   });
 
-  it("下注层能力：豪商按投入成长，叫阵骑士按对手加注成长", () => {
+  it("下注层能力：豪商按投入成长，小红帽按对手加注成长", () => {
     const r = battle(
       team(["GR1", "WR1", null], [null, null, null], { invested: 35 }),
       team(["LU1", "LU1", null], [null, null, null], { betOrRaiseCount: 2 }),

@@ -174,7 +174,7 @@ class Battle {
         for (const u of this.teams[seat].filter((x) => x.exists)) {
           const name = u.def!.name;
           switch (name) {
-            case "叫阵骑士": {
+            case "小红帽": {
               const n = foe.betOrRaiseCount;
               if (n) { u.atk += 2 * n; this.trig(u, name, `对手加注 ${n} 次：攻 +${2 * n}`); }
               break;
