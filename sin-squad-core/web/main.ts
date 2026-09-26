@@ -1685,7 +1685,7 @@ function sheetView(): string {
     case "pool": {
       const o = observe(table!, HUMAN);
       const picks = o.opponent.publicPicks;
-      return wrap("drawer", `<h2>我的牌池<small>${o.me.pool.length} 名 · 每手从这里随机发 4 名</small></h2>
+      return wrap("drawer", `<h2>我的牌池<small>${o.me.pool.length} 名 · 传统牌桌每个位置各看 3 名候选</small></h2>
         <div class="gallery">${o.me.pool.map((id) => card(id, { cls: "small" })).join("")}</div>
         <h2>对手<small>牌池 ${o.opponent.poolSize} 名${o.opponent.removedCount ? ` · 移除过 ${o.opponent.removedCount} 名` : ""}</small></h2>
         ${picks.length ? `<p class="muted">从市场公开挑入：</p><div class="gallery">${picks.map((id) => card(id, { cls: "small" })).join("")}</div>` : `<p class="muted">还没从市场挑过人；其余都是未知的。</p>`}`);
