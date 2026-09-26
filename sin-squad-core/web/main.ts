@@ -292,7 +292,12 @@ function initTable(s: Style, tableSeed: number) {
 //
 // 牌桌完全由种子决定，所以只存种子、电脑风格、调试固定项和双方的每一步；读档时照着重放。
 
-const SAVE_KEY = "sinsquad.save.v1";
+/**
+ * 存档靠“种子 + 每一步操作”重放。人物表、规则一变，同一个种子发的牌就不一样了，旧存档会重放成另一局，
+ * 所以这类改动要升版本号，旧版本的存档直接丢掉。v2：加入第二批 8 名人物。
+ */
+const SAVE_KEY = "sinsquad.save.v2";
+try { localStorage.removeItem("sinsquad.save.v1"); } catch { /* 无所谓 */ }
 interface SaveData { seed: number; style: Style; rig: TableRig | null; debugText: string; actions: Array<[Seat, Action]> }
 
 function saveGame() {
