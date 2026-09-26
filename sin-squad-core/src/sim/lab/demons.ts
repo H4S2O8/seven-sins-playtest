@@ -85,7 +85,7 @@ function campaignInput(rng: Rng, stage: number): BattleInput {
 }
 
 const camp = (d0: CharacterDef | null, d1: CharacterDef | null, descendFrom = Number(process.env.DESCEND_FROM ?? 2)): CampaignOptions =>
-  ({ demons: [d0, d1], nearest: true, hellfire: true, armorToHp: true, descendFrom, immediate: process.env.IMMEDIATE === "1" });
+  ({ demons: [d0, d1], nearest: true, hellfire: true, armorToHp: true, descendFrom, immediate: process.env.IMMEDIATE !== "0" });
 
 /** 1 号座这一手的净筹码：赢拿走奖池，平局退回，外加利息。 */
 const chips = (r: BattleResult, x: BattleInput) => {

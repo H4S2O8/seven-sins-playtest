@@ -478,23 +478,8 @@ class Battle {
     this.pushFrame();
 
     // 万蝇之王：降临后马上出手一次
-    for (const u of this.hungry.splice(0)) {
-      if (!u.alive || !this.alive(other(u.seat)).length) continue;
-      u.flags.delete("刚击倒");
-      this.trig(u, "万蝇之王", "饿坏了：马上出手");
-      this.takeTurn(u);
-      this.pushFrame();
-      const done = this.decide(instantClaims(this.victory, this.vteams()));
-      if (done) return done;
-      while (u.alive && u.flags.has("刚击倒") && this.alive(other(u.seat)).length) {
-        u.flags.delete("刚击倒");
-        this.trig(u, "万蝇之王", "还没吃饱：再出手一次");
-        this.takeTurn(u);
-        this.pushFrame();
-        const again = this.decide(instantClaims(this.victory, this.vteams()));
-        if (again) return again;
-      }
-    }
+    const fed = this.feedHungry();
+    if (fed) return fed;
 
     const queue: [Unit[], Unit[]] = [this.alive(0), this.alive(1)];
     let side: Seat = r % 2 === 1 ? this.first : other(this.first);
@@ -517,6 +502,8 @@ class Battle {
             queue[seat].push(d);
           }
         }
+        const fed = this.feedHungry();
+        if (fed) return fed;
       }
       // 万蝇之王：自己出手击倒敌人后，马上再出手一次
       while (this.isDemon(u, "万蝇之王") && u.alive && u.flags.has("刚击倒") && this.alive(other(u.seat)).length) {
@@ -537,6 +524,28 @@ class Battle {
     }
     this.resolveDeaths(new Map());
     this.pushFrame();
+    return null;
+  }
+
+  /** 万蝇之王：降临后马上出手一次，击倒了就接着出手。 */
+  private feedHungry(): BattleResult | null {
+    for (const u of this.hungry.splice(0)) {
+      if (!u.alive || !this.alive(other(u.seat)).length) continue;
+      u.flags.delete("刚击倒");
+      this.trig(u, "万蝇之王", "饿坏了：马上出手");
+      this.takeTurn(u);
+      this.pushFrame();
+      const done = this.decide(instantClaims(this.victory, this.vteams()));
+      if (done) return done;
+      while (u.alive && u.flags.has("刚击倒") && this.alive(other(u.seat)).length) {
+        u.flags.delete("刚击倒");
+        this.trig(u, "万蝇之王", "还没吃饱：再出手一次");
+        this.takeTurn(u);
+        this.pushFrame();
+        const again = this.decide(instantClaims(this.victory, this.vteams()));
+        if (again) return again;
+      }
+    }
     return null;
   }
 
