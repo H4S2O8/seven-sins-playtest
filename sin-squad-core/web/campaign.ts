@@ -36,6 +36,8 @@ export interface CampaignCtx {
   saved: StageSave | null;
   art: Set<string>;
   /** 画一张人物牌（战役版卡面）。 */
+  /** 看过的剧情编号（关前那段看过、或者这一层已经赢过，才能回看）。 */
+  seen: Set<string>;
   card(id: string, cls?: string, down?: boolean): string;
 }
 
@@ -258,6 +260,7 @@ export function briefView(c: CampaignCtx, no: number, demon: string | null): str
       <div class="facts">${facts}</div>
       <div class="vn-learn"><small>这一层新学的</small>${esc(s.teaches)}</div>
       ${s.demon ? `<div class="vn-prize">${demonCard(s, c.art, "mini")}她带着魔神牌「${s.demon}」上桌；${no < p.cleared ? "你已经有这张了" : "赢了它归你，再从 3 名人物里挑 1 名进牌池"}</div>` : ""}
+      ${replays(c, no)}
       ${demonPicker(c, demon)}
     </div>
     ${dialog(s, s.intro, `${tries ? `<div class="tally" title="输给她 ${tries} 次">${"<i></i>".repeat(Math.min(tries, 12))}${tries > 12 ? `<small>×${tries}</small>` : ""}</div>` : ""}
@@ -267,6 +270,16 @@ export function briefView(c: CampaignCtx, no: number, demon: string | null): str
           : `<button class="primary big seat-btn" data-go="enter" data-arg="${no}" autofocus>入座</button>`}
       </div>`)}`;
   return scene(s, c.art, inner, "brief");
+}
+
+/** 回看这一层的剧情：初到时那段、赢下之后那段。 */
+function replays(c: CampaignCtx, no: number): string {
+  const won = no < c.progress.cleared;
+  const btns = [
+    won || c.seen.has(`s${no}-before`) ? `<button data-go="replay" data-arg="${no}:before">初到这里</button>` : "",
+    won ? `<button data-go="replay" data-arg="${no}:after">${no === STAGES.length - 1 ? "离开之前" : "赢下之后"}</button>` : "",
+  ].filter(Boolean).join("");
+  return btns ? `<div class="vn-replay"><small>回看</small>${btns}</div>` : "";
 }
 
 // ───────── 一关打完 ─────────

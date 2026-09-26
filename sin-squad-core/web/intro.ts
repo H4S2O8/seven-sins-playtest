@@ -7,6 +7,8 @@ import {
 } from "./campaign.js";
 import type { CampaignProgress } from "../src/campaign/progress.js";
 import { STAGES } from "../src/campaign/stages.js";
+import { linesFor, scene, type Line, type Scene, type SceneWhen } from "../src/campaign/story.js";
+import { storyFinishLine, storyPatch, storyView } from "./story.js";
 import { turnCard } from "./motion.js";
 import { isMuted, toggleMuted } from "./music.js";
 import { SIN_LATIN } from "./sigil.js";
@@ -80,6 +82,7 @@ type Screen =
   | { kind: "campaign" }
   | { kind: "brief"; no: number }
   | { kind: "result" }
+  | { kind: "story"; sc: Scene; lines: Line[]; i: number; then: Screen }
   | { kind: "reward"; pick: string | null; remove: string | null }
   | { kind: "cpool" }
   | { kind: "title" }
@@ -96,10 +99,25 @@ function writeFast(v: boolean) {
   try { localStorage.setItem(FAST_KEY, v ? "1" : "0"); } catch { /* 存不了只影响下次 */ }
 }
 
+/** 看过的剧情（关前那段只在第一次走进这一层时自动播）。 */
+const STORY_KEY = "sinsquad.story.v1";
+function readSeen(): Set<string> {
+  try {
+    const v: unknown = JSON.parse(localStorage.getItem(STORY_KEY) ?? "[]");
+    return new Set(Array.isArray(v) ? v.filter((x) => typeof x === "string") : []);
+  } catch { return new Set(); }
+}
+function writeSeen(seen: Set<string>) {
+  try { localStorage.setItem(STORY_KEY, JSON.stringify([...seen])); } catch { /* 存不了只会再播一次 */ }
+}
+
 export class Gate {
   private screen: Screen | null = null;
   private fast = readFast();
   private timer: number | null = null;
+  private seen = readSeen();
+  /** 剧情这一句打完字的时刻（之前点一下只是把字显示完）。 */
+  private typedAt = 0;
   private readonly root: HTMLElement;
   private readonly art: Set<string>;
 
@@ -114,6 +132,12 @@ export class Gate {
     });
     this.root.addEventListener("keydown", (ev) => {
       if (ev.key === "Escape" && (this.screen?.kind === "opponent" || this.screen?.kind === "campaign")) return this.go("back");
+      if (this.screen?.kind === "story") {
+        if (ev.key === "Escape") return this.go("storySkip");
+        if ((ev.target as HTMLElement).tagName === "BUTTON") return;
+        if (ev.key === "Enter" || ev.key === " " || ev.key === "ArrowRight") { ev.preventDefault(); return this.go("storyNext"); }
+        return;
+      }
       if (ev.key !== "Enter" && ev.key !== " ") return;
       const el = (ev.target as HTMLElement).closest<HTMLElement>("[data-go][role=button]");
       if (el) { ev.preventDefault(); this.go(el.dataset.go!, el.dataset.arg); }
@@ -125,7 +149,29 @@ export class Gate {
   show(kind: "title" | "opponent" | "campaign" | "result") {
     // 没确认过 18+ 之前哪儿也去不了
     this.screen = adultConfirmed() ? { kind } : { kind: "age", refused: false };
+    // 第一次赢下这一层：先播关后剧情，再看结算
+    const r = kind === "result" ? this.hooks.stageResult() : null;
+    if (r?.won && r.firstClear && this.screen?.kind === "result") this.screen = this.story(r.stage, "after", this.screen, r.retries);
     this.draw();
+    this.startLine();
+  }
+
+  /** 一段剧情的画面；播完（或跳过）回到 then。 */
+  private story(no: number, when: SceneWhen, then: Screen, retries = this.hooks.campaign().progress.retries[no]): Screen {
+    const sc = scene(no, when);
+    return { kind: "story", sc, lines: linesFor(sc, retries), i: 0, then };
+  }
+
+  private startLine() {
+    const s = this.screen;
+    if (s?.kind !== "story") return;
+    this.typedAt = performance.now() + Array.from(s.lines[s.i].text).length * 32;
+  }
+
+  private endStory(s: Extract<Screen, { kind: "story" }>) {
+    this.seen.add(s.sc.id);
+    writeSeen(this.seen);
+    this.screen = s.then;
   }
 
   hide() {
@@ -139,7 +185,7 @@ export class Gate {
     this.timer = null;
   }
 
-  private go(what: string, arg?: string) {
+  private go(what: string, arg?: string): void {
     if (what === "music") {
       // 只换按钮本身：不清计时器、不重画（抛筹码转到一半重画会从头再转，入座横幅也会停住）
       toggleMuted();
@@ -155,7 +201,29 @@ export class Gate {
       case "refuse": this.screen = { kind: "age", refused: true }; break;
       case "adult": confirmAdult(); this.screen = { kind: "title" }; break;
       case "campaign": this.screen = { kind: "campaign" }; break;
-      case "brief": this.screen = { kind: "brief", no: Number(arg) }; break;
+      case "brief": {
+        const no = Number(arg);
+        const brief: Screen = { kind: "brief", no };
+        // 第一次走进还没赢过的这一层：先播关前剧情
+        const fresh = !this.seen.has(scene(no, "before").id) && no === this.hooks.campaign().progress.cleared;
+        this.screen = fresh ? this.story(no, "before", brief) : brief;
+        break;
+      }
+      case "replay": {
+        if (s?.kind !== "brief") return;
+        const [no, when] = (arg ?? "").split(":");
+        this.screen = this.story(Number(no), when as SceneWhen, s);
+        break;
+      }
+      case "storyNext": {
+        if (s?.kind !== "story") return;
+        if (performance.now() < this.typedAt) { this.typedAt = 0; storyFinishLine(this.root); return; }
+        if (s.i + 1 >= s.lines.length) { this.endStory(s); break; }
+        s.i++;
+        this.typedAt = performance.now() + storyPatch(this.root, s.sc, s.lines, s.i);
+        return;
+      }
+      case "storySkip": if (s?.kind === "story") this.endStory(s); break;
       case "pool": this.screen = { kind: "cpool" }; break;
       case "enter": this.hide(); this.hooks.startStage(Number(arg), this.demon()); return;
       // 挑魔神牌：只换选中状态，不重画
@@ -169,7 +237,8 @@ export class Gate {
         if (s?.kind !== "reward" || !s.pick) return;
         this.hooks.pickReward(s.pick, s.remove);
         const next = this.hooks.campaign().progress.cleared;
-        this.screen = next < STAGES.length ? { kind: "brief", no: next } : { kind: "campaign" };
+        if (next < STAGES.length) return this.go("brief", String(next));
+        this.screen = { kind: "campaign" };
         break;
       }
       case "resume": this.hide(); this.hooks.resume(); return;
@@ -194,6 +263,7 @@ export class Gate {
       case "skip": case "sit": this.hide(); this.hooks.done(); return;
     }
     this.draw();
+    this.startLine();
     const now = this.screen;
     // 筹码转完再显示结果；入座横幅停一会儿自动进牌桌
     if (now?.kind === "toss" && !now.landed) {
@@ -257,7 +327,7 @@ export class Gate {
   }
 
   private ctx(): CampaignCtx {
-    return { ...this.hooks.campaign(), art: this.art, card: (id, cls, down) => this.hooks.card(id, cls, down, true) };
+    return { ...this.hooks.campaign(), art: this.art, seen: this.seen, card: (id, cls, down) => this.hooks.card(id, cls, down, true) };
   }
 
   /** 关前挑的魔神牌；还没挑过就默认最新拿到的那张。挑过的牌如果不在手里了（换了存档）也退回默认。 */
@@ -281,6 +351,7 @@ export class Gate {
       case "age": return ageView(s.refused);
       case "campaign": return campaignView(this.ctx());
       case "brief": return briefView(this.ctx(), s.no, this.demon());
+      case "story": return storyView(this.art, s.sc, s.lines, s.i);
       case "cpool": return poolView(this.ctx());
       case "reward": return rewardView(this.ctx(), s.pick, s.remove);
       case "result": {
