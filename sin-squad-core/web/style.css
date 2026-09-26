@@ -875,6 +875,8 @@ table.ref th small { display: block; font-size: 11.5px; }
 table.ref td { padding: 6px 0; }
 table.ref tr { border-bottom: 1px solid #ffffff12; }
 .sheet.card-sheet { display: flex; gap: 22px; align-items: center; max-width: 760px; }
+/* 这个弹层是 flex 排版，关闭按钮的 float 不起作用、会变成排在最前面的一项（跑到立绘左边），所以直接钉在右上角 */
+.sheet.card-sheet > .close { position: absolute; top: 12px; right: 12px; margin: 0; }
 .full-portrait { flex: none; height: min(60dvh, 420px); filter: drop-shadow(0 6px 14px #000c); }
 /* 详情里的大卡：斜过来露出牌的厚度，像一张拿在手里的实体牌。没有鼠标时自己慢慢晃、光跟着扫；鼠标移上去就跟着鼠标转（tilt.ts）。
  * 转的是牌自己（.lift），不是外面这层：外层 [data-tilt] 的默认倾斜在这里关掉。 */
