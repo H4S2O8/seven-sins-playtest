@@ -1,0 +1,78 @@
+{
+  "说明": "每张图的生成参数。完整提示词 = style + \", \" + subject；工具还会自动在前后加上 modes 里 added 的词。seeds 是那一次生成的全部候选，picked 是用进游戏的那张。同样的 subject、seed、模型和工具默认参数能复现同一张图。打包只拷 .webp，这个文件不会进页面。",
+  "style": "1.1::artist:solipsist ::, 0.5::kakure eria ::, 0.6::VillainchinR18 ::, year 2025, 0.65::artist:windforcelan ::",
+  "sinColors": {
+    "愤怒": "crimson",
+    "贪婪": "gold",
+    "暴食": "olive green",
+    "嫉妒": "teal",
+    "怠惰": "slate blue",
+    "傲慢": "purple",
+    "色欲": "rose pink"
+  },
+  "modes": {
+    "portrait": {
+      "tool": "novelai_asset_character（NovelAI V5 Full，832×1216，其余参数用工具默认值）",
+      "added": {
+        "before": "2.1::transparent background::, has alpha",
+        "after": "simple design, clean lineart, isolated, no background, very aesthetic, masterpiece, no text"
+      },
+      "post": "取 alpha > 8% 的范围裁紧，等比缩进 396×598，放到 416×608 透明画布上，水平居中、距顶 10px；cwebp -q 82 -alpha_q 90"
+    },
+    "scene": {
+      "tool": "novelai_generate_image（1216×832）",
+      "post": "缩到 608×416，转 webp"
+    }
+  },
+  "images": {
+    "WR4": {
+      "name": "破阵者", "mode": "portrait",
+      "subject": "1boy, muscular warrior, crimson plate armor, torn red cape, holding giant warhammer over shoulder, cracked glowing shards of a broken magic shield falling from the hammer head, scarred face, angry, red glowing eyes, full body, standing, dominant crimson color scheme",
+      "seeds": [680951775, 3107185676], "picked": 3107185676
+    },
+    "GR4": {
+      "name": "金库守卫", "mode": "portrait",
+      "subject": "1boy, stocky vault guard, heavy golden plate armor, great tower shield shaped like a vault door with a round lock dial, large ring of keys on belt, visored helmet raised, stern expression, full body, standing guard, dominant gold color scheme",
+      "seeds": [963547474, 702166355], "picked": 963547474
+    },
+    "GL4": {
+      "name": "酸液兽", "mode": "portrait",
+      "subject": "no humans, acid slime beast, monster, bulky body of translucent olive green acid, dripping and bubbling, several slime tentacles, half-dissolved armor plates and a melting helmet floating inside its body, wide toothy maw, glowing yellow eyes, full body, dominant olive green color scheme",
+      "seeds": [319077384, 604003390], "picked": 604003390
+    },
+    "GL5": {
+      "name": "终餐者", "mode": "portrait",
+      "subject": "1girl, tall gaunt gourmand reaper, olive green hooded robe, white napkin tied at the collar, holding a huge two-pronged carving fork like a scythe, silver cloche lid in other hand, sharp teeth, licking lips, hungry smile, dark eye shadows, full body, standing, dominant olive green color scheme",
+      "seeds": [868254730, 1940013769], "picked": 1940013769
+    },
+    "EN4": {
+      "name": "窥伺刀", "mode": "portrait",
+      "subject": "1boy, slim assassin, teal hooded coat, mask covering lower face, one glowing eye visible through messy bangs, long curved knife held in reverse grip, second knife held behind back, leaning forward, stalking pose, jealous glare, full body, dominant teal color scheme",
+      "seeds": [3563223848, 3638060286], "picked": 3563223848
+    },
+    "SL4": {
+      "name": "终止符", "mode": "portrait",
+      "subject": "1boy, tall knight, slate blue heavy armor with clock face engravings, greatsword planted point down, both hands resting on the pommel, large hourglass hanging from the belt, half-closed sleepy eyes, calm expression, long dark coat, full body, standing, dominant slate blue color scheme",
+      "seeds": [3139938671, 3731908475], "picked": 3139938671
+    },
+    "LU4": {
+      "name": "诱导者", "mode": "portrait",
+      "subject": "1girl, confident dancer, rose pink layered dress with ribbons, beckoning gesture with one finger, come hither, smug smirk, looking at viewer, folding fan in other hand, faint pink hexagon barrier glowing around her raised hand, long wavy hair, full body, standing, dominant rose pink color scheme",
+      "seeds": [2861431200, 3091229081], "picked": 3091229081
+    },
+    "LU5": {
+      "name": "双生誓", "mode": "portrait",
+      "subject": "2girls, twins, identical twin sisters standing side by side, holding hands, matching rose pink dresses, a single rose pink ribbon tied between their joined wrists, matching rings, mirrored pose, gentle smile, full body, dominant rose pink color scheme",
+      "seeds": [4206987447, 327015182], "picked": 327015182
+    }
+  },
+  "unrecorded": {
+    "说明": "这些图生成时没有留下提示词。重画后把它们移到 images 里。",
+    "ids": [
+      "WR1", "WR2", "WR3", "GR1", "GR2", "GR3", "GL1", "GL2", "GL3", "EN1", "EN2", "EN3",
+      "SL1", "SL2", "SL3", "PR1", "PR2", "PR3", "LU1", "LU2", "LU3",
+      "foe-cautious", "foe-aggressive", "foe-bluff",
+      "A01–A22", "V01–V27", "P01–P31"
+    ]
+  }
+}
