@@ -49,6 +49,8 @@ export interface Unit {
   barrierEchoed: boolean;
   regenRounds: number;
   deathRound: number | null;
+  /** 只触发一次、或者按条件开关的人物能力状态（例如“第一次低于一半生命”）。 */
+  flags: Set<string>;
 }
 
 export const MAX_BARRIER = 2;
@@ -72,7 +74,7 @@ export function emptyUnit(seat: Seat, pos: number): Unit {
     switchRemaining: null, switched: false, attacks: 0, pendingBonus: 0,
     huntTarget: null, huntUsed: false, lostTotal: 0, bloodSpringAcc: 0, healAcc: 0,
     halfHealthTriggered: false, focusEchoUsed: false, sideCoverUsed: false,
-    barrierEchoed: false, regenRounds: 0, deathRound: null,
+    barrierEchoed: false, regenRounds: 0, deathRound: null, flags: new Set(),
   };
 }
 

@@ -89,6 +89,13 @@ class Battle {
   private readonly idle = new Set<Unit>();
   /** 这一轮每人被谁打过（集火回响用）。 */
   private readonly hitThisRound = new Map<Unit, Set<Unit>>();
+  /** 夺势者 → 它盯住的敌方攻最高者（开战时定下），那人倒下时夺势者全队攻 +2。 */
+  private readonly mightTarget = new Map<Unit, Unit>();
+  /** 复仇印：上一次打中它的敌人，和已经叠了几层。 */
+  private readonly lastHitBy = new Map<Unit, Unit>();
+  private readonly revenge = new Map<Unit, number>();
+  /** 缓行者：哪几轮攻 +2（每轮被打中后的下一轮）。存成一组轮数：同一轮里先被打又出手时，不能把这一轮的加成覆盖掉。 */
+  private readonly slowBoost = new Map<Unit, Set<number>>();
 
   constructor(private readonly input: BattleInput) {
     this.env = new Set([input.arenaId, ...(input.publicEffectId ? [input.publicEffectId] : [])]);
@@ -200,6 +207,43 @@ class Battle {
             case "炫耀者":
               if (me.revealedPos === u.pos) { u.atk += 3; u.hp += 4; this.trig(u, name, "被亮出：+3/+4"); }
               break;
+            case "利滚利":
+              if (me.opsPaid) { u.atk += me.opsPaid; this.trig(u, name, `付过 ${me.opsPaid} 次操作费：攻 +${me.opsPaid}`); }
+              break;
+            case "金库守卫":
+              if ((me.stack ?? 0) > (foe.stack ?? 0)) { this.addBarrier(u, 1, false); this.trig(u, name, "筹码领先：屏障 +1"); }
+              break;
+            case "赌徒":
+              if (me.betOrRaiseCount) { u.atk += 2; this.trig(u, name, "本手下注或加注过：攻 +2"); }
+              break;
+            case "宝库主":
+              if (me.invested > 30) { u.atk += 3; this.trig(u, name, `投入 ${me.invested}：攻 +3`); }
+              break;
+            case "躺赢者":
+              if (!me.betOrRaiseCount) { u.atk += 2; u.hp += 3; this.trig(u, name, "本手没下注：+2/+3"); }
+              break;
+            case "偷心者": {
+              const o = opp(u);
+              if (o.exists && o.equipmentIds.length) { u.atk += 2; this.trig(u, name, "对位带着装备：攻 +2"); }
+              break;
+            }
+          }
+        }
+        // 全队加成
+        const mine = this.teams[seat].filter((x) => x.exists);
+        for (const u of mine) {
+          const name = u.def!.name;
+          if (name === "战吼者") {
+            for (const x of mine) x.atk += 1;
+            this.trig(u, name, "开场战吼：全队攻 +1");
+          }
+          if (name === "首席" && me.revealedPos === u.pos) {
+            for (const x of mine) x.atk += 1;
+            this.trig(u, name, "被亮出：全队攻 +1");
+          }
+          if (name === "双生誓" && u.pos === 1 && this.teams[seat][0].exists && this.teams[seat][2].exists) {
+            for (const x of mine) x.hp += 2;
+            this.trig(u, name, "两侧都有队友：全队血 +2");
           }
         }
         const healer = this.teams[seat].find((u) => u.exists && u.def!.name === "静息药师");
@@ -248,7 +292,10 @@ class Battle {
       }
     }
 
-    // 缔结、魅惑、沉眠
+    // 缔结、魅惑、沉眠、复写、镜像（复写和镜像看的是开战这一刻对位的样子，互相复写也不连锁）
+    const atkAt = new Map(all.map((u) => [u, u.atk]));
+    const armorAt = new Map(all.map((u) => [u, armorOf(u)]));
+    const barrierAt = new Map(all.map((u) => [u, u.barrier]));
     for (const u of all) {
       const o = opp(u);
       if (u.def!.name === "沉眠巨像") u.skipRounds = 1;
@@ -260,6 +307,23 @@ class Battle {
         this.trig(o, "牵线人", "被缔结：本场不出手");
       }
       if (u.def!.name === "魅惑者") { o.charmed = true; this.trig(o, "魅惑者", "被魅惑：第一轮打自己人"); }
+      if (u.def!.name === "复写匠") {
+        const arm = armorAt.get(o)!;
+        const bar = barrierAt.get(o)!;
+        if (arm > 0 && arm >= bar) { u.armorBase += arm; this.trig(u, "复写匠", `复写对位的护甲 ${arm}`); }
+        else if (bar > 0) { this.addBarrier(u, bar, false); this.trig(u, "复写匠", `复写对位的屏障 ${bar}`); }
+      }
+      if (u.def!.name === "镜狱") {
+        const k = Math.min(3, atkAt.get(o)!);
+        if (k > 0) { u.atk += k; this.trig(u, "镜狱", `对位攻 ${atkAt.get(o)}：攻 +${k}`); }
+      }
+    }
+
+    // 夺势者：记下敌方开战时攻最高的那一个
+    for (const u of all) {
+      if (u.def!.name !== "夺势者") continue;
+      const foes = this.teams[other(u.seat)].filter((x) => x.exists);
+      if (foes.length) this.mightTarget.set(u, maxBy(foes, (x) => x.atk));
     }
 
     // 屏障回声：开战就带屏障的人也算“第一次获得”
@@ -365,6 +429,11 @@ class Battle {
       }
     }
 
+    // 休眠守卫：满血时补一层屏障
+    for (const u of this.livingAll()) {
+      if (this.abilityOn(u, "休眠守卫") && u.hp >= u.maxHp && u.barrier === 0) { this.addBarrier(u, 1); this.trig(u, "休眠守卫", "满血：屏障 +1"); }
+    }
+
     // 这一轮不出手的人（也不反击）
     this.idle.clear();
     this.hitThisRound.clear();
@@ -441,7 +510,10 @@ class Battle {
         u.switched = true;
         const foes = this.alive(other(seat));
         if (!foes.length) return;
-        target = minBy(foes, (x) => x.hp);
+        // 诱导者嘲讽：转线过来的敌人先打它，否则打血最少的
+        const taunt = foes.find((x) => this.abilityOn(x, "诱导者"));
+        if (taunt) this.trig(taunt, "诱导者", "嘲讽：转线的敌人改打它");
+        target = taunt ?? minBy(foes, (x) => x.hp);
       }
     }
     const times = this.has("P13") && r === 3 && u.attacks < 2 ? 2 : 1;
@@ -496,6 +568,21 @@ class Battle {
     if (this.has("P18") && r >= 4) d += 1;
     if (this.has("A01") && a.switched && !opposite) d = Math.max(1, d - 2);
     if (this.has("P23") && health(a) < 0.3) d += Math.max(1, Math.floor(d * 0.25));
+    // 人物能力的攻击加值（先加，再按下面的翻倍类效果乘）
+    const foe = t.seat !== a.seat;
+    const bonus = (name: string, n: number, text: string) => { d += n; this.trig(a, name, text); };
+    const facing = this.teams[other(a.seat)][a.pos];
+    if (foe && this.abilityOn(a, "断头台") && health(t) < 0.3) bonus("断头台", 3, "处决：攻 +3");
+    if (foe && this.abilityOn(a, "饥饿猎犬") && t.hp < a.hp) bonus("饥饿猎犬", 2, "追食：攻 +2");
+    if (this.abilityOn(a, "终餐者") && this.alive(other(a.seat)).length === 1) bonus("终餐者", 4, "终餐：攻 +4");
+    if (foe && this.abilityOn(a, "窥伺刀") && this.bet[t.seat].revealedPos === t.pos) bonus("窥伺刀", 2, "看穿亮牌：攻 +2");
+    if (this.abilityOn(a, "缓行者") && this.slowBoost.get(a)?.has(r)) bonus("缓行者", 2, "蓄力：攻 +2");
+    if (this.abilityOn(a, "终止符") && r >= 3) bonus("终止符", 3, "晚钟：攻 +3");
+    if (this.abilityOn(a, "优越者") && facing.alive && facing.atk < a.atk) bonus("优越者", 2, "压制：攻 +2");
+    if (this.abilityOn(a, "终局王") && this.alive(a.seat).length > this.alive(other(a.seat)).length) bonus("终局王", 2, "王座：攻 +2");
+    if (this.abilityOn(a, "共鸣者") && this.teams[a.seat].some((x) => x.alive && Math.abs(x.pos - a.pos) === 1 && x.atk > a.atk)) {
+      bonus("共鸣者", 2, "共鸣：攻 +2");
+    }
     if (this.abilityOn(a, "无瑕刺客") && a.hp >= a.maxHp) { d *= 2; this.trig(a, "无瑕刺客", "满血：攻击翻倍"); }
     if (this.abilityOn(a, "清算者") && r === 1 && this.bet[other(a.seat)].betOrRaiseCount > 0) { d *= 2; this.trig(a, "清算者", "对手加过注：首轮翻倍"); }
     if (this.has("P11") && (no === 3 || no === 6)) d *= 2;
@@ -535,14 +622,27 @@ class Battle {
         continue;
       }
       let armor = armorOf(dst);
+      if (this.abilityOn(dst, "镀金者") && dst.hp >= dst.maxHp) armor += 1; // 满血时护甲 +1
       if (this.has("P04") && health(dst) > 0.75) armor = Math.floor(armor / 2);
       let real = Math.max(0, s.amount - armor);
       s.hit.landed = true;
+      // 酸液兽：打中带护甲的人，腐蚀掉它 1 点护甲（每人只被腐蚀一次；这一段还按原来的护甲算）
+      if (src.seat !== dst.seat && armorOf(dst) > 0 && !dst.flags.has("酸蚀") && this.abilityOn(src, "酸液兽")) {
+        dst.flags.add("酸蚀");
+        if (dst.armorBase > 0) dst.armorBase--;
+        else dst.armorEquip--;
+        this.trig(src, "酸液兽", `腐蚀：${dst.def!.name}护甲 -1`);
+      }
       // 所有伤害都是整数：减半向下取整，+25% 四舍五入
       if (this.has("A07") && dst.attacks === 0) real = Math.floor(real / 2);
       if (this.has("A09") && r <= 2) real = Math.min(real, Math.max(1, Math.floor(dst.startHp / 4)));
       if (this.has("P26") && dst.pos === 1) real = Math.round(real * 1.25);
       if (this.has("P27") && dst.pos !== 1 && src.pos === 1 && src.seat !== dst.seat && !dst.sideCoverUsed) { dst.sideCoverUsed = true; real = Math.floor(real / 2); }
+      // 慢钟：第一轮每段伤害 -2，最少 1
+      if (r === 1 && real > 0 && this.abilityOn(dst, "慢钟")) {
+        real = Math.max(1, real - 2);
+        if (!dst.flags.has("拖延")) { dst.flags.add("拖延"); this.trig(dst, "慢钟", "拖延：第一轮受到的伤害 -2"); }
+      }
       s.hit.sum += real;
       if (real <= 0) continue;
       s.hit.segs++;
@@ -587,6 +687,36 @@ class Battle {
       if (u.hp > 0 && this.abilityOn(u, "蓄痛拳手")) { u.atk += n; this.trig(u, "蓄痛拳手", `攻 +${n}`); }
     }
     for (const [u, n] of armorBreaks) u.armorBase = Math.max(0, u.armorBase - n);
+    for (const [u, set] of hitters) {
+      if (u.hp <= 0) continue;
+      // 缓行者：每轮第一次被打中，下一轮攻 +2
+      if (this.abilityOn(u, "缓行者")) {
+        const rounds = this.slowBoost.get(u) ?? this.slowBoost.set(u, new Set()).get(u)!;
+        if (!rounds.has(r + 1)) { rounds.add(r + 1); this.trig(u, "缓行者", "下一轮攻 +2"); }
+      }
+      // 复仇印：被同一个敌人连续打中，攻 +1（最多 +3）
+      if (this.abilityOn(u, "复仇印")) {
+        for (const src of set) {
+          if (src.seat === u.seat) continue;
+          const n = this.revenge.get(u) ?? 0;
+          if (this.lastHitBy.get(u) === src && n < 3) {
+            u.atk += 1;
+            this.revenge.set(u, n + 1);
+            this.trig(u, "复仇印", `记仇：攻 +1（${n + 1}/3）`);
+          }
+          this.lastHitBy.set(u, src);
+        }
+      }
+    }
+    // 护心人：相邻队友被敌人攻击时，自己得 1 层屏障
+    if (t.seat !== a.seat) {
+      for (const g of this.teams[t.seat]) {
+        if (g !== t && g.alive && g.hp > 0 && Math.abs(g.pos - t.pos) === 1 && g.barrier < MAX_BARRIER && this.abilityOn(g, "护心人")) {
+          this.addBarrier(g, 1);
+          this.trig(g, "护心人", `${t.def!.name}被攻击：屏障 +1`);
+        }
+      }
+    }
 
     // 攻击带来的自损
     if (this.has("A12") && no % 3 === 0) this.loseHp(a, 3);
@@ -623,8 +753,11 @@ class Battle {
     const room = u.maxHp - u.hp;
     const real = Math.min(room, v);
     if (real > 0) {
-      u.hp = u.hp + real;
-      this.events.push({ round: this.round, type: "heal", seat: u.seat, pos: u.pos, amount: real });
+      // 胃囊巨人：受到治疗时额外回复 1（也不超过上限）
+      const extra = this.abilityOn(u, "胃囊巨人") ? Math.min(1, room - real) : 0;
+      u.hp = u.hp + real + extra;
+      this.events.push({ round: this.round, type: "heal", seat: u.seat, pos: u.pos, amount: real + extra });
+      if (extra) this.trig(u, "胃囊巨人", "储能：额外回复 1");
     }
     if (this.has("P20") && v - real > 0 && u.barrier < 1) this.addBarrier(u, 1);
     if (this.has("P25") && real > 0) {
@@ -638,6 +771,12 @@ class Battle {
   }
 
   private onBarrierBroken(t: Unit, attacker: Unit, dmg: Map<Unit, number>) {
+    // 破阵者：第一次打破敌人的屏障，攻 +2
+    if (attacker.seat !== t.seat && !attacker.flags.has("破阵") && this.abilityOn(attacker, "破阵者")) {
+      attacker.flags.add("破阵");
+      attacker.atk += 2;
+      this.trig(attacker, "破阵者", "破盾：攻 +2");
+    }
     if (this.has("P01")) t.pendingBonus += 3;
     if (this.has("P05")) dmg.set(t, (dmg.get(t) ?? 0) + 1);
     if (this.has("P07") && attacker.seat !== t.seat) dmg.set(t, (dmg.get(t) ?? 0) + 2);
@@ -680,6 +819,27 @@ class Battle {
           }
         }
       }
+      for (const v of newlyDead) {
+        for (const k of hitters.get(v) ?? []) {
+          if (!k.alive || k.seat === v.seat) continue;
+          if (this.abilityOn(k, "掠夺商")) { this.addBarrier(k, 1); this.trig(k, "掠夺商", `击倒${v.def!.name}：屏障 +1`); }
+          if (this.abilityOn(k, "吞光者")) { this.trig(k, "吞光者", `击倒${v.def!.name}：回复 2`); this.heal(k, 2); }
+        }
+        // 缠绵者：对位的敌人被击倒，相邻队友各回复 2
+        const lover = this.teams[other(v.seat)][v.pos];
+        if (lover.alive && this.abilityOn(lover, "缠绵者")) {
+          const near = this.teams[lover.seat].filter((x) => x.alive && Math.abs(x.pos - lover.pos) === 1);
+          if (near.length) this.trig(lover, "缠绵者", "余温：相邻队友回复 2");
+          for (const x of near) this.heal(x, 2);
+        }
+      }
+      // 夺势者：敌方开战时攻最高的那人倒下，全队攻 +2
+      for (const [u, target] of [...this.mightTarget]) {
+        if (!u.alive || !newlyDead.includes(target) || !this.abilityOn(u, "夺势者")) continue;
+        this.mightTarget.delete(u);
+        for (const x of this.alive(u.seat)) x.atk += 2;
+        this.trig(u, "夺势者", `${target.def!.name}倒下：全队攻 +2`);
+      }
       for (const seat of [0, 1] as Seat[]) {
         if (this.firstDeathDone[seat] || !newlyDead.some((u) => u.seat === seat)) continue;
         this.firstDeathDone[seat] = true;
@@ -699,6 +859,12 @@ class Battle {
           this.trig(al[0], "孤身余粮", "屏障 +1，接下来 2 轮回血");
         }
       }
+    }
+    // 第一次低于一半生命：怒潮攻 +2，不屈冠军屏障 +1
+    for (const u of this.livingAll()) {
+      if (health(u) >= 0.5) continue;
+      if (!u.flags.has("怒潮") && this.abilityOn(u, "怒潮")) { u.flags.add("怒潮"); u.atk += 2; this.trig(u, "怒潮", "濒死增压：攻 +2"); }
+      if (!u.flags.has("不屈") && this.abilityOn(u, "不屈冠军")) { u.flags.add("不屈"); this.addBarrier(u, 1); this.trig(u, "不屈冠军", "不屈：屏障 +1"); }
     }
     if (this.has("A17")) {
       for (const u of this.livingAll()) {

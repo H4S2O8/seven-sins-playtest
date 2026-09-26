@@ -12,6 +12,7 @@ export function randomBet(rng: Rng, revealedPos: number): BetContext {
     checkCount: rng.pick([0, 1, 1, 2]),
     opsPaid: rng.pick([0, 1, 1, 2]),
     revealedPos,
+    stack: rng.pick([30, 60, 90, 120]),
   };
 }
 

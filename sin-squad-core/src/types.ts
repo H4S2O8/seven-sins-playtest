@@ -106,6 +106,8 @@ export interface BetContext {
   opsPaid: number;
   /** 本方亮出的位置。 */
   revealedPos: number;
+  /** 开战时本方剩下的筹码（金库守卫比谁领先用）；没给就当 0。 */
+  stack?: number;
 }
 
 export interface TeamSetup {
