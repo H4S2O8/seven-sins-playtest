@@ -1209,6 +1209,64 @@ table.ref td.ref-pic img { display: block; width: 84px; aspect-ratio: 1216 / 832
   .reveal-body p { font-size: 12.5px; }
 }
 
+/* ───────── 市场“发现”：候选人物浮在牌桌上方正中 ─────────
+ * 像炉石的发现：桌面压暗，几张大牌依次翻出来、轻轻浮动；挑中的那张飞向挑它的人，没人要的沉下去。
+ */
+.discover {
+  position: absolute; inset: 0; z-index: 6;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+  perspective: 1100px;
+  pointer-events: none;
+}
+.discover::before {
+  content: ""; position: absolute; inset: -6px -12px; z-index: -1; border-radius: 30px;
+  background: radial-gradient(ellipse at 50% 50%, #0a0508b8 0%, #0a0508e6 70%);
+  opacity: 0; transition: opacity .45s .25s;
+}
+.discover.open::before { opacity: 1; }
+.discover-title {
+  font-family: var(--display); font-weight: 900; font-size: clamp(22px, 3.4vw, 32px); letter-spacing: .35em; color: var(--gold);
+  text-shadow: 0 0 18px #d9b25f88; text-align: center;
+}
+/* 动画只挂在打开的时候：每次打开（关→开）都会重新淡入 */
+.discover.open .discover-title { animation: fade .5s .45s both; }
+.discover-title small {
+  display: block; margin-top: 2px; font-family: var(--latin); font-weight: 400; font-size: 11px; letter-spacing: .4em; color: #d9b25fbb;
+}
+.discover-cards {
+  display: flex; justify-content: center; align-items: center; gap: clamp(14px, 3vw, 40px);
+  transform-style: preserve-3d;
+}
+.discover-cards > .card:nth-child(2) { --i: 1; }
+.discover-cards > .card:nth-child(3) { --i: 2; }
+.discover-cards > .card:nth-child(4) { --i: 3; }
+.discover .card {
+  --cw: clamp(118px, min(17vw, 24dvh), 200px);
+  pointer-events: auto;
+  /* 依次从下方翻着升上来，之后轻轻浮动（用独立的 translate / rotate，不和 transform 上的动画打架） */
+  animation: discoverIn .7s cubic-bezier(.2, .8, .3, 1.15) calc(.55s + var(--i, 0) * .14s) both,
+    discoverBob 3.4s ease-in-out calc(1.3s + var(--i, 0) * .4s) infinite;
+}
+@keyframes discoverIn {
+  from { translate: 0 60px; rotate: y 100deg; scale: .6; visibility: hidden; }
+  1% { visibility: visible; }
+}
+@keyframes discoverBob { 50% { translate: 0 -8px; } }
+.discover .card > .shade { transform: translate(6%, 12%) scale(1.02); opacity: .55; }
+.discover .card .info-btn { display: none; }
+@media (hover: hover) {
+  .discover .card.clickable:hover > .lift { transform: translateZ(40px) scale(1.07); }
+  .discover .card.clickable:hover .face.front { box-shadow: 0 0 0 2px var(--gold), 0 0 30px #d9b25fbb; }
+}
+.discover-hint { color: #e8dcc0; font-size: 13.5px; text-align: center; text-shadow: 0 1px 3px #000; }
+.discover.open .discover-hint { animation: fade .5s .9s both; }
+.discover.theirs .discover-hint { color: var(--muted); }
+.card.fx-leave { pointer-events: none; }
+@media (max-width: 699px) {
+  .discover .card { --cw: 27vw; }
+  .discover-cards { gap: 8px; }
+}
+
 /* ───────── 鼠标跟随的 3D 倾斜（web/tilt.ts）─────────
  * 选对手的卡、场地候选、标题页人物：随鼠标朝玩家侧过来，鼠标下有一块高光；卡片本身带几层边做出厚度。
  */
