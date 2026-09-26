@@ -872,11 +872,22 @@ table.ref td { padding: 6px 0; }
 table.ref tr { border-bottom: 1px solid #ffffff12; }
 .sheet.card-sheet { display: flex; gap: 22px; align-items: center; max-width: 760px; }
 .full-portrait { flex: none; height: min(60dvh, 420px); filter: drop-shadow(0 6px 14px #000c); }
+/* 详情里的大卡：斜过来露出牌的厚度，像一张拿在手里的实体牌。没有鼠标时自己慢慢晃、光跟着扫；鼠标移上去就跟着鼠标转（tilt.ts）。
+ * 转的是牌自己（.lift），不是外面这层：外层 [data-tilt] 的默认倾斜在这里关掉。 */
 .big-card { padding: 12px 8px; flex: none; perspective: 900px; }
-/* 详情里的大卡斜过来一点，露出牌的厚度 */
-.big-card .card > .lift { transform: translateZ(var(--z0)) rotateY(-16deg) rotateX(5deg); transition: transform .4s; }
-.big-card .card:hover > .lift { transform: translateZ(var(--z0)) rotateY(-4deg) rotateX(2deg); }
-.big-card .card > .shade { transform: translateX(8px) skewY(-4deg); opacity: .5; }
+.big-card[data-tilt] {
+  transform: none;
+  animation: light-idle 7s ease-in-out infinite alternate;
+  transition: --fx .3s, --fy .3s, --frx .3s, --fry .3s;
+}
+.big-card[data-tilting] { animation: none; --fx: var(--gx); --fy: var(--gy); --frx: var(--rx); --fry: var(--ry); }
+@keyframes light-idle {
+  from { --fx: 18%; --fy: 22%; --fry: -20deg; --frx: 7deg; }
+  to { --fx: 82%; --fy: 74%; --fry: -5deg; --frx: 1deg; }
+}
+.big-card .card > .lift { transform: translateZ(var(--z0)) rotateY(var(--fry)) rotateX(var(--frx)); }
+/* 大卡是拿在手里转的，不落影子（桌上那种影子在这里看着像一块错位的暗板） */
+.big-card .card > .shade { display: none; }
 .card-info .stats b { color: var(--gold); }
 .card-info .ability { font-size: 15px; background: #0004; border-left: 3px solid var(--gold); padding: 8px 10px; border-radius: 6px; }
 .card-info .equip-line { color: #d8f0b8; }
@@ -1800,4 +1811,72 @@ table.ref td.ref-pic img { display: block; width: 84px; aspect-ratio: 1216 / 832
   #frames .fg-felt-in { --cw: 26vw; gap: 12px; padding: 18px 8px 22px; }
   #frames .fg-small { --cw: 21vw; gap: 8px; }
   #frames .fg-tiny { --cw: 15vw; gap: 6px; }
+}
+
+
+/* ───────── 实体牌的质感（详情大卡，.card.lit） ─────────
+ * 不做彩虹镭射，模仿一张印刷好的实体牌在灯下转动：
+ *   .linen    亚麻纹纸面（扑克牌的 linen finish）：细密的经纬压纹，靠光越近越清楚
+ *   .sheen    烫金：一道暖白色的斜向反光扫过，color-dodge 只在本来就亮的金框、金字上亮起来，深色纸面几乎不变
+ *   .varnish  立绘上的光油：立绘窗比牌框更亮一点，像局部上了 UV
+ *   .gloss    整张牌面的柔光反射，screen 叠加（和真实反光一样只加亮）
+ * 大卡本身不带影子（.shade 隐藏）。
+ * 光的位置是 --fx / --fy（0–100%），牌的角度是 --frx / --fry。五套卡框通用。 */
+@property --fx { syntax: "<percentage>"; inherits: true; initial-value: 50%; }
+@property --fy { syntax: "<percentage>"; inherits: true; initial-value: 50%; }
+@property --frx { syntax: "<angle>"; inherits: true; initial-value: 5deg; }
+@property --fry { syntax: "<angle>"; inherits: true; initial-value: -16deg; }
+.card .linen, .card .sheen, .card .gloss, .card .varnish {
+  position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+}
+.card.lit .linen {
+  z-index: 5;
+  background:
+    repeating-linear-gradient(0deg, #ffffff1f 0 1px, #0000 1px 2px, #00000026 2px 3px),
+    repeating-linear-gradient(90deg, #ffffff17 0 1px, #0000 1px 2px, #0000001f 2px 3px),
+    var(--fr-grain) 0 0 / 160px 160px;
+  mix-blend-mode: soft-light;
+  -webkit-mask: radial-gradient(farthest-corner circle at var(--fx) var(--fy), #000 0%, #0009 45%, #0005 100%);
+  mask: radial-gradient(farthest-corner circle at var(--fx) var(--fy), #000 0%, #0009 45%, #0005 100%);
+}
+.card.lit .sheen {
+  z-index: 5;
+  --s: calc((var(--fx) + var(--fy)) / 2);
+  background:
+    linear-gradient(115deg, #0000 calc(var(--s) - 16%), #3a2a1480 calc(var(--s) - 7%), #7a6036 calc(var(--s) - 1.5%), #7a6036 calc(var(--s) + 1.5%), #3a2a1480 calc(var(--s) + 7%), #0000 calc(var(--s) + 16%));
+  /* 中间调的暖色做 color-dodge：暗处只提亮一点点，本来就亮的金色一下子冲到顶，像烫金在反光 */
+  mix-blend-mode: color-dodge;
+  /* 立绘窗挖掉：印刷的立绘不会像金属那样反光（它有自己的光油 .varnish），否则人物的白色会被冲爆。
+   * 立绘窗的位置每套卡框不同，由 --art-x / y / w / h 给 */
+  -webkit-mask: linear-gradient(#000 0 0), linear-gradient(#000 0 0) var(--art-x) var(--art-y) / var(--art-w) var(--art-h) no-repeat;
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) exclude, linear-gradient(#000 0 0) var(--art-x) var(--art-y) / var(--art-w) var(--art-h) no-repeat;
+}
+/* 各套卡框立绘窗的位置（牌宽的倍数），给 .sheen 挖洞用 */
+.card.lit {
+  --art-x: calc(var(--cw) * 0.055); --art-y: calc(var(--cw) * 0.055);
+  --art-w: calc(var(--cw) * 0.89); --art-h: calc(var(--cw) * 0.6);
+}
+.card.lit.fr-vitrail { --art-x: calc(var(--cw) * 0.06); --art-y: calc(var(--cw) * 0.06); --art-w: calc(var(--cw) * 0.88); --art-h: calc(var(--cw) * 0.62); }
+.card.lit.fr-codex { --art-x: calc(var(--cw) * 0.085); --art-y: calc(var(--cw) * 0.085); --art-w: calc(var(--cw) * 0.83); --art-h: calc(var(--cw) * 0.56); }
+.card.lit.fr-reliquary { --art-x: calc(var(--cw) * 0.085); --art-y: calc(var(--cw) * 0.1); --art-w: calc(var(--cw) * 0.83); --art-h: calc(var(--cw) * 0.53); }
+.card.lit.fr-arcana { --art-x: calc(var(--cw) * 0.045); --art-y: calc(var(--cw) * 0.1); --art-w: calc(var(--cw) * 0.91); --art-h: calc(var(--cw) * 0.62); }
+.card.lit .varnish {
+  z-index: 1;
+  background: radial-gradient(70% 55% at var(--fx) var(--fy), #ffffff26 0%, #ffffff0c 40%, #0000 70%);
+  mix-blend-mode: screen;
+}
+.card.lit .gloss {
+  z-index: 6;
+  background:
+    radial-gradient(circle at var(--fx) var(--fy), #ffffff2e 0%, #ffffff00 9%),
+    radial-gradient(65% 45% at var(--fx) var(--fy), #ffffff1c 0%, #ffffff08 45%, #0000 75%),
+    linear-gradient(calc(90deg + var(--fry)), #ffffff0a, #0000 60%);
+  mix-blend-mode: screen;
+}
+/* 翻到背面时正面这几层不显示（背面在 backface 那边，本来就看不到）；倒下的牌不上光 */
+.card.lit.dead .sheen, .card.lit.dead .gloss, .card.lit.dead .varnish { display: none; }
+/* 减少动态效果：不晃、不扫，光停在左上 */
+@media (prefers-reduced-motion: reduce) {
+  .big-card[data-tilt] { animation: none; --fx: 30%; --fy: 25%; }
 }
