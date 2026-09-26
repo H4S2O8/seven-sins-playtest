@@ -1,5 +1,5 @@
 {
-  "说明": "每张图的生成参数。完整提示词 = style + \", \" + subject；工具还会自动在前后加上 modes 里 added 的词。seeds 是那一次生成的全部候选，picked 是用进游戏的那张。同样的 subject、seed、模型和工具默认参数能复现同一张图。打包只拷 .webp，这个文件不会进页面。",
+  "说明": "每张图的生成参数。portrait 模式的完整提示词 = 2.1::transparent background::, has alpha, + style + \", \" + subject；portrait-asset 是旧做法，工具还会在前后自动加上 added 里的词。seeds 是同一描述词生成过的全部候选，picked 是用进游戏的那张。同样的 subject、seed、模型和参数能复现同一张图。打包只拷 .webp，这个文件不会进页面。",
   "style": "1.1::artist:solipsist ::, 0.5::kakure eria ::, 0.6::VillainchinR18 ::, year 2025, 0.65::artist:windforcelan ::",
   "sinColors": {
     "愤怒": "crimson",
@@ -12,31 +12,28 @@
   },
   "modes": {
     "portrait": {
-      "tool": "novelai_asset_character（NovelAI V5 Full，832×1216，其余参数用工具默认值）",
+      "tool": "novelai_generate_image（NovelAI V5 Full，832×1216，qualityPreset none，其余参数用工具默认值）",
+      "prompt": "2.1::transparent background::, has alpha, <style>, <subject>",
+      "post": "取透明区域裁紧，等比缩进 396×598，放到 416×608 透明画布上，水平居中、距顶 10px，转 webp"
+    },
+    "portrait-asset": {
+      "tool": "novelai_asset_character（旧做法，别再用：它自动追加的画风、质量词会盖过画风串，画出来偏平涂）",
       "added": {
         "before": "2.1::transparent background::, has alpha",
         "after": "simple design, clean lineart, isolated, no background, very aesthetic, masterpiece, no text"
       },
-      "post": "取 alpha > 8% 的范围裁紧，等比缩进 396×598，放到 416×608 透明画布上，水平居中、距顶 10px；cwebp -q 82 -alpha_q 90"
+      "post": "取 alpha > 8% 的范围裁紧，等比缩进 396×598，放到 416×608 透明画布上，水平居中、距顶 10px；cwebp -q 82 -alpha_q 90",
+      "redraw": "这些图以后重画时改用 portrait 模式"
     },
     "scene": {
       "tool": "novelai_generate_image（1216×832）",
       "post": "缩到 608×416，转 webp"
-    },
-    "portrait-plain": {
-      "tool": "novelai_generate_image（NovelAI V5 Full，832×1216，qualityPreset none，其余参数用工具默认值）",
-      "added": {
-        "before": "2.1::transparent background::, has alpha",
-        "after": ""
-      },
-      "post": "取 alpha > 8/255 的范围裁紧，等比缩进 396×598，放到 416×608 透明画布上，水平居中、距顶 10px；PIL WebP quality 85、method 6",
-      "note": "只用 style 画师串，不加任何画风、质量标签；portrait 模式在后面追加的词会把画面推向平涂。"
     }
   },
   "images": {
     "WR4": {
       "name": "攻城锤手",
-      "mode": "portrait",
+      "mode": "portrait-asset",
       "subject": "1boy, muscular warrior, crimson plate armor, torn red cape, holding giant warhammer over shoulder, cracked glowing shards of a broken magic shield falling from the hammer head, scarred face, angry, red glowing eyes, full body, standing, dominant crimson color scheme",
       "seeds": [
         680951775,
@@ -46,8 +43,7 @@
     },
     "GR2": {
       "name": "赎罪券商",
-      "mode": "portrait",
-      "post": "同 portrait-plain 的 post（PIL 裁切、WebP quality 85）",
+      "mode": "portrait-asset",
       "subject": "1girl, nun, medieval pardoner, gold and black nun habit, veil, holding up a parchment scroll with red wax seals dangling, gold coin collection box on a strap, rosary, gold coins, sly smile, half-closed eyes, full body",
       "seeds": [
         4151524730
@@ -56,7 +52,7 @@
     },
     "GR4": {
       "name": "金库守卫",
-      "mode": "portrait",
+      "mode": "portrait-asset",
       "subject": "1boy, stocky vault guard, heavy golden plate armor, great tower shield shaped like a vault door with a round lock dial, large ring of keys on belt, visored helmet raised, stern expression, full body, standing guard, dominant gold color scheme",
       "seeds": [
         963547474,
@@ -66,7 +62,7 @@
     },
     "GL1": {
       "name": "放血师",
-      "mode": "portrait-plain",
+      "mode": "portrait",
       "subject": "1girl, mature female, medieval barber surgeon, bloodletter, long dark olive green physician coat, blood-stained leather apron, red and white striped bandages wrapped around one forearm, holding a brass bloodletting bowl and a fleam lancet, licking blood off the blade, a live leech on the side of her neck, glass jar of leeches on her belt, pale skin, dark circles under eyes, hungry smile, dark hair in a loose bun, full body",
       "seeds": [
         2889116434,
@@ -76,8 +72,7 @@
     },
     "GL3": {
       "name": "食腐鸦",
-      "mode": "portrait",
-      "post": "同 portrait-plain 的 post（PIL 裁切、WebP quality 85）",
+      "mode": "portrait-asset",
       "subject": "1girl, crow-themed scavenger girl, tattered olive green cloak covered in black crow feathers, plague doctor beak mask pushed up on top of head, a crow perched on her shoulder, gnawing on a bone, sack of scraps, bandaged legs, barefoot, hungry eyes, full body",
       "seeds": [
         4045508192
@@ -86,8 +81,7 @@
     },
     "GL4": {
       "name": "噬铁软泥",
-      "mode": "portrait",
-      "post": "同 portrait-plain 的 post（PIL 裁切、WebP quality 85）",
+      "mode": "portrait-asset",
       "subject": "no humans, monster, large translucent murky olive green slime creature, blob body with a wide toothy grin and glowing yellow eyes, half-dissolved rusted knight helmet, gauntlet and breastplate floating inside its body, corroded metal, acid dripping and sizzling, bubbles, pseudopods, full body",
       "negative": "neon, bright yellow",
       "seeds": [
@@ -97,8 +91,7 @@
     },
     "GL5": {
       "name": "大野狼",
-      "mode": "portrait",
-      "post": "同 portrait-plain 的 post（PIL 裁切、WebP quality 85）",
+      "mode": "portrait-asset",
       "subject": "no humans, big bad wolf, tall lean anthropomorphic wolf, menacing, dark grey shaggy fur, wearing grandmother's frilly white nightcap and olive green shawl, olive nightgown torn, huge knife and fork in clawed hands, napkin around neck, long drooling tongue, rows of sharp teeth, hungry grin, glowing yellow eyes, hunched, full body",
       "seeds": [
         1772213834
@@ -107,7 +100,7 @@
     },
     "EN4": {
       "name": "影子",
-      "mode": "portrait",
+      "mode": "portrait-asset",
       "subject": "1boy, slim assassin, teal hooded coat, mask covering lower face, one glowing eye visible through messy bangs, long curved knife held in reverse grip, second knife held behind back, leaning forward, stalking pose, jealous glare, full body, dominant teal color scheme",
       "seeds": [
         3563223848,
@@ -117,8 +110,7 @@
     },
     "SL1": {
       "name": "冬眠熊",
-      "mode": "portrait",
-      "post": "同 portrait-plain 的 post（PIL 裁切、WebP quality 85）",
+      "mode": "portrait-asset",
       "subject": "1girl, sleepy girl wearing a huge grey bear pelt as a hooded cloak, bear head hood with ears, slate blue heavy armor underneath, hugging a pillow, yawning, eyes closed, drowsy, messy hair, thick fur, full body",
       "seeds": [
         3207927843
@@ -127,7 +119,7 @@
     },
     "SL4": {
       "name": "守夜人",
-      "mode": "portrait-plain",
+      "mode": "portrait",
       "subject": "1boy, tall lean medieval night watchman, long slate blue hooded cloak over dark gambeson, raising a medieval iron lantern with candle, long halberd in other hand, stubble, yawning lazily, one eye half-closed, messy dark hair under hood, full body",
       "seeds": [
         964153329,
@@ -137,8 +129,7 @@
     },
     "PR1": {
       "name": "孔雀",
-      "mode": "portrait",
-      "post": "同 portrait-plain 的 post（PIL 裁切、WebP quality 85）",
+      "mode": "portrait-asset",
       "subject": "1boy, flamboyant nobleman, peacock motif, long purple peacock feather train attached to his coat, full dense peacock feathers with violet and gold eyespots, 1.2::purple feathers::, ornate purple tailcoat with gold embroidery, feathered hat, hand on chest, smug, looking down on viewer, full body",
       "negative": "orange, floating dots",
       "seeds": [
@@ -148,8 +139,7 @@
     },
     "LU1": {
       "name": "痴情骑士",
-      "mode": "portrait",
-      "post": "同 portrait-plain 的 post（PIL 裁切、WebP quality 85）",
+      "mode": "portrait-asset",
       "subject": "1girl, mature female, tall woman, knight, rose pink and silver plate armor, long rose red cape, large kite shield with a heart and rose emblem, one hand pressing a heart locket to her chest, devoted gaze, gentle sad smile, long wavy pink hair, standing guard, full body",
       "seeds": [
         1607592473,
@@ -159,8 +149,7 @@
     },
     "LU3": {
       "name": "塞壬",
-      "mode": "portrait",
-      "post": "同 portrait-plain 的 post（PIL 裁切、WebP quality 85）",
+      "mode": "portrait-asset",
       "subject": "1girl, siren, singing, open mouth, long flowing rose pink hair, seashell hair ornament, pearl necklace, rose pink flowing dress with fin-like frills, fish scales on arms and cheeks, pointed ears like fins, water droplets, musical notes, barefoot, alluring, full body",
       "seeds": [
         1780188741
@@ -169,8 +158,7 @@
     },
     "LU4": {
       "name": "交际花",
-      "mode": "portrait",
-      "post": "同 portrait-plain 的 post（PIL 裁切、WebP quality 85）",
+      "mode": "portrait-asset",
       "subject": "1girl, mature female, courtesan, masquerade ball, elegant rose pink off-shoulder ball gown with dark rose lace, feathered masquerade mask held on a stick, lace folding fan, long gloves, pearl choker, beauty mark, confident alluring smile, beckoning, looking at viewer, updo hair with rose ornament, full body",
       "seeds": [
         1274799581
@@ -179,7 +167,7 @@
     },
     "LU5": {
       "name": "双子",
-      "mode": "portrait",
+      "mode": "portrait-asset",
       "subject": "2girls, twins, identical twin sisters standing side by side, holding hands, matching rose pink dresses, a single rose pink ribbon tied between their joined wrists, matching rings, mirrored pose, gentle smile, full body, dominant rose pink color scheme",
       "seeds": [
         4206987447,
