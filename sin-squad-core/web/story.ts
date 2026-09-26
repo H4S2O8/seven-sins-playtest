@@ -36,6 +36,9 @@ function face(sc: Scene, lines: Line[], i: number, art: Set<string>, side: "host
   return `<div class="story-slot ${side} ${st.cls}"${st.mood ? ` data-mood="${st.mood}"` : ""}>${stageFace(speakerStage(st.who), art, "vn-face story-face")}</div>`;
 }
 
+/** 烛火转红之后，这一幕剩下的部分都染成红的。 */
+const bloody = (lines: Line[], i: number) => lines.slice(0, i + 1).some((l) => l.fx === "blood");
+
 /** 一句台词：名牌 + 一个字一个字打出来的正文。 */
 function lineHtml(line: Line, i: number, total: number): string {
   const who = line.who ? speakerStage(line.who) : null;
@@ -51,8 +54,9 @@ function lineHtml(line: Line, i: number, total: number): string {
 export function storyView(art: Set<string>, sc: Scene, lines: Line[], i: number): string {
   const s = stage(sc.stage);
   const bg = art.has(s.arenaId) ? `;--scene:url('art/${s.arenaId}.webp')` : "";
-  return `<div class="vn story" style="--sin:${stageColor(s)}${bg}" data-go="storyNext">
-    <div class="vn-bg"></div><div class="embers">${"<i></i>".repeat(14)}</div>
+  const fx = lines[i].fx;
+  return `<div class="vn story ${bloody(lines, i) ? "bloody" : ""}" style="--sin:${stageColor(s)}${bg}" data-go="storyNext"${fx ? ` data-fx="${fx}"` : ""}>
+    <div class="vn-bg"></div><div class="embers">${"<i></i>".repeat(14)}</div><div class="story-fx"></div>
     <button class="story-skip" data-go="storySkip">跳过 ›</button>
     <div class="story-cast">${face(sc, lines, i, art, "host")}${face(sc, lines, i, art, "guest")}</div>
     <div class="vn-dialog story-dialog" role="button" tabindex="0" aria-live="polite" autofocus>${lineHtml(lines[i], i, lines.length)}</div>
@@ -64,6 +68,14 @@ export function storyView(art: Set<string>, sc: Scene, lines: Line[], i: number)
  * 返回这一句打完字的时间（毫秒）。
  */
 export function storyPatch(root: HTMLElement, sc: Scene, lines: Line[], i: number): number {
+  const vn = root.querySelector<HTMLElement>(".vn.story");
+  if (vn) {
+    vn.classList.toggle("bloody", bloody(lines, i));
+    // 演出：换一句就重播一次
+    vn.removeAttribute("data-fx");
+    const fx = lines[i].fx;
+    if (fx && fx !== "blood") { void vn.offsetWidth; vn.dataset.fx = fx; }
+  }
   for (const side of ["host", "guest"] as const) {
     const el = root.querySelector<HTMLElement>(`.story-slot.${side}`);
     if (!el) continue;

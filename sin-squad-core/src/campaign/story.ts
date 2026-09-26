@@ -27,9 +27,13 @@ export interface Line {
   who?: Speaker;
   mood?: Mood;
   text: string;
+  /** 这一句的演出：shake 震屏、flash 闪白、light 头顶洒下她的罪色光、blood 烛火转红（之后一直是红的）。 */
+  fx?: Fx;
   /** 只在重来过才赢的时候说（台词里的 {N} 换成重来次数）。 */
   retried?: true;
 }
+
+export type Fx = "shake" | "flash" | "light" | "blood";
 
 export type SceneWhen = "before" | "after";
 
@@ -41,8 +45,8 @@ export interface Scene {
   lines: Line[];
 }
 
-const say = (who: Speaker, mood: Mood, text: string): Line => ({ who, mood, text });
-const nar = (text: string): Line => ({ text });
+const say = (who: Speaker, mood: Mood, text: string, fx?: Fx): Line => (fx ? { who, mood, text, fx } : { who, mood, text });
+const nar = (text: string, fx?: Fx): Line => (fx ? { text, fx } : { text });
 const again = (who: Speaker, mood: Mood, text: string): Line => ({ who, mood, text, retried: true });
 
 /** 每一层两段：[关前, 关后]。 */
@@ -60,12 +64,12 @@ const SCRIPT: Array<[Line[], Line[]]> = [
     [
       again("barmaid", "动摇", "第 {N} 次才赢我？……算了，看在你这么执着的份上，这把我认了。"),
       say("barmaid", "动摇", "等、等一下，刚才那把不算，我手滑了……"),
-      nar("桌上的蜡烛忽然矮了一截，火苗由黄转红，红得像要滴下来。"),
+      nar("桌上的蜡烛忽然矮了一截，火苗由黄转红，红得像要滴下来。", "blood"),
       say("barmaid", "动摇", "咦，蜡烛怎么变红了？……喂，你身后那是什么东西？！"),
       say("asmodeus", "得意", "别怕，小丫头。我只是来带走一位客人。"),
       say("asmodeus", "平静", "我看了你一整晚。排人的手很稳，输了也不走……真是个有意思的赌徒。"),
       say("asmodeus", "得意", "来吧，我的小赌徒。楼上有七张牌桌在等你。赢过我们七姐妹，我就放你回来。"),
-      nar("红光吞没了酒馆。再睁眼时，你站在一座高塔的最底层，头顶是七扇熄灭的玫瑰窗。"),
+      nar("红光吞没了酒馆。再睁眼时，你站在一座高塔的最底层，头顶是七扇熄灭的玫瑰窗。", "flash"),
     ],
   ],
   // ── 第一层 · 路西法 ──
@@ -81,7 +85,7 @@ const SCRIPT: Array<[Line[], Line[]]> = [
     [
       again("lucifer", "平静", "第 {N} 次。在我面前跪了 {N} 次才站起来。……我会记住你的。"),
       say("lucifer", "动摇", "……这一局，是我让你的。记住，是我让的。"),
-      nar("头顶第一扇玫瑰窗亮了起来，紫色的光落在牌桌上。"),
+      nar("头顶第一扇玫瑰窗亮了起来，紫色的光落在牌桌上。", "light"),
       say("lucifer", "败北", "走吧，上面还有六个妹妹。她们可没有我这么仁慈。"),
       nar("楼梯口传来一声轻笑。"),
       say("asmodeus", "得意", "姐姐，脸红了哦。"),
@@ -103,7 +107,7 @@ const SCRIPT: Array<[Line[], Line[]]> = [
       again("leviathan", "平静", "……{N} 次。你回来找了我 {N} 次。……嗯，我记着呢。"),
       say("leviathan", "败北", "……又是这样。别人赢，我看着。"),
       say("leviathan", "动摇", "去吧，去找阿斯莫德。……反正你一开始就是她的。"),
-      nar("第二扇玫瑰窗亮了。利维坦把什么东西悄悄挂上了树枝，是你刚才用过的一枚筹码。"),
+      nar("第二扇玫瑰窗亮了。利维坦把什么东西悄悄挂上了树枝，是你刚才用过的一枚筹码。", "light"),
       say("asmodeus", "得意", "小利维坦，那枚筹码，还给人家。"),
       say("leviathan", "生气", "……不给。"),
       say("asmodeus", "平静", "好吧，留着吧。我的小赌徒，三姐脾气不太好，上楼的时候脚步放轻一点。"),
@@ -112,17 +116,17 @@ const SCRIPT: Array<[Line[], Line[]]> = [
   // ── 第三层 · 撒旦 ──
   [
     [
-      nar("还没走到第三层，就听见拍桌子的声音。这里是一座比武场，沙地上全是焦痕。"),
-      say("satan", "得意", "喂！终于来了！我手都痒死了！"),
+      nar("还没走到第三层，就听见拍桌子的声音。这里是一座比武场，沙地上全是焦痕。", "shake"),
+      say("satan", "得意", "喂！终于来了！我手都痒死了！", "shake"),
       say("satan", "生气", "利维坦那个闷葫芦都输了？那你肯定有两下子！别让我失望！"),
       say("satan", "平静", "规矩就一条：先打倒对面两个人的赢！简单吧？"),
       say("satan", "生气", "跟，还是不跟？快点！我没耐心看你发呆！"),
     ],
     [
       again("satan", "得意", "第 {N} 次！哈，你跟我一样倔！我喜欢！"),
-      say("satan", "生气", "啊啊啊！（拍桌）……行，你有种。我认！"),
+      say("satan", "生气", "啊啊啊！（拍桌）……行，你有种。我认！", "shake"),
       say("satan", "败北", "输就输！下次我加注加到你哭！"),
-      nar("第三扇玫瑰窗亮起，红光里还带着火星。"),
+      nar("第三扇玫瑰窗亮起，红光里还带着火星。", "light"),
       say("asmodeus", "得意", "三姐，这已经是这个月拍坏的第四张桌子了。"),
       say("satan", "生气", "要你管！"),
       say("asmodeus", "平静", "上面是四姐的院子。她要是睡着了，你就……算了，她一直睡着。"),
@@ -141,7 +145,7 @@ const SCRIPT: Array<[Line[], Line[]]> = [
       again("belphegor", "平静", "{N} 次……好勤快哦……光听着就累了……"),
       say("belphegor", "败北", "……输了啊。也好……这下终于能好好睡一觉了……"),
       say("belphegor", "平静", "上楼吧……楼梯好长……我就不送了……"),
-      nar("第四扇玫瑰窗亮了。雪停了，院子里只剩她均匀的呼吸声。"),
+      nar("第四扇玫瑰窗亮了。雪停了，院子里只剩她均匀的呼吸声。", "light"),
       say("asmodeus", "得意", "她是真的睡着了。……你要不要给她把毯子盖好？"),
       say("asmodeus", "平静", "上面是五姐的宝库。进门之前，把口袋捂紧一点。"),
     ],
@@ -159,7 +163,7 @@ const SCRIPT: Array<[Line[], Line[]]> = [
       again("mammon", "平静", "{N} 次挑战，每次都输光本金。按我的利率算，您已经欠我一座金山了。"),
       say("mammon", "动摇", "……亏损。这是我账上第一笔亏损。"),
       say("mammon", "败北", "我认账。不过，您从我这里拿走的，迟早要连本带利还回来。"),
-      nar("第五扇玫瑰窗亮了。她提起笔，在你的名字下面画了一道线。"),
+      nar("第五扇玫瑰窗亮了。她提起笔，在你的名字下面画了一道线。", "light"),
       say("asmodeus", "得意", "玛门姐姐，账上还记着我的名字吗？"),
       say("mammon", "平静", "记着。您欠的，是最多的。"),
       say("asmodeus", "平静", "……我们上楼吧，我的小赌徒。六姐肚子饿了，别让她等太久。"),
@@ -179,7 +183,7 @@ const SCRIPT: Array<[Line[], Line[]]> = [
       again("beelzebub", "得意", "{N} 次！你来了这么多次，我都多吃了 {N} 顿夜宵！"),
       say("beelzebub", "败北", "输了……好饿……你走之前能把剩下的点心留给我吗？"),
       say("beelzebub", "平静", "你好厉害！下次来，我请你吃饭，真的！"),
-      nar("第六扇玫瑰窗亮了。整座塔里，只剩最顶上那一扇还黑着。"),
+      nar("第六扇玫瑰窗亮了。整座塔里，只剩最顶上那一扇还黑着。", "light"),
       say("asmodeus", "得意", "六扇了。……真快啊。"),
       say("asmodeus", "平静", "上来吧，我的小赌徒。最后一张牌桌，我亲自坐庄。"),
     ],
@@ -197,7 +201,7 @@ const SCRIPT: Array<[Line[], Line[]]> = [
     [
       again("asmodeus", "得意", "第 {N} 次。你为我回来了 {N} 次，我可是一次一次数着的哦。"),
       say("asmodeus", "动摇", "……赢了我？呵，我果然没看错人。"),
-      nar("最后一扇玫瑰窗亮了。七种颜色的光一起落下来，塔底那扇门吱呀一声开了。"),
+      nar("最后一扇玫瑰窗亮了。七种颜色的光一起落下来，塔底那扇门吱呀一声开了。", "light"),
       say("asmodeus", "败北", "门就在那里，你可以走了。"),
       nar("门外传来酒馆的喧闹声，还有一声熟悉的吆喝。"),
       say("barmaid", "生气", "客人！你的小费还没给呢！"),
