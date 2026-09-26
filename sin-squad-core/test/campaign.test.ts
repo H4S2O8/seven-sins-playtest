@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { HeuristicAgent, playTable, RandomAgent } from "../src/ai/agents.js";
 import { applyReward, newProgress, recordLoss, recordWin, rewardOffer, stageTable, tauntTier, unlocked } from "../src/campaign/progress.js";
 import { MIN_CAMPAIGN_POOL, STAGES, STARTING_POOL, stage } from "../src/campaign/stages.js";
+import { campaignRoster } from "../src/content/campaign-cards.js";
 import { CHARACTERS } from "../src/content/characters.js";
 import type { Phase } from "../src/game/actions.js";
 import { Table } from "../src/game/table.js";
@@ -108,8 +109,22 @@ describe("战役进度", () => {
 
   it("候选优先她那一罪的招牌人物", () => {
     const p = newProgress();
-    const offer = rewardOffer(p, 1, 42);
-    expect(offer.filter((id) => stage(1).signature.includes(id)).length).toBe(3);
+    const offer = rewardOffer(p, 4, 42);
+    expect(offer.filter((id) => stage(4).signature.includes(id)).length).toBe(3);
+  });
+
+  it("候选只出下一关能用的人物", () => {
+    for (let no = 1; no < STAGES.length; no++) {
+      const roster = campaignRoster(Math.min(no + 1, STAGES.length - 1));
+      for (let seed = 0; seed < 20; seed++) {
+        const offer = rewardOffer(newProgress(), no, seed);
+        expect(offer).toHaveLength(3);
+        for (const id of offer) expect(roster).toContain(id);
+        expect(offer).not.toContain("EN3");
+      }
+    }
+    // 路西法的招牌里 PR2 带屏障，第 5 层才教
+    expect(rewardOffer(newProgress(), 1, 1)).not.toContain("PR2");
   });
 
   it("挑人后可以移除一名，但牌池不能低于下限", () => {
