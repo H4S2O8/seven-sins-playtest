@@ -112,6 +112,14 @@ describe("魔神降临", () => {
     expect(r.timeline[1][0][0]).toMatchObject({ characterId: "DM1", demon: true });
   });
 
+  it("第 2 轮起一有空位就降临，这一轮还会出手", () => {
+    // 食腐鸦第 2 轮被痴情骑士打倒，魔神当轮补上，排到本方最后出手
+    const r = battle(team(["LU2", "GL3", "LU2"]), team(["LU2", "LU1", "LU2"]), { campaign: { demons: ["DM1", null] } });
+    const i = r.events.findIndex((e) => e.type === "demon");
+    expect(r.events[i]).toMatchObject({ round: 2, seat: 0, pos: 1 });
+    expect(r.events.slice(i).some((e) => e.type === "attack" && e.round === 2 && e.seat === 0 && e.pos === 1)).toBe(true);
+  });
+
   it("每场只来一次", () => {
     const r = battle(team([null, null, "WR2"]), team(["GL3", "GL3", "GL3"]), { campaign: { demons: ["DM1", "DM2"] } });
     expect(r.events.filter((e) => e.type === "demon" && e.seat === 0)).toHaveLength(1);

@@ -39,7 +39,7 @@ export interface CampaignBattleRules {
   nearest?: boolean;
   /** 用战役版卡面：护甲换成血，靠操作费、装备、护甲的能力改写。 */
   cards?: boolean;
-  /** 双方带的魔神牌（null = 没带）。从第 2 轮起，每轮开始时本方有空位就降临到编号最小的空位上，每场一次。 */
+  /** 双方带的魔神牌（null = 没带）。从第 2 轮起，本方一有空位就降临到编号最小的空位上，每场一次。 */
   demons?: [string | null, string | null];
 }
 
@@ -438,6 +438,8 @@ class Battle {
       this.pushFrame();
       const done = this.decide(instantClaims(this.victory, this.teams));
       if (done) return done;
+      // 这一下打出了空位：魔神马上降临，排到本方这一轮最后出手
+      for (const d of this.summonDemons()) queue[d.seat].push(d);
     }
 
     // 轮末效果
@@ -455,13 +457,15 @@ class Battle {
   }
 
   /**
-   * 魔神降临：从第 2 轮起，每轮开始时本方有空位（没人、被吞掉或已倒下），
-   * 魔神就降临到编号最小的空位上。每场一次。
+   * 魔神降临：从第 2 轮起，本方一有空位（没人、被吞掉或已倒下），
+   * 魔神就降临到编号最小的空位上。每场一次。轮初、每次出手之后都检查。
    * 倒下的人从阵上移走，但击倒数照算（见 VictoryState.removedDead）。
+   * 返回这次降临的魔神。
    */
-  private summonDemons() {
+  private summonDemons(): Unit[] {
+    const arrived: Unit[] = [];
     const demons = this.rules.demons;
-    if (!demons || this.round < DEMON_FROM) return;
+    if (!demons || this.round < DEMON_FROM) return arrived;
     for (const seat of [0, 1] as Seat[]) {
       const id = demons[seat];
       if (!id || this.demonDone[seat]) continue;
@@ -474,7 +478,10 @@ class Battle {
       this.teams[seat][pos] = u;
       this.demonDone[seat] = true;
       this.events.push({ round: this.round, type: "demon", seat, pos, characterId: id });
+      arrived.push(u);
     }
+    if (arrived.length) this.pushFrame();
+    return arrived;
   }
 
   /** 对位倒下后最近的敌人：两翼先打 2 号位，2 号位打血较少的一翼；最近的倒了就往外找。 */
