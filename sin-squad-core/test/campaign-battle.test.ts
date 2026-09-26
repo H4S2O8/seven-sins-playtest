@@ -214,6 +214,8 @@ describe("关卡牌桌带上战役战斗规则", () => {
     p.cleared = 3;
     p.demons = ["晨星", "深渊之眼"];
     const o = stageTable(p, 3, 1, "晨星");
+    expect(o.campaign!.fixedBet).toEqual([10, 20]);
+    expect(o.campaign!.secondReveal).toBe(true);
     expect(o.campaign!.battle).toEqual({ hellfire: true, cards: true, nearest: true, demons: ["DM1", "DM3"] });
     expect(stageTable(p, 0, 1).campaign!.battle!.demons).toEqual([null, null]);
     expect(() => stageTable(p, 3, 1, "金山")).toThrow();

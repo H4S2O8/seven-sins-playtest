@@ -7,7 +7,7 @@ import type { UnitSnapshot } from "../src/battle/unit.js";
 import { CHARACTERS, character } from "../src/content/characters.js";
 import { ARENAS, EQUIPMENT, PUBLIC_EFFECTS, RULES, arena, equipment, publicEffect, rule } from "../src/content/tables.js";
 import type { Action } from "../src/game/actions.js";
-import { Table, validatePlacement, type Placement, type TableRig } from "../src/game/table.js";
+import { MAX_RAISES, Table, validatePlacement, type Placement, type TableRig } from "../src/game/table.js";
 import { legalActions, observe, type Observation } from "../src/game/view.js";
 import type { AttackShape, Seat } from "../src/types.js";
 import {
@@ -1184,6 +1184,7 @@ function phaseLabel(o: Observation): string {
     case "arena": return "选场地";
     case "place": return "布阵";
     case "peek": return o.toAct.includes(HUMAN) ? "窥视" : "布阵完成";
+    case "reveal2": return "再翻开一名";
     case "bet": return `第 ${o.betting.round} 轮下注`;
     case "operate": return "操作：拿装备？";
     case "draft": return "挑装备";
@@ -1207,6 +1208,7 @@ function foeRow(o: Observation): string {
     if (!opp.placed) return card(null, { ...base, backText: o.phase === "arena" ? "" : "布阵中…" });
     if (opp.emptyPositions.includes(pos)) return slot("空位<br><small>被饕餮吞掉</small>", { unit: base.unit });
     if (opp.revealed?.pos === pos) return card(opp.revealed.characterId, { ...base, equip: eq, cls: "lit" });
+    if (opp.revealed2?.pos === pos) return card(opp.revealed2.characterId, { ...base, equip: eq, cls: "lit" });
     if (o.me.peek?.pos === pos) return card(o.me.peek.characterId, { ...base, equip: eq, cls: "peeked" });
     if (peeking) return card(null, { ...base, equip: eq, backText: "点这里偷看", act: "peek", arg: pos, cls: "target" });
     return card(null, { ...base, equip: eq });
@@ -1242,7 +1244,7 @@ function myRow(o: Observation): string {
       if (ui.draft.pos === pos) equip = o.me.offers![ui.draft.offer!];
     }
     return card(id, {
-      key: keys[pos], unit: `${HUMAN}-${pos}`, equip, cls: `${cls} ${pos === pl.reveal ? "lit" : "dark"}`,
+      key: keys[pos], unit: `${HUMAN}-${pos}`, equip, cls: `${cls} ${pos === pl.reveal || pos === pl.reveal2 ? "lit" : "dark"}`,
       act: drafting ? "draftPos" : undefined, arg: pos,
     });
   }).join("");
@@ -1296,6 +1298,7 @@ function phaseDock(o: Observation, mine: boolean): string {
     case "arena": return arenaDock(o, mine);
     case "place": return placeDock(o, mine);
     case "peek": return mine ? peekDock(o) : waiting("等待对手");
+    case "reveal2": return mine ? reveal2Dock(o) : waiting("对手在选翻开谁");
     case "bet": return mine ? betDock(o) : waiting(`对手在考虑第 ${o.betting.round} 轮下注`);
     case "operate": return mine ? operateDock(o) : waiting("等对手决定要不要拿装备");
     case "draft": return mine && o.me.offers ? draftDock(o) : waiting("对手在挑装备");
@@ -1371,6 +1374,13 @@ function peekDock(o: Observation) {
     <div class="actions">${btn("不交换，开始下注", "peekSwap", "-1", "primary big")}</div>`;
 }
 
+function reveal2Dock(o: Observation) {
+  const pl = o.me.placement!;
+  const picks = legalActions(table!, HUMAN).flatMap((a) => (a.type === "reveal2" ? [a.pos] : []));
+  return prompt("再翻开一名", "对手也在暗选，双方一起翻开") +
+    `<div class="actions">${picks.map((pos) => btn(`${posName(pos)} ${character(pl.slots[pos]!).name}`, "reveal2", pos, "big")).join("")}</div>`;
+}
+
 function betDock(o: Observation) {
   const b = o.betting;
   const stack = o.stacks[HUMAN];
@@ -1378,14 +1388,28 @@ function betDock(o: Observation) {
   const acts = legalActions(table!, HUMAN);
   const has = (t: Action["type"]) => acts.some((a) => a.type === t);
   const opening = b.target === 0;
+  const verb = opening ? "下注" : "加注到";
+  const toCall = Math.min(b.toCall, stack);
+  const sub = b.canFold ? "" : "对手亮出了僭王：第 1 轮不能弃牌";
+  if (b.step !== null) {
+    // 固定额下注：不用选金额，只有几个按钮
+    const sized = acts.find((a) => a.type === "bet" || a.type === "raise");
+    const to = sized?.type === "bet" ? sized.amount : sized?.type === "raise" ? sized.to : 0;
+    const cap = !opening && b.raisesLeft === 0 ? `这一轮已经加注 ${MAX_RAISES} 次，只能跟注或弃牌` : "";
+    return prompt(toCall ? `对手下注，你要跟 ${toCall}` : `第 ${b.round} 轮下注`, sub || cap || `这一轮每次${opening ? "下注" : "加注"} ${b.step}`) +
+      `<div class="actions poker">
+        ${has("fold") ? btn("弃牌", "fold", undefined, "fold big") : ""}
+        ${has("check") ? btn("过牌", "check", undefined, "call big") : ""}
+        ${has("call") ? btn(`跟注 ${toCall}`, "call", undefined, "call big") : ""}
+        ${sized ? btn(`${verb} <b>${to}</b>`, "betFixed", to, "raise big") : ""}
+        ${has("allIn") ? btn(`全押 ${stack}`, "allIn", undefined, "allin big") : ""}
+      </div>`;
+  }
   const min = opening ? table!.options.minBet : b.minRaiseTo;
   const max = opening ? stack - 1 : me + stack - 1;
   const canSize = min <= max;
   if (canSize && (ui.betAmount === null || ui.betAmount < min || ui.betAmount > max)) ui.betAmount = min;
   const quick = acts.flatMap((a) => (a.type === "bet" ? [a.amount] : a.type === "raise" ? [a.to] : []));
-  const verb = opening ? "下注" : "加注到";
-  const toCall = Math.min(b.toCall, stack);
-  const sub = b.canFold ? "" : "对手亮出了僭王：第 1 轮不能弃牌";
   return prompt(toCall ? `对手下注，你要跟 ${toCall}` : `第 ${b.round} 轮下注`, sub) +
     (canSize ? `<div class="sizer">
       ${quick.map((x) => btn(String(x), "setBet", x, `chip-btn ${x === ui.betAmount ? "on" : ""}`)).join("")}
@@ -1640,6 +1664,7 @@ function onAct(name: string, arg: string | undefined) {
       });
     }
     case "peek": return act({ type: "peek", pos: n });
+    case "reveal2": return act({ type: "reveal2", pos: n });
     case "peekSwap": {
       if (arg === "-1") return act({ type: "peekSwap", swap: null });
       const [a, b] = (arg ?? "").split("-").map(Number);
@@ -1650,6 +1675,7 @@ function onAct(name: string, arg: string | undefined) {
     case "fold": return act({ type: "fold" });
     case "allIn": return act({ type: "allIn" });
     case "setBet": ui.betAmount = n; return render();
+    case "betFixed": return act(o!.betting.target === 0 ? { type: "bet", amount: n } : { type: "raise", to: n });
     case "betSized": {
       const amount = ui.betAmount!;
       return act(o!.betting.target === 0 ? { type: "bet", amount } : { type: "raise", to: amount });

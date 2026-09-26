@@ -41,6 +41,10 @@ export function logLine(e: TableEvent): string | null {
     case "placed":
       return `${who(e.seat)}布好了阵，亮出 ${posName(e.revealPos)} ${name(e.characterId)}` +
         (e.eaten !== null ? `；饕餮吞掉了 ${posName(e.eaten)} 的队友` : "");
+    case "reveal2": {
+      const parts = e.picks.flatMap((p, s) => (p ? [`${who(s as Seat)}翻开 ${posName(p.pos)} ${name(p.characterId)}`] : []));
+      return `再翻开一名：${parts.join("，")}`;
+    }
     case "betAction": {
       const label = BET_LABEL[e.action] ?? e.action;
       return `第 ${e.round} 轮：${who(e.seat)}${label}${e.amount > 0 ? ` ${e.amount}` : ""}（奖池 ${e.pot}）`;

@@ -75,6 +75,8 @@ export function stageTable(p: CampaignProgress, no: number, seed: number, demon:
       pools: [p.pool.slice(), s.foePool.slice()],
       deal: s.deal,
       betting: s.betting,
+      fixedBet: [10, 20],
+      secondReveal: true,
       battle: {
         hellfire: true,
         cards: true,

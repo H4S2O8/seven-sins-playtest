@@ -1,5 +1,5 @@
 import { runBattle } from "../battle/engine.js";
-import { CHARACTERS } from "../content/characters.js";
+import { CHARACTERS, character } from "../content/characters.js";
 import { PUBLIC_EFFECTS, RULES } from "../content/tables.js";
 import type { Action } from "../game/actions.js";
 import type { Table } from "../game/table.js";
@@ -47,6 +47,7 @@ export class HeuristicAgent implements Agent {
       case "arena": return this.rng.pick(acts);
       case "place": return this.choosePlacement(obs, acts);
       case "peek": return acts[0].type === "peek" ? this.rng.pick(acts) : this.chooseSwap(obs, acts);
+      case "reveal2": return this.chooseReveal2(obs, acts);
       case "bet": return this.chooseBet(obs, acts);
       case "operate": return { type: "operate", draft: obs.opFee <= Math.max(10, obs.stacks[seat] * 0.25) };
       case "draft": return this.chooseDraft(obs, acts);
@@ -107,6 +108,7 @@ export class HeuristicAgent implements Agent {
       if (o.emptyPositions.includes(pos)) return { characterId: null, equipmentId: null };
       let id: string;
       if (o.revealed && o.revealed.pos === pos) id = o.revealed.characterId;
+      else if (o.revealed2 && o.revealed2.pos === pos) id = o.revealed2.characterId;
       else if (obs.me.peek && obs.me.peek.pos === pos) id = obs.me.peek.characterId;
       else id = this.rng.pick(pool);
       return { characterId: id, equipmentId: o.equipment[pos] };
@@ -150,6 +152,20 @@ export class HeuristicAgent implements Agent {
     if (toCall === 0) return has("check") ?? acts[0];
     if (p >= potOdds + (this.style === "cautious" ? 0.05 : -0.05)) return has("call") ?? has("allIn")!;
     return has("fold") ?? has("call") ?? acts[0];
+  }
+
+  /**
+   * 第二次翻开：把强的留到最后，先翻弱的（攻 × 血最小）。
+   * 爱诈唬的有三成反过来先翻强的，让对手以为后面还有更强的。
+   */
+  private chooseReveal2(obs: Observation, acts: Action[]): Action {
+    const power = (a: Action) => {
+      if (a.type !== "reveal2") return 0;
+      const c = character(obs.me.placement!.slots[a.pos]!);
+      return c.atk * c.hp;
+    };
+    const sorted = acts.slice().sort((a, b) => power(a) - power(b));
+    return this.style === "bluff" && this.rng.next() < 0.3 ? sorted[sorted.length - 1] : sorted[0];
   }
 
   /** 偷看之后：试每一种换位（包括不换），挑估算胜率最高的。 */

@@ -10,6 +10,8 @@ export type Action =
   | { type: "peek"; pos: number }
   /** 密探偷看之后：交换自己两名暗置人物的位置（null = 不交换）。对手不会知道。 */
   | { type: "peekSwap"; swap: [number, number] | null }
+  /** 第二次翻开：暗选自己再翻开哪一名（双方选完一起翻开）。 */
+  | { type: "reveal2"; pos: number }
   | { type: "check" }
   | { type: "bet"; amount: number }
   | { type: "call" }
@@ -34,6 +36,7 @@ export type Phase =
   | "arena"
   | "place"
   | "peek"
+  | "reveal2"
   | "bet"
   | "operate"
   | "draft"
