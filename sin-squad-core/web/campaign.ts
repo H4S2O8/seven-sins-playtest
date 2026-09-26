@@ -1,5 +1,6 @@
 import type { CampaignProgress } from "../src/campaign/progress.js";
 import { MIN_CAMPAIGN_POOL, STAGES, stage, type StageDef } from "../src/campaign/stages.js";
+import { demonId } from "../src/content/demons.js";
 import { arena, rule } from "../src/content/tables.js";
 import { SIN_LATIN } from "./sigil.js";
 import { SIN_COLOR, esc } from "./text.js";
@@ -16,7 +17,7 @@ import { SIN_COLOR, esc } from "./text.js";
  */
 
 /** 正在进行、还没打完的那一关（存档里的）。 */
-export interface StageSave { stage: number; handNo: number; stacks: [number, number] }
+export interface StageSave { stage: number; handNo: number; stacks: [number, number]; demon: string | null }
 
 /** 一关刚打完的结果。 */
 export interface StageResult {
@@ -34,6 +35,7 @@ export interface CampaignCtx {
   progress: CampaignProgress;
   saved: StageSave | null;
   art: Set<string>;
+  /** 画一张人物牌（战役版卡面）。 */
   /** 看过的剧情编号（关前那段看过、或者这一层已经赢过，才能回看）。 */
   seen: Set<string>;
   card(id: string, cls?: string, down?: boolean): string;
@@ -103,6 +105,43 @@ function rose(color: string, state: "lit" | "open" | "dim"): string {
   </svg>`;
 }
 
+/** 魔神牌插画 art/demon-<她的名字>.webp（和她的立绘 campaign-<名字> 同名）。 */
+function demonArt(s: StageDef): string | null {
+  return s.portrait?.replace("campaign-", "demon-") ?? null;
+}
+
+/** 魔神牌编号（DM1…）→ 插画编号。 */
+const DEMON_ART = new Map(STAGES.filter((s) => s.demon).map((s) => [demonId(s.demon!), demonArt(s)!]));
+
+/** 卡面立绘用哪张图：人物是 art/<编号>，魔神牌是她那张插画。 */
+export function cardArt(id: string): string {
+  return DEMON_ART.get(id) ?? id;
+}
+
+/** 魔神牌：有插画就用插画，没有就用她那一罪的颜色衬名字。 */
+function demonCard(s: StageDef, art: Set<string>, cls = "", attrs = ""): string {
+  const id = demonArt(s);
+  const has = !!id && art.has(id);
+  return `<span class="demon got ${has ? "has-art" : ""} ${cls}" style="--sin:${stageColor(s)}" title="魔神牌「${s.demon}」" ${attrs}>
+    ${has ? `<img src="art/${id}.webp" alt="${s.demon}" draggable="false">` : `<span>${s.demon}</span>`}</span>`;
+}
+
+/** 哪一关给的这张魔神牌。 */
+function demonStage(name: string): StageDef {
+  return STAGES.find((s) => s.demon === name)!;
+}
+
+/** 关前：从已经拿到的魔神牌里挑一张带上桌（也可以不带）。 */
+function demonPicker(c: CampaignCtx, pick: string | null): string {
+  const got = c.progress.demons;
+  if (!got.length) return "";
+  const opts = got.map((name) => demonCard(demonStage(name), c.art, `pick ${pick === name ? "on" : ""}`,
+    `data-go="dpick" data-arg="${name}" role="button" tabindex="0"`)).join("");
+  return `<div class="vn-demons"><small>带一张魔神牌</small>${opts}
+    <span class="demon none pick ${pick === null ? "on" : ""}" data-go="dpick" data-arg="" role="button" tabindex="0" title="不带魔神牌"><span>不带</span></span>
+    <em class="vn-demon-name">${pick ? `「${pick}」` : "空手上桌"}</em></div>`;
+}
+
 /**
  * 她站在画面上的样子：有立绘用立绘，套一道哥特尖拱金框；
  * 没画的先放一扇她那一罪颜色的大玫瑰窗，底下刻拉丁名。
@@ -169,8 +208,7 @@ export function campaignView(c: CampaignCtx): string {
   const all = p.cleared >= STAGES.length;
   const demons = STAGES.filter((s) => s.demon).map((s) => {
     const got = p.demons.includes(s.demon!);
-    return `<div class="demon ${got ? "got" : ""}" style="--sin:${stageColor(s)}" title="${got ? `魔神牌「${s.demon}」` : "打败她才能得到"}">
-      <span>${got ? s.demon : "？"}</span></div>`;
+    return got ? demonCard(s, c.art) : `<span class="demon" title="打败她才能得到"><span>？</span></span>`;
   }).join("");
   return `<div class="tower-stage">
     <button class="gate-back" data-go="back" aria-label="返回">‹ 标题</button>
@@ -193,7 +231,7 @@ export function campaignView(c: CampaignCtx): string {
 
 // ───────── 关前 ─────────
 
-export function briefView(c: CampaignCtx, no: number): string {
+export function briefView(c: CampaignCtx, no: number, demon: string | null): string {
   const s = stage(no);
   const p = c.progress;
   const tries = p.retries[no];
@@ -221,8 +259,9 @@ export function briefView(c: CampaignCtx, no: number): string {
       </div>
       <div class="facts">${facts}</div>
       <div class="vn-learn"><small>这一层新学的</small>${esc(s.teaches)}</div>
+      ${s.demon ? `<div class="vn-prize">${demonCard(s, c.art, "mini")}她带着魔神牌「${s.demon}」上桌；${no < p.cleared ? "你已经有这张了" : "赢了它归你，再从 3 名人物里挑 1 名进牌池"}</div>` : ""}
       ${replays(c, no)}
-      ${s.demon ? `<div class="vn-prize"><span class="demon got mini" style="--sin:${stageColor(s)}"><span>${s.demon}</span></span>赢了得到她的魔神牌，再从 3 名人物里挑 1 名进牌池</div>` : ""}
+      ${demonPicker(c, demon)}
     </div>
     ${dialog(s, s.intro, `${tries ? `<div class="tally" title="输给她 ${tries} 次">${"<i></i>".repeat(Math.min(tries, 12))}${tries > 12 ? `<small>×${tries}</small>` : ""}</div>` : ""}
       ${warn}
@@ -272,7 +311,7 @@ export function resultView(c: CampaignCtx, r: StageResult): string {
     <div class="verdict win">
       ${s.no > 0 ? `<div class="verdict-rose">${rose(stageColor(s), "lit")}</div>` : ""}
       <small>VICTORIA</small><b>你赢下了这一层</b><span>${tries}</span>
-      ${r.firstClear && s.demon ? `<div class="vn-prize"><span class="demon got mini" style="--sin:${stageColor(s)}"><span>${s.demon}</span></span>得到她的魔神牌「${s.demon}」</div>` : ""}
+      ${r.firstClear && s.demon ? `<div class="vn-prize">${demonCard(s, c.art, "mini")}得到她的魔神牌「${s.demon}」</div>` : ""}
     </div>
     ${dialog(s, s.outro, `${ending}<div class="gate-actions row vn-actions">${go}</div>`)}`;
   return scene(s, c.art, inner, "result win");

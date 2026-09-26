@@ -12,6 +12,7 @@ npm run typecheck
 npm run sim -- roster 60000       # 人物总胜率与最强 / 最弱情境
 npm run sim -- opening 400 120    # 开局胜率分布（验收标准：绝大多数落在 30%–80%）
 npm run sim -- tables 100 cautious aggressive   # 整张牌桌对局（random / cautious / aggressive / bluff）
+npm run sim -- level all 20000    # 战役战斗：每关对比转线 / 打最近、有无魔神
 ```
 
 ## 结构
@@ -79,7 +80,7 @@ npm run build:web                 # 打包到仓库根目录的 sin-squad-v3/
 
 打包结果是纯静态文件，本地用任意静态服务器打开仓库根目录下的 `sin-squad-v3/` 即可。这个目录不进 git：推送到 `main` 后，GitHub Actions（`.github/workflows/pages.yml`）会跑类型检查和测试、重新打包，并发布到 GitHub Pages。
 
-**炼狱战役**（设计稿 `sin-squad-source/sin-squad-design/campaign-v1/00-战役与规则收缩.md`）：`new Table({ campaign })` 打开战役的规则开关：专属胜利规则开局就公开（第 7 层每手从前面几关的规则里随机翻一条）、场地固定为对手主场（第 6 层起才生效，之前只当背景）、没有公共效果 / 表决 / 暗标 / 操作费 / 装备、每手之后没有市场；序章各发 3 张全部上场、不下注。不给 `campaign` 就是原来的自由牌桌，规则一点不变。界面在 `web/campaign.ts`：18+ 确认 → 标题 → 炼狱之馆（一层一层往上，打过的能重打）→ 关前 → 牌桌（顶栏“离桌”不丢进度）→ 赢了：关后台词、第一次通关挑 1 名、可移除 1 名 → 上楼；输了：她按重来次数嘲讽，可以无限重来。进度存在 `sinsquad.campaign.v1`，没打完的那一关存在 `sinsquad.campaign.table.v1`，和自由牌桌的存档互不覆盖。还没做的：设计稿 P1 的其余规则收缩（第二次翻开、固定额下注、业火、打最近的敌人、去护甲、魔神降临）、剧情对话层、表情和语音、画廊。
+**炼狱战役**（设计稿 `sin-squad-source/sin-squad-design/campaign-v1/00-战役与规则收缩.md`）：`new Table({ campaign })` 打开战役的规则开关：专属胜利规则开局就公开（第 7 层每手从前面几关的规则里随机翻一条）、场地固定为对手主场（第 6 层起才生效，之前只当背景）、没有公共效果 / 表决 / 暗标 / 操作费 / 装备、每手之后没有市场；序章各发 3 张全部上场、不下注。不给 `campaign` 就是原来的自由牌桌，规则一点不变。界面在 `web/campaign.ts`：18+ 确认 → 标题 → 炼狱之馆（一层一层往上，打过的能重打）→ 关前 → 牌桌（顶栏“离桌”不丢进度）→ 赢了：关后台词、第一次通关挑 1 名、可移除 1 名 → 上楼；输了：她按重来次数嘲讽，可以无限重来。进度存在 `sinsquad.campaign.v1`，没打完的那一关存在 `sinsquad.campaign.table.v1`，和自由牌桌的存档互不覆盖。关前可以从已经拿到的魔神牌里挑一张带上桌（她那一关的魔神牌她自己带），牌桌第三块牌显示双方的魔神牌；战役牌桌上的人物用战役版卡面（`campaignCard`：护甲换血、改写的能力）。通关挑人只从下一关能用的人物里出（`campaignRoster`）。还没做的：第二次翻开、固定额下注、剧情对话层、表情和语音、画廊。
 
 **18+ 确认**：第一次打开先问一次，确认后记在浏览器里（`sinsquad.adult.v1`）；确认之前不画任何立绘。
 

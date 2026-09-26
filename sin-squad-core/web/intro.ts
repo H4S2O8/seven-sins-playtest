@@ -33,8 +33,8 @@ export interface Opening {
 }
 
 export interface GateHooks {
-  /** 画一张人物牌（用牌桌那边同一套有厚度的 3D 卡面）；down = 背面朝上。 */
-  card(id: string, cls?: string, down?: boolean): string;
+  /** 画一张人物牌（用牌桌那边同一套有厚度的 3D 卡面）；down = 背面朝上；campaign = 战役版卡面。 */
+  card(id: string, cls?: string, down?: boolean, campaign?: boolean): string;
   back(cls?: string): string;
   save(): SaveInfo | null;
   /** 开一张新桌，返回开局信息（牌池、庄家等）。 */
@@ -48,8 +48,8 @@ export interface GateHooks {
   canReturn(): boolean;
   /** 战役：进度和没打完的那一关。 */
   campaign(): { progress: CampaignProgress; saved: StageSave | null };
-  /** 开这一关的牌桌（重新开始）。 */
-  startStage(no: number): void;
+  /** 开这一关的牌桌（重新开始），demon 是你带的魔神牌。 */
+  startStage(no: number, demon: string | null): void;
   /** 继续没打完的那一关。 */
   resumeStage(): void;
   /** 一关刚打完的结果（没有就是 null）。 */
@@ -225,7 +225,9 @@ export class Gate {
       }
       case "storySkip": if (s?.kind === "story") this.endStory(s); break;
       case "pool": this.screen = { kind: "cpool" }; break;
-      case "enter": this.hide(); this.hooks.startStage(Number(arg)); return;
+      case "enter": this.hide(); this.hooks.startStage(Number(arg), this.demon()); return;
+      // 挑魔神牌：只换选中状态，不重画
+      case "dpick": this.demonPick = arg || null; this.patchDemon(); return;
       case "resumeStage": this.hide(); this.hooks.resumeStage(); return;
       case "reward": this.screen = { kind: "reward", pick: null, remove: null }; break;
       // 挑人、划掉：只改选中状态，不重画（重画会让候选牌从头再升起来一遍）
@@ -325,14 +327,30 @@ export class Gate {
   }
 
   private ctx(): CampaignCtx {
-    return { ...this.hooks.campaign(), art: this.art, seen: this.seen, card: (id, cls, down) => this.hooks.card(id, cls, down) };
+    return { ...this.hooks.campaign(), art: this.art, seen: this.seen, card: (id, cls, down) => this.hooks.card(id, cls, down, true) };
+  }
+
+  /** 关前挑的魔神牌；还没挑过就默认最新拿到的那张。挑过的牌如果不在手里了（换了存档）也退回默认。 */
+  private demonPick: string | null | undefined = undefined;
+  private demon(): string | null {
+    const got = this.hooks.campaign().progress.demons;
+    if (this.demonPick === null) return null;
+    if (this.demonPick !== undefined && got.includes(this.demonPick)) return this.demonPick;
+    return got.at(-1) ?? null;
+  }
+
+  private patchDemon() {
+    const pick = this.demon();
+    this.root.querySelectorAll<HTMLElement>(".vn-demons .pick").forEach((el) => el.classList.toggle("on", (el.dataset.arg || null) === pick));
+    const name = this.root.querySelector(".vn-demon-name");
+    if (name) name.textContent = pick ? `「${pick}」` : "空手上桌";
   }
 
   private view(s: Screen): string {
     switch (s.kind) {
       case "age": return ageView(s.refused);
       case "campaign": return campaignView(this.ctx());
-      case "brief": return briefView(this.ctx(), s.no);
+      case "brief": return briefView(this.ctx(), s.no, this.demon());
       case "story": return storyView(this.art, s.sc, s.lines, s.i);
       case "cpool": return poolView(this.ctx());
       case "reward": return rewardView(this.ctx(), s.pick, s.remove);

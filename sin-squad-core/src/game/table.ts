@@ -1,4 +1,4 @@
-import { runBattle, type BattleResult } from "../battle/engine.js";
+import { runBattle, type BattleResult, type CampaignBattleRules } from "../battle/engine.js";
 import { CHARACTERS, character } from "../content/characters.js";
 import { ARENAS, EQUIPMENT, PUBLIC_EFFECTS, RULES } from "../content/tables.js";
 import { Rng } from "../rng.js";
@@ -48,7 +48,19 @@ export interface CampaignRules {
   deal: 3 | 4;
   /** false：不下注，布完阵直接开打（序章）。 */
   betting: boolean;
+  /** 战斗规则：炼狱业火、打最近的敌人、战役卡面、双方的魔神牌。 */
+  battle?: CampaignBattleRules;
+  /**
+   * 固定额下注（设计稿 §2.4）：第 1、2 轮每次下注 / 加注的额度，每轮最多加注 MAX_RAISES 次。
+   * 只有筹码不够时才能全押。不给就是自由金额。
+   */
+  fixedBet?: [number, number];
+  /** 第二次翻开（§2.1）：第 1 轮下注之后，双方同时暗选再翻开一名，然后一起翻开。 */
+  secondReveal?: boolean;
 }
+
+/** 固定额下注时，每轮最多加注几次（开局那一注不算）。 */
+export const MAX_RAISES = 3;
 
 /**
  * 调试用的固定项。没给的项照常随机；给了的项每一手都生效。
@@ -73,6 +85,8 @@ export interface Placement {
   /** 被饕餮吞掉的人物（没有吞噬时为 null）。 */
   eatenId: string | null;
   reveal: number;
+  /** 第二次翻开的那一名（还没翻为 null）。 */
+  reveal2: number | null;
 }
 
 export interface BetStats {
@@ -104,6 +118,11 @@ export interface HandState {
   invested: [number, number];
   stats: [BetStats, BetStats];
   betRound: 1 | 2;
+  /** 本轮已经加注的次数（固定额下注限次用；开局那一注不算）。 */
+  raises: number;
+  /** 第二次翻开：双方暗选的位置（null = 还没选或不用选）。 */
+  reveal2Pick: [number | null, number | null];
+  reveal2Pending: [boolean, boolean];
   roundBet: [number, number];
   target: number;
   minRaise: number;
@@ -135,6 +154,8 @@ export type TableEvent =
   | { type: "operate"; round: 1 | 2; fee: number; drafted: [boolean, boolean] }
   | { type: "installed"; seat: Seat; pos: number; equipmentId: string }
   | { type: "reveal"; ruleId: string; publicEffectId: string | null }
+  /** 第二次翻开：双方同时翻开的人物（不用翻的一方为 null）。 */
+  | { type: "reveal2"; picks: [{ pos: number; characterId: string } | null, { pos: number; characterId: string } | null] }
   | { type: "votes"; votes: [boolean, boolean] }
   | { type: "bids"; bids: [number, number]; peActive: boolean }
   | { type: "peResult"; publicEffectId: string; active: boolean }
@@ -144,6 +165,8 @@ export type TableEvent =
   | { type: "market"; candidates: string[]; firstPicker: Seat }
   | { type: "marketPick"; seat: Seat; characterId: string }
   | { type: "marketRemove"; seat: Seat; removed: boolean }
+  /** 金山的利息：奖池分完之后，对手再付给 seat 这么多筹码。 */
+  | { type: "interest"; seat: Seat; amount: number; stacks: [number, number] }
   | { type: "tableOver"; winner: Seat };
 
 const GRAND_ID = "GL2"; // 饕餮
@@ -201,6 +224,7 @@ export class Table {
       case "arena": return [h.arenaChooser];
       case "place": return h.placing === null ? [] : [h.placing];
       case "peek": return SEATS.filter((s) => h.peekPending[s]);
+      case "reveal2": return SEATS.filter((s) => h.reveal2Pending[s] && h.reveal2Pick[s] === null);
       case "bet": return [h.actor];
       case "operate": return SEATS.filter((s) => h.opCommit[s] === null);
       case "draft": return SEATS.filter((s) => h.offers[s] !== null && h.draftChoice[s] === null);
@@ -248,7 +272,7 @@ export class Table {
       peekPending: [false, false], peek: [null, null],
       pot: 0, invested: [0, 0],
       stats: [{ betOrRaise: 0, checks: 0, opsPaid: 0 }, { betOrRaise: 0, checks: 0, opsPaid: 0 }],
-      betRound: 1, roundBet: [0, 0], target: 0, minRaise: this.options.minBet, acted: [false, false], actor: other(dealer),
+      betRound: 1, raises: 0, reveal2Pick: [null, null], reveal2Pending: [false, false], roundBet: [0, 0], target: 0, minRaise: this.options.minBet, acted: [false, false], actor: other(dealer),
       allIn: false, opFee: 0, opCommit: [null, null], offers: [null, null], draftChoice: [null, null],
       votes: [null, null], bids: [null, null], bidCap: 0,
       folded: null, battle: null, outcome: null,
@@ -286,6 +310,7 @@ export class Table {
       case "place": return this.onPlace(seat, action.picks, action.eat, action.reveal);
       case "peek": return this.onPeek(seat, action.pos);
       case "peekSwap": return this.onPeekSwap(seat, action.swap);
+      case "reveal2": return this.onReveal2(seat, action.pos);
       case "check": case "bet": case "call": case "raise": case "allIn": case "fold":
         return this.onBet(seat, action);
       case "operate": return this.onOperate(seat, action.draft);
@@ -393,8 +418,49 @@ export class Table {
     this.startBetRound(1);
   }
 
+  /** 第二次翻开能选的位置：在场、没亮出的人。 */
+  hiddenPositions(seat: Seat): number[] {
+    const pl = this.hand.placement[seat];
+    if (!pl) return [];
+    return [0, 1, 2].filter((p) => pl.slots[p] !== null && p !== pl.reveal && p !== pl.reveal2);
+  }
+
+  /** 第二次翻开：还剩两名以上暗牌的一方要暗选一名；只剩一名的留到开打再翻。 */
+  private startReveal2() {
+    const h = this.hand;
+    h.reveal2Pick = [null, null];
+    h.reveal2Pending = [this.hiddenPositions(0).length >= 2, this.hiddenPositions(1).length >= 2];
+    if (!h.reveal2Pending[0] && !h.reveal2Pending[1]) return this.startBetRound(2);
+    this.phase = "reveal2";
+  }
+
+  private onReveal2(seat: Seat, pos: number) {
+    this.expect("reveal2");
+    const h = this.hand;
+    if (!this.hiddenPositions(seat).includes(pos)) throw new Error("只能翻开自己一名暗置的人物");
+    h.reveal2Pick[seat] = pos;
+    if (SEATS.some((s) => h.reveal2Pending[s] && h.reveal2Pick[s] === null)) return;
+    // 双方都选完，一起翻开
+    const picks = SEATS.map((s) => {
+      const p = h.reveal2Pick[s];
+      if (p === null) return null;
+      const pl = h.placement[s]!;
+      pl.reveal2 = p;
+      return { pos: p, characterId: pl.slots[p]! };
+    }) as [{ pos: number; characterId: string } | null, { pos: number; characterId: string } | null];
+    this.log.push({ type: "reveal2", picks });
+    this.startBetRound(2);
+  }
+
+  /** 固定额下注时这一轮每次下注 / 加注的额度；自由金额时为 null。 */
+  betStep(): number | null {
+    const f = this.campaign?.fixedBet;
+    return f ? f[this.hand.betRound - 1] : null;
+  }
+
   private startBetRound(round: 1 | 2) {
     const h = this.hand;
+    h.raises = 0;
     h.betRound = round;
     h.roundBet = [0, 0];
     h.target = 0;
@@ -421,6 +487,8 @@ export class Table {
     let putIn = 0;
     let aggressive = false;
 
+    const step = this.betStep();
+    if (step !== null) this.checkFixedBet(seat, action, step);
     switch (action.type) {
       case "check":
         if (me !== h.target) throw new Error("有未跟的下注，不能过牌");
@@ -467,6 +535,7 @@ export class Table {
     if (aggressive) {
       const increment = h.roundBet[seat] - h.target;
       if (increment >= h.minRaise) h.minRaise = increment;
+      if (h.target > 0) h.raises++; // 已经有人下过注，这一下就是加注
       h.target = h.roundBet[seat];
       h.acted[other(seat)] = false;
       h.stats[seat].betOrRaise++;
@@ -487,6 +556,32 @@ export class Table {
       if (this.stacks[rich] === 0) return this.endBetRound();
     }
     h.actor = o;
+  }
+
+  /**
+   * 固定额下注：下注只能是本轮额度，加注只能加一个额度，每轮最多加注 MAX_RAISES 次；
+   * 只有筹码不够下注或加注时才能全押。
+   */
+  private checkFixedBet(seat: Seat, action: Action, step: number) {
+    const h = this.hand;
+    const stack = this.stacks[seat];
+    const need = h.target === 0 ? step : h.target + step - h.roundBet[seat];
+    const capped = h.target > 0 && h.raises >= MAX_RAISES;
+    switch (action.type) {
+      case "bet":
+        if (action.amount !== step) throw new Error(`这一轮每次下注 ${step}`);
+        break;
+      case "raise":
+        if (capped) throw new Error(`这一轮已经加注 ${MAX_RAISES} 次，只能跟注或弃牌`);
+        if (action.to !== h.target + step) throw new Error(`这一轮每次加注 ${step}`);
+        break;
+      case "allIn": {
+        const toCall = h.target - h.roundBet[seat];
+        // 筹码不够跟注时，全押就是跟注；够跟注但不够下注 / 加注时，才能全押当作加注
+        if (stack > toCall && (capped || stack >= need)) throw new Error("筹码够下注或加注时不能全押");
+        break;
+      }
+    }
   }
 
   private endBetRound() {
@@ -563,7 +658,10 @@ export class Table {
       if (!h.ruleRevealed) return this.revealRule();
       return this.fight();
     }
-    if (h.betRound === 1) return this.campaign ? this.startBetRound(2) : this.revealRule();
+    if (h.betRound === 1) {
+      if (!this.campaign) return this.revealRule();
+      return this.campaign.secondReveal ? this.startReveal2() : this.startBetRound(2);
+    }
     return this.fight();
   }
 
@@ -670,6 +768,7 @@ export class Table {
       publicEffectId: h.peActive ? h.publicEffectId : null,
       pot: h.pot,
       firstSeat: other(h.dealer), // 非庄家先手：庄家后布阵、有信息优势
+      campaign: this.campaign?.battle,
     });
     h.battle = result;
     this.log.push({
@@ -685,6 +784,14 @@ export class Table {
     h.pot = 0;
     h.outcome = { winner: result.winner, by: "battle", pot };
     this.log.push({ type: "settle", winner: result.winner, pot, stacks: [this.stacks[0], this.stacks[1]] });
+    // 金山的利息：输了也收，但不超过对手剩下的筹码
+    for (const s of SEATS) {
+      const amount = Math.min(result.interest[s], this.stacks[other(s)]);
+      if (amount <= 0) continue;
+      this.stacks[other(s)] -= amount;
+      this.stacks[s] += amount;
+      this.log.push({ type: "interest", seat: s, amount, stacks: [this.stacks[0], this.stacks[1]] });
+    }
     this.checkInvariant();
     if (this.endIfBroke()) return;
     this.openMarket(result.winner === null ? other(h.dealer) : other(result.winner));
@@ -805,7 +912,7 @@ export function validatePlacement(dealt: string[], picks: number[], eat: EatChoi
     slots[eaten] = null;
   }
   if (!Number.isInteger(reveal) || reveal < 0 || reveal > 2 || slots[reveal] === null) throw new Error("必须亮出一名在场的人物");
-  return { slots, eat, eatenId, reveal };
+  return { slots, eat, eatenId, reveal, reveal2: null };
 }
 
 export function characterName(id: string | null): string {

@@ -1,3 +1,4 @@
+import { campaignCard } from "../content/campaign-cards.js";
 import { character } from "../content/characters.js";
 import { equipment } from "../content/tables.js";
 import { other, type BetContext, type Seat, type TeamSetup } from "../types.js";
@@ -26,7 +27,28 @@ export interface BattleInput {
   pot: number;
   /** 第 1 轮先出手的一方（牌桌上是非庄家）；之后每轮轮换。默认 0。 */
   firstSeat?: Seat;
+  /** 战役规则开关；不给就是自由牌桌的规则。 */
+  campaign?: CampaignBattleRules;
 }
+
+/** 战役的战斗规则（战役设计稿 §2.5、§2.6、§3.5、§3.7）。每项都可以单独打开。 */
+export interface CampaignBattleRules {
+  /** 炼狱业火：从第 4 轮起，每轮结束时每个活着的人受伤害（第 4 轮 1 点，之后每轮多 1），不经屏障。战斗不再有轮数上限。 */
+  hellfire?: boolean;
+  /** 对位倒下后不再空过一回合转线，下一次出手直接打最近的敌人。 */
+  nearest?: boolean;
+  /** 用战役版卡面：护甲换成血，靠操作费、装备、护甲的能力改写。 */
+  cards?: boolean;
+  /** 双方带的魔神牌（null = 没带）。从第 2 轮起，本方一有空位就降临到编号最小的空位上，每场一次。 */
+  demons?: [string | null, string | null];
+}
+
+/** 业火开烧的轮数。 */
+export const HELLFIRE_FROM = 4;
+/** 业火时的轮数上限：到这里业火早已烧死所有人，只是防止死循环。 */
+const HELLFIRE_MAX_ROUNDS = 40;
+/** 魔神最早在第几轮降临。 */
+export const DEMON_FROM = 2;
 
 /** 回放的一帧：一次出手（或轮初、轮末效果）里发生的事件，以及之后的样子。 */
 export interface BattleFrame {
@@ -46,7 +68,11 @@ export type BattleEvent =
   | { round: number; type: "death"; seat: Seat; pos: number }
   /** 能力、场地、公共效果在某人身上生效（给画面播放用；round 0 = 开战时）。 */
   | { round: number; type: "trigger"; seat: Seat; pos: number; name: string; text: string }
-  | { round: number; type: "note"; text: string };
+  | { round: number; type: "note"; text: string }
+  /** 炼狱业火烧遍全场：每个活着的人都受 amount 伤害（随后的 damage 事件是逐人的结果）。 */
+  | { round: number; type: "hellfire"; amount: number }
+  /** 魔神降临到 seat 方的 pos 号位。 */
+  | { round: number; type: "demon"; seat: Seat; pos: number; characterId: string };
 
 export interface BattleResult {
   /** null = 平局。 */
@@ -63,7 +89,13 @@ export interface BattleResult {
   frames: BattleFrame[];
   /** 第 1 轮先出手的一方。 */
   first: Seat;
+  /** 金山收到的利息：本手结算完奖池后，由对手付给这一方（牌桌负责结算，不超过对手剩下的筹码）。 */
+  interest: [number, number];
 }
+
+/** 金山：每次收多少利息、每手最多收多少。 */
+export const INTEREST_STEP = 5;
+export const INTEREST_CAP = 20;
 
 export function runBattle(input: BattleInput): BattleResult {
   return new Battle(input).run();
@@ -82,6 +114,13 @@ class Battle {
   private firstDeathDone: [boolean, boolean] = [false, false];
   private loneTriggered: [boolean, boolean] = [false, false];
   private wingUsed: [boolean, boolean] = [false, false];
+  private readonly rules: CampaignBattleRules;
+  private demonDone: [boolean, boolean] = [false, false];
+  /** 晨星的决斗：双方互相指着对方。 */
+  private readonly duel = new Map<Unit, Unit>();
+  /** 万蝇之王：降临后还没出的那一下。 */
+  private hungry: Unit[] = [];
+  private interest: [number, number] = [0, 0];
   private readonly first: Seat;
   private readonly frames: BattleFrame[] = [];
   private frameMark = 0;
@@ -91,13 +130,14 @@ class Battle {
   private readonly hitThisRound = new Map<Unit, Set<Unit>>();
 
   constructor(private readonly input: BattleInput) {
+    this.rules = input.campaign ?? {};
     this.env = new Set([input.arenaId, ...(input.publicEffectId ? [input.publicEffectId] : [])]);
     this.first = input.firstSeat ?? 0;
     this.bet = [input.teams[0].bet, input.teams[1].bet];
     this.teams = [this.buildTeam(0), this.buildTeam(1)];
     this.setupBattle();
     this.victory = setupVictory(input.ruleId, this.teams, [this.bet[0].revealedPos, this.bet[1].revealedPos]);
-    this.maxRounds = maxRoundsFor(input.ruleId);
+    this.maxRounds = this.rules.hellfire ? HELLFIRE_MAX_ROUNDS : maxRoundsFor(input.ruleId);
     this.start = [this.teams[0].map(snapshot), this.teams[1].map(snapshot)];
   }
 
@@ -119,10 +159,14 @@ class Battle {
     return true;
   }
 
+  private card(id: string) {
+    return this.rules.cards ? campaignCard(id) : character(id);
+  }
+
   private buildTeam(seat: Seat): Unit[] {
     const setup = this.input.teams[seat];
     const team = setup.slots.map((s, pos) =>
-      s.characterId ? unitFrom(character(s.characterId), seat, pos) : emptyUnit(seat, pos),
+      s.characterId ? unitFrom(this.card(s.characterId), seat, pos) : emptyUnit(seat, pos),
     );
     team.forEach((u, i) => {
       const e = setup.slots[i].equipmentId;
@@ -185,6 +229,11 @@ class Battle {
               break;
             }
             case "赎罪券商": {
+              if (this.rules.cards) {
+                const n = Math.min(2, me.betOrRaiseCount);
+                if (n) { this.addBarrier(u, n, false); this.trig(u, name, `下注或加注 ${me.betOrRaiseCount} 次：屏障 +${n}`); }
+                break;
+              }
               const n = Math.min(2, me.opsPaid);
               if (n) { this.addBarrier(u, n, false); this.trig(u, name, `付过 ${me.opsPaid} 次操作费：屏障 +${n}`); }
               break;
@@ -210,9 +259,10 @@ class Battle {
           this.trig(twin, "双子", "两侧都有队友：全队血 +2");
         }
         const healer = this.teams[seat].find((u) => u.exists && u.def!.name === "隐修士");
-        if (me.opsPaid === 0 && healer) {
+        const calm = this.rules.cards ? me.betOrRaiseCount === 0 : me.opsPaid === 0;
+        if (calm && healer) {
           for (const u of this.teams[seat]) if (u.exists) u.hp += 5;
-          this.trig(healer, "隐修士", "没付操作费：全队血 +5");
+          this.trig(healer, "隐修士", this.rules.cards ? "没下注或加注：全队血 +5" : "没付操作费：全队血 +5");
         }
       }
       // 镜中人：看的是对位此刻的攻和形状
@@ -330,7 +380,7 @@ class Battle {
     if (this.timeline.length < this.round) this.timeline.push([this.teams[0].map(snapshot), this.teams[1].map(snapshot)]);
     return {
       winner, reason, rounds: this.round, events: this.events, start: this.start, timeline: this.timeline,
-      frames: this.frames, first: this.first,
+      frames: this.frames, first: this.first, interest: this.interest,
       final: [this.teams[0].map(snapshot), this.teams[1].map(snapshot)],
     };
   }
@@ -356,6 +406,8 @@ class Battle {
    */
   private playRound(): BattleResult | null {
     const r = this.round;
+
+    this.summonDemons();
 
     // 轮初效果
     if (this.has("P06") && (r === 2 || r === 4 || r === 6)) {
@@ -386,6 +438,9 @@ class Battle {
     }
     this.pushFrame();
 
+    const fed = this.feedHungry();
+    if (fed) return fed;
+
     const queue: [Unit[], Unit[]] = [this.alive(0), this.alive(1)];
     let side: Seat = r % 2 === 1 ? this.first : other(this.first);
     while (queue[0].length || queue[1].length) {
@@ -393,21 +448,152 @@ class Battle {
       const u = queue[side].shift()!;
       side = other(side);
       if (!u.alive || this.idle.has(u)) continue;
+      u.flags.delete("刚击倒");
       this.takeTurn(u);
       this.pushFrame();
       const done = this.decide(instantClaims(this.victory, this.teams));
       if (done) return done;
+      // 这一下打出了空位：魔神马上降临，排到本方这一轮最后出手
+      for (const d of this.summonDemons()) queue[d.seat].push(d);
+      const fedNow = this.feedHungry();
+      if (fedNow) return fedNow;
+      // 万蝇之王：自己出手击倒敌人后，马上再出手一次
+      const more = this.gorge(u);
+      if (more) return more;
     }
 
     // 轮末效果
     if (this.has("P24")) for (const u of this.livingAll()) if (u.regenRounds > 0 && u.hp > 0) { u.regenRounds--; this.heal(u, 2); }
     this.resolveDeaths(new Map());
     this.pushFrame();
+    if (this.rules.hellfire && r >= HELLFIRE_FROM) {
+      const amount = r - HELLFIRE_FROM + 1;
+      this.events.push({ round: r, type: "hellfire", amount });
+      for (const u of this.livingAll()) this.loseHp(u, amount);
+      this.resolveDeaths(new Map());
+    }
+    this.pushFrame();
+    return null;
+  }
+
+  /**
+   * 魔神降临：从第 2 轮起，本方一有空位（没人、被吞掉或已倒下），
+   * 魔神就降临到编号最小的空位上。每场一次。轮初、每次出手之后都检查。
+   * 倒下的人从阵上移走，但击倒数照算（见 VictoryState.removedDead）。
+   * 返回这次降临的魔神。
+   */
+  private summonDemons(): Unit[] {
+    const arrived: Unit[] = [];
+    const demons = this.rules.demons;
+    if (!demons || this.round < DEMON_FROM) return arrived;
+    for (const seat of [0, 1] as Seat[]) {
+      const id = demons[seat];
+      if (!id || this.demonDone[seat]) continue;
+      const pos = this.teams[seat].findIndex((u) => !u.alive);
+      if (pos < 0) continue;
+      const old = this.teams[seat][pos];
+      if (old.exists) this.victory.removedDead[seat].push(old);
+      const u = unitFrom(character(id), seat, pos);
+      u.demon = true;
+      this.teams[seat][pos] = u;
+      this.demonDone[seat] = true;
+      this.events.push({ round: this.round, type: "demon", seat, pos, characterId: id });
+      arrived.push(u);
+      this.onDescend(u);
+    }
+    if (arrived.length) this.pushFrame();
+    return arrived;
+  }
+
+  /** 魔神降临那一下的能力。 */
+  private onDescend(d: Unit) {
+    const name = d.def!.name;
+    const foes = this.alive(other(d.seat));
+    if (name === "金山") this.collect(d, "降临");
+    if (!foes.length) return;
+    switch (name) {
+      case "晨星": {
+        const champ = maxBy(foes, (x) => x.atk);
+        this.duel.set(d, champ);
+        this.duel.set(champ, d);
+        this.trig(d, name, `决斗：向${champ.def!.name}下战书`);
+        break;
+      }
+      case "深渊之眼":
+        for (const f of foes) {
+          if (f.atk <= 1) continue;
+          f.atk--;
+          d.atk++;
+          this.trig(d, name, `夺攻：${f.def!.name}攻 -1`);
+        }
+        break;
+      case "万蝇之王":
+        this.hungry.push(d);
+        break;
+      case "欲之王": {
+        const t = maxBy(foes, (x) => x.hp);
+        const mine = d.hp;
+        d.hp = t.hp;
+        t.hp = Math.max(1, mine);
+        for (const x of [d, t]) { x.maxHp = Math.max(x.maxHp, x.hp); x.startHp = Math.max(x.startHp, x.hp); }
+        this.trig(d, name, `换心：和${t.def!.name}交换血量`);
+        break;
+      }
+    }
+  }
+
+  private isDemon(u: Unit, name: string) {
+    return u.demon && u.def!.name === name;
+  }
+
+  /** 金山收一笔利息。 */
+  private collect(d: Unit, why: string) {
+    const before = this.interest[d.seat];
+    this.interest[d.seat] = Math.min(INTEREST_CAP, before + INTEREST_STEP);
+    const got = this.interest[d.seat] - before;
+    if (got > 0) this.trig(d, "金山", `利息（${why}）：+${got} 筹码`);
+  }
+
+  /** 万蝇之王：降临后马上出手一次，击倒了就接着出手。 */
+  private feedHungry(): BattleResult | null {
+    for (const u of this.hungry.splice(0)) {
+      if (!u.alive || !this.alive(other(u.seat)).length) continue;
+      u.flags.delete("刚击倒");
+      this.trig(u, "万蝇之王", "饿坏了：马上出手");
+      this.takeTurn(u);
+      this.pushFrame();
+      const done = this.decide(instantClaims(this.victory, this.teams));
+      if (done) return done;
+      const more = this.gorge(u);
+      if (more) return more;
+    }
+    return null;
+  }
+
+  /** 万蝇之王：自己出手击倒了敌人，就再出手一次（反击击倒不算）。 */
+  private gorge(u: Unit): BattleResult | null {
+    while (this.isDemon(u, "万蝇之王") && u.alive && u.flags.has("刚击倒") && this.alive(other(u.seat)).length) {
+      u.flags.delete("刚击倒");
+      this.trig(u, "万蝇之王", "还没吃饱：再出手一次");
+      this.takeTurn(u);
+      this.pushFrame();
+      const done = this.decide(instantClaims(this.victory, this.teams));
+      if (done) return done;
+    }
+    return null;
+  }
+
+  /** 对位倒下后最近的敌人：两翼先打 2 号位，2 号位打血较少的一翼；最近的倒了就往外找。 */
+  private nearestFoe(u: Unit): Unit | null {
+    const foes = this.teams[other(u.seat)];
+    const order = u.pos === 1 ? [0, 2].sort((a, b) => foes[a].hp - foes[b].hp || a - b) : [1, 2 - u.pos];
+    for (const p of order) if (foes[p].alive) return foes[p];
     return null;
   }
 
   /** 对位已倒下、这一轮还要花时间转线的人。 */
   private switching(u: Unit): boolean {
+    if (this.rules.nearest || this.isDemon(u, "永眠")) return false; // 永眠从不出手，也就不用转线，照样反击
     if (this.teams[other(u.seat)][u.pos].alive) return false;
     if (u.charmed && this.round === 1) return false;
     return (u.switchRemaining ?? this.switchCost(u.pos)) > 0;
@@ -425,7 +611,21 @@ class Battle {
     let target: Unit | null = null;
     let opposite = false;
     const o = this.teams[other(seat)][u.pos];
-    if (u.charmed && r === 1) {
+    // 永眠：从不出手（但不算不出手的人，照样反击）
+    if (this.isDemon(u, "永眠")) return;
+    // 晨星的决斗：双方只打对方，直到一方倒下
+    const rival = this.duel.get(u);
+    if (rival?.alive) { target = rival; opposite = rival === o; }
+    else if (rival) this.duel.delete(u);
+    // 焚怒：出手打所有敌人，逐个碰撞
+    if (this.isDemon(u, "焚怒")) {
+      for (const t of this.alive(other(seat))) {
+        if (!u.alive) break;
+        if (t.alive) this.strike(u, t, t === o);
+      }
+      return;
+    }
+    if (!target && u.charmed && r === 1) {
       const adj = this.teams[seat].filter((x) => x.alive && Math.abs(x.pos - u.pos) === 1);
       if (adj.length) { target = minBy(adj, (x) => x.hp); this.trig(u, "塞壬", "被魅惑：攻击队友"); }
     }
@@ -433,6 +633,9 @@ class Battle {
       if (o.alive) {
         target = o;
         opposite = true;
+      } else if (this.rules.nearest) {
+        target = this.nearestFoe(u);
+        if (!target) return;
       } else {
         if (u.switchRemaining === null) u.switchRemaining = this.switchCost(u.pos);
         if (u.switchRemaining > 0) {
@@ -458,8 +661,8 @@ class Battle {
     const r = this.round;
     let t = target;
 
-    // 守护改写目标
-    if (t.seat !== a.seat) {
+    // 守护改写目标（决斗不受守护影响）
+    if (t.seat !== a.seat && this.duel.get(a) !== t) {
       const guard = this.teams[t.seat].find(
         (g) => g.alive && g !== t && Math.abs(g.pos - t.pos) === 1 && this.abilityOn(g, "痴情骑士"),
       );
@@ -518,11 +721,23 @@ class Battle {
       segs.push({ a, t, amount: 1, hit: frost, recoil: false });
     }
     // 碰撞：被打的人把自己的攻整段打回来（这一轮不出手、正在转线的人除外）
+    let back: Hit | null = null;
     if (this.retaliates(t)) {
-      this.events.push({ round: r, type: "recoil", seat: t.seat, pos: t.pos, targetSeat: a.seat, targetPos: a.pos, amount: t.atk });
-      const back: Hit = { a: t, t: a, sum: 0, landed: false, minOne: true, segs: 0 };
+      // 永眠的反击打出双倍的攻
+      const amount = this.isDemon(t, "永眠") ? t.atk * 2 : t.atk;
+      this.events.push({ round: r, type: "recoil", seat: t.seat, pos: t.pos, targetSeat: a.seat, targetPos: a.pos, amount });
+      back = { a: t, t: a, sum: 0, landed: false, minOne: true, segs: 0 };
       hitList.push(back);
-      segs.push({ a: t, t: a, amount: t.atk, hit: back, recoil: true });
+      segs.push({ a: t, t: a, amount, hit: back, recoil: true });
+      // 焚怒反击时，攻击者的队友也挨同样一下（他们不反击）
+      if (this.isDemon(t, "焚怒")) {
+        for (const x of this.alive(a.seat)) {
+          if (x === a) continue;
+          const splash: Hit = { a: t, t: x, sum: 0, landed: false, minOne: true, segs: 0 };
+          hitList.push(splash);
+          segs.push({ a: t, t: x, amount: t.atk, hit: splash, recoil: true });
+        }
+      }
     }
 
     // 结算每一段（先记账，再一起扣血）
@@ -537,6 +752,11 @@ class Battle {
       if (dst.barrier > 0) {
         dst.barrier--;
         this.events.push({ round: r, type: "blocked", seat: dst.seat, pos: dst.pos });
+        // 战役版噬铁软泥：打中带屏障的敌人，多打掉它一层
+        if (this.rules.cards && src.seat !== dst.seat && dst.barrier > 0 && this.abilityOn(src, "噬铁软泥")) {
+          dst.barrier--;
+          this.trig(src, "噬铁软泥", `腐蚀：${dst.def!.name}多失去一层屏障`);
+        }
         this.onBarrierBroken(dst, src, dmg);
         continue;
       }
@@ -595,6 +815,10 @@ class Battle {
         this.heal(a, heal);
       }
     }
+    // 金山：她打中敌人（反击也算）、被敌人打中，都收一笔利息
+    if (hit.segs > 0 && this.isDemon(a, "金山")) this.collect(a, "打中");
+    if (back && back.segs > 0 && this.isDemon(t, "金山")) this.collect(t, "打中");
+    if (hit.segs > 0 && this.isDemon(t, "金山")) this.collect(t, "被打中");
     // 狂战士、裂甲
     for (const [u, n] of hits) {
       if (u.hp > 0 && this.abilityOn(u, "狂战士")) { u.atk += n; this.trig(u, "狂战士", `攻 +${n}`); }
@@ -690,6 +914,8 @@ class Battle {
     }
     for (const u of newlyDead) this.events.push({ round: r, type: "death", seat: u.seat, pos: u.pos });
 
+    // 万蝇之王看的是“自己出手有没有击倒”：出手前清掉，出手后再看
+    for (const v of newlyDead) for (const k of hitters.get(v) ?? []) if (k.seat !== v.seat) k.flags.add("刚击倒");
     if (newlyDead.length) {
       for (const u of this.livingAll()) {
         if (this.abilityOn(u, "食腐鸦")) {

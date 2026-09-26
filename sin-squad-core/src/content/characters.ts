@@ -1,4 +1,5 @@
 import type { CharacterDef } from "../types.js";
+import { DEMONS } from "./demons.js";
 
 /**
  * 21 名人物。面板形状各走极端，效果越强面板越弱。
@@ -74,7 +75,8 @@ export const CHARACTERS: readonly CharacterDef[] = [
     ability: "开战时：若站在 2 号位且两侧都有队友，全队血 +2", tag: "布阵", stage: 2 },
 ];
 
-const BY_ID = new Map(CHARACTERS.map((c) => [c.id, c]));
+/** 魔神牌也能按编号查到，战斗回放和画面不用分两套查法。 */
+const BY_ID = new Map([...CHARACTERS, ...DEMONS].map((c) => [c.id, c]));
 
 export function character(id: string): CharacterDef {
   const c = BY_ID.get(id);
