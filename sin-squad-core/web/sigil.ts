@@ -125,12 +125,34 @@ export function tileIconSvg(kind: "arena" | "rule" | "pe"): string {
     `<g fill='none' stroke='url(#g)' stroke-width='1.3' stroke-linejoin='round' stroke-linecap='round'>${body}</g></svg>`;
 }
 
+/**
+ * 牌桌中央的嵌花：同一枚七芒星的空心版，只有金线和七颗罪色宝石，外圈刻一圈 SEPTEM · PECCATA · MORTALIA。
+ * 中心是空的，奖池压在上面。
+ */
+export function inlaySvg(): string {
+  const gems = ORDER.map((sin, i) => {
+    const [x, y] = pt(84, i).split(" ").map(Number);
+    return `<circle cx='${x}' cy='${y}' r='4.2' fill='${SIN_COLOR[sin]}' stroke='#e8c983' stroke-width='1.1'/>`;
+  }).join("");
+  return `<svg xmlns='http://www.w3.org/2000/svg' viewBox='-100 -100 200 200' opacity='.42'>` +
+    `<defs><path id='ring' d='M-92.5 0A92.5 92.5 0 1 1 92.5 0A92.5 92.5 0 1 1 -92.5 0'/></defs>` +
+    `<g fill='none' stroke='#d9b25f' stroke-linejoin='round'>` +
+    `<circle r='97.5' stroke-width='.9'/><circle r='87.5' stroke-width='1.2'/><circle r='84' stroke-width='.5' stroke-dasharray='1 3'/>` +
+    `<path d='${star(84, 2)}' stroke-width='.6' stroke-opacity='.6'/><path d='${star(84, 3)}' stroke-width='1.5'/>` +
+    `<circle r='40' stroke-width='.8'/></g>` +
+    `<text font-family='Cinzel, Trajan Pro, Palatino, Georgia, serif' font-size='6.4' letter-spacing='3.1' fill='#d9b25f'>` +
+    `<textPath href='#ring'>SEPTEM · PECCATA · MORTALIA · SEPTEM · PECCATA · MORTALIA ·</textPath></text>` +
+    gems +
+    `</svg>`;
+}
+
 const dataUrl = (svg: string) => `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
 
-/** 把纹章、牌背、长条牌图标挂到根元素的 CSS 变量上（--sigil、--card-back、--icon-arena / rule / pe）。 */
+/** 把纹章、牌背、桌面嵌花、长条牌图标挂到根元素的 CSS 变量上（--sigil、--card-back、--inlay、--icon-arena / rule / pe）。 */
 export function installSigil() {
   const root = document.documentElement.style;
   root.setProperty("--sigil", dataUrl(sigilSvg()));
+  root.setProperty("--inlay", dataUrl(inlaySvg()));
   root.setProperty("--card-back", dataUrl(cardBackSvg()));
   for (const k of ["arena", "rule", "pe"] as const) root.setProperty(`--icon-${k}`, dataUrl(tileIconSvg(k)));
 }
