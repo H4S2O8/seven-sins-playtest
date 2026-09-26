@@ -16,6 +16,7 @@ import {
   bubble as hudBubble, collect, crumble, discoverExit, flip, floater as hudFloater, laneShift, measure, pulse, reducedMotion, shake, shatter, strike, type Snapshot,
 } from "./motion.js";
 import { isMuted, setScene, toggleMuted } from "./music.js";
+import { installFrames, showGallery } from "./frames.js";
 import { SIN_LATIN, installSigil } from "./sigil.js";
 import { installTilt } from "./tilt.js";
 import { disableTips, dismissTip, resetTips, tipHtml } from "./tips.js";
@@ -723,6 +724,7 @@ function cardFront(id: string, o: CardOpts) {
       ${defs ? `<div class="defs">${defs}</div>` : ""}
       ${eqs.length ? `<div class="equip" title="${esc(eqs.map((e) => `${e.name}：${e.text}`).join("；"))}">${eqs.map((e) => e.name).join("、")}</div>` : ""}
     </div>
+    <i class="orn"></i><span class="sin-tag">${SIN_LATIN[c.sin]}</span>
     <div class="plate"><span>${c.name}</span></div>
     <div class="text">${CARD_TEXT[id] ?? esc(c.ability)}</div>
     <div class="stats">
@@ -749,7 +751,7 @@ function card(id: string | null, o: CardOpts = {}) {
     o.lane ? `--lane:${o.lane}` : "",
   ].filter(Boolean).join(";");
   const cls = [
-    "card", o.cls ?? "", down ? "down" : "", o.dead ? "dead" : "", o.act ? "clickable" : "", b?.barrier && !down ? "shielded" : "",
+    "card person", o.cls ?? "", down ? "down" : "", o.dead ? "dead" : "", o.act ? "clickable" : "", b?.barrier && !down ? "shielded" : "",
     o.fan !== undefined ? "fanned" : "", o.lane ? "switching" : "",
   ].filter(Boolean).join(" ");
   return `<div class="${cls}"${style ? ` style="${style}"` : ""}${o.key ? ` data-key="${o.key}"` : ""}${o.unit ? ` data-unit="${o.unit}"` : ""}${o.acting ? " data-acting" : ""}${attrs(o)}${c && !down ? ` title="${esc(`${c.name}（${c.sin}）：${c.ability}`)}"` : ""}>
@@ -1627,6 +1629,8 @@ app.addEventListener("input", (ev) => {
 // ───────────────────────── 入场 ─────────────────────────
 
 installSigil();
+installFrames();
+const gallery = new URLSearchParams(location.search).has("frames");
 const gate = new Gate({
   card: (id, cls, down) => card(id, { cls, down }),
   back: (cls) => card(null, { cls }),
@@ -1655,7 +1659,8 @@ const gate = new Gate({
 window.addEventListener("resize", () => render(false));
 installTilt();
 // 调试模式：直接开桌，跳过入场
-if (debug) newTable(debug.style ?? "cautious");
+if (gallery) showGallery({ card });
+else if (debug) newTable(debug.style ?? "cautious");
 else { render(); gate.show("title"); }
 
 // 给自动化测试用：读当前牌桌（不影响游戏）

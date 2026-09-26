@@ -1303,3 +1303,474 @@ table.ref td.ref-pic img { display: block; width: 84px; aspect-ratio: 1216 / 832
 }
 
 .card-info h2 small .latin { font-family: var(--latin); letter-spacing: .18em; color: #d9b25fcc; margin-right: 4px; }
+
+
+/* ───────── 卡框样式 ─────────
+ * 人物牌（.card.person）的卡面只有一套 HTML，根元素（或一览页的每一节）上的 data-frame 决定用哪套卡框。
+ * 没有 data-frame 或 classic 就是上面那套原来的样式；下面每套只改人物牌的正面和侧边，牌背、桌上的长条牌不动。
+ * 卡框用到的 SVG（窗形遮罩、框线、纹样、图标）在 web/frames.ts 里生成，挂在 --fr-… / --ic-… 变量上。
+ * .orn 是盖在牌面上的装饰层，.sin-tag 是罪的拉丁名，原来那套里都不显示。 */
+.card .orn, .card .sin-tag { display: none; }
+.card .orn { position: absolute; pointer-events: none; }
+.card .sin-tag { pointer-events: none; }
+
+/* ═════ 花窗 VITRAIL：哥特尖拱窗、罪色菱格彩玻璃、石雕窗框、玫瑰窗数值 ═════ */
+[data-frame="vitrail"] .person .edge {
+  background: linear-gradient(var(--edge-dir, 180deg), #a39886 0%, #625a4e 40%, #1c1916 50%, #625a4e 60%, #8d8373 100%);
+}
+[data-frame="vitrail"] .person .face.front {
+  padding: calc(var(--cw) * 0.06) calc(var(--cw) * 0.06) calc(var(--cw) * 0.045);
+  background:
+    var(--fr-stone) 0 0 / 160px 160px,
+    radial-gradient(110% 55% at 50% 8%, color-mix(in srgb, var(--sin) 30%, transparent), transparent 72%),
+    linear-gradient(172deg, #4a433a, #2c2722 50%, #1b1815);
+}
+[data-frame="vitrail"] .person .face.front::before {
+  box-shadow:
+    inset 0 0 0 1px #000,
+    inset 0 0 0 calc(var(--cw) * 0.014) #6f665a,
+    inset 0 0 0 calc(var(--cw) * 0.021) #d4ac5acc,
+    inset 0 0 0 calc(var(--cw) * 0.027) #0d0b09,
+    inset 0 calc(var(--cw) * 0.03) calc(var(--cw) * 0.06) #0007;
+}
+[data-frame="vitrail"] .person .art {
+  flex: 0 0 calc(var(--cw) * 0.62);
+  border-radius: 0;
+  box-shadow: none;
+  -webkit-mask: var(--fr-vitrail-mask) 0 0 / 100% 100% no-repeat;
+  mask: var(--fr-vitrail-mask) 0 0 / 100% 100% no-repeat;
+  background:
+    radial-gradient(55% 45% at 50% 26%, #fff6d466 0%, transparent 72%),
+    var(--fr-vitrail-glass) 0 0 / 100% 100% no-repeat,
+    linear-gradient(color-mix(in srgb, var(--sin) 82%, #fff 12%), color-mix(in srgb, var(--sin) 70%, #000));
+}
+[data-frame="vitrail"] .person .art::after {
+  background: linear-gradient(transparent 58%, #0000003a 80%, #00000090);
+  box-shadow: inset 0 0 calc(var(--cw) * 0.06) #0007;
+}
+[data-frame="vitrail"] .person .art .portrait { top: calc(var(--cw) * 0.035); }
+[data-frame="vitrail"] .person .orn {
+  display: block;
+  top: calc(var(--cw) * 0.06); left: calc(var(--cw) * 0.06);
+  width: calc(var(--cw) * 0.88); height: calc(var(--cw) * 0.62);
+  background: var(--fr-vitrail-frame) 0 0 / 100% 100% no-repeat;
+}
+/* 尖拱把立绘窗的两个上角切掉了，护甲 / 屏障小标挪到起拱处下面 */
+[data-frame="vitrail"] .person .defs { top: calc(var(--cw) * 0.3); left: calc(var(--cw) * 0.035); }
+/* 名牌：一条石楣，刻金字，两端一朵罪色的四瓣花 */
+[data-frame="vitrail"] .person .plate {
+  margin: 0 calc(var(--cw) * -0.02);
+  height: calc(var(--cw) * 0.14);
+  background:
+    var(--fr-stone) 0 0 / 160px 160px,
+    linear-gradient(#5a5246, #37312a 55%, #25201b);
+  border-top: 1px solid #0d0b09;
+  border-bottom: 1px solid #0d0b09;
+  box-shadow: inset 0 1px 0 #ffffff26, inset 0 -1px 0 #00000080, 0 2px 4px #000a, 0 0 0 1px #d4ac5a55;
+}
+[data-frame="vitrail"] .person .plate::before, [data-frame="vitrail"] .person .plate::after {
+  width: calc(var(--cw) * 0.075);
+  transform: none;
+  box-shadow: none;
+  background: linear-gradient(135deg, #f6e2a8, #b88a3e);
+  -webkit-mask: var(--ic-quatrefoil) center / contain no-repeat;
+  mask: var(--ic-quatrefoil) center / contain no-repeat;
+}
+[data-frame="vitrail"] .person .plate span {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: max(10px, calc(var(--cw) * 0.118));
+  letter-spacing: .12em;
+  color: #f3dfa8;
+  text-shadow: 0 -1px 0 #000c, 0 1px 0 #ffffff1c, 0 0 6px #000;
+}
+[data-frame="vitrail"] .person .text { margin-top: calc(var(--cw) * 0.03); color: #e3d8c2; text-shadow: 0 1px 1px #000a; }
+[data-frame="vitrail"] .person .text b { color: #f0cf7e; }
+[data-frame="vitrail"] .person .stats { border-top: 0; height: calc(var(--cw) * 0.21); position: relative; }
+[data-frame="vitrail"] .person .stats::before {
+  content: ""; position: absolute; left: 22%; right: 22%; top: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, #d4ac5a99, transparent);
+}
+/* 数值：两扇小玫瑰窗——铅条外圈、八根窗棂、中间一块整玻璃写数字 */
+[data-frame="vitrail"] .person .stat {
+  width: max(17px, calc(var(--cw) * 0.21)); height: max(17px, calc(var(--cw) * 0.21));
+  font-family: var(--latin);
+  font-size: max(10px, calc(var(--cw) * 0.125));
+  box-shadow: 0 0 0 max(1px, calc(var(--cw) * 0.008)) #0b0907, 0 0 0 max(2px, calc(var(--cw) * 0.017)) #d4ac5a, 0 0 0 max(3px, calc(var(--cw) * 0.024)) #0b0907, 0 2px 4px #000c;
+}
+[data-frame="vitrail"] .person .stat.atk {
+  background:
+    radial-gradient(circle at 50% 50%, #0000 0 50%, #0b0907 51% 56%, #0000 57%),
+    radial-gradient(circle at 42% 36%, #fff3c0 0%, #e9b64c 30%, #a8701c 50%, #0000 51%),
+    repeating-conic-gradient(#0b0907 0 5deg, #0000 5deg 45deg),
+    radial-gradient(circle, #f2c562, #b27a1e 70%, #5e3c0a);
+}
+[data-frame="vitrail"] .person .stat.hp {
+  background:
+    radial-gradient(circle at 50% 50%, #0000 0 50%, #0b0907 51% 56%, #0000 57%),
+    radial-gradient(circle at 42% 36%, #ffc0b0 0%, #e0503a 30%, #8c1f14 50%, #0000 51%),
+    repeating-conic-gradient(#0b0907 0 5deg, #0000 5deg 45deg),
+    radial-gradient(circle, #d8543c, #86200f 70%, #3d0a05);
+}
+[data-frame="vitrail"] .person .stat.hp.hurt {
+  background:
+    radial-gradient(circle at 50% 50%, #0000 0 50%, #0b0907 51% 56%, #0000 57%),
+    radial-gradient(circle at 42% 36%, #9c5a4e 0%, #6a2a20 50%, #0000 51%),
+    repeating-conic-gradient(#0b0907 0 5deg, #0000 5deg 45deg),
+    radial-gradient(circle, #7a3a2e, #3d140c 70%);
+}
+[data-frame="vitrail"] .person .shape { font-family: var(--display); color: #cdbb96; letter-spacing: .1em; }
+[data-frame="vitrail"] .person .shape.heavy { color: #e8c688; }
+[data-frame="vitrail"] .person .shape.multi { color: #e8b0cf; }
+/* 查看按钮占掉右上角三叶饰的位置，做成同样的一枚小圆饰 */
+[data-frame="vitrail"] .person .info-btn {
+  top: calc(var(--cw) * 0.144); right: calc(var(--cw) * 0.14); transform: translate(50%, -50%);
+  width: max(14px, calc(var(--cw) * 0.1)); height: max(14px, calc(var(--cw) * 0.1)); font-size: max(8px, calc(var(--cw) * 0.055));
+  background: radial-gradient(circle at 40% 35%, #4a433a, #1b1815); border: 1px solid #d4ac5a; color: #f0dca8; opacity: 1;
+  box-shadow: 0 0 0 1px #0b0907;
+}
+[data-frame="vitrail"] .person .equip { background: #1a1612ee; color: #f0dca8; border-color: #d4ac5a99; }
+
+/* ═════ 圣典 CODEX：羊皮纸、描金边框、罪色菱格底纹、朱红书名、火漆印数值 ═════ */
+[data-frame="codex"] .person .edge {
+  background: linear-gradient(var(--edge-dir, 180deg), #f6e2a8 0%, #caa24f 35%, #8a6424 50%, #caa24f 65%, #f0d48e 100%);
+}
+[data-frame="codex"] .person .face.front {
+  padding: calc(var(--cw) * 0.085) calc(var(--cw) * 0.085) calc(var(--cw) * 0.07);
+  background:
+    var(--fr-grain) 0 0 / 160px 160px,
+    radial-gradient(130% 90% at 50% 45%, transparent 55%, #7a4a1a40 100%),
+    radial-gradient(circle at 82% 88%, #9a6a2a22, transparent 28%),
+    radial-gradient(circle at 14% 30%, #9a6a2a18, transparent 22%),
+    linear-gradient(168deg, #f4e9cf, #e8d8b2 55%, #dbc69a);
+}
+[data-frame="codex"] .person .face.front::before { box-shadow: none; background: var(--fr-codex-frame) 0 0 / 100% 100% no-repeat; }
+[data-frame="codex"] .person .face.front::after { background: linear-gradient(125deg, #ffffff30 0%, #ffffff00 30%, #ffffff00 75%, #ffffff14 100%); }
+/* 描金框画在牌面的 ::before 上，罪色内框带是 .orn（遮罩成细带，颜色跟着人物走） */
+[data-frame="codex"] .person .orn {
+  display: block; inset: 0; border-radius: inherit;
+  background: var(--sin);
+  -webkit-mask: var(--fr-codex-band) 0 0 / 100% 100% no-repeat;
+  mask: var(--fr-codex-band) 0 0 / 100% 100% no-repeat;
+}
+[data-frame="codex"] .person .art {
+  flex: 0 0 calc(var(--cw) * 0.56);
+  border-radius: 0;
+  background:
+    radial-gradient(60% 55% at 50% 30%, #fff4 0%, transparent 70%),
+    var(--fr-codex-diaper) 0 0 / calc(var(--cw) * 0.14) calc(var(--cw) * 0.14),
+    color-mix(in srgb, var(--sin) 88%, #1a0c20);
+  box-shadow: 0 0 0 1px #2a1a0c, 0 0 0 calc(var(--cw) * 0.018) #caa24f, 0 0 0 calc(var(--cw) * 0.024) #2a1a0c, 0 2px 6px #5a3a1a66;
+}
+[data-frame="codex"] .person .art::after { background: linear-gradient(transparent 70%, #00000030); box-shadow: inset 0 0 calc(var(--cw) * 0.05) #0006; }
+[data-frame="codex"] .person .art .portrait { filter: drop-shadow(0 2px 3px #0008); }
+[data-frame="codex"] .person .glyph { display: none; }
+/* 书名：朱红，两边一条细金线 */
+[data-frame="codex"] .person .plate {
+  margin: calc(var(--cw) * 0.03) 0 0;
+  height: calc(var(--cw) * 0.13);
+  background: none; border: 0; box-shadow: none;
+  gap: calc(var(--cw) * 0.035);
+}
+[data-frame="codex"] .person .plate::before, [data-frame="codex"] .person .plate::after {
+  flex: 1 1 0; width: auto; aspect-ratio: auto; height: 1px; transform: none;
+  background: linear-gradient(90deg, transparent, #9a7430);
+  box-shadow: 0 2px 0 -1px #9a743066;
+}
+[data-frame="codex"] .person .plate::after { background: linear-gradient(90deg, #9a7430, transparent); }
+[data-frame="codex"] .person .plate span {
+  flex: none; max-width: 80%;
+  font-family: var(--display); font-weight: 900;
+  font-size: max(10px, calc(var(--cw) * 0.125));
+  letter-spacing: .1em;
+  color: #8e2214;
+  text-shadow: 0 1px 0 #fff6;
+}
+[data-frame="codex"] .person .text {
+  margin-top: calc(var(--cw) * 0.012);
+  font-family: var(--display); font-weight: 700;
+  color: #3a2616;
+}
+[data-frame="codex"] .person .text b { color: #9a2617; }
+[data-frame="codex"] .person .stats { border-top: 0; height: calc(var(--cw) * 0.2); margin-bottom: calc(var(--cw) * -0.012) !important; position: relative; }
+[data-frame="codex"] .person .stats::before {
+  content: ""; position: absolute; left: 24%; right: 24%; top: 6%; height: 3px;
+  border-top: 1px solid #9a743088; border-bottom: 1px solid #9a743055;
+}
+/* 数值：两枚火漆印——边缘不规整，外圈一道压痕 */
+[data-frame="codex"] .person .stat {
+  width: max(18px, calc(var(--cw) * 0.21)); height: max(18px, calc(var(--cw) * 0.2));
+  font-family: var(--latin);
+  font-size: max(10px, calc(var(--cw) * 0.125));
+  color: #fff0d8;
+  text-shadow: 0 -1px 0 #0008, 0 1px 0 #ffffff40;
+  border-radius: 52% 48% 55% 45% / 48% 55% 45% 52%;
+  box-shadow: inset 0 0 0 calc(var(--cw) * 0.022) #0000, inset 0 0 0 calc(var(--cw) * 0.03) #00000038, inset 0 2px 2px #ffffff40, inset 0 -2px 3px #0006, 0 1px 2px #3a200c99;
+}
+[data-frame="codex"] .person .stat.atk { background: radial-gradient(circle at 38% 32%, #e3b764, #a77420 55%, #5e3d0c); }
+[data-frame="codex"] .person .stat.hp { background: radial-gradient(circle at 38% 32%, #d0503c, #8e1b12 55%, #4a0906); border-radius: 46% 54% 47% 53% / 55% 46% 54% 45%; }
+[data-frame="codex"] .person .stat.hp.hurt { background: radial-gradient(circle at 38% 32%, #8a5a50, #5a2a22 60%); color: #ffd0c4; }
+[data-frame="codex"] .person .stat.up { color: #d6ffc0; }
+[data-frame="codex"] .person .shape { font-family: var(--display); color: #5a3e24; font-style: italic; }
+[data-frame="codex"] .person .shape.heavy { color: #7a4a14; }
+[data-frame="codex"] .person .shape.multi { color: #8e2a52; }
+[data-frame="codex"] .person .info-btn { top: calc(var(--cw) * 0.1); right: calc(var(--cw) * 0.1); }
+[data-frame="codex"] .person .equip { background: #8e2214ee; color: #fff0d8; border-color: #f0d48e99; }
+[data-frame="codex"] .person.dead .face.front { filter: grayscale(1) brightness(.6) sepia(.3); }
+
+/* ═════ 圣物匣 RELIQUARY：厚鎏金框、四角卷草、顶上一颗罪色宝石、圆拱玻璃窗、金绶带名牌 ═════ */
+[data-frame="reliquary"] .person .face.front {
+  padding: calc(var(--cw) * 0.1) calc(var(--cw) * 0.085) calc(var(--cw) * 0.065);
+  background:
+    radial-gradient(110% 60% at 50% 30%, color-mix(in srgb, var(--sin) 40%, transparent), transparent 75%),
+    repeating-linear-gradient(45deg, #ffffff05 0 2px, transparent 2px 6px),
+    linear-gradient(172deg, #241c26, #110c12 60%, #0a070b);
+}
+[data-frame="reliquary"] .person .face.front::before { box-shadow: inset 0 0 0 1px #000; }
+[data-frame="reliquary"] .person .orn {
+  display: block; inset: 0; border-radius: inherit;
+  background: var(--fr-reliquary-frame) 0 0 / 100% 100% no-repeat;
+}
+/* 顶上的宝石：罪色的圆凸宝石，金托 */
+[data-frame="reliquary"] .person .orn::after {
+  content: ""; position: absolute; left: 50%; top: calc(var(--cw) * 0.012); transform: translateX(-50%);
+  width: calc(var(--cw) * 0.11); aspect-ratio: 1; border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 30%, #ffffffd0 0 8%, #ffffff00 22%),
+    radial-gradient(circle at 60% 72%, color-mix(in srgb, var(--sin) 60%, #fff) 0, transparent 40%),
+    radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--sin) 85%, #fff 15%), color-mix(in srgb, var(--sin) 55%, #000) 80%);
+  box-shadow: 0 0 0 max(1px, calc(var(--cw) * 0.008)) #1a1206, 0 0 0 max(2px, calc(var(--cw) * 0.016)) #e6c67a, 0 0 0 max(3px, calc(var(--cw) * 0.022)) #1a1206, 0 0 calc(var(--cw) * 0.05) color-mix(in srgb, var(--sin) 70%, transparent);
+}
+[data-frame="reliquary"] .person .art {
+  flex: 0 0 calc(var(--cw) * 0.56);
+  border-radius: calc(var(--cw) * 0.42) calc(var(--cw) * 0.42) 2px 2px / calc(var(--cw) * 0.24) calc(var(--cw) * 0.24) 2px 2px;
+  background:
+    repeating-radial-gradient(circle at 50% 24%, #ffe9a800 0 calc(var(--cw) * 0.07), #ffe9a82a calc(var(--cw) * 0.074), #ffe9a800 calc(var(--cw) * 0.08)),
+    radial-gradient(circle at 50% 24%, #fff0c080 0, #fff0c000 calc(var(--cw) * 0.22)),
+    radial-gradient(circle at 50% 30%, color-mix(in srgb, var(--sin) 75%, #fff 15%) 0%, color-mix(in srgb, var(--sin) 60%, #000) 85%);
+  box-shadow: 0 0 0 1px #1a1206, 0 0 0 calc(var(--cw) * 0.016) #e6c67a, 0 0 0 calc(var(--cw) * 0.024) #5a3f1a, 0 0 0 calc(var(--cw) * 0.03) #1a1206, 0 3px 8px #000c;
+}
+/* 玻璃的一道斜反光 */
+[data-frame="reliquary"] .person .art::after {
+  background:
+    linear-gradient(115deg, #fff0 30%, #ffffff1c 38%, #fff0 46%, #fff0 60%, #ffffff10 64%, #fff0 68%),
+    linear-gradient(transparent 62%, #0000004d 82%, #000000a0);
+  box-shadow: inset 0 0 calc(var(--cw) * 0.07) #000a;
+}
+[data-frame="reliquary"] .person .art .portrait { top: calc(var(--cw) * 0.03); }
+[data-frame="reliquary"] .person .defs { top: calc(var(--cw) * 0.2); }
+/* 名牌：金绶带，两端燕尾，名字刻在上面 */
+[data-frame="reliquary"] .person .plate {
+  margin: calc(var(--cw) * -0.06) calc(var(--cw) * -0.05) 0;
+  height: calc(var(--cw) * 0.15);
+  background: linear-gradient(#fff1c4 0%, #e3bf6c 22%, #b88a3e 55%, #8a6424 80%, #c9a050 100%);
+  border: 0;
+  box-shadow: none;
+  clip-path: polygon(0 0, 100% 0, 95% 50%, 100% 100%, 0 100%, 5% 50%);
+}
+[data-frame="reliquary"] .person .plate::before, [data-frame="reliquary"] .person .plate::after {
+  width: calc(var(--cw) * 0.035); box-shadow: none; background: #3a2408;
+}
+[data-frame="reliquary"] .person .plate span {
+  font-family: var(--display); font-weight: 900;
+  font-size: max(10px, calc(var(--cw) * 0.118));
+  letter-spacing: .12em;
+  color: #2a1804;
+  text-shadow: 0 1px 0 #fff4c8aa;
+}
+[data-frame="reliquary"] .person .text {
+  /* 珐琅框统一高度：一行字的人物和三行字的人物，框和底栏都在同一个位置 */
+  flex: 1 1 0;
+  margin: calc(var(--cw) * 0.03) calc(var(--cw) * -0.005) 0;
+  padding: calc(var(--cw) * 0.018) calc(var(--cw) * 0.03);
+  border-radius: 3px;
+  background: linear-gradient(#0b080cd0, #150f18d0);
+  box-shadow: inset 0 0 0 1px #b88a3e66, inset 0 0 calc(var(--cw) * 0.04) #000;
+  color: #eadcc0;
+}
+[data-frame="reliquary"] .person .text b { color: #f0cf7e; }
+[data-frame="reliquary"] .person .stats {
+  position: relative; z-index: 2;
+  border-top: 0; height: calc(var(--cw) * 0.23);
+  margin: auto calc(var(--cw) * 0.02) calc(var(--cw) * -0.012) !important;
+}
+/* 攻：金盾；血：红宝石血滴 */
+[data-frame="reliquary"] .person .stat {
+  position: relative; isolation: isolate;
+  width: max(17px, calc(var(--cw) * 0.2)); height: max(18px, calc(var(--cw) * 0.22));
+  border-radius: 0; box-shadow: none; background: none;
+  font-family: var(--latin);
+  font-size: max(10px, calc(var(--cw) * 0.125));
+}
+[data-frame="reliquary"] .person .stat::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+}
+[data-frame="reliquary"] .person .stat.atk::before {
+  background:
+    linear-gradient(90deg, #0000 48%, #fff4 49% 51%, #0000 52%),
+    linear-gradient(160deg, #fff1c4, #d9b25f 30%, #8a6424 65%, #d4ac5a);
+  clip-path: polygon(0 0, 100% 0, 100% 48%, 88% 76%, 50% 100%, 12% 76%, 0 48%);
+  filter: drop-shadow(0 1px 1px #000);
+}
+[data-frame="reliquary"] .person .stat.atk { padding-bottom: calc(var(--cw) * 0.03); }
+[data-frame="reliquary"] .person .stat.hp::before {
+  inset: 12% 9% 0;
+  border-radius: 50% 0 50% 50%;
+  transform: rotate(-45deg) scale(.92);
+  background:
+    radial-gradient(circle at 30% 70%, #ffd6ce 0 6%, #0000 22%),
+    conic-gradient(from 20deg, #ff6a50, #9a1208, #e0301e, #5a0804, #ff6a50);
+  box-shadow: inset 0 0 0 max(1px, calc(var(--cw) * 0.008)) #1a0604, 0 0 0 max(1px, calc(var(--cw) * 0.01)) #e6c67a;
+}
+[data-frame="reliquary"] .person .stat.hp { height: max(19px, calc(var(--cw) * 0.23)); padding-top: calc(var(--cw) * 0.045); }
+[data-frame="reliquary"] .person .stat.hp.hurt::before { background: conic-gradient(from 20deg, #9a5a50, #4a1a14, #7a3a30, #2a0a06, #9a5a50); }
+[data-frame="reliquary"] .person .stat.atk.up::before { filter: drop-shadow(0 0 3px #b8ff9a); }
+[data-frame="reliquary"] .person .shape { font-family: var(--display); color: #d9c6a0; letter-spacing: .1em; }
+[data-frame="reliquary"] .person .shape.heavy { color: #f0cf7e; }
+[data-frame="reliquary"] .person .shape.multi { color: #eab4d2; }
+[data-frame="reliquary"] .person .info-btn { top: calc(var(--cw) * 0.105); right: calc(var(--cw) * 0.1); }
+
+/* ═════ 塔罗 ARCANA：立绘铺满、罪色光芒、洋葱顶拱的细金线画框、奶油色标题框、扑克角标数值 ═════ */
+[data-frame="arcana"] .person .edge {
+  background: linear-gradient(var(--edge-dir, 180deg), #f4ead2 0%, #d8c8a4 40%, #8a7a5a 50%, #d8c8a4 60%, #efe3c6 100%);
+}
+[data-frame="arcana"] .person .face.front {
+  padding: 0 calc(var(--cw) * 0.07) calc(var(--cw) * 0.06);
+  justify-content: flex-end;
+  background: #120d10;
+}
+[data-frame="arcana"] .person .face.front::before { box-shadow: inset 0 0 0 1px #000c; }
+[data-frame="arcana"] .person .art {
+  position: absolute; left: calc(var(--cw) * 0.045); top: calc(var(--cw) * 0.045);
+  width: calc(var(--cw) * 0.91); height: calc(var(--cw) * 1.33);
+  flex: none; border-radius: 0; box-shadow: none;
+  -webkit-mask: var(--fr-arcana-mask) 0 0 / 100% 100% no-repeat;
+  mask: var(--fr-arcana-mask) 0 0 / 100% 100% no-repeat;
+  background:
+    radial-gradient(circle at 50% 21%, #fff8e0 0, #fff0c8aa calc(var(--cw) * 0.05), #fff0c800 calc(var(--cw) * 0.3)),
+    repeating-conic-gradient(from 0deg at 50% 21%, #fff0c826 0 3deg, #fff0c800 3deg 10deg),
+    radial-gradient(circle at 50% 24%, color-mix(in srgb, var(--sin) 70%, #fff 25%) 0%, var(--sin) 38%, color-mix(in srgb, var(--sin) 35%, #000) 90%);
+}
+[data-frame="arcana"] .person .art::after {
+  background: linear-gradient(transparent 40%, #0a060880 56%, #0a0608e8 72%, #0a0608 100%);
+  box-shadow: none;
+}
+[data-frame="arcana"] .person .art .portrait { width: 116%; top: calc(var(--cw) * 0.1); }
+[data-frame="arcana"] .person .glyph { display: none; }
+[data-frame="arcana"] .person .defs { top: calc(var(--cw) * 0.3); left: calc(var(--cw) * 0.025); }
+[data-frame="arcana"] .person .equip { bottom: auto; top: calc(var(--cw) * 0.73); }
+[data-frame="arcana"] .person .orn {
+  display: block; inset: 0; border-radius: inherit;
+  background: var(--fr-arcana-frame) 0 0 / 100% 100% no-repeat;
+}
+/* 顶上：罪的拉丁名，像大阿卡纳的牌号 */
+[data-frame="arcana"] .person .sin-tag {
+  display: block; position: absolute; left: 50%; top: calc(var(--cw) * 0.085); transform: translateX(-50%);
+  font-family: var(--latin); font-weight: 700;
+  font-size: max(7px, calc(var(--cw) * 0.058)); letter-spacing: .22em; line-height: 1;
+  padding: calc(var(--cw) * 0.012) calc(var(--cw) * 0.03) calc(var(--cw) * 0.012) calc(var(--cw) * 0.042);
+  color: #20140c; background: #efe3c6;
+  box-shadow: 0 0 0 1px #20140c, 0 0 0 max(2px, calc(var(--cw) * 0.012)) #efe3c6, 0 0 0 max(3px, calc(var(--cw) * 0.018)) #7a5a2a88;
+}
+/* 名字：奶油色的标题框 */
+[data-frame="arcana"] .person .plate {
+  margin: 0 calc(var(--cw) * 0.02);
+  height: calc(var(--cw) * 0.13);
+  background: #efe3c6;
+  border: 1px solid #20140c;
+  box-shadow: 0 0 0 max(1px, calc(var(--cw) * 0.012)) #efe3c6, 0 0 0 max(2px, calc(var(--cw) * 0.018)) #7a5a2a, 0 3px 6px #000c;
+}
+[data-frame="arcana"] .person .plate::before, [data-frame="arcana"] .person .plate::after {
+  width: calc(var(--cw) * 0.03); background: #20140c; box-shadow: none;
+}
+[data-frame="arcana"] .person .plate span {
+  font-family: var(--display); font-weight: 900;
+  font-size: max(10px, calc(var(--cw) * 0.112));
+  letter-spacing: .14em;
+  color: #20140c; text-shadow: none;
+}
+[data-frame="arcana"] .person .text { position: relative; min-height: 2lh; margin-top: calc(var(--cw) * 0.03); color: #efe3c6; text-shadow: 0 1px 2px #000; }
+[data-frame="arcana"] .person .text b { color: #f3cf78; }
+[data-frame="arcana"] .person .stats { position: relative; border-top: 0; height: calc(var(--cw) * 0.25); margin: calc(var(--cw) * 0.01) calc(var(--cw) * -0.03) calc(var(--cw) * -0.03) !important; }
+/* 数值：像扑克牌的角标——一个大数字，下面一枚花色（剑 / 心） */
+[data-frame="arcana"] .person .stat {
+  width: auto; min-width: calc(var(--cw) * 0.16); height: 100%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+  background: none; box-shadow: none; border-radius: 0;
+  font-family: var(--latin); font-weight: 700;
+  font-size: max(11px, calc(var(--cw) * 0.15));
+  color: #f6ecd4;
+  text-shadow: 0 1px 2px #000, 0 0 6px #000;
+}
+[data-frame="arcana"] .person .stat::after {
+  content: ""; width: max(8px, calc(var(--cw) * 0.085)); aspect-ratio: 1;
+  -webkit-mask: var(--ic) center / contain no-repeat; mask: var(--ic) center / contain no-repeat;
+  filter: drop-shadow(0 1px 1px #000);
+}
+[data-frame="arcana"] .person .stat.atk::after { --ic: var(--ic-sword); background: linear-gradient(#f6e2a8, #b88a3e); }
+[data-frame="arcana"] .person .stat.hp::after { --ic: var(--ic-heart); background: linear-gradient(#ff8a70, #b0281a); }
+[data-frame="arcana"] .person .stat.hp.hurt { background: none; color: #ff9a86; }
+[data-frame="arcana"] .person .stat.up { color: #c8ffae; }
+[data-frame="arcana"] .person .stat.down { color: #ffc2b4; }
+[data-frame="arcana"] .person .shape { align-self: center; font-family: var(--display); color: #d9c9a6; letter-spacing: .12em; }
+[data-frame="arcana"] .person .shape.heavy { color: #f0cf7e; }
+[data-frame="arcana"] .person .shape.multi { color: #eab4d2; }
+
+/* 小卡：去掉细碎的装饰，只留框形和数值 */
+@container face (max-width: 80px) {
+  [data-frame="arcana"] .person .sin-tag { display: none; }
+  [data-frame="reliquary"] .person .plate::before, [data-frame="reliquary"] .person .plate::after { display: none; }
+}
+
+/* ───────── 卡框一览（?frames） ───────── */
+#frames {
+  position: fixed; inset: 0; z-index: 50; overflow: auto;
+  background: radial-gradient(ellipse at 50% 0%, #2a1f16 0%, var(--wood) 70%) fixed, var(--wood);
+  padding: 0 16px 60px;
+}
+#frames .fg-top {
+  position: sticky; top: 0; z-index: 10;
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  margin: 0 -16px; padding: 10px 16px;
+  background: #140f0bee; border-bottom: 1px solid var(--line); backdrop-filter: blur(6px);
+}
+#frames h1 { margin: 0; font: 900 20px var(--display); color: var(--gold); letter-spacing: .1em; }
+#frames nav { display: flex; gap: 6px; flex-wrap: wrap; flex: 1; }
+#frames nav a, #frames .fg-btn {
+  color: var(--ink); text-decoration: none; font-size: 13px;
+  padding: 5px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel2);
+  cursor: pointer; font-family: inherit;
+}
+#frames nav a i, #frames h2 i { font-style: normal; font-family: var(--latin); letter-spacing: .18em; color: #d9b25fbb; margin-left: 6px; font-size: .72em; }
+#frames .fg-btn.primary { background: linear-gradient(#e3c173, #b98d3c); color: #21180c; border-color: #6e5226; font-weight: 800; }
+#frames .fg-sec { max-width: 1180px; margin: 0 auto; padding: 34px 0 10px; border-bottom: 1px solid #4a3d3055; scroll-margin-top: 50px; }
+#frames .fg-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; margin-bottom: 18px; }
+#frames .fg-head > div:first-child { max-width: 640px; }
+#frames h2 { margin: 0 0 6px; font: 900 26px var(--display); color: #f1e3c0; letter-spacing: .08em; }
+#frames .fg-on { font-style: normal; font-size: 12px; font-family: inherit; letter-spacing: 0; vertical-align: middle; margin-left: 10px; padding: 2px 8px; border-radius: 999px; background: #7fcf6a33; color: var(--good); }
+#frames .fg-head p { margin: 0; color: var(--muted); line-height: 1.7; }
+#frames .fg-btns { display: flex; gap: 8px; }
+#frames .fg-row { display: flex; flex-wrap: wrap; gap: 18px; justify-content: center; padding: 10px 0; perspective: 1400px; }
+#frames .fg-hero { --cw: 184px; }
+#frames .fg-small { --cw: 96px; gap: 12px; }
+#frames .fg-tiny { --cw: 62px; gap: 8px; }
+/* 斜放的一块毡面：看牌在桌上（有厚度、有影子）的样子 */
+#frames .fg-felt { perspective: 1300px; padding: 14px 0 26px; }
+#frames .fg-felt-in {
+  --cw: 118px;
+  display: flex; flex-wrap: wrap; gap: 22px; justify-content: center;
+  padding: 26px 20px 30px; border-radius: 26px;
+  background: radial-gradient(ellipse at 50% 40%, var(--felt) 0%, var(--felt-dark) 100%);
+  box-shadow: 0 0 0 8px var(--rim), 0 18px 40px #000a;
+  transform: rotateX(22deg); transform-style: preserve-3d;
+}
+#frames.compare .fg-top, #frames.compare .fg-felt, #frames.compare .fg-small, #frames.compare .fg-tiny, #frames.compare .fg-head p, #frames.compare .fg-btns { display: none; }
+#frames.compare .fg-sec { padding: 18px 0 8px; }
+#frames.compare .fg-head { margin-bottom: 4px; }
+#frames .card.selected .face.front { box-shadow: 0 0 0 2px var(--gold), 0 0 18px var(--gold); }
+@media (max-width: 700px) {
+  #frames .fg-hero { --cw: 42vw; gap: 12px; }
+  #frames .fg-felt-in { --cw: 26vw; gap: 12px; padding: 18px 8px 22px; }
+  #frames .fg-small { --cw: 21vw; gap: 8px; }
+  #frames .fg-tiny { --cw: 15vw; gap: 6px; }
+}

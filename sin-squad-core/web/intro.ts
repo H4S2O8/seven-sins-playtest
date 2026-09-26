@@ -129,6 +129,7 @@ export class Gate {
       case "play": this.screen = { kind: "opponent" }; break;
       case "resume": this.hide(); this.hooks.resume(); return;
       case "help": case "chars": case "debug": this.hooks.sheet(what); return;
+      case "frames": location.href = "./?frames"; return;
       case "back":
         if (this.hooks.canReturn()) { this.hide(); this.hooks.done(); return; }
         this.screen = { kind: "title" };
@@ -225,6 +226,7 @@ export class Gate {
         <div class="gate-row">
           <button data-go="help">规则</button>
           <button data-go="chars">人物图鉴</button>
+          <button data-go="frames">卡框</button>
         </div>
       </div>
       <button class="gate-debug" data-go="debug">调试开局</button>
