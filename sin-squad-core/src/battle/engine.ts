@@ -507,9 +507,9 @@ class Battle {
     if (this.has("P23") && health(a) < 0.3) d += Math.max(1, Math.floor(d * 0.25));
     // 人物能力的攻击加值（先加，再按下面的翻倍类效果乘）
     const bonus = (name: string, n: number, text: string) => { d += n; this.trig(a, name, text); };
-    if (this.abilityOn(a, "终宴侍女") && this.alive(other(a.seat)).length === 1) bonus("终宴侍女", 4, "收割：攻 +4");
+    if (this.abilityOn(a, "大野狼") && this.alive(other(a.seat)).length === 1) bonus("大野狼", 4, "收割：攻 +4");
     if (t.seat !== a.seat && this.abilityOn(a, "影子") && this.bet[t.seat].revealedPos === t.pos) bonus("影子", 2, "看穿亮牌：攻 +2");
-    if (this.abilityOn(a, "守钟人") && r >= 3) bonus("守钟人", 3, "后期发力：攻 +3");
+    if (this.abilityOn(a, "守夜人") && r >= 3) bonus("守夜人", 3, "后期发力：攻 +3");
     if (this.abilityOn(a, "无瑕刺客") && a.hp >= a.maxHp) { d *= 2; this.trig(a, "无瑕刺客", "满血：攻击翻倍"); }
     if (this.abilityOn(a, "清算者") && r === 1 && this.bet[other(a.seat)].betOrRaiseCount > 0) { d *= 2; this.trig(a, "清算者", "对手加过注：首轮翻倍"); }
     if (this.has("P11") && (no === 3 || no === 6)) d *= 2;

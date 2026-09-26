@@ -40,17 +40,17 @@ describe("第二批人物", () => {
     expect(afterHit(hidden, 1)[1][0].hp).toBe(hp("GR4") - dealt("EN4", atk("EN4"), arm("GR4")));
   });
 
-  it("终宴侍女：敌方只剩一人时攻 +4", () => {
+  it("大野狼：敌方只剩一人时攻 +4", () => {
     expect(afterHit(battle(solo("GL5"), solo("GR4")), 1)[1][0].hp).toBe(hp("GR4") - dealt("GL5", atk("GL5") + 4, arm("GR4")));
     expect(afterHit(battle(solo("GL5"), team(["GR4", "GR4", null])), 1)[1][0].hp).toBe(hp("GR4") - dealt("GL5", atk("GL5"), arm("GR4")));
   });
 
-  it("守钟人：第三轮起才加攻", () => {
+  it("守夜人：第三轮起才加攻", () => {
     const rng = new Rng(7);
     let seen = false;
     for (let i = 0; i < 400; i++) {
       for (const e of randomRun(rng).events) {
-        if (e.type !== "trigger" || e.name !== "守钟人") continue;
+        if (e.type !== "trigger" || e.name !== "守夜人") continue;
         expect(e.round).toBeGreaterThanOrEqual(3);
         seen = true;
       }
