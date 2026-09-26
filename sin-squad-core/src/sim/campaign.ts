@@ -1,37 +1,19 @@
 import { runBattle, type BattleInput, type BattleResult, type CampaignBattleRules } from "../battle/engine.js";
+import { HeuristicAgent, playTable, RandomAgent, type Agent } from "../ai/agents.js";
+import { newProgress, stageTable } from "../campaign/progress.js";
+import { STAGES, stage } from "../campaign/stages.js";
 import { campaignRoster } from "../content/campaign-cards.js";
 import { DEMON_IDS } from "../content/demons.js";
+import { Table } from "../game/table.js";
 import { Rng } from "../rng.js";
 import type { BetContext, TeamSetup } from "../types.js";
 
 /**
- * 战役的战斗模拟：按关卡的牌池、专属规则、主场和魔神，随机打很多场，
- * 对比“转线”和“打最近的敌人”两种写法、有没有魔神。
- *
- * 关卡表先在这里写一份战斗要用的部分（专属规则、主场、魔神）；
- * 牌桌那边的关卡表合进来之后，改成直接读那一份。
+ * 战役模拟：
+ * - 战斗：按关卡的牌池、专属规则、主场和魔神随机打很多场，
+ *   对比“转线”和“打最近的敌人”两种写法、有没有魔神；
+ * - 整桌：按 stageTable 开真的牌桌，让电脑对打，看一张牌桌打几手。
  */
-export interface LevelBattleSetup {
-  /** 专属胜利规则；第 7 关每手从这里随机一条。 */
-  rules: string[];
-  /** 有效果的主场；没有则为 null。 */
-  arenaId: string | null;
-}
-
-export const LEVEL_BATTLE: readonly LevelBattleSetup[] = [
-  { rules: ["V01"], arenaId: null }, // 序章 · 看板娘：全灭
-  { rules: ["V12"], arenaId: null }, // 1 路西法：众目所向
-  { rules: ["V08"], arenaId: null }, // 2 利维坦：掐灭火力
-  { rules: ["V03"], arenaId: null }, // 3 撒旦：连续击破
-  { rules: ["V07"], arenaId: null }, // 4 贝尔芬格：斩旗
-  { rules: ["V09"], arenaId: null }, // 5 玛门：薄弱环节
-  { rules: ["V01"], arenaId: "A07" }, // 6 别西卜：吃干净，水淹地牢
-  { rules: ["V12", "V08", "V03", "V07", "V09", "V01"], arenaId: "A04" }, // 7 阿斯莫德：七罪之约，许愿井
-];
-
-/** 没有效果的主场（只当背景）。 */
-const NO_ARENA = "NONE";
-
 function campaignBet(rng: Rng, level: number, revealedPos: number): BetContext {
   if (level === 0) return { invested: 10, betOrRaiseCount: 0, checkCount: 0, opsPaid: 0, revealedPos };
   return {
@@ -71,7 +53,7 @@ export const VARIANTS: readonly Variant[] = [
 ];
 
 export function levelBattle(rng: Rng, level: number, v: Variant, mine?: string[]): BattleInput {
-  const setup = LEVEL_BATTLE[level];
+  const setup = stage(level);
   const roster = campaignRoster(level);
   const a = campaignTeam(rng, level, roster, mine);
   const b = campaignTeam(rng, level, roster);
@@ -79,7 +61,7 @@ export function levelBattle(rng: Rng, level: number, v: Variant, mine?: string[]
   return {
     teams: [a, b],
     ruleId: rng.pick(setup.rules),
-    arenaId: setup.arenaId ?? NO_ARENA,
+    arenaId: setup.arenaActive ? setup.arenaId : "NONE",
     publicEffectId: null,
     pot: a.bet.invested + b.bet.invested,
     firstSeat: rng.int(2) as 0 | 1,
@@ -153,4 +135,43 @@ export function levelOpening(level: number, v: Variant, teams: number, per: numb
     wrs.push(score / per);
   }
   return wrs.sort((a, b) => a - b);
+}
+
+export interface TableStats {
+  tables: number;
+  /** 你（启发式“谨慎”）赢下的牌桌。 */
+  won: number;
+  avgHands: number;
+  /** 以弃牌结束的手。 */
+  foldShare: number;
+  /** 金山收到的利息总额。 */
+  interest: number;
+}
+
+/**
+ * 整张牌桌：你带上一关拿到的魔神（第 1 关还没有），对手按关卡的牌风。
+ * 你用启发式“谨慎”，代表一个会算的玩家。
+ */
+export function levelTables(level: number, n: number, seed = 20260926): TableStats {
+  const p = newProgress();
+  p.cleared = level;
+  p.demons = STAGES.slice(1, level).map((s) => s.demon!).filter(Boolean);
+  const mine = p.demons.length ? p.demons[p.demons.length - 1] : null;
+  const st = stage(level);
+  const out: TableStats = { tables: n, won: 0, avgHands: 0, foldShare: 0, interest: 0 };
+  let hands = 0, folds = 0, battles = 0;
+  for (let i = 0; i < n; i++) {
+    const s = seed + level * 1000 + i;
+    const t = new Table(stageTable(p, level, s, mine));
+    const foe: Agent = st.style === "novice" ? new RandomAgent(s + 1) : new HeuristicAgent(st.style, s + 1, 8);
+    playTable(t, [new HeuristicAgent("cautious", s + 2, 8), foe]);
+    if (t.winner === 0) out.won++;
+    hands += t.handNo;
+    folds += t.log.filter((e) => e.type === "fold").length;
+    battles += t.log.filter((e) => e.type === "battle").length;
+    for (const e of t.log) if (e.type === "interest") out.interest += e.amount;
+  }
+  out.avgHands = hands / n;
+  out.foldShare = folds / Math.max(1, folds + battles);
+  return out;
 }

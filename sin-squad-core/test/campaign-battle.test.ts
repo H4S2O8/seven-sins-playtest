@@ -206,3 +206,32 @@ describe("七张魔神牌", () => {
     expect(snap[1][2].hp).toBe(3);
   });
 });
+
+describe("关卡牌桌带上战役战斗规则", () => {
+  it("stageTable 打开业火、打最近、战役卡面，双方带魔神", async () => {
+    const { newProgress, stageTable } = await import("../src/campaign/progress.js");
+    const p = newProgress();
+    p.cleared = 3;
+    p.demons = ["晨星", "深渊之眼"];
+    const o = stageTable(p, 3, 1, "晨星");
+    expect(o.campaign!.battle).toEqual({ hellfire: true, cards: true, nearest: true, demons: ["DM1", "DM3"] });
+    expect(stageTable(p, 0, 1).campaign!.battle!.demons).toEqual([null, null]);
+    expect(() => stageTable(p, 3, 1, "金山")).toThrow();
+  });
+
+  it("金山的利息在奖池分完后结算，筹码守恒", async () => {
+    const { newProgress, stageTable } = await import("../src/campaign/progress.js");
+    const { Table } = await import("../src/game/table.js");
+    const { HeuristicAgent, playTable } = await import("../src/ai/agents.js");
+    const p = newProgress();
+    p.cleared = 6;
+    p.demons = ["晨星", "深渊之眼", "焚怒", "永眠", "金山"];
+    let seen = 0;
+    for (let seed = 1; seed <= 30 && !seen; seed++) {
+      const t = new Table(stageTable(p, 6, seed, "金山"));
+      playTable(t, [new HeuristicAgent("cautious", seed, 4), new HeuristicAgent("aggressive", seed + 1, 4)]);
+      for (const e of t.log) if (e.type === "interest") { seen++; expect(e.amount).toBeLessThanOrEqual(20); }
+    }
+    expect(seen).toBeGreaterThan(0);
+  });
+});

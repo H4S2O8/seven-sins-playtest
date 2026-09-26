@@ -4,7 +4,8 @@ import { ARENAS, arena, publicEffect, rule } from "../content/tables.js";
 import { HeuristicAgent, playTable, RandomAgent, type Agent, type Style } from "../ai/agents.js";
 import { Table } from "../game/table.js";
 import { Rng } from "../rng.js";
-import { LEVEL_BATTLE, levelOpening, levelStats, VARIANTS } from "./campaign.js";
+import { STAGES } from "../campaign/stages.js";
+import { levelOpening, levelStats, levelTables, VARIANTS } from "./campaign.js";
 import { randomBattle } from "./sampler.js";
 
 /**
@@ -12,7 +13,7 @@ import { randomBattle } from "./sampler.js";
  *   npm run sim -- roster [场数]        人物总胜率与各自的最强 / 最弱情境
  *   npm run sim -- opening [开局数] [每个开局的场数]   开局胜率分布（验收标准：绝大多数落在 30%–80%）
  *   npm run sim -- tables [桌数] [对手A] [对手B]      整张牌桌对局统计（对手：random / cautious / aggressive / bluff）
- *   npm run sim -- level <关卡 0–7 | all> [场数]      战役战斗统计：转线 / 打最近、有无魔神四种写法对比
+ *   npm run sim -- level <关卡 0–7 | all> [场数]      战役：战斗统计（转线 / 打最近、有无魔神）+ 整桌手数
  */
 
 const pct = (x: number) => `${(x * 100).toFixed(1)}%`;
@@ -117,9 +118,9 @@ function tables(n: number, a: string, b: string) {
 }
 
 function level(which: string, n: number) {
-  const levels = which === "all" ? LEVEL_BATTLE.map((_, i) => i) : [Number(which)];
+  const levels = which === "all" ? STAGES.map((s) => s.no) : [Number(which)];
   for (const lv of levels) {
-    if (!LEVEL_BATTLE[lv]) throw new Error(`没有第 ${which} 关（0 = 序章，1–7 = 七姐妹）`);
+    if (!STAGES[lv]) throw new Error(`没有第 ${which} 关（0 = 序章，1–7 = 七姐妹）`);
     console.log(`\n── ${lv === 0 ? "序章" : `第 ${lv} 关`} · ${n} 场 ──`);
     for (const v of VARIANTS) {
       if (lv === 0 && v.demons) continue; // 序章没有魔神
@@ -133,6 +134,11 @@ function level(which: string, n: number) {
         ` · 开局胜率落在 30%–80% ${pct(band)}`,
       );
     }
+    const t = levelTables(lv, Math.max(20, Math.round(n / 200)));
+    console.log(
+      `整桌（${t.tables} 桌，你用“谨慎”）：你赢 ${pct(t.won / t.tables)} · 平均 ${t.avgHands.toFixed(1)} 手` +
+      ` · 弃牌结束的手 ${pct(t.foldShare)}` + (t.interest ? ` · 金山利息共 ${t.interest}` : ""),
+    );
   }
 }
 

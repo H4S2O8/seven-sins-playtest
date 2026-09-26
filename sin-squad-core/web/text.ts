@@ -2,7 +2,7 @@ import type { BattleEvent, BattleResult } from "../src/battle/engine.js";
 import { character } from "../src/content/characters.js";
 import { arena, equipment, publicEffect, rule } from "../src/content/tables.js";
 import type { TableEvent } from "../src/game/table.js";
-import type { AttackShape, Seat, Sin } from "../src/types.js";
+import { other, type AttackShape, type Seat, type Sin } from "../src/types.js";
 
 /** 网页里的中文文案：牌桌记录、战斗记录、规则说明。 */
 
@@ -71,6 +71,9 @@ export function logLine(e: TableEvent): string | null {
       return `战斗结束：${e.winner === null ? "平局" : `${who(e.winner)}获胜`}（${e.reason}）`;
     case "settle":
       return (e.winner === null ? "平局，双方拿回各自的投入" : `${who(e.winner)}赢得奖池 ${e.pot}`) +
+        ` · 筹码：你 ${e.stacks[0]} / 对手 ${e.stacks[1]}`;
+    case "interest":
+      return `金山收利息：${who(other(e.seat))}付给${who(e.seat)} ${e.amount} 筹码` +
         ` · 筹码：你 ${e.stacks[0]} / 对手 ${e.stacks[1]}`;
     case "market":
       return `市场翻出：${e.candidates.map(name).join("、")}；${who(e.firstPicker)}先挑`;

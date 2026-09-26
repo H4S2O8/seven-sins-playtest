@@ -73,7 +73,10 @@ export class HeuristicAgent implements Agent {
         : this.rng.next() < 0.3 ? this.rng.pick(PUBLIC_EFFECTS).id : null;
       const arenaId = obs.arenaActive ? obs.arenaId ?? obs.arenaOptions[0] : "NONE";
       const teams: [TeamSetup, TeamSetup] = obs.seat === 0 ? [me, foe] : [foe, me];
-      const r = runBattle({ teams, ruleId, arenaId, publicEffectId: peId, pot: obs.pot, firstSeat: other(obs.dealer) });
+      const r = runBattle({
+        teams, ruleId, arenaId, publicEffectId: peId, pot: obs.pot, firstSeat: other(obs.dealer),
+        campaign: obs.battleRules ?? undefined,
+      });
       score += r.winner === obs.seat ? 1 : r.winner === null ? 0.5 : 0;
     }
     return score / n;

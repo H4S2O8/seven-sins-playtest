@@ -24,3 +24,10 @@ export const DEMONS: readonly CharacterDef[] = [
 ];
 
 export const DEMON_IDS: readonly string[] = DEMONS.map((d) => d.id);
+
+/** 按名字查魔神牌编号（战役进度和关卡表里记的是名字）。 */
+export function demonId(name: string): string {
+  const d = DEMONS.find((x) => x.name === name);
+  if (!d) throw new Error(`未知魔神牌：${name}`);
+  return d.id;
+}
