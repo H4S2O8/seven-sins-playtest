@@ -758,7 +758,7 @@ function card(id: string | null, o: CardOpts = {}) {
     o.lane ? `--lane:${o.lane}` : "",
   ].filter(Boolean).join(";");
   const cls = [
-    "card person", `fr-${o.frame ?? currentFrame()}`, "lit", o.cls ?? "", down ? "down" : "", o.dead ? "dead" : "", o.act ? "clickable" : "", b?.barrier && !down ? "shielded" : "",
+    "card person", `fr-${o.frame ?? currentFrame()}`, "foil", o.cls ?? "", down ? "down" : "", o.dead ? "dead" : "", o.act ? "clickable" : "", b?.barrier && !down ? "shielded" : "",
     o.fan !== undefined ? "fanned" : "", o.lane ? "switching" : "",
   ].filter(Boolean).join(" ");
   return `<div class="${cls}"${style ? ` style="${style}"` : ""}${o.key ? ` data-key="${o.key}"` : ""}${o.unit ? ` data-unit="${o.unit}"` : ""}${o.acting ? " data-acting" : ""}${attrs(o)}${c && !down ? ` title="${esc(`${c.name}（${c.sin}）：${c.ability}`)}"` : ""}>
