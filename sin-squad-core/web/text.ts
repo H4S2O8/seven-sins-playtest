@@ -110,6 +110,10 @@ export function battleLine(ev: BattleEvent, names: (seat: Seat, pos: number) => 
         : `${u(ev.seat, ev.pos)}【${ev.name}】${ev.text}`;
     case "note":
       return ev.text;
+    case "hellfire":
+      return `炼狱业火烧遍全场：每人 ${num(ev.amount)} 伤害`;
+    case "demon":
+      return `魔神降临：${u(ev.seat, ev.pos)}`;
   }
 }
 

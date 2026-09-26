@@ -4,6 +4,7 @@ import { ARENAS, arena, publicEffect, rule } from "../content/tables.js";
 import { HeuristicAgent, playTable, RandomAgent, type Agent, type Style } from "../ai/agents.js";
 import { Table } from "../game/table.js";
 import { Rng } from "../rng.js";
+import { LEVEL_BATTLE, levelOpening, levelStats, VARIANTS } from "./campaign.js";
 import { randomBattle } from "./sampler.js";
 
 /**
@@ -11,6 +12,7 @@ import { randomBattle } from "./sampler.js";
  *   npm run sim -- roster [场数]        人物总胜率与各自的最强 / 最弱情境
  *   npm run sim -- opening [开局数] [每个开局的场数]   开局胜率分布（验收标准：绝大多数落在 30%–80%）
  *   npm run sim -- tables [桌数] [对手A] [对手B]      整张牌桌对局统计（对手：random / cautious / aggressive / bluff）
+ *   npm run sim -- level <关卡 0–7 | all> [场数]      战役战斗统计：转线 / 打最近、有无魔神四种写法对比
  */
 
 const pct = (x: number) => `${(x * 100).toFixed(1)}%`;
@@ -114,12 +116,33 @@ function tables(n: number, a: string, b: string) {
   if (leaderCases) console.log(`第 3 手后筹码领先的一方最终赢下牌桌：${pct(leaderWins / leaderCases)}（${leaderCases} 桌）`);
 }
 
+function level(which: string, n: number) {
+  const levels = which === "all" ? LEVEL_BATTLE.map((_, i) => i) : [Number(which)];
+  for (const lv of levels) {
+    if (!LEVEL_BATTLE[lv]) throw new Error(`没有第 ${which} 关（0 = 序章，1–7 = 七姐妹）`);
+    console.log(`\n── ${lv === 0 ? "序章" : `第 ${lv} 关`} · ${n} 场 ──`);
+    for (const v of VARIANTS) {
+      if (lv === 0 && v.demons) continue; // 序章没有魔神
+      const s = levelStats(lv, v, n);
+      const wrs = levelOpening(lv, v, 150, 60);
+      const band = wrs.filter((x) => x >= 0.3 && x <= 0.8).length / wrs.length;
+      console.log(
+        `${v.name.padEnd(9, "　")} 平均 ${s.avgRounds.toFixed(2)} 轮 · 业火烧到 ${pct(s.hellfire / n)} · 平局 ${pct(s.draws / n)}` +
+        ` · 先击倒胜率 ${pct(s.firstKillWins / Math.max(1, s.firstKillCases))}` +
+        (v.demons ? ` · 魔神降临 ${pct(s.demon / n)} · 降临局翻盘 ${pct(s.comeback / Math.max(1, s.comebackCases))}` : "") +
+        ` · 开局胜率落在 30%–80% ${pct(band)}`,
+      );
+    }
+  }
+}
+
 const [cmd = "roster", ...args] = process.argv.slice(2);
 const num = (i: number, d: number) => (args[i] ? Number(args[i]) : d);
 switch (cmd) {
   case "roster": roster(num(0, 60000)); break;
   case "opening": opening(num(0, 400), num(1, 120)); break;
   case "tables": tables(num(0, 100), args[1] ?? "cautious", args[2] ?? "aggressive"); break;
+  case "level": level(args[0] ?? "all", num(1, 20000)); break;
   default:
-    console.log("用法：roster [场数] | opening [开局数] [每个开局场数] | tables [桌数] [对手A] [对手B]");
+    console.log("用法：roster [场数] | opening [开局数] [每个开局场数] | tables [桌数] [对手A] [对手B] | level <关卡|all> [场数]");
 }

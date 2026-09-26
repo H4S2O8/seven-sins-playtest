@@ -12,6 +12,7 @@ npm run typecheck
 npm run sim -- roster 60000       # 人物总胜率与最强 / 最弱情境
 npm run sim -- opening 400 120    # 开局胜率分布（验收标准：绝大多数落在 30%–80%）
 npm run sim -- tables 100 cautious aggressive   # 整张牌桌对局（random / cautious / aggressive / bluff）
+npm run sim -- level all 20000    # 战役战斗：每关对比转线 / 打最近、有无魔神
 ```
 
 ## 结构

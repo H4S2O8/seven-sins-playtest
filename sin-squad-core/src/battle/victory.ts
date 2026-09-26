@@ -29,6 +29,8 @@ export interface VictoryState {
   streak: [number, number];
   /** 绝境突围的窗口。 */
   window: { lone: Seat; openedAt: number; enemyDeathsAtOpen: number } | null;
+  /** 倒下后被魔神顶掉位置的人：不在阵上了，但击倒数照算。 */
+  removedDead: [Unit[], Unit[]];
 }
 
 const existing = (team: Unit[]) => team.filter((u) => u.exists);
@@ -54,10 +56,13 @@ export function setupVictory(ruleId: string, teams: [Unit[], Unit[]], revealedPo
     const r = team[revealedPos[seat]];
     return { flag, core, weak, secondCore, revealed: r && r.exists ? r : flag };
   };
-  return { ruleId, keys: [keysFor(0), keysFor(1)], streak: [0, 0], window: null };
+  return { ruleId, keys: [keysFor(0), keysFor(1)], streak: [0, 0], window: null, removedDead: [[], []] };
 }
 
 const dead = (u: Unit | null) => !!u && !u.alive;
+
+/** seat 方一共倒下了几人（含被魔神顶掉位置的）。 */
+const killed = (st: VictoryState, teams: [Unit[], Unit[]], seat: Seat) => deaths(teams[seat]) + st.removedDead[seat].length;
 
 /** 随时成立就立刻获胜的条件（每次攻击后都检查）：全灭，以及不需要“保持”的规则。 */
 export function instantClaims(st: VictoryState, teams: [Unit[], Unit[]]): [boolean, boolean] {
@@ -74,9 +79,10 @@ function condition(st: VictoryState, teams: [Unit[], Unit[]], seat: Seat): boole
   const me = teams[seat];
   const foe = teams[other(seat)];
   const foeKeys = st.keys[other(seat)];
+  const foeDeaths = killed(st, teams, other(seat));
   switch (st.ruleId) {
-    case "V02": return deaths(foe) >= 1;
-    case "V03": return deaths(foe) >= 2;
+    case "V02": return foeDeaths >= 1;
+    case "V03": return foeDeaths >= 2;
     case "V04": return alive(me).length >= 2 && alive(foe).length === 1;
     case "V05": return existing(foe).every((u) => health(u) <= 0.5);
     case "V06": return existing(foe).filter((u) => health(u) <= 0.25).length >= 2;
@@ -84,10 +90,10 @@ function condition(st: VictoryState, teams: [Unit[], Unit[]], seat: Seat): boole
     case "V08": return dead(foeKeys.core);
     case "V09": return dead(foeKeys.weak);
     case "V10": return dead(foeKeys.flag) && dead(foeKeys.secondCore);
-    case "V11": return dead(foeKeys.flag) && deaths(foe) >= 2;
+    case "V11": return dead(foeKeys.flag) && foeDeaths >= 2;
     case "V12": return dead(foeKeys.revealed);
-    case "V17": return deaths(foe) >= 1 && existing(me).every((u) => u.alive && health(u) > 0.5);
-    case "V20": return deaths(foe) >= 2;
+    case "V17": return foeDeaths >= 1 && existing(me).every((u) => u.alive && health(u) > 0.5);
+    case "V20": return foeDeaths >= 2;
     default: return false;
   }
 }
@@ -137,11 +143,11 @@ function applyBreakoutWindow(st: VictoryState, teams: [Unit[], Unit[]], round: n
   const b = alive(teams[1]).length;
   if (!st.window) {
     const lone: Seat | null = a === 1 && b >= 2 ? 0 : b === 1 && a >= 2 ? 1 : null;
-    if (lone !== null) st.window = { lone, openedAt: round, enemyDeathsAtOpen: deaths(teams[other(lone)]) };
+    if (lone !== null) st.window = { lone, openedAt: round, enemyDeathsAtOpen: killed(st, teams, other(lone)) };
     return;
   }
   const { lone, openedAt, enemyDeathsAtOpen } = st.window;
-  if (deaths(teams[other(lone)]) > enemyDeathsAtOpen) {
+  if (killed(st, teams, other(lone)) > enemyDeathsAtOpen) {
     st.window = null; // 孤身者反杀成功，继续打
     return;
   }
