@@ -101,6 +101,14 @@ function rose(color: string, state: "lit" | "open" | "dim"): string {
   </svg>`;
 }
 
+/** 魔神牌：有插画（art/demon-<名字>.webp）就用插画，没有就用她那一罪的颜色衬名字。 */
+function demonCard(s: StageDef, art: Set<string>, cls = ""): string {
+  const id = s.portrait?.replace("campaign-", "demon-");
+  const has = !!id && art.has(id);
+  return `<span class="demon got ${has ? "has-art" : ""} ${cls}" style="--sin:${stageColor(s)}" title="魔神牌「${s.demon}」">
+    ${has ? `<img src="art/${id}.webp" alt="${s.demon}" draggable="false">` : `<span>${s.demon}</span>`}</span>`;
+}
+
 /**
  * 她站在画面上的样子：有立绘用立绘，套一道哥特尖拱金框；
  * 没画的先放一扇她那一罪颜色的大玫瑰窗，底下刻拉丁名。
@@ -167,8 +175,7 @@ export function campaignView(c: CampaignCtx): string {
   const all = p.cleared >= STAGES.length;
   const demons = STAGES.filter((s) => s.demon).map((s) => {
     const got = p.demons.includes(s.demon!);
-    return `<div class="demon ${got ? "got" : ""}" style="--sin:${stageColor(s)}" title="${got ? `魔神牌「${s.demon}」` : "打败她才能得到"}">
-      <span>${got ? s.demon : "？"}</span></div>`;
+    return got ? demonCard(s, c.art) : `<span class="demon" title="打败她才能得到"><span>？</span></span>`;
   }).join("");
   return `<div class="tower-stage">
     <button class="gate-back" data-go="back" aria-label="返回">‹ 标题</button>
@@ -219,7 +226,7 @@ export function briefView(c: CampaignCtx, no: number): string {
       </div>
       <div class="facts">${facts}</div>
       <div class="vn-learn"><small>这一层新学的</small>${esc(s.teaches)}</div>
-      ${s.demon ? `<div class="vn-prize"><span class="demon got mini" style="--sin:${stageColor(s)}"><span>${s.demon}</span></span>赢了得到她的魔神牌，再从 3 名人物里挑 1 名进牌池</div>` : ""}
+      ${s.demon ? `<div class="vn-prize">${demonCard(s, c.art, "mini")}赢了得到她的魔神牌，再从 3 名人物里挑 1 名进牌池</div>` : ""}
     </div>
     ${dialog(s, s.intro, `${tries ? `<div class="tally" title="输给她 ${tries} 次">${"<i></i>".repeat(Math.min(tries, 12))}${tries > 12 ? `<small>×${tries}</small>` : ""}</div>` : ""}
       ${warn}
@@ -259,7 +266,7 @@ export function resultView(c: CampaignCtx, r: StageResult): string {
     <div class="verdict win">
       ${s.no > 0 ? `<div class="verdict-rose">${rose(stageColor(s), "lit")}</div>` : ""}
       <small>VICTORIA</small><b>你赢下了这一层</b><span>${tries}</span>
-      ${r.firstClear && s.demon ? `<div class="vn-prize"><span class="demon got mini" style="--sin:${stageColor(s)}"><span>${s.demon}</span></span>得到她的魔神牌「${s.demon}」</div>` : ""}
+      ${r.firstClear && s.demon ? `<div class="vn-prize">${demonCard(s, c.art, "mini")}得到她的魔神牌「${s.demon}」</div>` : ""}
     </div>
     ${dialog(s, s.outro, `${ending}<div class="gate-actions row vn-actions">${go}</div>`)}`;
   return scene(s, c.art, inner, "result win");
