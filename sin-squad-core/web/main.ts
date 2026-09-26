@@ -225,7 +225,7 @@ function resetInputs() {
 
 // ───────────────────────── 调试模式 ─────────────────────────
 //
-// 网址加 ?debug 打开，例如：?debug&me=EN1,GL2,PR3,WR3&foe=LU1&rule=V02&arena=A08,A02&pe=P10&dealer=foe&seed=42&ai=bluff
+// 网址加 ?debug 打开，例如：?debug&me=EN1,GL2,PR3,WR3&foe=LU1&rule=V02&arena=A05,A02&pe=P10&dealer=foe&seed=42&ai=bluff
 //   me / foe   每手固定发给你 / 电脑的人物（最多 4 名，不够的随机补）
 //   rule / pe  固定胜利规则 / 公共效果；arena 固定两张候选场地；market 固定市场
 //   dealer     第一手谁坐庄（me / foe）；seed 固定随机种子；ai 电脑风格
@@ -298,8 +298,8 @@ function initTable(s: Style, tableSeed: number) {
  * 存档靠“种子 + 每一步操作”重放。人物表、规则一变，同一个种子发的牌就不一样了，旧存档会重放成另一局，
  * 所以这类改动要升版本号，旧版本的存档直接丢掉。v2：加入第二批 8 名人物。
  */
-const SAVE_KEY = "sinsquad.save.v2";
-try { localStorage.removeItem("sinsquad.save.v1"); } catch { /* 无所谓 */ }
+const SAVE_KEY = "sinsquad.save.v3";
+try { localStorage.removeItem("sinsquad.save.v1"); localStorage.removeItem("sinsquad.save.v2"); } catch { /* 无所谓 */ }
 interface SaveData { seed: number; style: Style; rig: TableRig | null; debugText: string; actions: Array<[Seat, Action]> }
 
 function saveGame() {
@@ -1445,10 +1445,10 @@ function sheetView(): string {
         <div class="debug-form"><input type="text" data-input="debugText" value="${esc(debugText)}" placeholder="me=EN1,GL2,PR3,WR3&amp;rule=V02&amp;dealer=foe" aria-label="调试参数">
         ${btn("按这些参数开新桌", "applyDebug", undefined, "primary")}</div>
         ${debug ? refTable(rows) : `<p class="muted">现在没有开调试。填上参数、点按钮，就会按这些固定项开一桌。</p>`}
-        <h3>用法</h3><p class="muted">在网址后面加参数，例如 <code>?debug&amp;me=EN1,GL2,PR3,WR3&amp;foe=LU1&amp;rule=V02&amp;arena=A08,A02&amp;pe=P10&amp;dealer=foe&amp;seed=42&amp;ai=bluff</code>。
+        <h3>用法</h3><p class="muted">在网址后面加参数，例如 <code>?debug&amp;me=EN1,GL2,PR3,WR3&amp;foe=LU1&amp;rule=V02&amp;arena=A05,A02&amp;pe=P10&amp;dealer=foe&amp;seed=42&amp;ai=bluff</code>。
         me / foe 是每手固定发给你 / 电脑的人物（最多 4 名，不够的随机补）；rule、pe、arena、market 分别固定胜利规则、公共效果、两张候选场地、市场；dealer 是第一手庄家（me / foe）；seed 固定随机种子；ai 是电脑风格（cautious / aggressive / bluff）。</p>
         <h3>人物编号</h3><p class="muted">${ids}</p>
-        <p class="muted">规则、场地、公共效果的编号见“规则”里的列表顺序：V01–V27、A01–A22、P01–P31。</p>`);
+        <p class="muted">规则、场地、公共效果的编号见“规则”里的列表顺序：V01–V27、A01–A14、P01–P31。</p>`);
     }
     case "log": {
       const lines = logLines.slice(-120).reverse();
