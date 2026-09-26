@@ -442,10 +442,8 @@ class Battle {
         }
         const foes = this.alive(other(seat));
         if (!foes.length) return;
-        // 交际花嘲讽：转线过来的敌人先打它，否则打血最少的
-        const taunt = foes.find((x) => this.abilityOn(x, "交际花"));
-        if (taunt) this.trig(taunt, "交际花", "嘲讽：转线的敌人改打它");
-        target = taunt ?? minBy(foes, (x) => x.hp);
+        // 转线后打血最少的
+        target = minBy(foes, (x) => x.hp);
       }
     }
     const times = this.has("P13") && r === 3 && u.attacks < 2 ? 2 : 1;
@@ -491,7 +489,7 @@ class Battle {
     const segs: Seg[] = [];
     const hitList: Hit[] = [];
     const no = ++a.attacks;
-    let d = a.atk + a.pendingBonus;
+    let d = Math.max(0, a.atk + a.pendingBonus);
     a.pendingBonus = 0;
     if (a.huntTarget === t) { d += 2; a.huntTarget = null; }
     if (this.has("P10") && r === 1) d += 2;
@@ -602,6 +600,16 @@ class Battle {
       if (u.hp > 0 && this.abilityOn(u, "狂战士")) { u.atk += n; this.trig(u, "狂战士", `攻 +${n}`); }
     }
     for (const [u, n] of armorBreaks) u.armorBase = Math.max(0, u.armorBase - n);
+    // 交际花逢场作戏：打中她的敌人（反击也算），下一次攻击 -2；每个敌人只算一次，这一下把她打倒也照样算
+    for (const [u, srcs] of hitters) {
+      if (!this.abilityOn(u, "交际花")) continue;
+      for (const s of srcs) {
+        if (s.seat === u.seat || s.flags.has("逢场作戏")) continue;
+        s.flags.add("逢场作戏");
+        s.pendingBonus -= 2;
+        this.trig(u, "交际花", `逢场作戏：${s.def!.name}下一次攻击 -2`);
+      }
+    }
 
     // 攻击带来的自损
     if (this.has("P22") && (no === 2 || no === 4 || no === 6)) { this.loseHp(a, 2); a.pendingBonus += 3; }

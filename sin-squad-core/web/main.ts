@@ -300,8 +300,8 @@ function initTable(s: Style, tableSeed: number) {
  * 存档靠“种子 + 每一步操作”重放。人物表、规则一变，同一个种子发的牌就不一样了，旧存档会重放成另一局，
  * 所以这类改动要升版本号，旧版本的存档直接丢掉。v2：加入第二批 8 名人物。
  */
-const SAVE_KEY = "sinsquad.save.v3";
-try { localStorage.removeItem("sinsquad.save.v1"); localStorage.removeItem("sinsquad.save.v2"); } catch { /* 无所谓 */ }
+const SAVE_KEY = "sinsquad.save.v4";
+try { localStorage.removeItem("sinsquad.save.v1"); localStorage.removeItem("sinsquad.save.v2"); localStorage.removeItem("sinsquad.save.v3"); } catch { /* 无所谓 */ }
 interface SaveData { seed: number; style: Style; rig: TableRig | null; debugText: string; actions: Array<[Seat, Action]> }
 
 function saveGame() {
