@@ -13,7 +13,7 @@ import {
 import { Gate, type Opening, type SaveInfo } from "./intro.js";
 import { morph } from "./morph.js";
 import {
-  bubble as hudBubble, collect, crumble, flip, floater as hudFloater, laneShift, measure, pulse, reducedMotion, shake, shatter, strike, type Snapshot,
+  bubble as hudBubble, collect, crumble, discoverExit, flip, floater as hudFloater, laneShift, measure, pulse, reducedMotion, shake, shatter, strike, type Snapshot,
 } from "./motion.js";
 import { isMuted, setScene, toggleMuted } from "./music.js";
 import { SIN_LATIN, installSigil } from "./sigil.js";
@@ -380,6 +380,7 @@ function consumeLog(play: boolean): { reveal: { ruleId: string; publicEffectId: 
     const line = logLine(e);
     if (line) logLines.push(line);
     if (e.type === "reveal" && play) reveal = { ruleId: e.ruleId, publicEffectId: e.publicEffectId };
+    if (e.type === "marketPick") lastPick = { seat: e.seat, id: e.characterId };
     if (e.type === "handStart") {
       ui.notice = null;
       ui.lastBattle = null;
@@ -785,6 +786,9 @@ function btn(label: string, act: string, arg?: string | number, cls = "") {
 
 // ───────────────────────── 画面 ─────────────────────────
 
+/** 市场里最近被挑走的那一名：它的牌从“发现”里飞向挑它的人。 */
+let lastPick: { seat: Seat; id: string } | null = null;
+
 /** 这次重画里被收走的第几张牌（收牌动画一张接一张）。 */
 let leaving = 0;
 
@@ -815,14 +819,57 @@ function render(animate = true) {
       ${center(o)}
       <div class="row me">${ui.battle ? battleRow(ui.battle, HUMAN, o) : myRow(o)}</div>
       ${seatBar(o, HUMAN)}
-    </div></section>
+    </div>${discoverView(o)}</section>
     <section class="dock">${ui.error ? `<div class="error">${esc(ui.error)}</div>` : ""}${ui.battle ? battleDock(ui.battle) : dock(o)}</section>
     ${sheetView()}
-  `, (el) => animate && collect(el as HTMLElement, before.get((el as HTMLElement).dataset.key!), leaving++));
+  `, (el) => animate && leave(el as HTMLElement, before));
   leaving = 0;
   fitTable();
   if (animate) flip(app, before, flipFrom);
   flipFrom = new Map();
+}
+
+/**
+ * 这次重画里要消失的牌怎么退场：桌上的牌收走；“发现”里被挑走的那张飞向挑它的人，剩下的沉下去。
+ */
+function leave(el: HTMLElement, before: Snapshot): boolean {
+  const seen = before.get(el.dataset.key!);
+  if (el.closest(".discover")) {
+    const id = el.dataset.pick;
+    let target: Element | null = null;
+    if (lastPick && id === lastPick.id) {
+      target = app.querySelector(lastPick.seat === HUMAN ? ".seat.bottom .avatar" : ".seat.top .avatar");
+      lastPick = null;
+    }
+    return discoverExit(el, seen?.rect, target, leaving++);
+  }
+  return collect(el, seen, leaving++);
+}
+
+/**
+ * 市场“发现”：候选人物浮在牌桌上方正中（桌面压暗），像炉石的发现。轮到你时点一张放进牌池；
+ * 对手挑的时候也摆出来，看得到她挑了谁。这一层一直在（没开时是空的），牌才能从里面飞走、沉下去。
+ */
+function discoverView(o: Observation): string {
+  const open = !ui.battle && o.phase === "marketPick";
+  // 开着、关着都用同一个模板（标题、牌、提示三层，中间不留空白）：增量更新按位置对上，
+  // 关的时候里面的牌才会一张张走退场动画，否则装牌的那一层会被整个换掉、牌直接消失
+  const view = (cls: string, title: string, cards: string, hint: string) =>
+    `<div class="discover${cls}"><div class="discover-title">${title}</div><div class="discover-cards">${cards}</div><div class="discover-hint">${hint}</div></div>`;
+  if (!open) return view("", "", "", "");
+  const mine = o.toAct.includes(HUMAN);
+  const stage = Table.marketStageFor(o.handNo, table!.options.blindEvery);
+  const seen = new Map<string, number>();
+  const cards = o.market.map((id, i) => {
+    const n = (seen.get(id) ?? 0) + 1;
+    seen.set(id, n);
+    // 牌直接放在 .discover-cards 里（不包格子）：挑走一张时剩下的牌原地不动，只滑过去补位
+    return card(id, {
+      key: `h${o.handNo}-mk-${id}${n > 1 ? `#${n}` : ""}`, act: mine ? "marketPick" : undefined, arg: i,
+    }).replace("<div ", `<div data-pick="${id}" `);
+  }).join("");
+  return view(` open ${mine ? "mine" : "theirs"}`, `发现<small>INVENTIO · 市场阶段 ${stage}</small>`, cards,
+    mine ? "挑一名放进你的牌池 · 本手输家先挑，挑了谁对手看得到" : "对手在挑人……挑了谁你看得到");
 }
 
 /** 按当前画面选背景音乐：入场各屏放菜单曲，牌桌 / 战斗 / 胜负各有一首。 */
@@ -1219,10 +1266,8 @@ function bidDock(o: Observation) {
 }
 
 function marketDock(o: Observation, mine: boolean) {
-  const stage = Table.marketStageFor(o.handNo, table!.options.blindEvery);
-  const mid = (o.market.length - 1) / 2;
-  const tray = `<div class="tray hand fan">${o.market.map((id, i) => card(id, { key: `h${o.handNo}-mk${i}-${id}`, cls: "small", fan: i - mid, act: mine ? "marketPick" : undefined, arg: i })).join("")}</div>`;
-  return (mine ? prompt("市场：挑一名放进你的牌池", `本手输家先挑，挑了谁对手看得到 · 市场阶段 ${stage}`) : waiting("对手在市场挑人")) + tray;
+  // 候选人物浮在牌桌上方（discoverView），操作栏只留一句说明
+  return mine ? prompt("市场：从上方挑一名放进你的牌池", "本手输家先挑，挑了谁对手看得到") : waiting("对手在市场挑人");
 }
 
 function removeDock(o: Observation) {
