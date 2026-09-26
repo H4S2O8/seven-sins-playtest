@@ -257,7 +257,11 @@ code { background: #0005; border-radius: 4px; padding: 0 4px; font-size: 12px; }
   position: absolute; inset: 0;
   transform: translateZ(var(--z0));
   transform-style: preserve-3d;
-  transition: transform .22s cubic-bezier(.3, .7, .4, 1.25);
+  transition: transform .22s cubic-bezier(.3, .7, .4, 1.25), rotate .18s ease-out, translate .18s ease-out;
+  /* 鼠标悬停时朝鼠标侧过去（light.ts 写 --hrot）；用独立的 rotate，和各处抬起用的 transform 叠加。
+   * 侧过去时压低的那个角会往下沉，所以同时再抬高一点（--hz），免得那个角沉到桌面下面被盖住 */
+  rotate: var(--hrot, 0deg);
+  translate: 0 0 var(--hz, 0px);
   pointer-events: none;
 }
 .card > .lift > * { pointer-events: auto; }
@@ -1814,14 +1818,17 @@ table.ref td.ref-pic img { display: block; width: 84px; aspect-ratio: 1216 / 832
 }
 
 
-/* ───────── 实体牌的质感（详情大卡，.card.lit） ─────────
- * 不做彩虹镭射，模仿一张印刷好的实体牌在灯下转动：
+/* ───────── 实体牌的质感（所有人物牌，.card.lit） ─────────
+ * 不做彩虹镭射，模仿一张印刷好的实体牌；平放时只有纸面和一层静止的顶光，
+ * 鼠标悬停时牌朝鼠标侧过去（Steam 集换式卡牌那样），反光跟着角度走：
  *   .linen    亚麻纹纸面（扑克牌的 linen finish）：细密的经纬压纹，靠光越近越清楚
  *   .sheen    烫金：一道暖白色的斜向反光扫过，color-dodge 只在本来就亮的金框、金字上亮起来，深色纸面几乎不变
  *   .varnish  立绘上的光油：立绘窗比牌框更亮一点，像局部上了 UV
  *   .gloss    整张牌面的柔光反射，screen 叠加（和真实反光一样只加亮）
  * 大卡本身不带影子（.shade 隐藏）。
- * 光的位置是 --fx / --fy（0–100%），牌的角度是 --frx / --fry。五套卡框通用。 */
+ * 牌背只有 .sheen 和 .gloss：玫瑰窗的金色窗棂会跟着反光。
+ * 光的位置是 --fx / --fy（0–100%）：平放时在牌的上沿外面一点；悬停时由 light.ts 写成鼠标的位置，并加 fx-lit；
+ * 详情大卡自己慢慢晃（light-idle），牌的角度是 --frx / --fry。五套卡框通用。 */
 @property --fx { syntax: "<percentage>"; inherits: true; initial-value: 50%; }
 @property --fy { syntax: "<percentage>"; inherits: true; initial-value: 50%; }
 @property --frx { syntax: "<angle>"; inherits: true; initial-value: 5deg; }
@@ -1829,6 +1836,8 @@ table.ref td.ref-pic img { display: block; width: 84px; aspect-ratio: 1216 / 832
 .card .linen, .card .sheen, .card .gloss, .card .varnish {
   position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
 }
+.card.lit { --fx: 50%; --fy: -12%; transition: --fx .15s, --fy .15s; }
+.big-card .card.lit { --fx: inherit; --fy: inherit; transition: none; }
 .card.lit .linen {
   z-index: 5;
   background:
@@ -1846,6 +1855,9 @@ table.ref td.ref-pic img { display: block; width: 84px; aspect-ratio: 1216 / 832
     linear-gradient(115deg, #0000 calc(var(--s) - 16%), #3a2a1480 calc(var(--s) - 7%), #7a6036 calc(var(--s) - 1.5%), #7a6036 calc(var(--s) + 1.5%), #3a2a1480 calc(var(--s) + 7%), #0000 calc(var(--s) + 16%));
   /* 中间调的暖色做 color-dodge：暗处只提亮一点点，本来就亮的金色一下子冲到顶，像烫金在反光 */
   mix-blend-mode: color-dodge;
+  /* 烫金只在牌被侧过来（悬停）或详情大卡上反光，平放的牌不闪 */
+  opacity: 0;
+  transition: opacity .2s;
   /* 立绘窗挖掉：印刷的立绘不会像金属那样反光（它有自己的光油 .varnish），否则人物的白色会被冲爆。
    * 立绘窗的位置每套卡框不同，由 --art-x / y / w / h 给 */
   -webkit-mask: linear-gradient(#000 0 0), linear-gradient(#000 0 0) var(--art-x) var(--art-y) / var(--art-w) var(--art-h) no-repeat;
@@ -1873,6 +1885,16 @@ table.ref td.ref-pic img { display: block; width: 84px; aspect-ratio: 1216 / 832
     radial-gradient(65% 45% at var(--fx) var(--fy), #ffffff1c 0%, #ffffff08 45%, #0000 75%),
     linear-gradient(calc(90deg + var(--fry)), #ffffff0a, #0000 60%);
   mix-blend-mode: screen;
+}
+.card.lit.fx-lit { --hz: calc(var(--cw) * 0.16); }
+.card.lit.fx-lit .sheen, .big-card .card.lit .sheen { opacity: 1; }
+.card.lit .face.back .sheen { -webkit-mask: none; mask: none; }
+.card.lit.fx-lit .face.back .sheen { opacity: .8; }
+/* 小卡上亚麻纹就太粗了，只留反光 */
+@container face (max-width: 80px) {
+  .card.lit { --fx: 50%; --fy: -12%; transition: --fx .15s, --fy .15s; }
+.big-card .card.lit { --fx: inherit; --fy: inherit; transition: none; }
+.card.lit .linen { display: none; }
 }
 /* 翻到背面时正面这几层不显示（背面在 backface 那边，本来就看不到）；倒下的牌不上光 */
 .card.lit.dead .sheen, .card.lit.dead .gloss, .card.lit.dead .varnish { display: none; }
