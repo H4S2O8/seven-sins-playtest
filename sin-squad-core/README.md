@@ -25,6 +25,7 @@ npm run sim -- tables 100 cautious aggressive   # 整张牌桌对局（random / 
 | `src/game/table.ts` | 一张牌桌的状态机：底注、庄位、落后方选场地、布阵亮牌、两轮下注、操作费封顶、拿装备、暗标、全押退款、结算、市场挑人、升盲 |
 | `src/game/view.ts` | 每个座位能看到的信息（严格隐藏对手的暗牌）与合法动作 |
 | `src/campaign/stages.ts` | 炼狱战役的关卡表：酒馆序章 + 七姐妹，每关的专属规则、主场、牌桌参数、她的牌池、关前关后台词、重开嘲讽 |
+| `src/campaign/story.ts` | 战役剧情：每一层的关前、关后对话脚本（说话人、表情差分标签、旁白、重来过才说的句子），网页端 `web/story.ts` 一句一句播 |
 | `src/campaign/progress.ts` | 战役进度：解锁、重来次数、嘲讽分档、通关挑人和移除；`stageTable()` 把一关变成 `TableOptions` |
 | `src/ai/agents.ts` | 随机对手、启发式对手（只读自己的观察，用战斗模拟估胜率） |
 | `src/sim/` | 模拟器 |

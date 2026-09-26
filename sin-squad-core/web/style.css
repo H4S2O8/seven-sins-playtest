@@ -2056,7 +2056,7 @@ table.ref td.ref-pic img { display: block; width: 84px; aspect-ratio: 1216 / 832
     radial-gradient(ellipse 90% 55% at 50% 108%, #7a1e10aa 0%, #3a0c0a66 40%, transparent 72%),
     radial-gradient(ellipse at 50% 30%, #231218 0%, #0c0709 75%);
 }
-#gate.gate-brief, #gate.gate-result { padding: 0; place-items: stretch; background: #0a0608; }
+#gate.gate-brief, #gate.gate-result, #gate.gate-story { padding: 0; place-items: stretch; background: #0a0608; }
 .logo.small { font-size: clamp(32px, 6vw, 50px); }
 .tower-sub { margin: 6px auto 0; max-width: 34em; color: #d9d0c2; font-size: 14px; line-height: 1.6; }
 
@@ -2150,7 +2150,7 @@ table.ref td.ref-pic img { display: block; width: 84px; aspect-ratio: 1216 / 832
   filter: saturate(.8); animation: sceneIn 1.2s ease both;
 }
 @keyframes sceneIn { from { opacity: 0; scale: 1.06; } }
-.vn > :not(.vn-bg):not(.embers) { position: relative; z-index: 2; }
+.vn > :where(:not(.vn-bg):not(.embers)) { position: relative; z-index: 2; }
 .vn > .gate-back { position: absolute; z-index: 5; top: 12px; left: 12px; }
 /* 余烬：她那一罪颜色的火星从下往上飘 */
 .embers { position: absolute; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
@@ -2292,6 +2292,44 @@ table.ref td.ref-pic img { display: block; width: 84px; aspect-ratio: 1216 / 832
   text-shadow: 0 0 10px #000, 0 0 2px #000; pointer-events: none; }
 #gate button.disabled { opacity: .45; pointer-events: none; }
 
+/* ── 剧情：一句一句的视觉小说 ── */
+.vn.story { grid-template-columns: 1fr; grid-template-rows: 1fr auto; cursor: pointer; user-select: none; }
+.vn > .story-skip { position: absolute; z-index: 5; top: 12px; right: 78px; }
+.story-dialog:focus { outline: none; }
+.story-cast { grid-column: 1; grid-row: 1 / 3; align-self: end; display: flex; justify-content: space-between; align-items: flex-end;
+  gap: 4vw; margin: 0 auto -12px; width: min(100%, 1100px); pointer-events: none; }
+.story-slot { width: min(40vw, 420px); transition: opacity .5s, filter .4s, translate .5s cubic-bezier(.2,.8,.3,1); }
+.story-slot.guest { opacity: 0; translate: 60px 0; }
+.story-slot.guest .sister.vn-face { animation: none; }
+.story-slot.on { opacity: 1; translate: 0 0; }
+.story-slot.quiet { filter: brightness(.55) saturate(.7); }
+.story-slot.speaking { filter: none; }
+.story-face.vn-face { width: 100%; }
+/* 表情差分画好之前，用立绘的小动作代替 */
+.story-slot[data-mood="生气"] .sister { animation: moodShake .45s ease both; }
+.story-slot[data-mood="动摇"] .sister { animation: moodWobble .9s ease both; }
+.story-slot[data-mood="得意"] .sister { animation: moodLift .7s ease both; }
+.story-slot[data-mood="败北"] { filter: grayscale(.5) brightness(.8); }
+.story-slot[data-mood="败北"] .sister { translate: 0 10px; transition: translate .6s; }
+@keyframes moodShake { 20% { translate: -6px 0; } 40% { translate: 6px 0; } 60% { translate: -4px 0; } 80% { translate: 3px 0; } }
+@keyframes moodWobble { 30% { rotate: -1.5deg; } 70% { rotate: 1deg; } }
+@keyframes moodLift { 40% { translate: 0 -10px; } }
+.story-dialog { grid-column: 1; grid-row: 2; width: min(100%, 860px); justify-self: center; min-height: 118px; animation: fade .5s .3s both; }
+.story-line span { opacity: 0; animation: charIn .01s calc(var(--k) * var(--ms)) forwards; }
+.story-line.shown span { animation: none; opacity: 1; }
+@keyframes charIn { to { opacity: 1; } }
+.story-line.narration { font-style: italic; color: #d9cfbd; }
+.story-foot { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--muted); }
+.story-next { color: var(--gold); animation: nextBob 1.2s ease-in-out infinite; }
+@keyframes nextBob { 50% { translate: 0 3px; } }
+.vn-replay { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; font-size: 13px; }
+.vn-replay small { color: var(--muted); margin-right: 2px; }
+.vn-replay button { padding: 4px 12px; font-size: 13px; }
+@media (prefers-reduced-motion: reduce) {
+  .story-line span { animation: none; opacity: 1; }
+  .story-slot[data-mood] .sister { animation: none; }
+}
+
 @media (max-width: 699px) {
   .floor { grid-template-columns: 58px 1fr; column-gap: 12px; min-height: 62px; }
   .floor .window, .floor .door { grid-column: 1; width: 52px; }
@@ -2303,6 +2341,12 @@ table.ref td.ref-pic img { display: block; width: 84px; aspect-ratio: 1216 / 832
   .sister.vn-face { width: min(62vw, 260px); }
   .vn-side, .verdict { grid-column: 1; grid-row: 2; }
   .vn-dialog { grid-column: 1; grid-row: 3; }
+  .vn.story { grid-template-rows: 1fr auto; }
+  .story-dialog { grid-row: 2; }
+  .story-cast { gap: 0; }
+  .story-slot { width: 56vw; }
+  .story-slot.guest { margin-left: -12vw; }
+  .vn > .story-skip { right: 70px; }
   .facts { flex-wrap: wrap; }
   .fact { flex: 1 1 28%; }
 }
