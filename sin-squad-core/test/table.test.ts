@@ -149,7 +149,7 @@ describe("调试固定项", () => {
     expect(t.hand.publicEffectId).toBe("P10");
     driveUntil(t, "place");
     expect(t.hand.dealt[0].slice(0, 2)).toEqual(["EN1", "GL2"]);
-    expect(t.hand.dealt[0]).toHaveLength(4);
+    expect(t.hand.dealt[0]).toHaveLength(18);
     expect(new Table({ seed: 9 }).pools).toEqual(t.pools); // 随机数照常消耗
   });
 
@@ -221,6 +221,19 @@ describe("隐藏信息", () => {
 });
 
 describe("牌桌层", () => {
+  it("传统牌桌每个槽位三选一，最多重抽一次且旧候选不会回来", () => {
+    const t = new Table({ seed: 77 });
+    if (t.phase === "arena") t.apply(t.toAct()[0], { type: "chooseArena", index: 0 });
+    const seat = t.toAct()[0];
+    const before = t.placeCandidates(seat, 0).map((i) => t.hand.dealt[seat][i]);
+    t.apply(seat, { type: "rerollPlace", pos: 0 });
+    const after = t.placeCandidates(seat, 0).map((i) => t.hand.dealt[seat][i]);
+    expect(before).toHaveLength(3);
+    expect(after).toHaveLength(3);
+    expect(after.some((id) => before.includes(id))).toBe(false);
+    expect(() => t.apply(seat, { type: "rerollPlace", pos: 0 })).toThrow("已经重抽过一次");
+  });
+
   it("筹码少的一方选场地", () => {
     const t = new Table({ seed: 9 });
     driveUntil(t, "bet");

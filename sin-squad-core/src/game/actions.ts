@@ -6,6 +6,7 @@ export type Action =
   | { type: "chooseArena"; index: 0 | 1 }
   /** 传统牌桌布阵：picks[i] 是放在 i 号位的候选牌序号。 */
   | { type: "place"; picks: [number, number, number]; eat: EatChoice | null; reveal: number }
+  | { type: "rerollPlace"; pos: 0 | 1 | 2 }
   /** 密探：暗中查看对手一个暗置位置。 */
   | { type: "peek"; pos: number }
   /** 密探偷看之后：交换自己两名暗置人物的位置（null = 不交换）。对手不会知道。 */

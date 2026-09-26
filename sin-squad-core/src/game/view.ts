@@ -172,6 +172,17 @@ export function legalActions(t: Table, seat: Seat): Action[] {
     case "place": {
       const dealt = h.dealt[seat];
       const out: Action[] = [];
+      if (!t.campaign) {
+        for (let pos = 0; pos < 3; pos++) if (!h.placeRerolls[seat][pos]) out.push({ type: "rerollPlace", pos: pos as 0 | 1 | 2 });
+        for (const a of t.placeCandidates(seat, 0)) for (const b of t.placeCandidates(seat, 1)) for (const c of t.placeCandidates(seat, 2)) {
+          const picks: [number, number, number] = [a, b, c];
+          const slots = picks.map((i) => dealt[i]);
+          const eats: Array<EatChoice | null> = [null];
+          slots.forEach((id, eater) => { if (id === "GL2") for (let eaten = 0; eaten < 3; eaten++) if (eaten !== eater) eats.push({ eater, eaten }); });
+          for (const eat of eats) for (let reveal = 0; reveal < 3; reveal++) if (!eat || eat.eaten !== reveal) out.push({ type: "place", picks, eat, reveal });
+        }
+        return out;
+      }
       for (const picks of perms3(dealt.length)) {
         const slots = picks.map((i) => dealt[i]);
         const eats: Array<EatChoice | null> = [null];

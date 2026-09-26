@@ -109,6 +109,7 @@ export interface HandState {
   peRevealed: boolean;
   peActive: boolean;
   dealt: [string[], string[]];
+  placeRerolls: [[boolean, boolean, boolean], [boolean, boolean, boolean]];
   placing: Seat | null;
   placement: [Placement | null, Placement | null];
   equipment: [(string | null)[], (string | null)[]];
@@ -274,7 +275,7 @@ export class Table {
       ruleId: c ? this.rng.pick(c.rules) : pickOr(this.rng.pick(RULES).id, this.rig.ruleId),
       publicEffectId: c ? "" : pickOr(this.rng.pick(PUBLIC_EFFECTS).id, this.rig.publicEffectId),
       ruleRevealed: false, peRevealed: false, peActive: false,
-      dealt: [[], []], placing: null, placement: [null, null],
+      dealt: [[], []], placeRerolls: [[false, false, false], [false, false, false]], placing: null, placement: [null, null],
       equipment: [[null, null, null], [null, null, null]],
       attackTargets: [[0, 1, 2], [0, 1, 2]],
       peekPending: [false, false], peek: [null, null],
@@ -316,6 +317,7 @@ export class Table {
     switch (action.type) {
       case "chooseArena": return this.onArena(seat, action.index);
       case "place": return this.onPlace(seat, action.picks, action.eat, action.reveal);
+      case "rerollPlace": return this.onRerollPlace(seat, action.pos);
       case "peek": return this.onPeek(seat, action.pos);
       case "peekSwap": return this.onPeekSwap(seat, action.swap);
       case "reveal2": return this.onReveal2(seat, action.pos);
@@ -346,10 +348,11 @@ export class Table {
   /** 从各自牌池发牌，然后非庄家先布阵。 */
   private deal() {
     const h = this.hand;
-    const n = this.campaign?.deal ?? 4;
+    const n = this.campaign ? this.campaign.deal : 18;
     for (const s of SEATS) {
-      const idx = this.rng.sample([...this.pools[s].keys()], n);
-      h.dealt[s] = idx.map((i) => this.pools[s][i]);
+      const source = this.campaign ? this.pools[s] : CHARACTERS.map((c) => c.id);
+      const idx = this.rng.sample([...source.keys()], n);
+      h.dealt[s] = idx.map((i) => source[i]);
       const forced = this.rig.deal?.[s];
       if (forced?.length) {
         const rest = h.dealt[s].filter((id) => !forced.includes(id));
@@ -360,9 +363,25 @@ export class Table {
     this.phase = "place";
   }
 
+  private onRerollPlace(seat: Seat, pos: 0 | 1 | 2) {
+    this.expect("place");
+    if (this.campaign) throw new Error("战役不使用重抽");
+    if (this.hand.placing !== seat) throw new Error("还没轮到你布阵");
+    if (this.hand.placeRerolls[seat][pos]) throw new Error("这个槽位已经重抽过一次");
+    this.hand.placeRerolls[seat][pos] = true;
+  }
+
+  placeCandidates(seat: Seat, pos: number): number[] {
+    if (this.campaign) return [...this.hand.dealt[seat].keys()];
+    const offset = this.hand.placeRerolls[seat][pos] ? 9 : 0;
+    return [offset + pos, offset + pos + 3, offset + pos + 6];
+  }
+
+
   private onPlace(seat: Seat, picks: number[], eat: EatChoice | null, reveal: number) {
     this.expect("place");
     const h = this.hand;
+    if (!this.campaign && picks.some((pick, pos) => !this.placeCandidates(seat, pos).includes(pick))) throw new Error("每个槽位只能从当前三张候选中选择");
     const placement = validatePlacement(h.dealt[seat], picks, eat, reveal);
     h.placement[seat] = placement;
     this.log.push({ type: "placed", seat, revealPos: reveal, characterId: placement.slots[reveal]!, eaten: eat?.eaten ?? null });

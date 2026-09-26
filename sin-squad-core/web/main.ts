@@ -1384,6 +1384,27 @@ function arenaDock(o: Observation, mine: boolean) {
 
 function placeDock(o: Observation, mine: boolean) {
   const dealt = o.me.dealt;
+  if (mine && !table!.campaign && dealt.length >= 18) {
+    const groups = [0, 1, 2].map((pos) => {
+      const choices = table!.placeCandidates(HUMAN, pos);
+      const selected = ui.place.slots[pos];
+      const cards = choices.map((i) => card(dealt[i], {
+        key: dealtKey(o, i), cls: `small ${selected === i ? "selected" : ""}`, act: "slotPick", arg: `${pos}-${i}`,
+      })).join("");
+      const used = table!.hand.placeRerolls[HUMAN][pos];
+      return `<div class="place-choice"><b>${posName(pos)}</b><div class="tray hand">${cards}</div>
+        <div class="actions compact">${btn(used ? "已换过" : "D：换一组", "rerollPlace", pos, used ? "disabled" : "")}</div></div>`;
+    }).join("");
+    const filled = ui.place.slots.every((x) => x !== null);
+    const ids = ui.place.slots.map((i) => i === null ? null : dealt[i]);
+    const gl2 = ids.indexOf("GL2");
+    let ok = filled && ui.place.reveal !== null;
+    let eat = "";
+    if (gl2 >= 0 && filled) eat = `<div class="actions compact"><span class="label">饕餮吞队友：</span>${btn("不吞", "eat", -1, ui.place.eaten === null ? "on" : "")}${[0,1,2].filter((p) => p !== gl2).map((p) => btn(posName(p), "eat", p, ui.place.eaten === p ? "on" : "")).join("")}</div>`;
+    if (ui.place.eaten === ui.place.reveal) ok = false;
+    return prompt("每个位置三选一", "每个位置最多 D 一次；换掉的三张不会回来。选完后点场上的一张设为亮牌。") +
+      `<div class="place-choices">${groups}</div>${eat}<div class="actions">${btn("确认布阵", "place", undefined, `primary big ${ok ? "" : "disabled"}`)}</div>`;
+  }
   // 手牌：已经放上场的牌离开手牌；可以拖到场上，也可以点一下放到第一个空位
   const placedKeys = new Set(o.me.placement ? myKeys(o, o.me.placement.slots) : []);
   const tray = (mineNow: boolean) => {
@@ -1728,6 +1749,18 @@ function onAct(name: string, arg: string | undefined) {
       ui.place.eaten = null;
       ui.error = null;
       return render();
+    }
+    case "slotPick": {
+      const [pos, pick] = (arg ?? "").split("-").map(Number);
+      ui.place.slots[pos] = pick;
+      if (ui.place.reveal === null) ui.place.reveal = pos;
+      ui.place.eaten = null;
+      return render();
+    }
+    case "rerollPlace": {
+      ui.place.slots[n] = null;
+      if (ui.place.reveal === n) ui.place.reveal = null;
+      return act({ type: "rerollPlace", pos: n as 0 | 1 | 2 });
     }
     case "reveal": ui.place.reveal = n; ui.error = null; return render();
     case "eat": ui.place.eaten = n < 0 ? null : n; if (ui.place.reveal === ui.place.eaten) ui.place.reveal = null; return render();

@@ -122,7 +122,8 @@ export class HeuristicAgent implements Agent {
   // ── 各阶段 ──
 
   private choosePlacement(obs: Observation, acts: Action[]): Action {
-    const candidates = this.rng.sample(acts, Math.min(12, acts.length));
+    const placeActs = acts.filter((a) => a.type === "place");
+    const candidates = this.rng.sample(placeActs, Math.min(12, placeActs.length));
     let best = candidates[0];
     let bestScore = -1;
     for (const a of candidates) {
