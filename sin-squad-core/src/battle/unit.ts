@@ -49,7 +49,7 @@ export interface Unit {
   barrierEchoed: boolean;
   regenRounds: number;
   deathRound: number | null;
-  /** 只触发一次的人物能力状态（例如破阵者“第一次打破屏障”、酸液兽腐蚀过谁）。 */
+  /** 只触发一次的人物能力状态（例如攻城锤手“第一次打破屏障”、噬铁软泥腐蚀过谁）。 */
   flags: Set<string>;
 }
 
