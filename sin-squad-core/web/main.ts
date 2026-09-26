@@ -1752,7 +1752,8 @@ function onAct(name: string, arg: string | undefined) {
     }
     case "slotPick": {
       const [pos, pick] = (arg ?? "").split("-").map(Number);
-      ui.place.slots[pos] = pick;
+      if (ui.place.slots[pos] === pick) ui.place.reveal = pos;
+      else ui.place.slots[pos] = pick;
       if (ui.place.reveal === null) ui.place.reveal = pos;
       ui.place.eaten = null;
       return render();
