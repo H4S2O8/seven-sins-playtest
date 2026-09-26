@@ -1,4 +1,4 @@
-/** 共用类型。规则说明以《七罪暗队 · 规则草案 v0.3》为准。 */
+/** 共用类型。规则说明以《七宗罪-德州战棋》当前实现为准。 */
 
 export type Sin = "愤怒" | "贪婪" | "暴食" | "嫉妒" | "怠惰" | "傲慢" | "色欲";
 
@@ -71,6 +71,8 @@ export interface PublicEffectDef {
 export interface SlotSetup {
   characterId: string | null; // null = 空位（例如被饕餮吞掉）
   equipmentId: string | null;
+  /** 优先攻击的敌方位置；未给时默认攻击同号位。 */
+  targetPos?: number | null;
 }
 
 /** 饕餮在布阵时吞掉队友：eater、eaten 都是位置编号。 */

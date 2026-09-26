@@ -1,4 +1,4 @@
-# 七罪暗队 · Sin Squad
+# 七宗罪-德州战棋 · Sin Squad
 
 德州扑克的下注 × 酒馆战棋的自动战斗。每手从牌池排出 3 名人物、只亮 1 名，靠下注讲故事，揭开后自动开打。
 
@@ -29,4 +29,4 @@ python3 -m http.server --directory ../sin-squad-v3
 
 ## 早期原型
 
-无欲之所第一幕试玩、Four Desires、Oath Fall、卡牌对决、面具牌桌，以及 Godot 版七罪暗队的网页导出，已从 `main` 移除，完整保留在 tag [`prototypes-archive-2026-09`](../../tree/prototypes-archive-2026-09)。
+无欲之所第一幕试玩、Four Desires、Oath Fall、卡牌对决、面具牌桌，以及早期 Godot 版的网页导出，已从 `main` 移除，完整保留在 tag [`prototypes-archive-2026-09`](../../tree/prototypes-archive-2026-09)。

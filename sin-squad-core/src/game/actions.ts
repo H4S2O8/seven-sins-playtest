@@ -4,7 +4,7 @@ import type { EatChoice } from "../types.js";
 export type Action =
   /** 落后方从两张场地里选一张。 */
   | { type: "chooseArena"; index: 0 | 1 }
-  /** 从发到的 4 名里挑 3 名布阵：picks[i] 是放在 i 号位的那张（发牌序号）。 */
+  /** 传统牌桌布阵：picks[i] 是放在 i 号位的候选牌序号。 */
   | { type: "place"; picks: [number, number, number]; eat: EatChoice | null; reveal: number }
   /** 密探：暗中查看对手一个暗置位置。 */
   | { type: "peek"; pos: number }
@@ -19,8 +19,9 @@ export type Action =
   | { type: "raise"; to: number }
   | { type: "allIn" }
   | { type: "fold" }
-  /** 下注匹配后，是否付操作费拿装备。 */
-  | { type: "operate"; draft: boolean }
+  /** 下注匹配后的唯一一次操作：跳过、拿装备，或公开重设三人的优先目标。 */
+  | { type: "operate"; operation: "pass" | "draft" }
+  | { type: "operate"; operation: "retarget"; targets: [number, number, number] }
   /** 从三张候选装备里选一张，装到 pos 号位。 */
   | { type: "draft"; offerIndex: number; pos: number }
   /** 公共效果：投生效 / 不生效。 */

@@ -77,6 +77,7 @@ interface Ui {
   place: { slots: (number | null)[]; reveal: number | null; eaten: number | null };
   betAmount: number | null;
   draft: { offer: number | null; pos: number | null };
+  retarget: [number, number, number];
   bid: number;
   removeIdx: number | null;
   notice: { text: string; good: boolean | null } | null;
@@ -254,6 +255,7 @@ const ui: Ui = {
   place: { slots: [null, null, null], reveal: null, eaten: null },
   betAmount: null,
   draft: { offer: null, pos: null },
+  retarget: [0, 1, 2],
   bid: 0,
   removeIdx: null,
   notice: null,
@@ -1123,7 +1125,7 @@ function shownMoney(o: Observation): { stacks: [number, number]; pot: number } {
 
 function topBar(o: Observation) {
   return `<header class="top">
-    <div class="brand"${BUILD ? ` title="构建 ${BUILD}"` : ""}>七罪暗队<small>${VERSION} 试玩</small></div>
+    <div class="brand"${BUILD ? ` title="构建 ${BUILD}"` : ""}>七宗罪-德州战棋<small>${VERSION} 试玩</small></div>
     ${debug ? btn("调试", "sheet", "debug", "debug-chip") : ""}
     <div class="hand-no">第 ${o.handNo} 手 · 底注 ${o.ante}${o.handNo % 5 === 0 ? " · 下手升盲" : ""}</div>
     <nav>${musicBtn()}${btn("记录", "sheet", "log")}${btn("牌池", "sheet", "pool")}${btn("规则", "sheet", "help")}${btn("卡框", "sheet", "frames")}${campaignStage === null ? btn("新桌", "newTable") : btn("离桌", "leaveStage")}</nav>
@@ -1488,8 +1490,12 @@ function betDock(o: Observation) {
 }
 
 function operateDock(o: Observation) {
-  return prompt(`付 ${o.opFee} 操作费，从 3 件装备里挑 1 件？`, "装备装在谁身上对手看得到") +
-    `<div class="actions">${btn("不拿", "operate", 0, "big")}${btn(`付 ${o.opFee} 拿装备`, "operate", 1, "primary big")}</div>`;
+  const targets = o.me.attackTargets.map((x, i) => `<label>${posName(i)}优先打
+    <select data-input="target-${i}">${[0,1,2].map((p) => `<option value="${p}" ${x === p ? "selected" : ""}>${posName(p)}${p === i ? "（对位）" : ""}</option>`).join("")}</select></label>`).join("");
+  return prompt(`操作阶段：一次操作，费用 ${o.opFee}`, "拿装备或公开改一次攻击指向；改指向的费用也进入奖池") +
+    `<div class="actions">${btn("跳过", "operate", 0, "big")}${btn(`付 ${o.opFee} 拿装备`, "operate", 1, "primary big")}</div>
+    <div class="retarget-editor"><p>改指向（公开给对手，本轮默认仍会攻击）：</p>${targets}
+    <div class="actions">${btn(`付 ${o.opFee} 改指向`, "retarget", undefined, "big")}</div></div>`;
 }
 
 function draftDock(o: Observation) {
@@ -1751,7 +1757,8 @@ function onAct(name: string, arg: string | undefined) {
       const amount = ui.betAmount!;
       return act(o!.betting.target === 0 ? { type: "bet", amount } : { type: "raise", to: amount });
     }
-    case "operate": return act({ type: "operate", draft: n === 1 });
+    case "operate": return act({ type: "operate", operation: n === 1 ? "draft" : "pass" });
+    case "retarget": return act({ type: "operate", operation: "retarget", targets: ui.retarget });
     case "draftOffer": ui.draft.offer = n; return render();
     case "draftPos": ui.draft.pos = n; return render();
     case "draft": return act({ type: "draft", offerIndex: ui.draft.offer!, pos: ui.draft.pos! });
@@ -1913,6 +1920,14 @@ app.addEventListener("input", (ev) => {
   app.querySelectorAll<HTMLInputElement>(`[data-input="${key}"]`).forEach((x) => { if (x !== el) x.value = String(v); });
   app.querySelectorAll(`[data-bind="${key}"]`).forEach((x) => { x.textContent = String(v); });
   app.querySelectorAll<HTMLElement>(".chip-btn").forEach((x) => x.classList.toggle("on", Number(x.dataset.arg) === v));
+});
+
+app.addEventListener("change", (ev) => {
+  const el = ev.target as HTMLSelectElement;
+  const key = el.dataset.input;
+  if (!key?.startsWith("target-")) return;
+  const pos = Number(key.slice(7));
+  if (pos >= 0 && pos < 3) ui.retarget[pos] = Number(el.value);
 });
 
 // ───────────────────────── 入场 ─────────────────────────

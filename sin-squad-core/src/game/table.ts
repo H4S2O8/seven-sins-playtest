@@ -112,6 +112,8 @@ export interface HandState {
   placing: Seat | null;
   placement: [Placement | null, Placement | null];
   equipment: [(string | null)[], (string | null)[]];
+  /** 每个己方位置公开指定的优先敌方目标。 */
+  attackTargets: [[number, number, number], [number, number, number]];
   peekPending: [boolean, boolean];
   peek: [{ pos: number; characterId: string } | null, { pos: number; characterId: string } | null];
   pot: number;
@@ -130,7 +132,7 @@ export interface HandState {
   actor: Seat;
   allIn: boolean;
   opFee: number;
-  opCommit: [boolean | null, boolean | null];
+  opCommit: [OperationChoice | null, OperationChoice | null];
   offers: [string[] | null, string[] | null];
   draftChoice: [{ offerIndex: number; pos: number } | null, { offerIndex: number; pos: number } | null];
   votes: [boolean | null, boolean | null];
@@ -145,13 +147,18 @@ export interface HandState {
   removeDone: [boolean, boolean];
 }
 
+export type OperationChoice =
+  | { kind: "pass" }
+  | { kind: "draft" }
+  | { kind: "retarget"; targets: [number, number, number] };
+
 export type TableEvent =
   | { type: "handStart"; no: number; dealer: Seat; ante: number; arenaOptions: [string, string]; chooser: Seat }
   | { type: "arenaChosen"; seat: Seat; arenaId: string }
   | { type: "placed"; seat: Seat; revealPos: number; characterId: string; eaten: number | null }
   | { type: "betAction"; seat: Seat; round: 1 | 2; action: string; amount: number; stack: number; pot: number }
   | { type: "refund"; seat: Seat; amount: number }
-  | { type: "operate"; round: 1 | 2; fee: number; drafted: [boolean, boolean] }
+  | { type: "operate"; round: 1 | 2; fee: number; operations: [OperationChoice, OperationChoice] }
   | { type: "installed"; seat: Seat; pos: number; equipmentId: string }
   | { type: "reveal"; ruleId: string; publicEffectId: string | null }
   /** 第二次翻开：双方同时翻开的人物（不用翻的一方为 null）。 */
@@ -269,6 +276,7 @@ export class Table {
       ruleRevealed: false, peRevealed: false, peActive: false,
       dealt: [[], []], placing: null, placement: [null, null],
       equipment: [[null, null, null], [null, null, null]],
+      attackTargets: [[0, 1, 2], [0, 1, 2]],
       peekPending: [false, false], peek: [null, null],
       pot: 0, invested: [0, 0],
       stats: [{ betOrRaise: 0, checks: 0, opsPaid: 0 }, { betOrRaise: 0, checks: 0, opsPaid: 0 }],
@@ -313,7 +321,7 @@ export class Table {
       case "reveal2": return this.onReveal2(seat, action.pos);
       case "check": case "bet": case "call": case "raise": case "allIn": case "fold":
         return this.onBet(seat, action);
-      case "operate": return this.onOperate(seat, action.draft);
+      case "operate": return this.onOperate(seat, action);
       case "draft": return this.onDraft(seat, action.offerIndex, action.pos);
       case "vote": return this.onVote(seat, action.activate);
       case "bid": return this.onBid(seat, action.amount);
@@ -612,21 +620,30 @@ export class Table {
     this.afterOperations();
   }
 
-  private onOperate(seat: Seat, draft: boolean) {
+  private onOperate(seat: Seat, action: Extract<Action, { type: "operate" }>) {
     this.expect("operate");
     const h = this.hand;
-    h.opCommit[seat] = draft;
+    let choice: OperationChoice;
+    if (action.operation === "retarget") {
+      if (action.targets.length !== 3 || action.targets.some((x) => !Number.isInteger(x) || x < 0 || x > 2)) {
+        throw new Error("三个优先目标都必须是 1、2、3 号位");
+      }
+      choice = { kind: "retarget", targets: [...action.targets] as [number, number, number] };
+    } else choice = { kind: action.operation };
+    h.opCommit[seat] = choice;
     if (h.opCommit[0] === null || h.opCommit[1] === null) return;
-    const drafted = [h.opCommit[0], h.opCommit[1]] as [boolean, boolean];
-    this.log.push({ type: "operate", round: h.betRound, fee: h.opFee, drafted });
+    const operations = [h.opCommit[0], h.opCommit[1]] as [OperationChoice, OperationChoice];
+    this.log.push({ type: "operate", round: h.betRound, fee: h.opFee, operations });
     for (const s of SEATS) {
-      if (!drafted[s]) continue;
+      const op = operations[s];
+      if (op.kind === "pass") continue;
       this.pay(s, h.opFee);
       h.stats[s].opsPaid++;
-      h.offers[s] = this.rng.sample(EQUIPMENT.map((e) => e.id), 3);
+      if (op.kind === "draft") h.offers[s] = this.rng.sample(EQUIPMENT.map((e) => e.id), 3);
+      else h.attackTargets[s] = [...op.targets] as [number, number, number];
     }
     this.checkInvariant();
-    if (drafted[0] || drafted[1]) this.phase = "draft";
+    if (operations.some((op) => op.kind === "draft")) this.phase = "draft";
     else this.afterOperations();
   }
 
@@ -727,7 +744,7 @@ export class Table {
     const h = this.hand;
     const p = h.placement[seat]!;
     return {
-      slots: p.slots.map((c, i) => ({ characterId: c, equipmentId: c ? h.equipment[seat][i] : null })),
+      slots: p.slots.map((c, i) => ({ characterId: c, equipmentId: c ? h.equipment[seat][i] : null, targetPos: h.attackTargets[seat][i] })),
       eat: null, // 吞噬已经体现在 slots 里：被吞的位置为空，吞噬加成见 battleTeams()
       bet: {
         invested: h.invested[seat],

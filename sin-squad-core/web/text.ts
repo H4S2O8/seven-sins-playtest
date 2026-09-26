@@ -52,7 +52,7 @@ export function logLine(e: TableEvent): string | null {
     case "refund":
       return `退回${who(e.seat)}对方跟不上的 ${e.amount}`;
     case "operate": {
-      const d = (s: Seat) => (e.drafted[s] ? `付 ${e.fee} 拿装备` : "不拿");
+      const d = (s: Seat) => e.operations[s].kind === "draft" ? `付 ${e.fee} 拿装备` : e.operations[s].kind === "retarget" ? `付 ${e.fee} 改了攻击指向` : "跳过";
       return `操作：你${d(0)}，对手${d(1)}`;
     }
     case "installed": {

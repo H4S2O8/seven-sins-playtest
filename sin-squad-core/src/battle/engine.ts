@@ -169,6 +169,9 @@ class Battle {
       s.characterId ? unitFrom(this.card(s.characterId), seat, pos) : emptyUnit(seat, pos),
     );
     team.forEach((u, i) => {
+      const targetPos = setup.slots[i].targetPos ?? i;
+      if (!Number.isInteger(targetPos) || targetPos < 0 || targetPos > 2) throw new Error("优先攻击位置必须是 0、1、2");
+      u.targetPos = targetPos;
       const e = setup.slots[i].equipmentId;
       if (u.exists && e) u.equipmentIds.push(e);
     });
@@ -594,7 +597,7 @@ class Battle {
   /** 对位已倒下、这一轮还要花时间转线的人。 */
   private switching(u: Unit): boolean {
     if (this.rules.nearest || this.isDemon(u, "永眠")) return false; // 永眠从不出手，也就不用转线，照样反击
-    if (this.teams[other(u.seat)][u.pos].alive) return false;
+    if (this.teams[other(u.seat)][u.targetPos].alive) return false;
     if (u.charmed && this.round === 1) return false;
     return (u.switchRemaining ?? this.switchCost(u.pos)) > 0;
   }
@@ -625,14 +628,15 @@ class Battle {
       }
       return;
     }
+    const preferred = this.teams[other(seat)][u.targetPos];
     if (!target && u.charmed && r === 1) {
       const adj = this.teams[seat].filter((x) => x.alive && Math.abs(x.pos - u.pos) === 1);
       if (adj.length) { target = minBy(adj, (x) => x.hp); this.trig(u, "塞壬", "被魅惑：攻击队友"); }
     }
     if (!target) {
-      if (o.alive) {
-        target = o;
-        opposite = true;
+      if (preferred.alive) {
+        target = preferred;
+        opposite = preferred.pos === u.pos;
       } else if (this.rules.nearest) {
         target = this.nearestFoe(u);
         if (!target) return;
