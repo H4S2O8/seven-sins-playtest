@@ -37,6 +37,12 @@ await writeFile(join(out, "index.html"), html);
 await mkdir(join(out, "art"), { recursive: true });
 for (const f of artFiles) await copyFile(join(artDir, f), join(out, "art", f));
 
+// 场地的房间背景：web/room/<场地编号>.webp，是场地插画预先缩小、虚化过的版本（铺在牌桌四周，页面上不再实时模糊）
+const roomDir = join(web, "room");
+const roomFiles = (await readdir(roomDir).catch(() => [])).filter((f) => f.endsWith(".webp"));
+await mkdir(join(out, "room"), { recursive: true });
+for (const f of roomFiles) await copyFile(join(roomDir, f), join(out, "room", f));
+
 // 背景音乐：web/audio/<曲名>.mp3（曲名见 web/music.ts）
 const audioDir = join(web, "audio");
 const audioFiles = (await readdir(audioDir).catch(() => [])).filter((f) => f.endsWith(".mp3"));
