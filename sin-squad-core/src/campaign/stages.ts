@@ -67,7 +67,7 @@ export const STAGES: readonly StageDef[] = [
     rules: ["V01"], ruleName: "酒馆规矩", ruleText: "把对面三个人全部打倒就赢",
     arenaId: "A08", arenaActive: false, style: "novice",
     buyIn: 30, baseAnte: 10, blindEvery: 99, deal: 3, betting: false,
-    foePool: ["WR2", "GR3", "GL1", "GL3", "LU1", "SL4", "GL5", "LU5"], signature: [], demon: null, portrait: null,
+    foePool: ["WR2", "GR3", "GL1", "GL3", "LU1", "SL4", "GL5", "LU5"], signature: [], demon: null, portrait: "campaign-barmaid",
     intro: "“新来的？这牌叫七罪暗队。先不赌钱，排好你的三个人，看他们自己打。”",
     outro: "“等等，这把不算……哎，蜡烛怎么变成红的了？”",
     taunts: [
@@ -83,7 +83,7 @@ export const STAGES: readonly StageDef[] = [
     rules: ["V12"], ruleName: "众目所向", ruleText: "布阵时亮出的那名是旗手，先击倒对方旗手的一方胜",
     arenaId: "A14", arenaActive: false, style: "bluff", ...SISTER_TABLE,
     foePool: ["PR1", "PR3", "WR2", "GR3", "GL3", "LU1", "SL4", "WR3"], signature: ["PR1", "PR2", "PR3"],
-    demon: "晨星", portrait: null,
+    demon: "晨星", portrait: "campaign-lucifer",
     intro: "“抬头。在我的大厅里，你亮出的那一个，就是你全部的尊严。”",
     outro: "“……你赢的只是一张牌桌，不是我。”",
     taunts: [
@@ -99,7 +99,7 @@ export const STAGES: readonly StageDef[] = [
     rules: ["V08"], ruleName: "掐灭火力", ruleText: "攻最高的是核心，先击倒对方核心的一方胜",
     arenaId: "A13", arenaActive: false, style: "cautious", ...SISTER_TABLE,
     foePool: ["EN1", "EN2", "EN4", "PR1", "GL1", "GL3", "LU1", "WR2"], signature: ["EN1", "EN2", "EN4"],
-    demon: "深渊之眼", portrait: null,
+    demon: "深渊之眼", portrait: "campaign-leviathan",
     intro: "“阿斯莫德看中的人……让我看看，你手里有什么。”",
     outro: "“为什么大家都想要你……我也想要。”",
     taunts: [
@@ -115,7 +115,7 @@ export const STAGES: readonly StageDef[] = [
     rules: ["V03"], ruleName: "连续击破", ruleText: "先击倒两名敌人的一方胜",
     arenaId: "A02", arenaActive: false, style: "aggressive", ...SISTER_TABLE,
     foePool: ["WR1", "WR2", "WR3", "WR4", "EN4", "GL5", "GR3", "LU1"], signature: ["WR1", "WR3", "WR4"],
-    demon: "焚怒", portrait: "foe-aggressive",
+    demon: "焚怒", portrait: "campaign-satan",
     intro: "“跟，还是不跟？快点！我没耐心看你发呆！”",
     outro: "“好！再来！……什么，你要走？”",
     taunts: [
@@ -131,7 +131,7 @@ export const STAGES: readonly StageDef[] = [
     rules: ["V07"], ruleName: "斩旗", ruleText: "血最高的是旗手，先击倒对方旗手的一方胜",
     arenaId: "A03", arenaActive: false, style: "cautious", ...SISTER_TABLE,
     foePool: ["SL1", "SL2", "SL3", "SL4", "WR1", "EN2", "LU1", "GL3"], signature: ["SL1", "SL2", "SL3"],
-    demon: "永眠", portrait: null,
+    demon: "永眠", portrait: "campaign-belphegor",
     intro: "“……过牌。嗯，再过。你慢慢来，我睡一会儿。”",
     outro: "“……输了？那我可以去睡了吧。”",
     taunts: [
@@ -147,7 +147,7 @@ export const STAGES: readonly StageDef[] = [
     rules: ["V09"], ruleName: "薄弱环节", ruleText: "血最低的是弱点，先击倒对方弱点的一方胜",
     arenaId: "A06", arenaActive: false, style: "cautious", ...SISTER_TABLE,
     foePool: ["GR1", "GR2", "GR3", "GR4", "PR2", "LU4", "WR4", "SL4"], signature: ["GR1", "GR2", "GR4"],
-    demon: "金山", portrait: "foe-cautious",
+    demon: "金山", portrait: "campaign-mammon",
     intro: "“进门先付利息。你的弱点，我已经标好价了。”",
     outro: "“这一笔算你的。利息，下次再收。”",
     taunts: [
@@ -163,7 +163,7 @@ export const STAGES: readonly StageDef[] = [
     rules: ["V01"], ruleName: "吃干净", ruleText: "全灭对方即胜",
     arenaId: "A07", arenaActive: true, style: "aggressive", ...SISTER_TABLE,
     foePool: ["GL1", "GL2", "GL3", "GL5", "GR3", "WR2", "SL1", "LU5"], signature: ["GL2", "GL5", "GL1"],
-    demon: "万蝇之王", portrait: null,
+    demon: "万蝇之王", portrait: "campaign-beelzebub",
     intro: "“你也饿吗？坐吧，地牢里水有点深，别介意。”",
     outro: "“吃饱了……你好厉害。下次带点心来？”",
     taunts: [
@@ -179,7 +179,7 @@ export const STAGES: readonly StageDef[] = [
     rules: ["V12", "V08", "V03", "V07", "V09", "V01"], ruleName: "七罪之约", ruleText: "每手开局从前面几关的规则里随机翻一条",
     arenaId: "A04", arenaActive: true, style: "bluff", samples: 32, ...SISTER_TABLE,
     foePool: ["LU1", "LU2", "LU3", "LU4", "LU5", "PR2", "WR3", "GL2"], signature: ["LU2", "LU3", "LU4"],
-    demon: "欲之王", portrait: "foe-bluff",
+    demon: "欲之王", portrait: "campaign-asmodeus",
     intro: "“终于爬上来了。你猜，我亮的是真的吗？”",
     outro: "“……好吧，门开了。可你真的想走吗？”",
     taunts: [
