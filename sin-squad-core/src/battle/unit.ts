@@ -97,7 +97,7 @@ export interface UnitSnapshot {
   shape: AttackShape;
   armor: number;
   barrier: number;
-  /** 身上的装备（夺装者会改变它）。 */
+  /** 身上的装备（扒手会改变它）。 */
   equipment: string[];
 }
 

@@ -10,7 +10,7 @@ import type { Action, Phase } from "./actions.js";
  *
  * 一手的顺序：
  *   底注 → 翻 2 张场地，筹码少的一方选 1 张 → 从各自牌池发 4 张
- *   → 非庄家布阵并亮 1 名 → 庄家布阵并亮 1 名 →（窥视者偷看）
+ *   → 非庄家布阵并亮 1 名 → 庄家布阵并亮 1 名 →（密探偷看）
  *   → 第 1 轮下注 →（操作：拿装备）→ 翻胜利规则 + 1 张公共效果 → 表决 /（暗标）
  *   → 第 2 轮下注 →（操作）→ 揭队战斗 → 结算 → 输家先挑人进牌池 → 各自可移除 1 名。
  */
@@ -125,8 +125,8 @@ export type TableEvent =
   | { type: "tableOver"; winner: Seat };
 
 const GRAND_ID = "GL2"; // 饕餮
-const PEEKER_ID = "EN1"; // 窥视者
-const CROWN_ID = "PR3"; // 冠冕者
+const PEEKER_ID = "EN1"; // 密探
+const CROWN_ID = "PR3"; // 僭王
 
 export class Table {
   readonly options: Required<Omit<TableOptions, "rig">>;
@@ -294,7 +294,7 @@ export class Table {
       return;
     }
     h.placing = null;
-    // 窥视者
+    // 密探
     for (const s of SEATS) {
       const mine = h.placement[s]!;
       const foe = h.placement[other(s)]!;
@@ -359,7 +359,7 @@ export class Table {
     this.phase = "bet";
   }
 
-  /** 冠冕者：被亮出时，对手在第 1 轮下注不能弃牌。 */
+  /** 僭王：被亮出时，对手在第 1 轮下注不能弃牌。 */
   canFold(seat: Seat): boolean {
     const h = this.hand;
     const foe = h.placement[other(seat)];
@@ -408,7 +408,7 @@ export class Table {
         aggressive = me + stack > h.target;
         break;
       case "fold":
-        if (!this.canFold(seat)) throw new Error("对手亮出了冠冕者，第 1 轮下注不能弃牌");
+        if (!this.canFold(seat)) throw new Error("对手亮出了僭王，第 1 轮下注不能弃牌");
         h.folded = seat;
         this.log.push({ type: "fold", seat });
         return this.settleFold(seat);

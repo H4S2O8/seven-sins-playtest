@@ -7,9 +7,9 @@ import { afterHit, battle, hpAfter, team } from "./helpers.js";
 describe("形状克制环", () => {
   it("重击打护甲：每下减去护甲", () => {
     const r = battle(team(["GR3", null, null]), team(["SL1", null, null]));
-    const hit = afterHit(r, 1); // 收藏家先手打瞌睡客
+    const hit = afterHit(r, 1); // 收藏家先手打冬眠熊
     expect(hit[1][0].hp).toBe(9 - 3); // 4 − 护甲 1
-    expect(hit[0][0].hp).toBe(7 - 1); // 瞌睡客反击 1
+    expect(hit[0][0].hp).toBe(7 - 1); // 冬眠熊反击 1
   });
 
   it("护甲克连击：每段都被减，但整次攻击至少扣 1", () => {
@@ -46,12 +46,12 @@ describe("对位、转线与守护", () => {
     expect(hpAfter(arena03, 3, 1, 1)).toBe(3);
   });
 
-  it("守护：相邻队友受到的攻击改由同行药袋承受", () => {
+  it("守护：相邻队友受到的攻击改由痴情骑士承受", () => {
     const r = battle(team(["GR3", null, null]), team(["WR2", "LU1", null]));
     const hit = afterHit(r, 1);
-    expect(hit[1][1].hp).toBe(12 - 4); // 收藏家的 4 打在药袋身上
-    expect(hit[1][0].hp).toBe(10); // 蓄痛拳手没挨打
-    expect(hit[0][0].hp).toBe(7); // 药袋这一轮在转线，不反击
+    expect(hit[1][1].hp).toBe(12 - 4); // 收藏家的 4 打在痴情骑士身上
+    expect(hit[1][0].hp).toBe(10); // 狂战士没挨打
+    expect(hit[0][0].hp).toBe(7); // 痴情骑士这一轮在转线，不反击
   });
 });
 
@@ -61,7 +61,7 @@ describe("轮流出手与碰撞", () => {
     const first = afterHit(r, 1);
     expect(first[1][0].hp).toBe(8 - 4);
     expect(first[0][0].hp).toBe(7 - 3);
-    // 盾税官还手这一下，再碰撞一次：盾税官倒下，收藏家剩 1
+    // 赎罪券商还手这一下，再碰撞一次：赎罪券商倒下，收藏家剩 1
     expect(r.winner).toBe(0);
     expect(r.rounds).toBe(1);
     expect(r.final[0][0].hp).toBe(1);
@@ -76,7 +76,7 @@ describe("轮流出手与碰撞", () => {
   });
 
   it("屏障也挡碰撞", () => {
-    // 无瑕刺客 3/3 带 1 层屏障，满血翻倍打盾税官；盾税官的 3 点反击被屏障挡掉
+    // 无瑕刺客 3/3 带 1 层屏障，满血翻倍打赎罪券商；赎罪券商的 3 点反击被屏障挡掉
     const r = battle(team(["PR2", null, null]), team(["GR2", null, null]));
     const hit = afterHit(r, 1);
     expect(hit[1][0].hp).toBe(8 - 6);
@@ -99,16 +99,16 @@ describe("轮流出手与碰撞", () => {
 
   it("吸血：自己攻击每打中一段回 1，反击打出的伤害不回血", () => {
     const r = battle(team(["GL1", null, null]), team(["LU1", null, null]));
-    // 嚼盾兽 3/8 连击 1+2 打同行药袋 3/12：两段都打中，回 2；同时吃药袋 3 点反击
+    // 血蛭 3/8 连击 1+2 打痴情骑士 3/12：两段都打中，回 2；同时吃痴情骑士 3 点反击
     expect(afterHit(r, 1)[0][0].hp).toBe(8 - 3 + 2);
     expect(afterHit(r, 1)[1][0].hp).toBe(12 - 3);
-    // 药袋回打：嚼盾兽挨 3，它的反击也打出 3，但不回血
+    // 痴情骑士回打：血蛭挨 3，它的反击也打出 3，但不回血
     expect(afterHit(r, 2)[0][0].hp).toBe(7 - 3);
     expect(afterHit(r, 2)[1][0].hp).toBe(9 - 3);
   });
 
   it("吸血按打中的段数算：护甲吃掉一段就少回 1", () => {
-    // 瞌睡客护甲 1：连击 1+2 → 第一段被吃光，只有第二段打中，回 1
+    // 冬眠熊护甲 1：连击 1+2 → 第一段被吃光，只有第二段打中，回 1
     const r = battle(team(["GL1", null, null]), team(["SL1", null, null]));
     const hp0 = r.start[0][0].startHp;
     expect(afterHit(r, 1)[0][0].hp).toBe(hp0 - 1 + 1);
@@ -148,7 +148,7 @@ describe("胜负判定", () => {
     );
     expect(r.winner).toBe(0);
     expect(r.reason).toBe("达成规则");
-    expect(r.rounds).toBe(2); // 第 2 轮瞌睡客打清算者时吃了反击倒下，当场结束
+    expect(r.rounds).toBe(2); // 第 2 轮冬眠熊打清算者时吃了反击倒下，当场结束
     expect(r.final[1][2].alive).toBe(true);
   });
 
@@ -159,7 +159,7 @@ describe("胜负判定", () => {
 });
 
 describe("开战时的能力", () => {
-  it("夺装者拿走对位的装备；静默书库让它失效", () => {
+  it("扒手拿走对位的装备；静默书库让它失效", () => {
     const a = team(["EN3", null, null]);
     const b = team(["GR3", null, null], ["E02"]);
     const stolen = battle(a, b);
@@ -178,7 +178,7 @@ describe("开战时的能力", () => {
     expect(me[1].characterId).toBeNull();
   });
 
-  it("下注层能力：金主按投入成长，挑衅者按对手加注成长", () => {
+  it("下注层能力：豪商按投入成长，叫阵骑士按对手加注成长", () => {
     const r = battle(
       team(["GR1", "WR1", null], [null, null, null], { invested: 35 }),
       team(["LU1", "LU1", null], [null, null, null], { betOrRaiseCount: 2 }),
@@ -197,8 +197,8 @@ describe("触发事件", () => {
       team(["GR3", "GR2", null]),
     );
     const trig = r.events.filter((e) => e.type === "trigger");
-    expect(trig).toContainEqual({ round: 0, type: "trigger", seat: 0, pos: 0, name: "炫耀者", text: "被亮出：+3/+4" });
-    expect(trig.some((e) => e.round === 1 && e.name === "蓄痛拳手")).toBe(true);
+    expect(trig).toContainEqual({ round: 0, type: "trigger", seat: 0, pos: 0, name: "孔雀", text: "被亮出：+3/+4" });
+    expect(trig.some((e) => e.round === 1 && e.name === "狂战士")).toBe(true);
   });
 });
 
