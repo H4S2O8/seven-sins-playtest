@@ -51,7 +51,7 @@ export function installLight() {
   document.addEventListener("pointermove", (ev) => {
     if (ev.pointerType !== "mouse") return;
     pointer = { x: ev.clientX, y: ev.clientY };
-    const card = (ev.target as HTMLElement | null)?.closest?.<HTMLElement>(".card.lit") ?? null;
+    const card = (ev.target as HTMLElement | null)?.closest?.<HTMLElement>(".card.foil") ?? null;
     const next = card && own(card) && !card.hasAttribute("data-fx") ? card : null;
     if (next !== hovered) { clear(hovered); hovered = next; }
     if (next) follow(next);
