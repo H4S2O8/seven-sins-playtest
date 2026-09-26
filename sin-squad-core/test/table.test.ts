@@ -141,10 +141,10 @@ describe("密探", () => {
 
 describe("调试固定项", () => {
   it("固定发牌、规则、公共效果、场地、庄家；没固定的照常随机", () => {
-    const rig = { deal: [["EN1", "GL2"], null] as [string[], null], ruleId: "V02", publicEffectId: "P10", arenaOptions: ["A08", "A02"] as [string, string], dealer: 0 as Seat };
+    const rig = { deal: [["EN1", "GL2"], null] as [string[], null], ruleId: "V02", publicEffectId: "P10", arenaOptions: ["A05", "A02"] as [string, string], dealer: 0 as Seat };
     const t = new Table({ seed: 9, rig });
     expect(t.hand.dealer).toBe(0);
-    expect(t.hand.arenaOptions).toEqual(["A08", "A02"]);
+    expect(t.hand.arenaOptions).toEqual(["A05", "A02"]);
     expect(t.hand.ruleId).toBe("V02");
     expect(t.hand.publicEffectId).toBe("P10");
     driveUntil(t, "place");

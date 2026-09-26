@@ -15,9 +15,9 @@ export interface Unit {
   /** 回复上限。 */
   maxHp: number;
   shape: AttackShape;
-  /** 人物与环境给的护甲（会被锈蚀、裂甲削减）。 */
+  /** 人物与环境给的护甲（会被裂甲削减）。 */
   armorBase: number;
-  /** 装备给的护甲（不受锈蚀影响）。 */
+  /** 装备给的护甲（不受裂甲影响）。 */
   armorEquip: number;
   barrier: number;
   equipmentIds: string[];
@@ -33,8 +33,6 @@ export interface Unit {
   skipNext: boolean;
   /** 转线：null = 还没开始转线；数字 = 还要花几轮。 */
   switchRemaining: number | null;
-  /** 是否已经转过线（断桥用）。 */
-  switched: boolean;
   attacks: number;
   /** 下一次攻击的加值（碎盾节、重整、燃命）。 */
   pendingBonus: number;
@@ -71,7 +69,7 @@ export function emptyUnit(seat: Seat, pos: number): Unit {
     atk: 0, hp: 0, startHp: 1, maxHp: 1, shape: "heavy",
     armorBase: 0, armorEquip: 0, barrier: 0, equipmentIds: [], eqAtk: 0, eqHp: 0,
     bonded: false, charmed: false, skipRounds: 0, skipNext: false,
-    switchRemaining: null, switched: false, attacks: 0, pendingBonus: 0,
+    switchRemaining: null, attacks: 0, pendingBonus: 0,
     huntTarget: null, huntUsed: false, lostTotal: 0, bloodSpringAcc: 0, healAcc: 0,
     halfHealthTriggered: false, focusEchoUsed: false, sideCoverUsed: false,
     barrierEchoed: false, regenRounds: 0, deathRound: null, flags: new Set(),

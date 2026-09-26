@@ -26,8 +26,9 @@
       "redraw": "这些图以后重画时改用 portrait 模式"
     },
     "scene": {
-      "tool": "novelai_generate_image（1216×832）",
-      "post": "缩到 608×416，转 webp"
+      "tool": "novelai_generate_image（NovelAI V5 Full，1216×832，qualityPreset none，其余参数用工具默认值）",
+      "prompt": "<style>, <subject>",
+      "post": "缩到 608×416，转 webp（-quality 82）；场地再按 README 的命令做一张 web/room/<编号>.webp"
     }
   },
   "images": {
@@ -184,6 +185,56 @@
         569750322
       ],
       "picked": 1993956096
+    },
+    "A02": {
+      "name": "比武场",
+      "mode": "scene",
+      "subject": "no humans, scenery, medieval jousting tournament lists, long wooden tilt barrier down the middle of a dirt field, two facing wooden grandstands with striped pavilion tents, heraldic banners and pennants, lances in racks, castle on a hill in the background, overcast sky, wide shot",
+      "seeds": [
+        3436594488,
+        4040980028
+      ],
+      "picked": 4040980028
+    },
+    "A04": {
+      "name": "许愿井",
+      "mode": "scene",
+      "subject": "no humans, scenery, old stone wishing well in a moonlit overgrown courtyard, small wooden roof, bucket hanging on a rope, coins glinting in dark water, ivy, stone walls, soft mist, fairy tale, night, wide shot",
+      "seeds": [
+        1675779776,
+        259452729
+      ],
+      "picked": 1675779776
+    },
+    "A06": {
+      "name": "巨龙宝库",
+      "mode": "scene",
+      "subject": "no humans, scenery, dragon hoard inside a vast cavern, mountains of gold coins, jeweled goblets, crowns, open treasure chests, huge scaled dragon tail curled around the gold, shadowy cave walls, warm golden glow, wide shot",
+      "seeds": [
+        2067813424,
+        127718120
+      ],
+      "picked": 127718120
+    },
+    "A07": {
+      "name": "水淹地牢",
+      "mode": "scene",
+      "subject": "no humans, scenery, flooded medieval dungeon, stone arches, iron-barred cells half underwater, rusty chains hanging from the ceiling, murky green water, torchlight reflecting on the water, dripping, gloomy, wide shot",
+      "seeds": [
+        3817032510,
+        1229265243
+      ],
+      "picked": 1229265243
+    },
+    "A13": {
+      "name": "黑森林",
+      "mode": "scene",
+      "subject": "no humans, scenery, dark forest at night, gnarled black trees, twisted roots, narrow dirt path, faint moonlight through the branches, glowing eyes in the dark between trees, fog, grimm fairy tale, wide shot",
+      "seeds": [
+        2281824326,
+        372955055
+      ],
+      "picked": 2281824326
     }
   },
   "unrecorded": {
@@ -205,7 +256,7 @@
       "LU2",
       "foe-aggressive",
       "foe-bluff",
-      "A01–A22",
+      "A01、A03、A05、A08–A12、A14",
       "V01–V27",
       "P01–P31"
     ]

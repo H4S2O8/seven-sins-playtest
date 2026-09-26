@@ -38,12 +38,12 @@ describe("对位、转线与守护", () => {
     expect(hpAfter(normal, 1, 1, 1)).toBe(9); // 双方第 1 轮都在转线
     expect(hpAfter(normal, 2, 1, 1)).toBe(9 - 3 - 3); // 第 2 轮互相碰撞两次
 
-    const arena02 = battle(a, b, { arenaId: "A02" }); // 圆形斗场：转线不花时间
-    expect(hpAfter(arena02, 1, 1, 1)).toBe(3);
-
-    const arena03 = battle(a, b, { arenaId: "A03" }); // 结冰渡口：转线要花两轮
-    expect(hpAfter(arena03, 2, 1, 1)).toBe(9);
-    expect(hpAfter(arena03, 3, 1, 1)).toBe(3);
+    // 崩落阶梯：1 号位转线多花一轮，3 号位转线不花时间
+    const stairs1 = battle(a, b, { arenaId: "A01" });
+    expect(hpAfter(stairs1, 2, 1, 1)).toBe(9); // 收藏家在 1 号位，前两轮都在转线
+    expect(hpAfter(stairs1, 3, 1, 1)).toBe(3);
+    const stairs3 = battle(team([null, null, "GR3"]), b, { arenaId: "A01" });
+    expect(hpAfter(stairs3, 1, 1, 1)).toBe(9 - 3); // 3 号位第 1 轮就打到冬眠熊；冬眠熊还在转线，不反击
   });
 
   it("守护：相邻队友受到的攻击改由痴情骑士承受", () => {
@@ -165,7 +165,7 @@ describe("开战时的能力", () => {
     const stolen = battle(a, b);
     expect(stolen.start[0][0].startHp).toBe(7 + 6);
     expect(stolen.start[1][0].startHp).toBe(7);
-    const silenced = battle(a, b, { arenaId: "A08" });
+    const silenced = battle(a, b, { arenaId: "A05" });
     expect(silenced.start[0][0].startHp).toBe(7);
     expect(silenced.start[1][0].startHp).toBe(7 + 6);
   });

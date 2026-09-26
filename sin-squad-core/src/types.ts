@@ -57,7 +57,7 @@ export interface ArenaDef {
   id: string;
   name: string;
   text: string;
-  kind: "转线" | "节奏" | "伤害" | "下注" | "形状" | "逆转";
+  kind: "转线" | "对位" | "节奏" | "伤害" | "下注" | "屏障" | "逆转";
 }
 
 export interface PublicEffectDef {
