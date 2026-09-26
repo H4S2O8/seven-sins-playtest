@@ -14,6 +14,7 @@
     "portrait": {
       "tool": "novelai_generate_image（NovelAI V5 Full，832×1216，qualityPreset none，其余参数用工具默认值）",
       "prompt": "2.1::transparent background::, has alpha, <style>, <subject>",
+      "negative": "条目里有 negative 时，把它原样传给工具的 negative 参数（叠加在默认负面预设之上）",
       "post": "取透明区域裁紧，等比缩进 396×598，放到 416×608 透明画布上，水平居中、距顶 10px，转 webp"
     },
     "portrait-asset": {
@@ -235,6 +236,109 @@
         372955055
       ],
       "picked": 2281824326
+    },
+    "campaign-barmaid": {
+      "name": "看板娘",
+      "mode": "portrait",
+      "subject": "1girl, solo, adult woman, full body, standing, front view, looking at viewer, smile, honey blonde hair, short ponytail, freckles, amber eyes, tavern waitress, white blouse, sleeves rolled up, brown corset, amber apron, coins pinned on apron, 1.2::holding deck of cards::, rag tucked in waist, warm amber color scheme",
+      "negative": "shadow, drop shadow, cast shadow, ground, floor, beer mug, tray",
+      "seeds": [
+        1492137996,
+        4056257946,
+        2931535375,
+        75180215
+      ],
+      "picked": 2931535375
+    },
+    "campaign-lucifer": {
+      "name": "路西法",
+      "mode": "portrait",
+      "subject": "1girl, solo, adult woman, full body, standing, front view, looking down at viewer, arrogant, silver hair, 1.3::straight hair::, very long hair, hair reaching knees, center-parted bangs, forehead visible, sidelocks framing face, purple eyes, gold pupils, 1.3::thin gold circlet on forehead::, star ornament on circlet, white and purple high collar gown, long cape, fallen angel, white wings, one wing burnt black, 1.2::broken halo::, cracked halo floating above head, purple color scheme",
+      "negative": "wavy hair, curly hair, messy hair, short hair, ponytail, braid, hair bun, blunt bangs, cross, crucifix",
+      "seeds": [
+        3354004553,
+        457807102,
+        3461854758,
+        1869645685
+      ],
+      "picked": 3354004553
+    },
+    "campaign-leviathan": {
+      "name": "利维坦",
+      "mode": "portrait",
+      "subject": "1girl, solo, adult woman, beautiful, delicate face, natural makeup, slender, full body, standing, front view, looking at viewer, melancholic, shy, slight blush, dark teal wavy long hair, glossy hair, hair over one eye, slit pupils, teal hooded cloak, fitted dark teal dress under cloak, frayed hem, smooth skin, fin ears, human legs, 1.3::two legs::, sea serpent tail coming out from under cloak behind her, teal color scheme",
+      "negative": "lamia, naga, snake body, snake lower body, monster girl lower body, mermaid, seaweed, tentacles, eye bags, baggy clothes, muscular, 1.3::scales::, scaled skin, dark lipstick, heavy makeup, eyeshadow",
+      "seeds": [
+        2093551363,
+        3374644282,
+        2076023197,
+        2532634185
+      ],
+      "picked": 2076023197
+    },
+    "campaign-satan": {
+      "name": "撒旦",
+      "mode": "portrait",
+      "subject": "1girl, solo, adult woman, beautiful, pretty face, natural makeup, slender, slim waist, toned, full body, standing, front view, looking at viewer, confident grin, small fangs, fair skin, crimson red hair, single-color hair, long hair, messy hair, gold eyes, small curved bull horns, black cropped leather jacket, crop top, bandaged fists, demon tail, flaming tail tip, crimson color scheme",
+      "negative": "red skin, colored skin, dark skin, muscular, muscular female, abs, bodybuilder, thick thighs, broad shoulders, multicolored hair, streaked hair, two-tone hair, black hair, short hair, large horns, dark lipstick, black lipstick, heavy makeup, eyeshadow, eyeliner",
+      "seeds": [
+        1697262353,
+        2825448119,
+        1113427230,
+        372619256
+      ],
+      "picked": 1113427230
+    },
+    "campaign-belphegor": {
+      "name": "贝尔芬格",
+      "mode": "portrait",
+      "subject": "1girl, solo, adult woman, full body, standing, front view, sleepy, half-closed eyes, yawning, slate blue messy very long hair, absurdly long hair, oversized blanket worn as clothes, hugging pillow, small goat horns, limp demon tail, sleeping cap on tail tip, slate blue color scheme",
+      "seeds": [
+        289079730,
+        3223521272,
+        4256642649,
+        2116160647
+      ],
+      "picked": 4256642649
+    },
+    "campaign-mammon": {
+      "name": "玛门",
+      "mode": "portrait",
+      "subject": "1girl, solo, adult woman, full body, standing, front view, looking at viewer, calm smile, blonde hair, neat hair bun, 1.5::monocle::, single monocle over right eye, black suit vest, white shirt, black trousers, no coat, white gloves, gold pocket watch chain, holding ledger, gold horns, thin demon tail, keys hanging from tail, gold color scheme",
+      "negative": "1.3::glasses::, eyeglasses, round eyewear, semi-rimless eyewear, coat, trench coat, overcoat, jacket, blazer",
+      "seeds": [
+        4104440274,
+        3211758352,
+        2177928596,
+        4262138241
+      ],
+      "picked": 4262138241
+    },
+    "campaign-beelzebub": {
+      "name": "别西卜",
+      "mode": "portrait",
+      "subject": "1girl, solo, adult woman, mature female, full body, standing, front view, looking at viewer, happy, olive green bob cut, round face, crumbs on face, two antenna-like ahoge, large plain white bib, holding cake, transparent insect wings, fly wings, olive green color scheme",
+      "negative": "text, english text, letters, logo, signature, watermark, number, child, chibi, loli",
+      "seeds": [
+        378737363,
+        3157551785,
+        982650145,
+        1685319110
+      ],
+      "picked": 3157551785
+    },
+    "campaign-asmodeus": {
+      "name": "阿斯莫德",
+      "mode": "portrait",
+      "subject": "1girl, solo, adult woman, young adult, early twenties, youthful face, full body, standing, front view, looking at viewer, seductive smile, pink-purple long wavy hair, 1.2::heart-shaped pupils::, 1.3::black curled ram horns::, one pair of black spiral horns on the sides of head, bat wings, heart-shaped tail tip, dark evening gown, sheer long gloves, 1.2::holding poker chip::, rose pink color scheme",
+      "negative": "mature female, milf, old, aged up, playing card, holding card, child, loli, multiple horns, extra horns, four horns, gold horns, white horns, bag, handbag",
+      "seeds": [
+        1259585785,
+        3591227518,
+        3538106016,
+        33339403
+      ],
+      "picked": 3591227518
     }
   },
   "unrecorded": {
