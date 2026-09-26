@@ -161,6 +161,8 @@ code { background: #0005; border-radius: 4px; padding: 0 4px; font-size: 12px; }
   background: #3a2c1e; border: 2px solid #8a6d44; font-weight: 800; font-size: 13px;
 }
 .seat .avatar.portrait { background: var(--face) 50% 8% / 190% no-repeat #2a2018; border-color: var(--gold); }
+/* 战役立绘是全身像，头像要放大到脸 */
+.seat .avatar.portrait.close { background-position: 50% 6%; background-size: 300%; }
 .seat.acting .avatar { border-color: var(--good); box-shadow: 0 0 10px var(--good); }
 .seat .who { font-weight: 700; white-space: nowrap; }
 .seat .dealer {

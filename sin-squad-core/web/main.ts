@@ -1115,7 +1115,7 @@ function seatBar(o: Observation, seat: Seat) {
   const submitted = seat === AI && o.opponent.submitted && ["operate", "draft", "vote", "bid", "marketRemove"].includes(o.phase);
   return `<div class="seat ${seat === AI ? "top" : "bottom"} ${acting ? "acting" : ""}">
     ${seat === AI && face
-      ? `<span class="avatar portrait" style="--face:url('art/${face}.webp')"></span>`
+      ? `<span class="avatar portrait${campaignStage === null ? "" : " close"}" style="--face:url('art/${face}.webp')"></span>`
       : `<span class="avatar">${seat === HUMAN ? "你" : campaignStage === null ? "机" : stage(campaignStage).foe[0]}</span>`}
     <span class="who">${name}</span>
     ${o.dealer === seat ? `<span class="dealer" title="庄家">庄</span>` : ""}
