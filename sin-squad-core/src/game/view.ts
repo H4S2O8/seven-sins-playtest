@@ -19,6 +19,8 @@ export interface Observation {
   invested: [number, number];
   arenaOptions: [string, string];
   arenaId: string | null;
+  /** 场地在战斗里生效（战役前几关的主场只当背景）。 */
+  arenaActive: boolean;
   ruleId: string | null;
   publicEffectId: string | null;
   publicEffectActive: boolean | null;
@@ -78,6 +80,7 @@ export function observe(t: Table, seat: Seat): Observation {
     seat, handNo: h.no, phase, toAct: t.toAct(), dealer: h.dealer, ante: h.ante,
     stacks: [t.stacks[0], t.stacks[1]], pot: h.pot, invested: [h.invested[0], h.invested[1]],
     arenaOptions: h.arenaOptions, arenaId: h.arenaId,
+    arenaActive: !t.campaign || t.campaign.arenaActive,
     ruleId: h.ruleRevealed ? h.ruleId : null,
     publicEffectId: h.peRevealed ? h.publicEffectId : null,
     publicEffectActive: h.peRevealed && phase !== "vote" && phase !== "bid" ? h.peActive : null,
@@ -119,13 +122,14 @@ export function observe(t: Table, seat: Seat): Observation {
   };
 }
 
-const PERMS3OF4: Array<[number, number, number]> = (() => {
+/** 从 n 张里挑 3 张排成 1、2、3 号位的所有排法。 */
+function perms3(n: number): Array<[number, number, number]> {
   const out: Array<[number, number, number]> = [];
-  for (let a = 0; a < 4; a++) for (let b = 0; b < 4; b++) for (let c = 0; c < 4; c++) {
+  for (let a = 0; a < n; a++) for (let b = 0; b < n; b++) for (let c = 0; c < n; c++) {
     if (a !== b && a !== c && b !== c) out.push([a, b, c]);
   }
   return out;
-})();
+}
 
 /**
  * 当前座位可以提交的动作（下注金额只给出一组常用档位；
@@ -141,7 +145,7 @@ export function legalActions(t: Table, seat: Seat): Action[] {
     case "place": {
       const dealt = h.dealt[seat];
       const out: Action[] = [];
-      for (const picks of PERMS3OF4) {
+      for (const picks of perms3(dealt.length)) {
         const slots = picks.map((i) => dealt[i]);
         const eats: Array<EatChoice | null> = [null];
         slots.forEach((c, eater) => {

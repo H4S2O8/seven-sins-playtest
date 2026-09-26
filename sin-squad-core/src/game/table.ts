@@ -26,6 +26,28 @@ export interface TableOptions {
   minBet?: number;
   /** 调试用：固定发牌、规则、场地等，方便测试某张牌。不影响正常游戏。 */
   rig?: TableRig;
+  /** 战役的规则开关；不给就是自由牌桌的完整规则。 */
+  campaign?: CampaignRules;
+}
+
+/**
+ * 战役用的收缩规则（设计稿 campaign-v1 §2、§3）。和自由牌桌相比：
+ * 胜利规则是对手专属的、开局前就公开；场地固定为对手的主场；
+ * 没有公共效果、表决、暗标、操作费和装备；每手之后没有市场，构筑挪到关卡之间。
+ */
+export interface CampaignRules {
+  /** 专属胜利规则：每手开局从这里抽一条（只有一条就是整张牌桌都不变），抽完立刻公开。 */
+  rules: string[];
+  /** 主场：整张牌桌固定，不再每手选场地。 */
+  arenaId: string;
+  /** 主场有没有效果（第 6 关起才有）；没有时只当背景。 */
+  arenaActive: boolean;
+  /** 双方的牌池（你的来自战役进度，她的固定）。 */
+  pools: [string[], string[]];
+  /** 每手发几张：3 张就是全部上场、只排位置（序章）。 */
+  deal: 3 | 4;
+  /** false：不下注，布完阵直接开打（序章）。 */
+  betting: boolean;
 }
 
 /**
@@ -129,8 +151,9 @@ const PEEKER_ID = "EN1"; // 密探
 const CROWN_ID = "PR3"; // 僭王
 
 export class Table {
-  readonly options: Required<Omit<TableOptions, "rig">>;
+  readonly options: Required<Omit<TableOptions, "rig" | "campaign">>;
   readonly rig: TableRig;
+  readonly campaign: CampaignRules | null;
   rng: Rng;
   stacks: [number, number];
   pools: [string[], string[]];
@@ -156,11 +179,15 @@ export class Table {
     };
     this.rig = options.rig ?? {};
     checkRig(this.rig);
+    this.campaign = options.campaign ?? null;
+    if (this.campaign) checkCampaign(this.campaign);
     this.rng = new Rng(this.options.seed);
     this.stacks = [this.options.buyIn, this.options.buyIn];
     this.total = this.options.buyIn * 2;
     const ids = CHARACTERS.map((c) => c.id);
-    this.pools = [this.rng.sample(ids, this.options.initialPoolSize), this.rng.sample(ids, this.options.initialPoolSize)];
+    this.pools = this.campaign
+      ? [this.campaign.pools[0].slice(), this.campaign.pools[1].slice()]
+      : [this.rng.sample(ids, this.options.initialPoolSize), this.rng.sample(ids, this.options.initialPoolSize)];
     const dealer = this.rng.int(2) as Seat;
     this.startHand(this.rig.dealer ?? dealer);
   }
@@ -204,14 +231,17 @@ export class Table {
     this.handNo++;
     const level = Math.floor((this.handNo - 1) / this.options.blindEvery);
     const ante = this.options.baseAnte * 2 ** level;
-    const arenaOptions = pickOr(this.rng.sample(ARENAS.map((a) => a.id), 2) as [string, string], this.rig.arenaOptions);
+    const c = this.campaign;
+    const arenaOptions: [string, string] = c
+      ? [c.arenaId, c.arenaId]
+      : pickOr(this.rng.sample(ARENAS.map((a) => a.id), 2) as [string, string], this.rig.arenaOptions);
     const chooser: Seat =
       this.stacks[0] === this.stacks[1] ? other(dealer) : this.stacks[0] < this.stacks[1] ? 0 : 1;
     this.hand = {
       no: this.handNo, dealer, ante,
       arenaOptions, arenaChooser: chooser, arenaId: null,
-      ruleId: pickOr(this.rng.pick(RULES).id, this.rig.ruleId),
-      publicEffectId: pickOr(this.rng.pick(PUBLIC_EFFECTS).id, this.rig.publicEffectId),
+      ruleId: c ? this.rng.pick(c.rules) : pickOr(this.rng.pick(RULES).id, this.rig.ruleId),
+      publicEffectId: c ? "" : pickOr(this.rng.pick(PUBLIC_EFFECTS).id, this.rig.publicEffectId),
       ruleRevealed: false, peRevealed: false, peActive: false,
       dealt: [[], []], placing: null, placement: [null, null],
       equipment: [[null, null, null], [null, null, null]],
@@ -230,6 +260,13 @@ export class Table {
     if (this.stacks[0] === 0 || this.stacks[1] === 0) this.hand.allIn = true;
     this.log.push({ type: "handStart", no: this.handNo, dealer, ante: paid, arenaOptions, chooser });
     this.phase = "arena";
+    if (c) {
+      // 战役：主场固定、专属规则开局就公开，直接发牌
+      this.hand.arenaId = c.arenaId;
+      this.hand.ruleRevealed = true;
+      this.log.push({ type: "reveal", ruleId: this.hand.ruleId, publicEffectId: null });
+      this.deal();
+    }
   }
 
   private pay(seat: Seat, amount: number) {
@@ -270,13 +307,20 @@ export class Table {
     const h = this.hand;
     h.arenaId = h.arenaOptions[index];
     this.log.push({ type: "arenaChosen", seat, arenaId: h.arenaId });
+    this.deal();
+  }
+
+  /** 从各自牌池发牌，然后非庄家先布阵。 */
+  private deal() {
+    const h = this.hand;
+    const n = this.campaign?.deal ?? 4;
     for (const s of SEATS) {
-      const idx = this.rng.sample([...this.pools[s].keys()], 4);
+      const idx = this.rng.sample([...this.pools[s].keys()], n);
       h.dealt[s] = idx.map((i) => this.pools[s][i]);
       const forced = this.rig.deal?.[s];
       if (forced?.length) {
         const rest = h.dealt[s].filter((id) => !forced.includes(id));
-        h.dealt[s] = [...forced, ...rest].slice(0, 4);
+        h.dealt[s] = [...forced, ...rest].slice(0, n);
       }
     }
     h.placing = other(h.dealer);
@@ -344,6 +388,7 @@ export class Table {
   }
 
   private afterPlacement() {
+    if (this.campaign && (!this.campaign.betting || this.hand.allIn)) return this.fight();
     if (this.hand.allIn) return this.revealRule();
     this.startBetRound(1);
   }
@@ -461,7 +506,7 @@ export class Table {
     this.checkInvariant();
     if (this.stacks[0] === 0 || this.stacks[1] === 0) h.allIn = true;
     const B = low;
-    if (B > 0 && !h.allIn) {
+    if (B > 0 && !h.allIn && !this.campaign) {
       h.opFee = Math.min(B, this.stacks[0], this.stacks[1]);
       h.opCommit = [null, null];
       h.offers = [null, null];
@@ -518,7 +563,7 @@ export class Table {
       if (!h.ruleRevealed) return this.revealRule();
       return this.fight();
     }
-    if (h.betRound === 1) return this.revealRule();
+    if (h.betRound === 1) return this.campaign ? this.startBetRound(2) : this.revealRule();
     return this.fight();
   }
 
@@ -611,12 +656,17 @@ export class Table {
     }) as [TeamSetup, TeamSetup];
   }
 
+  /** 战斗里生效的场地：战役前几关的主场只当背景。 */
+  battleArena(): string {
+    return this.campaign && !this.campaign.arenaActive ? "NONE" : this.hand.arenaId!;
+  }
+
   private fight() {
     const h = this.hand;
     const result = runBattle({
       teams: this.battleTeams(),
       ruleId: h.ruleId,
-      arenaId: h.arenaId!,
+      arenaId: this.battleArena(),
       publicEffectId: h.peActive ? h.publicEffectId : null,
       pot: h.pot,
       firstSeat: other(h.dealer), // 非庄家先手：庄家后布阵、有信息优势
@@ -666,6 +716,8 @@ export class Table {
 
   private openMarket(firstPicker: Seat) {
     const h = this.hand;
+    // 战役：每手之后不挑人，构筑挪到关卡之间
+    if (this.campaign) return this.startHand(other(h.dealer));
     const stage = Table.marketStageFor(this.handNo, this.options.blindEvery);
     let ids = CHARACTERS.filter((c) => c.stage === stage).map((c) => c.id);
     if (ids.length < 3) ids = CHARACTERS.filter((c) => c.stage === 2).map((c) => c.id); // 罪王级还没设计
@@ -724,6 +776,17 @@ function checkRig(rig: TableRig) {
   if (rig.ruleId && !RULES.some((r) => r.id === rig.ruleId)) throw new Error(`未知胜利规则：${rig.ruleId}`);
   if (rig.publicEffectId && !PUBLIC_EFFECTS.some((p) => p.id === rig.publicEffectId)) throw new Error(`未知公共效果：${rig.publicEffectId}`);
   for (const id of rig.arenaOptions ?? []) if (!ARENAS.some((a) => a.id === id)) throw new Error(`未知场地：${id}`);
+}
+
+/** 战役开关里的编号必须存在，牌池要够发牌。 */
+function checkCampaign(c: CampaignRules) {
+  if (c.rules.length === 0) throw new Error("战役至少要有一条胜利规则");
+  for (const id of c.rules) if (!RULES.some((r) => r.id === id)) throw new Error(`未知胜利规则：${id}`);
+  if (!ARENAS.some((a) => a.id === c.arenaId)) throw new Error(`未知场地：${c.arenaId}`);
+  for (const pool of c.pools) {
+    if (pool.length < c.deal) throw new Error(`牌池至少要有 ${c.deal} 名`);
+    for (const id of pool) character(id);
+  }
 }
 
 /** 检查布阵是否合法，返回布好的阵容。 */

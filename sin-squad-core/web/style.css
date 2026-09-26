@@ -2048,3 +2048,261 @@ table.ref td.ref-pic img { display: block; width: 84px; aspect-ratio: 1216 / 832
 @media (prefers-reduced-motion: reduce) {
   .big-card[data-tilt] { animation: none; --fx: 30%; --fy: 25%; }
 }
+
+/* ───────── 炼狱战役（web/campaign.ts） ───────── */
+/* 炼狱的底色：暗红的余烬光从下往上透，顶上是黑的；每一屏按她的罪色再染一层 */
+#gate.gate-age, #gate.gate-campaign, #gate.gate-reward, #gate.gate-cpool {
+  background:
+    radial-gradient(ellipse 90% 55% at 50% 108%, #7a1e10aa 0%, #3a0c0a66 40%, transparent 72%),
+    radial-gradient(ellipse at 50% 30%, #231218 0%, #0c0709 75%);
+}
+#gate.gate-brief, #gate.gate-result { padding: 0; place-items: stretch; background: #0a0608; }
+.logo.small { font-size: clamp(32px, 6vw, 50px); }
+.tower-sub { margin: 6px auto 0; max-width: 34em; color: #d9d0c2; font-size: 14px; line-height: 1.6; }
+
+/* 18+ */
+.age-stage { position: relative; text-align: center; width: min(560px, 100%); animation: fade .8s both; }
+.age-seal {
+  width: 118px; aspect-ratio: 1; margin: 0 auto 10px; display: grid; place-items: center; position: relative;
+}
+.age-seal::before {
+  content: ""; position: absolute; inset: 0; background: var(--sigil) center / contain no-repeat;
+  filter: drop-shadow(0 0 18px #d9b25f55); animation: sigilSpin 90s linear infinite;
+}
+.age-seal span {
+  position: relative; font-family: var(--latin); font-weight: 700; font-size: 17px; letter-spacing: .08em; color: #f6e2a8;
+  width: 58px; aspect-ratio: 1; border-radius: 50%; display: grid; place-items: center;
+  background: radial-gradient(circle at 40% 35%, #7a1a2c, #2a0810 75%); border: 2px solid #d9b25f; box-shadow: 0 0 16px #0009;
+}
+.age-text { margin: 14px 0 20px; color: #e8dcc0; line-height: 1.8; }
+.age-text b { color: var(--gold); font-size: 1.15em; }
+
+/* ── 炼狱之馆：七层的塔 ── */
+.tower-stage { position: relative; width: min(760px, 100%); text-align: center; padding-top: 6px; }
+.tower-head { margin-bottom: 8px; }
+.tower-count { display: inline-block; margin-top: 8px; padding: 2px 14px; border-radius: 999px; font-size: 12.5px; color: #e8dcc0;
+  background: #0007; border: 1px solid #8a6d4499; }
+.tower-count b { color: var(--gold); font-size: 15px; }
+.tower { position: relative; margin-top: 22px; display: flex; flex-direction: column-reverse; gap: 2px; padding: 4px 0 2px; }
+/* 塔的中轴：一根金线从酒馆门一直通到顶层，上面一个尖顶 */
+.spire { position: absolute; left: 50%; top: -14px; bottom: 34px; width: 2px; margin-left: -1px;
+  background: linear-gradient(#d9b25f00, #d9b25fcc 8%, #8a6d44aa 92%, #d9b25f00); }
+.spire::before { content: ""; position: absolute; left: 50%; top: -6px; width: 14px; height: 14px; margin-left: -7px; rotate: 45deg;
+  border: 2px solid #d9b25f; background: #1a0c10; }
+.floor { position: relative; display: grid; grid-template-columns: 1fr 76px 1fr; align-items: center; column-gap: 16px; min-height: 62px; }
+.floor .window, .floor .door { grid-column: 2; position: relative; width: 58px; aspect-ratio: 1; margin: 0 auto; transition: transform .2s, filter .3s; }
+.floor .door { width: 52px; }
+.floor .door::after { /* 酒馆门：一道拱门框住那扇窗 */
+  content: ""; position: absolute; inset: -8px -10px -14px; border: 2px solid #b8894a; border-bottom: 0;
+  border-radius: 40px 40px 0 0; box-shadow: inset 0 0 12px #d9a44a44;
+}
+.rose-svg { width: 100%; height: 100%; display: block; }
+.floor-no { position: absolute; left: 50%; bottom: -6px; translate: -50% 0; font-family: var(--latin); font-size: 10px; font-weight: 700;
+  color: #1a0c10; background: linear-gradient(#f6e2a8, #b8894a); padding: 0 6px; border-radius: 4px; letter-spacing: .05em; }
+.floor-plate { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.floor.right .floor-plate, .floor.base .floor-plate { grid-column: 3; grid-row: 1; text-align: left; }
+.floor.left .floor-plate { grid-column: 1; grid-row: 1; text-align: right; }
+.floor-plate small { font-family: var(--latin); font-size: 10.5px; letter-spacing: .22em; color: color-mix(in srgb, var(--sin) 55%, #d9d0c2); }
+.floor-plate b { font-family: var(--display); font-size: 19px; color: #f1e3c0; letter-spacing: .08em; line-height: 1.2; }
+.floor-rule { font-size: 12.5px; color: #cfc4b4; }
+.floor-plate em { font-style: normal; font-size: 12px; color: var(--muted); }
+.floor-plate em.ok { color: var(--good); }
+.floor-plate em.now { color: var(--gold); }
+.floor-plate em.saved { color: #f6c27a; }
+.floor[role=button] { cursor: pointer; }
+.floor.lit .window, .floor.lit .door { filter: drop-shadow(0 0 10px var(--sin)) drop-shadow(0 0 22px color-mix(in srgb, var(--sin) 60%, transparent)); }
+.floor.open .window, .floor.open .door { animation: roseCall 2.4s ease-in-out infinite; }
+@keyframes roseCall { 50% { filter: drop-shadow(0 0 14px #f6d58c) drop-shadow(0 0 28px #d9b25f88); } }
+.floor.dim .window { filter: grayscale(.6) brightness(.55); }
+.floor.dim .floor-plate { opacity: .5; }
+.floor.dim .floor-plate b { color: var(--muted); }
+@media (hover: hover) {
+  .floor[role=button]:hover .window, .floor[role=button]:hover .door { transform: scale(1.1); }
+  .floor[role=button]:hover .floor-plate b { color: var(--gold); }
+}
+.floor[role=button]:focus-visible { outline: none; }
+.floor[role=button]:focus-visible .floor-plate b { color: var(--gold); text-decoration: underline; }
+.tower-foot { margin-top: 14px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+/* 魔神牌：黑底鎏金的小牌，没得到的只是一张暗的牌背 */
+.demons { display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap; }
+.demons > small { font-family: var(--display); color: var(--muted); font-size: 12px; margin-right: 4px; }
+.demon {
+  width: 30px; height: 44px; border-radius: 4px; display: grid; place-items: center; position: relative;
+  background: linear-gradient(160deg, #1b1417, #050304); border: 1px solid #5a4632; color: #5a4632; font-size: 13px;
+}
+.demon.got { border: 1.5px solid #e2c070; color: #f6e2a8;
+  background: radial-gradient(circle at 50% 30%, color-mix(in srgb, var(--sin) 55%, #000), #050304 80%);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--sin) 60%, transparent), inset 0 0 0 2px #0008, inset 0 0 0 3px #b8894a88; }
+.demon.got span { writing-mode: vertical-rl; font-family: var(--display); font-size: 10px; letter-spacing: .1em; }
+.demon.mini { width: 30px; height: 44px; flex: none; }
+
+/* ── 关前、结算：视觉小说式的一幕 ── */
+.vn {
+  position: relative; min-height: 100dvh; overflow: hidden;
+  display: grid; grid-template-columns: minmax(220px, 40%) 1fr; grid-template-rows: 1fr auto;
+  padding: 54px clamp(16px, 4vw, 48px) clamp(16px, 3vh, 28px); column-gap: clamp(12px, 3vw, 40px);
+}
+.vn-bg { position: absolute; inset: -20px; z-index: 0;
+  background:
+    linear-gradient(180deg, #0a0608cc 0%, #0a060855 35%, #0a0608bb 75%, #0a0608 100%),
+    radial-gradient(ellipse at 25% 60%, color-mix(in srgb, var(--sin) 35%, transparent) 0%, transparent 60%),
+    var(--scene, none) center / cover no-repeat, #140a0c;
+  filter: saturate(.8); animation: sceneIn 1.2s ease both;
+}
+@keyframes sceneIn { from { opacity: 0; scale: 1.06; } }
+.vn > :not(.vn-bg):not(.embers) { position: relative; z-index: 2; }
+.vn > .gate-back { position: absolute; z-index: 5; top: 12px; left: 12px; }
+/* 余烬：她那一罪颜色的火星从下往上飘 */
+.embers { position: absolute; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
+.embers i { position: absolute; bottom: -10px; width: 4px; height: 4px; border-radius: 50%;
+  background: color-mix(in srgb, var(--sin) 50%, #ffb060); box-shadow: 0 0 8px 2px color-mix(in srgb, var(--sin) 60%, #ff7a30);
+  animation: ember 9s linear infinite; opacity: 0; }
+.embers i:nth-child(1) { left: 6%; animation-delay: 0s; } .embers i:nth-child(2) { left: 14%; animation-delay: 3.1s; animation-duration: 11s; }
+.embers i:nth-child(3) { left: 22%; animation-delay: 5.2s; } .embers i:nth-child(4) { left: 31%; animation-delay: 1.4s; animation-duration: 12s; }
+.embers i:nth-child(5) { left: 39%; animation-delay: 6.8s; } .embers i:nth-child(6) { left: 47%; animation-delay: 2.2s; animation-duration: 10s; }
+.embers i:nth-child(7) { left: 55%; animation-delay: 4.4s; } .embers i:nth-child(8) { left: 63%; animation-delay: .7s; animation-duration: 13s; }
+.embers i:nth-child(9) { left: 71%; animation-delay: 7.5s; } .embers i:nth-child(10) { left: 78%; animation-delay: 3.8s; animation-duration: 9.5s; }
+.embers i:nth-child(11) { left: 85%; animation-delay: 5.9s; } .embers i:nth-child(12) { left: 92%; animation-delay: 1.9s; animation-duration: 11.5s; }
+.embers i:nth-child(13) { left: 18%; animation-delay: 8.3s; } .embers i:nth-child(14) { left: 67%; animation-delay: 6.1s; animation-duration: 10.5s; }
+@keyframes ember {
+  0% { transform: translate(0, 0) scale(1); opacity: 0; }
+  10% { opacity: .9; }
+  100% { transform: translate(40px, -100dvh) scale(.3); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .embers { display: none; } }
+
+/* 她：有立绘站在左边，没画的是一扇慢慢转的大玫瑰窗 */
+.vn-cast { grid-column: 1; grid-row: 1 / 3; align-self: end; display: flex; justify-content: center; margin-bottom: -12px; pointer-events: none; }
+.sister { position: relative; display: grid; place-items: center; }
+.sister.vn-face { width: min(100%, 440px); animation: castIn .9s .15s cubic-bezier(.2,.8,.3,1) both; }
+@keyframes castIn { from { opacity: 0; translate: -40px 0; } }
+.sister.has-art img { width: 100%; display: block; filter: drop-shadow(0 0 30px color-mix(in srgb, var(--sin) 55%, transparent)) drop-shadow(0 10px 18px #000c);
+  -webkit-mask-image: linear-gradient(#000 80%, #0000); mask-image: linear-gradient(#000 80%, #0000); }
+.sister.no-art { aspect-ratio: .78; align-content: center; }
+.sister-rose { width: 82%; aspect-ratio: 1; filter: drop-shadow(0 0 26px var(--sin)) drop-shadow(0 0 60px color-mix(in srgb, var(--sin) 50%, transparent));
+  animation: sigilSpin 120s linear infinite; }
+.sister-latin { font-family: var(--latin); letter-spacing: .5em; font-size: 13px; color: color-mix(in srgb, var(--sin) 45%, #f1e3c0); margin-top: 14px; }
+.sister.has-art .sister-latin { position: absolute; bottom: 18%; left: 0; right: 0; text-align: center; text-shadow: 0 2px 6px #000; }
+.sister.gloat { animation: castIn .9s .15s cubic-bezier(.2,.8,.3,1) both, gloat 2.6s 1.2s ease-in-out infinite; }
+@keyframes gloat { 50% { translate: 0 -6px; } }
+.sister.beaten { filter: saturate(.7) brightness(.85); }
+
+.vn-side { grid-column: 2; grid-row: 1; align-self: center; text-align: left; max-width: 560px; animation: fade .8s .35s both; }
+.vn-kicker { font-family: var(--latin); font-size: 12px; letter-spacing: .3em; color: color-mix(in srgb, var(--sin) 50%, #d9d0c2); }
+.vn-title { margin: 2px 0 2px; font-family: var(--display); font-weight: 900; font-size: clamp(34px, 5.5vw, 56px); letter-spacing: .12em; line-height: 1.1;
+  background: linear-gradient(#fff3c8, #e0b75c 55%, #9a6e24); -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 3px 0 #3a2410) drop-shadow(0 0 18px color-mix(in srgb, var(--sin) 50%, transparent)); }
+.vn-about { margin: 0 0 14px; color: #e8dcc0; font-size: 14px; }
+
+/* 珐琅金属牌：切角、铜边，图标在左边的圆里（和桌上的场地 / 胜利规则同一家族） */
+.plates { display: flex; flex-direction: column; gap: 8px; }
+.plate {
+  --cut: 12px;
+  display: flex; align-items: center; gap: 12px; padding: 10px 16px 10px 10px;
+  clip-path: polygon(var(--cut) 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, var(--cut) 100%, 0 calc(100% - var(--cut)), 0 var(--cut));
+  background: linear-gradient(135deg, color-mix(in srgb, var(--tone) 85%, #fff 6%), var(--tone2));
+  box-shadow: inset 0 0 0 2px #b8894a, inset 0 0 0 4px #0006, inset 0 0 0 5px #b8894a55;
+}
+.plate.p-rule { --tone: #243470; --tone2: #0b1230; --icon: var(--icon-rule); }
+.plate.p-arena { --tone: #1f5049; --tone2: #0b2320; --icon: var(--icon-arena); }
+.plate.off { filter: grayscale(.55) brightness(.85); }
+.plate-icon { flex: none; width: 44px; aspect-ratio: 1; border-radius: 50%; border: 1.5px solid #d4ac5a;
+  background: var(--icon) center / 64% no-repeat, radial-gradient(circle at 40% 35%, color-mix(in srgb, var(--tone) 70%, #000), #07040a 75%); }
+.plate-text { display: flex; flex-direction: column; min-width: 0; }
+.plate-text small { font-size: 11px; color: #d9d0c2aa; letter-spacing: .15em; }
+.plate-text b { font-family: var(--display); color: #f6e2a8; font-size: 18px; letter-spacing: .08em; }
+.plate-text span { font-size: 13px; color: #e8dcc0; }
+.facts { display: flex; gap: 8px; margin: 12px 0 10px; }
+.fact { flex: 1; padding: 6px 8px; border-radius: 10px; background: #0008; border: 1px solid #5a4632; text-align: center; }
+.fact b { display: block; font-family: var(--display); color: var(--gold); font-size: 20px; }
+.fact small { font-size: 11.5px; color: #cfc4b4; }
+.vn-learn { font-size: 13.5px; color: #e8dcc0; }
+.vn-learn small { color: var(--muted); margin-right: 8px; }
+.vn-prize { display: flex; align-items: center; gap: 10px; margin-top: 10px; font-size: 13px; color: #e8dcc0; }
+
+/* 对话框：黑底金边，名牌是她的罪色缎带 */
+.vn-dialog {
+  grid-column: 2; grid-row: 2; position: relative; margin-top: 18px; padding: 22px 22px 16px;
+  background: linear-gradient(#140c10ee, #0a0608f5); border: 1px solid #b8894a; border-radius: 6px;
+  box-shadow: 0 10px 40px #000c, inset 0 0 0 3px #0a0608, inset 0 0 0 4px #b8894a55; text-align: left;
+  animation: fade .6s .6s both;
+}
+.vn-name { position: absolute; top: -15px; left: 16px; display: flex; align-items: baseline; gap: 8px; padding: 3px 18px 3px 14px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--sin) 75%, #000), color-mix(in srgb, var(--sin) 45%, #000));
+  clip-path: polygon(0 0, 100% 0, calc(100% - 10px) 50%, 100% 100%, 0 100%); border-left: 3px solid #d9b25f; }
+.vn-name b { font-family: var(--display); color: #fff3d8; font-size: 16px; letter-spacing: .1em; }
+.vn-name small { font-family: var(--latin); font-size: 9.5px; letter-spacing: .3em; color: #f1e3c0aa; }
+.vn-line { margin: 0 0 12px; font-size: clamp(15px, 1.9vw, 18px); line-height: 1.7; color: #f6ecd6; }
+.vn-actions { justify-content: flex-end !important; }
+.vn-warn { margin: 0 0 10px; font-size: 12.5px; color: #ffb8a4; }
+.vn-warn.good { color: var(--good); }
+.seat-btn { min-width: 160px; letter-spacing: .3em; }
+/* 输给她的次数：一组一组的刻痕 */
+.tally { display: flex; gap: 3px; align-items: center; margin: -2px 0 10px; }
+.tally i { width: 3px; height: 16px; border-radius: 1px; background: color-mix(in srgb, var(--sin) 50%, #e06a52); rotate: 8deg; }
+.tally i:nth-child(5n) { margin-right: 6px; }
+.tally small { color: #ffb8a4; font-size: 12px; margin-left: 4px; }
+.tally.big { justify-content: center; margin: 8px 0 6px; }
+.tally.big i { height: 24px; width: 4px; }
+
+/* 结算：大字 */
+.verdict { grid-column: 2; grid-row: 1; align-self: center; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px;
+  animation: verdictIn .9s .3s cubic-bezier(.2,.8,.3,1.2) both; }
+@keyframes verdictIn { from { opacity: 0; scale: .8; } }
+.verdict small { font-family: var(--latin); letter-spacing: .5em; font-size: 13px; color: #d9d0c2bb; }
+.verdict b { font-family: var(--display); font-weight: 900; font-size: clamp(30px, 5vw, 50px); letter-spacing: .12em; }
+.verdict.win b { background: linear-gradient(#fff3c8, #e0b75c 55%, #9a6e24); -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 0 20px #d9b25f88); }
+.verdict.lose b { color: color-mix(in srgb, var(--sin) 40%, #f0d0c8); text-shadow: 0 0 24px color-mix(in srgb, var(--sin) 70%, #000); }
+.verdict span { color: #e8dcc0; font-size: 14px; }
+/* 赢了：她那一层的玫瑰窗亮起来 */
+.verdict-rose { width: 120px; aspect-ratio: 1; margin-bottom: 6px; animation: roseLight 1.6s .4s ease-out both; }
+@keyframes roseLight {
+  0% { filter: grayscale(1) brightness(.5); scale: .9; }
+  60% { filter: grayscale(0) brightness(1.6) drop-shadow(0 0 40px var(--sin)); scale: 1.08; }
+  100% { filter: drop-shadow(0 0 18px var(--sin)) drop-shadow(0 0 36px color-mix(in srgb, var(--sin) 60%, transparent)); scale: 1; }
+}
+
+/* ── 挑人：和牌桌上的“发现”一样 ── */
+.reward-stage { position: relative; width: min(900px, 100%); text-align: center; padding-top: 8px; align-self: start; }
+.reward-head { margin-bottom: 10px; }
+.reward-cands { display: flex; justify-content: center; gap: clamp(14px, 3vw, 36px); margin: 8px 0 18px; perspective: 1100px; }
+.reward-opt { --cw: clamp(104px, min(13vw, 21dvh), 160px); position: relative; cursor: pointer; border-radius: 14px;
+  animation: discoverIn .7s cubic-bezier(.2,.8,.3,1.15) calc(.2s + var(--i) * .14s) both, discoverBob 3.4s ease-in-out calc(1s + var(--i) * .4s) infinite; }
+.reward-opt .card { --cw: clamp(100px, min(12vw, 19dvh), 150px); }
+.reward-pool .card { --cw: clamp(64px, min(8vw, 12dvh), 96px); }
+.reward-opt .info-btn { display: none; }
+.reward-opt::after { content: ""; position: absolute; inset: -6px; border-radius: 16px; pointer-events: none; transition: box-shadow .2s; }
+.reward-opt:hover::after { box-shadow: 0 0 0 1px #d9b25f88, 0 0 24px #d9b25f55; }
+.reward-opt.on::after { box-shadow: 0 0 0 2px var(--gold), 0 0 34px #d9b25fcc; }
+.reward-opt.on { scale: 1.06; }
+.reward-opt:not(.on) { transition: opacity .2s; }
+.reward-cands:has(.on) .reward-opt:not(.on) { opacity: .6; }
+.reward-shelf { margin: 0 auto 16px; padding: 12px 14px 14px; border-radius: 14px; background: #0007; border: 1px solid #5a463299; }
+.reward-shelf h3 { margin: 0 0 10px; font-family: var(--display); color: var(--gold); font-size: 16px; letter-spacing: .2em; }
+.reward-shelf h3 small { display: block; font-family: inherit; letter-spacing: 0; font-size: 12.5px; color: #cfc4b4; margin-top: 2px; font-weight: 400; }
+.reward-mine { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.reward-pool { position: relative; border-radius: 10px; transition: transform .15s, opacity .15s; }
+.reward-pool[role=button] { cursor: pointer; }
+.reward-pool[role=button]:hover { transform: translateY(-3px); }
+.reward-pool .info-btn { display: none; }
+/* 划掉：一道红色的斜线加一枚火漆 */
+.reward-pool.on { opacity: .55; }
+.reward-pool.on::after { content: "✕"; position: absolute; inset: 0; display: grid; place-items: center; font-size: 44px; font-weight: 900; color: #e06a52;
+  text-shadow: 0 0 10px #000, 0 0 2px #000; pointer-events: none; }
+#gate button.disabled { opacity: .45; pointer-events: none; }
+
+@media (max-width: 699px) {
+  .floor { grid-template-columns: 58px 1fr; column-gap: 12px; min-height: 62px; }
+  .floor .window, .floor .door { grid-column: 1; width: 52px; }
+  .floor.left .floor-plate, .floor.right .floor-plate, .floor.base .floor-plate { grid-column: 2; text-align: left; }
+  .spire { left: 29px; }
+  .floor-plate b { font-size: 17px; }
+  .vn { grid-template-columns: 1fr; grid-template-rows: auto auto auto; padding-top: 52px; }
+  .vn-cast { grid-column: 1; grid-row: 1; margin: 0 0 -40px; }
+  .sister.vn-face { width: min(62vw, 260px); }
+  .vn-side, .verdict { grid-column: 1; grid-row: 2; }
+  .vn-dialog { grid-column: 1; grid-row: 3; }
+  .facts { flex-wrap: wrap; }
+  .fact { flex: 1 1 28%; }
+}

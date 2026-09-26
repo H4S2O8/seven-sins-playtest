@@ -1,4 +1,7 @@
-import { HeuristicAgent, type Style } from "../src/ai/agents.js";
+import { HeuristicAgent, RandomAgent, type Agent, type Style } from "../src/ai/agents.js";
+import { applyReward, checkProgress, newProgress, recordLoss, recordWin, stageTable, type CampaignProgress } from "../src/campaign/progress.js";
+import { stage } from "../src/campaign/stages.js";
+import { Rng } from "../src/rng.js";
 import { splitMulti, type BattleEvent, type BattleResult } from "../src/battle/engine.js";
 import type { UnitSnapshot } from "../src/battle/unit.js";
 import { CHARACTERS, character } from "../src/content/characters.js";
@@ -11,6 +14,7 @@ import {
   AI, CARD_TEXT, HOW_TO_PLAY, HUMAN, REASON_TEXT, SIN_COLOR, battleLine, esc, logLine, num, posName, shapeName,
 } from "./text.js";
 import { Gate, type Opening, type SaveInfo } from "./intro.js";
+import { adultConfirmed, stageRuleName, stageRuleText, type StageResult, type StageSave } from "./campaign.js";
 import { morph } from "./morph.js";
 import {
   bubble as hudBubble, collect, crumble, discoverExit, flip, floater as hudFloater, laneShift, measure, pulse, reducedMotion, shake, shatter, strike, type Snapshot,
@@ -94,7 +98,7 @@ const artStyle = (id: string | null | undefined) => (artUrl(id) ? ` style="--art
 const STYLE_NAME: Record<Style, string> = { cautious: "谨慎", aggressive: "激进", bluff: "爱诈唬" };
 
 let table: Table | null = null;
-let agent: HeuristicAgent;
+let agent: Agent;
 let style: Style = "cautious";
 let seed = 0;
 let logLines: string[] = [];
@@ -199,6 +203,50 @@ let record: Array<[Seat, Action]> = [];
 /** 这次打开页面后亲眼看过战斗动画的那一手（种子-手数）；读档摆出来的战斗不算，不放胜负曲。 */
 let watchedBattle: string | null = null;
 
+// ───────────────────────── 战役 ─────────────────────────
+
+const PROGRESS_KEY = "sinsquad.campaign.v1";
+
+function loadProgress(): CampaignProgress {
+  try { return checkProgress(JSON.parse(localStorage.getItem(PROGRESS_KEY) ?? "null")) ?? newProgress(); } catch { return newProgress(); }
+}
+
+function storeProgress() {
+  try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress)); } catch { /* 存不了就算了 */ }
+}
+
+let progress = loadProgress();
+/** 正在打的是战役第几关（null = 自由牌桌）。 */
+let campaignStage: number | null = null;
+/** 开这一关时你的牌池。 */
+let stagePool: string[] = [];
+/** 这一关的输赢已经记进进度了（每张牌桌只记一次）。 */
+let settled = false;
+let stageResult: StageResult | null = null;
+
+/** 牌桌打完：记输赢、重来次数；赢了第一次还要挑人。结果页等战斗播完、点“继续”再弹。 */
+function settleStage() {
+  const t = table!;
+  if (campaignStage === null || t.phase !== "over" || settled) return;
+  settled = true;
+  const no = campaignStage;
+  const won = t.winner === HUMAN;
+  const first = won && no === progress.cleared;
+  const taunt = won ? null : recordLoss(progress, no, new Rng(seed + 7));
+  if (won) recordWin(progress, no, seed + 13);
+  storeProgress();
+  stageResult = { stage: no, won, taunt, retries: progress.retries[no], firstClear: first };
+}
+
+/** 对手的名字和立绘：战役里是这一关的姐妹，自由牌桌按电脑风格。 */
+function foeName(): string {
+  return campaignStage === null ? `电脑 · ${STYLE_NAME[style]}` : stage(campaignStage).foe;
+}
+function foePortrait(): string | null {
+  const id = campaignStage === null ? `foe-${style}` : stage(campaignStage).portrait;
+  return id && ART.has(id) ? id : null;
+}
+
 const ui: Ui = {
   place: { slots: [null, null, null], reveal: null, eaten: null },
   betAmount: null,
@@ -266,23 +314,35 @@ function newTable(s: Style) {
   afterApply();
 }
 
-/** 按种子开桌（新开或读档），不推进、不重画。 */
-function initTable(s: Style, tableSeed: number) {
+/**
+ * 按种子开桌（新开或读档），不推进、不重画。
+ * stageNo 不为 null 时开的是战役那一关（pool 是开这一关时你的牌池，读档时用存档里的，保证重放一致）。
+ */
+function initTable(s: Style, tableSeed: number, stageNo: number | null = null, pool: string[] = progress.pool) {
   if (aiTimer !== null) clearTimeout(aiTimer);
   aiTimer = null;
   battleToken++;
   style = s;
   seed = tableSeed;
   record = [];
-  try {
-    table = new Table({ seed, rig: debug?.rig });
-  } catch (err) {
-    // 调试参数写错了：提示出来，照常开一桌
-    alert(`调试参数有误：${err instanceof Error ? err.message : String(err)}`);
-    debug = null;
-    table = new Table({ seed });
+  campaignStage = stageNo;
+  stagePool = pool.slice();
+  settled = false;
+  if (stageNo !== null) {
+    const st = stage(stageNo);
+    table = new Table(stageTable({ ...progress, pool: stagePool }, stageNo, seed));
+    agent = st.style === "novice" ? new RandomAgent(seed + 1) : new HeuristicAgent(st.style, seed + 1, st.samples);
+  } else {
+    try {
+      table = new Table({ seed, rig: debug?.rig });
+    } catch (err) {
+      // 调试参数写错了：提示出来，照常开一桌
+      alert(`调试参数有误：${err instanceof Error ? err.message : String(err)}`);
+      debug = null;
+      table = new Table({ seed });
+    }
+    agent = new HeuristicAgent(style, seed + 1);
   }
-  agent = new HeuristicAgent(style, seed + 1);
   logLines = [];
   logCursor = 0;
   ui.battle = null;
@@ -301,33 +361,44 @@ function initTable(s: Style, tableSeed: number) {
  * 所以这类改动要升版本号，旧版本的存档直接丢掉。v2：加入第二批 8 名人物。
  */
 const SAVE_KEY = "sinsquad.save.v4";
+/** 战役里没打完的那一关单独存，和自由牌桌互不覆盖。 */
+const STAGE_SAVE_KEY = "sinsquad.campaign.table.v1";
 try { localStorage.removeItem("sinsquad.save.v1"); localStorage.removeItem("sinsquad.save.v2"); localStorage.removeItem("sinsquad.save.v3"); } catch { /* 无所谓 */ }
-interface SaveData { seed: number; style: Style; rig: TableRig | null; debugText: string; actions: Array<[Seat, Action]> }
+interface SaveData {
+  seed: number; style: Style; rig: TableRig | null; debugText: string; actions: Array<[Seat, Action]>;
+  /** 战役：第几关、开这一关时你的牌池。 */
+  stage?: number; pool?: string[];
+}
 
 function saveGame() {
+  const key = campaignStage === null ? SAVE_KEY : STAGE_SAVE_KEY;
   try {
-    if (!table || table.phase === "over") localStorage.removeItem(SAVE_KEY);
-    else localStorage.setItem(SAVE_KEY, JSON.stringify({ seed, style, rig: debug?.rig ?? null, debugText, actions: record } satisfies SaveData));
+    if (!table || table.phase === "over") localStorage.removeItem(key);
+    else if (campaignStage === null) localStorage.setItem(key, JSON.stringify({ seed, style, rig: debug?.rig ?? null, debugText, actions: record } satisfies SaveData));
+    else localStorage.setItem(key, JSON.stringify({ seed, style, rig: null, debugText: "", actions: record, stage: campaignStage, pool: stagePool } satisfies SaveData));
   } catch { /* 存不了就算了：只是下次不能继续 */ }
 }
 
-function readSave(): SaveData | null {
+function readSave(key = SAVE_KEY): SaveData | null {
   try {
-    const v = JSON.parse(localStorage.getItem(SAVE_KEY) ?? "null") as SaveData | null;
-    return v && typeof v.seed === "number" && Array.isArray(v.actions) ? v : null;
+    const v = JSON.parse(localStorage.getItem(key) ?? "null") as SaveData | null;
+    if (!v || typeof v.seed !== "number" || !Array.isArray(v.actions)) return null;
+    if (key === STAGE_SAVE_KEY && (typeof v.stage !== "number" || !Array.isArray(v.pool))) return null;
+    return v;
   } catch {
     return null;
   }
 }
 
 /** 读档：重开同一张桌，把记录的每一步照做一遍（电脑那边也照样“想”一遍，让它的随机数接得上）。 */
-function resumeGame(): boolean {
-  const sv = readSave();
+function resumeGame(key = SAVE_KEY): boolean {
+  const sv = readSave(key);
   if (!sv) return false;
   debug = sv.rig ? { rig: sv.rig, seed: sv.seed, style: sv.style } : null;
   debugText = sv.debugText ?? "";
   try {
-    initTable(sv.style, sv.seed);
+    if (key === STAGE_SAVE_KEY) initTable(sv.style, sv.seed, sv.stage!, sv.pool!);
+    else initTable(sv.style, sv.seed);
     for (const [seat, a] of sv.actions) {
       if (seat === AI) agent.act(table!, AI);
       table!.apply(seat, a);
@@ -336,14 +407,29 @@ function resumeGame(): boolean {
   } catch (err) {
     // 规则改过、存档对不上了：丢掉存档
     console.error(err);
-    try { localStorage.removeItem(SAVE_KEY); } catch { /* 无所谓 */ }
+    try { localStorage.removeItem(key); } catch { /* 无所谓 */ }
     table = null;
+    campaignStage = null;
     return false;
   }
   consumeLog(false);
   render();
   scheduleAi();
   return true;
+}
+
+/** 战役里没打完的那一关：第几手、多少筹码（同样在临时桌上重放）。 */
+function stageSaveInfo(): StageSave | null {
+  const sv = readSave(STAGE_SAVE_KEY);
+  if (!sv) return null;
+  try {
+    const t = new Table(stageTable({ ...progress, pool: sv.pool! }, sv.stage!, sv.seed));
+    for (const [seat, a] of sv.actions) t.apply(seat, a);
+    if (t.phase === "over") return null;
+    return { stage: sv.stage!, handNo: t.handNo, stacks: [t.stacks[0], t.stacks[1]] };
+  } catch {
+    return null;
+  }
 }
 
 function saveInfo(): SaveInfo | null {
@@ -372,6 +458,7 @@ function applyAction(seat: Seat, action: Action) {
 /** 每次有人提交动作后：读新增的牌桌记录，必要时开始战斗动画，然后重画并安排电脑。 */
 function afterApply() {
   const pending = consumeLog(true);
+  settleStage();
   // 全押直接开打时不弹揭晓卡，免得挡住战斗
   if (pending.reveal && !ui.battle) showReveal(pending.reveal.ruleId, pending.reveal.publicEffectId);
   render();
@@ -388,7 +475,8 @@ function consumeLog(play: boolean): { reveal: { ruleId: string; publicEffectId: 
   for (const e of fresh) {
     const line = logLine(e);
     if (line) logLines.push(line);
-    if (e.type === "reveal" && play) reveal = { ruleId: e.ruleId, publicEffectId: e.publicEffectId };
+    // 战役的专属规则开局前就知道了，只有每手随机翻一条（第 7 层）时才弹揭晓
+    if (e.type === "reveal" && play && (!t.campaign || t.campaign.rules.length > 1)) reveal = { ruleId: e.ruleId, publicEffectId: e.publicEffectId };
     if (e.type === "marketPick") lastPick = { seat: e.seat, id: e.characterId };
     if (e.type === "handStart") {
       ui.notice = null;
@@ -822,7 +910,8 @@ function render(animate = true) {
     return;
   }
   const o = observe(table, HUMAN);
-  const foeArt = ART.has(`foe-${style}`) ? `<div class="foe-seat"><img src="art/foe-${style}.webp" alt=""></div>` : "";
+  const face = foePortrait();
+  const foeArt = face ? `<div class="foe-seat"><img src="art/${face}.webp" alt=""></div>` : "";
   morph(app, `
     ${roomView(o)}
     ${topBar(o)}
@@ -989,7 +1078,7 @@ function topBar(o: Observation) {
     <div class="brand"${BUILD ? ` title="构建 ${BUILD}"` : ""}>七罪暗队<small>${VERSION} 试玩</small></div>
     ${debug ? btn("调试", "sheet", "debug", "debug-chip") : ""}
     <div class="hand-no">第 ${o.handNo} 手 · 底注 ${o.ante}${o.handNo % 5 === 0 ? " · 下手升盲" : ""}</div>
-    <nav>${musicBtn()}${btn("记录", "sheet", "log")}${btn("牌池", "sheet", "pool")}${btn("规则", "sheet", "help")}${btn("卡框", "sheet", "frames")}${btn("新桌", "newTable")}</nav>
+    <nav>${musicBtn()}${btn("记录", "sheet", "log")}${btn("牌池", "sheet", "pool")}${btn("规则", "sheet", "help")}${btn("卡框", "sheet", "frames")}${campaignStage === null ? btn("新桌", "newTable") : btn("离桌", "leaveStage")}</nav>
   </header>`;
 }
 
@@ -1016,7 +1105,8 @@ function chipStack(n: number, max = 4) {
 
 function seatBar(o: Observation, seat: Seat) {
   const acting = !ui.battle && o.phase !== "over" && o.toAct.includes(seat);
-  const name = seat === HUMAN ? "你" : `电脑 · ${STYLE_NAME[style]}`;
+  const name = seat === HUMAN ? "你" : foeName();
+  const face = foePortrait();
   const roundBet = o.phase === "bet" ? o.betting.roundBet[seat] : 0;
   const stack = shownMoney(o).stacks[seat];
   const extra = seat === AI
@@ -1024,9 +1114,9 @@ function seatBar(o: Observation, seat: Seat) {
     : `<span class="meta">牌池 ${o.me.pool.length}</span>`;
   const submitted = seat === AI && o.opponent.submitted && ["operate", "draft", "vote", "bid", "marketRemove"].includes(o.phase);
   return `<div class="seat ${seat === AI ? "top" : "bottom"} ${acting ? "acting" : ""}">
-    ${seat === AI && ART.has(`foe-${style}`)
-      ? `<span class="avatar portrait" style="--face:url('art/foe-${style}.webp')"></span>`
-      : `<span class="avatar">${seat === HUMAN ? "你" : "机"}</span>`}
+    ${seat === AI && face
+      ? `<span class="avatar portrait" style="--face:url('art/${face}.webp')"></span>`
+      : `<span class="avatar">${seat === HUMAN ? "你" : campaignStage === null ? "机" : stage(campaignStage).foe[0]}</span>`}
     <span class="who">${name}</span>
     ${o.dealer === seat ? `<span class="dealer" title="庄家">庄</span>` : ""}
     <span class="stack">${chipStack(stack)}<b>${stack}</b>${stack === 0 && o.phase !== "over" ? `<span class="allin-tag" title="筹码全在奖池里，赢下这手就拿回来">全押</span>` : ""}</span>
@@ -1062,7 +1152,7 @@ function center(o: Observation) {
   const pe = o.publicEffectId ? publicEffect(o.publicEffectId) : null;
   const peState = o.publicEffectActive === null ? (pe ? "voting" : "") : o.publicEffectActive ? "on" : "off";
   const peLabel = pe ? `${pe.name}${o.publicEffectActive === null ? "" : o.publicEffectActive ? " ✓" : " ✗"}` : null;
-  const tiles = tableCleared(o) ? `<div class="tile-slot"></div>`.repeat(3) : envTile(o, "arena", "场地", a?.name ?? null, a?.text ?? "", `候选：${o.arenaOptions.map((x) => arena(x).name).join(" / ")}`, "", o.arenaId) +
+  const tiles = tableCleared(o) ? `<div class="tile-slot"></div>`.repeat(3) : campaignStage !== null ? campaignTiles(o) : envTile(o, "arena", "场地", a?.name ?? null, a?.text ?? "", `候选：${o.arenaOptions.map((x) => arena(x).name).join(" / ")}`, "", o.arenaId) +
     envTile(o, "rule", "胜利规则", r ? r.name : null, r ? `${r.text}（最多 ${r.maxRounds} 轮）` : "", "第 1 轮下注后翻开", "", o.ruleId) +
     envTile(o, "pe", "公共效果", peLabel, pe ? pe.text : "", r ? "已全押，本手没有" : "和规则一起翻开", peState, o.publicEffectId);
   let status = phaseLabel(o);
@@ -1077,6 +1167,16 @@ function center(o: Observation) {
       ${ui.notice && !ui.battle ? `<div class="notice ${ui.notice.good === true ? "good" : ui.notice.good === false ? "bad" : ""}">${ui.notice.text}</div>` : `<div class="phase">${status}</div>`}
     </div>
   </div>`;
+}
+
+/** 战役：主场和专属规则两块牌，一开局就翻开；没有公共效果。 */
+function campaignTiles(o: Observation): string {
+  const no = campaignStage!;
+  const a = arena(o.arenaId!);
+  const r = rule(o.ruleId!);
+  return envTile(o, "arena", "主场", a.name, o.arenaActive ? a.text : "只当背景，不生效", "", o.arenaActive ? "" : "off", o.arenaId) +
+    envTile(o, "rule", "专属规则", stageRuleName(no, r.id), `${stageRuleText(no, r.id)}（最多 ${r.maxRounds} 轮）`, "", "", r.id) +
+    `<div class="tile-slot"></div>`;
 }
 
 function phaseLabel(o: Observation): string {
@@ -1186,6 +1286,10 @@ function phaseDock(o: Observation, mine: boolean): string {
   switch (o.phase) {
     case "over": {
       const won = table!.winner === HUMAN;
+      if (campaignStage !== null) {
+        return `<div class="result ${won ? "good" : "bad"}">${won ? `${foeName()}输光了！` : `${foeName()}赢下了这张牌桌`}<small>共 ${table!.handNo} 手</small></div>
+          <div class="actions">${btn("继续", "stageEnd", undefined, "primary big")}</div>`;
+      }
       return `<div class="result ${won ? "good" : "bad"}">${won ? "你赢下了这张牌桌！" : "对手赢下了这张牌桌"}<small>共 ${table!.handNo} 手</small></div>
         <div class="actions">${btn("再开一桌", "newTable", undefined, "primary big")}</div>`;
     }
@@ -1491,6 +1595,9 @@ function onAct(name: string, arg: string | undefined) {
     case "music": toggleMuted(); return render();
     case "closeSheet": ui.sheet = null; render(); return scheduleAi();
     case "newTable": ui.sheet = null; render(); gate.show("opponent"); return musicScene();
+    // 离桌不丢这一关：存档还在，炼狱之馆里可以继续
+    case "leaveStage": ui.sheet = null; render(); gate.show("campaign"); return musicScene();
+    case "stageEnd": ui.sheet = null; render(); gate.show("result"); return musicScene();
     case "tipOk": dismissTip(arg ?? ""); return render();
     case "tipOff": disableTips(); return render();
     case "tipsReset": resetTips(); ui.sheet = null; return render();
@@ -1722,7 +1829,7 @@ const gate = new Gate({
   save: saveInfo,
   start(s): Opening {
     debug = parseDebug(location.search);
-    initTable(s, debug?.seed ?? Math.floor(Math.random() * 1e9));
+    initTable(s, debug?.seed ?? Math.floor(Math.random() * 1e9), null);
     saveGame();
     consumeLog(true);
     render();
@@ -1738,7 +1845,23 @@ const gate = new Gate({
     render();
   },
   done() { render(); scheduleAi(); },
-  canReturn: () => !!table && table.phase !== "over",
+  canReturn: () => !!table && table.phase !== "over" && campaignStage === null,
+  campaign: () => ({ progress, saved: stageSaveInfo() }),
+  startStage(no) {
+    debug = null;
+    stageResult = null;
+    initTable("cautious", Math.floor(Math.random() * 1e9), no);
+    saveGame();
+    consumeLog(true);
+    render();
+    scheduleAi();
+  },
+  resumeStage() { if (!resumeGame(STAGE_SAVE_KEY)) gate.show("campaign"); },
+  stageResult: () => stageResult,
+  pickReward(pick, remove) {
+    applyReward(progress, pick, remove);
+    storeProgress();
+  },
 }, ART);
 
 window.addEventListener("resize", () => render(false));
@@ -1746,7 +1869,7 @@ installTilt();
 installLight();
 // 调试模式：直接开桌，跳过入场
 if (gallery) showGallery({ card });
-else if (debug) newTable(debug.style ?? "cautious");
+else if (debug && adultConfirmed()) newTable(debug.style ?? "cautious");
 else { render(); gate.show("title"); }
 
 // 给自动化测试用：读当前牌桌（不影响游戏）
