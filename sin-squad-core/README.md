@@ -86,6 +86,7 @@ npm run build:web                 # 打包到仓库根目录的 sin-squad-v3/
 立绘用 NovelAI 普通生成（832×1216，质量预设关掉），提示词只有 `2.1::transparent background::, has alpha,` + 下面的画风标签 + 人物和姿势描述，不写背景，也不加任何其他画风、质量标签（透明背景角色模式会自动追加 simple design、clean lineart 等，画出来偏平涂，别用）。再按透明区域裁紧，顶端对齐缩放到 416×608 的 webp。
 画风统一用这组标签开头：`1.1::artist:solipsist ::, 0.5::kakure eria ::, 0.6::VillainchinR18 ::, year 2025, 0.65::artist:windforcelan ::`；
 每种罪一个主色调：愤怒深红、贪婪金、暴食橄榄绿、嫉妒青绿、怠惰灰蓝、傲慢紫、色欲玫粉。
+每张图的描述词、种子和后处理记在 `web/art/prompts.json`；新画或重画一张图时，把它的提示词补进去。
 
 战斗完全确定：同样的输入永远得到同样的结果。牌桌的随机数可以用种子复现。
 
