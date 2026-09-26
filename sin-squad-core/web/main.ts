@@ -16,7 +16,7 @@ import {
   bubble as hudBubble, collect, crumble, discoverExit, flip, floater as hudFloater, laneShift, measure, pulse, reducedMotion, shake, shatter, strike, type Snapshot,
 } from "./motion.js";
 import { isMuted, setScene, toggleMuted } from "./music.js";
-import { installFrames, showGallery } from "./frames.js";
+import { FRAMES, currentFrame, installFrames, setFrame, showGallery, type FrameId } from "./frames.js";
 import { SIN_LATIN, installSigil } from "./sigil.js";
 import { installTilt } from "./tilt.js";
 import { disableTips, dismissTip, resetTips, tipHtml } from "./tips.js";
@@ -62,6 +62,7 @@ type Sheet =
   | { kind: "env"; which: "arena" | "rule" | "pe" }
   | { kind: "log" }
   | { kind: "pool" }
+  | { kind: "frames" }
   | { kind: "debug" };
 
 interface Ui {
@@ -664,6 +665,8 @@ function bodyOf(id: string, equip: string | null): Body {
 
 interface CardOpts {
   equip?: string | null;
+  /** 用哪套卡框（默认是玩家选的那套）；选卡框的弹层里每个选项用自己的。 */
+  frame?: FrameId;
   /** 战斗中身上的全部装备（扒手可能让一人带两件）；给了就不看 equip。 */
   equipList?: string[];
   body?: Body;
@@ -751,7 +754,7 @@ function card(id: string | null, o: CardOpts = {}) {
     o.lane ? `--lane:${o.lane}` : "",
   ].filter(Boolean).join(";");
   const cls = [
-    "card person", o.cls ?? "", down ? "down" : "", o.dead ? "dead" : "", o.act ? "clickable" : "", b?.barrier && !down ? "shielded" : "",
+    "card person", `fr-${o.frame ?? currentFrame()}`, o.cls ?? "", down ? "down" : "", o.dead ? "dead" : "", o.act ? "clickable" : "", b?.barrier && !down ? "shielded" : "",
     o.fan !== undefined ? "fanned" : "", o.lane ? "switching" : "",
   ].filter(Boolean).join(" ");
   return `<div class="${cls}"${style ? ` style="${style}"` : ""}${o.key ? ` data-key="${o.key}"` : ""}${o.unit ? ` data-unit="${o.unit}"` : ""}${o.acting ? " data-acting" : ""}${attrs(o)}${c && !down ? ` title="${esc(`${c.name}（${c.sin}）：${c.ability}`)}"` : ""}>
@@ -929,7 +932,7 @@ function topBar(o: Observation) {
     <div class="brand">七罪暗队<small>v0.3 试玩</small></div>
     ${debug ? btn("调试", "sheet", "debug", "debug-chip") : ""}
     <div class="hand-no">第 ${o.handNo} 手 · 底注 ${o.ante}${o.handNo % 5 === 0 ? " · 下手升盲" : ""}</div>
-    <nav>${musicBtn()}${btn("记录", "sheet", "log")}${btn("牌池", "sheet", "pool")}${btn("规则", "sheet", "help")}${btn("新桌", "newTable")}</nav>
+    <nav>${musicBtn()}${btn("记录", "sheet", "log")}${btn("牌池", "sheet", "pool")}${btn("规则", "sheet", "help")}${btn("卡框", "sheet", "frames")}${btn("新桌", "newTable")}</nav>
   </header>`;
 }
 
@@ -1302,6 +1305,17 @@ function sheetView(): string {
     `<div class="overlay" ${closable ? `data-act="closeSheet"` : ""}><div class="sheet ${cls}" data-stop="1" role="dialog">
       ${closable ? `<button class="close" data-act="closeSheet" aria-label="关闭">×</button>` : ""}${inner}</div></div>`;
   switch (s.kind) {
+    case "frames": {
+      // 每个选项摆一张同样的人物，用各自的卡框；点了立刻换，桌上的牌跟着变
+      const opts = FRAMES.map((f) => {
+        const on = f.id === currentFrame();
+        return `<div class="frame-opt ${on ? "on" : ""}" data-act="frame" data-arg="${f.id}" role="button" tabindex="0" aria-pressed="${on}">
+          ${card("LU1", { frame: f.id })}
+          <div class="frame-about"><b>${f.name}<i>${f.latin}</i>${on ? `<em>使用中</em>` : ""}</b><p>${esc(f.about)}</p></div>
+        </div>`;
+      }).join("");
+      return wrap("frames", `<h2>卡框<small>人物牌的样式，随时可以换</small></h2><div class="frame-opts">${opts}</div>`);
+    }
     case "help": {
       const tabs: Array<[Ui["helpTab"], string]> = [["play", "玩法"], ["chars", "人物"], ["equip", "装备"], ["rules", "胜利规则"], ["arenas", "场地"], ["effects", "公共效果"]];
       let body = "";
@@ -1401,7 +1415,7 @@ function onAct(name: string, arg: string | undefined) {
   switch (name) {
     case "sheet": {
       if (arg?.startsWith("env:")) ui.sheet = { kind: "env", which: arg.slice(4) as "arena" | "rule" | "pe" };
-      else ui.sheet = { kind: arg as "help" | "log" | "pool" | "debug" };
+      else ui.sheet = { kind: arg as "help" | "log" | "pool" | "frames" | "debug" };
       return render();
     }
     case "music": toggleMuted(); return render();
@@ -1416,6 +1430,7 @@ function onAct(name: string, arg: string | undefined) {
       return render();
     }
     case "tab": ui.helpTab = arg as Ui["helpTab"]; return render();
+    case "frame": setFrame(arg ?? ""); return render();
     case "applyDebug": {
       debug = parseDebug(`?debug&${debugText}`);
       gate.hide();

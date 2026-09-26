@@ -3,8 +3,8 @@ import type { AttackShape } from "../src/types.js";
 import { esc } from "./text.js";
 
 /**
- * 人物牌的卡框样式。卡面的 HTML 只有一套（main.ts 的 cardFront），换卡框只换 CSS：
- * 根元素上的 data-frame 决定用哪套（style.css 里 [data-frame="…"] .person 开头的规则），classic 是原来那套。
+ * 人物牌的卡框样式，玩家可以在“卡框”弹层里换，默认花窗。卡面的 HTML 只有一套（main.ts 的 cardFront），换卡框只换 CSS：
+ * 牌上的 fr-<卡框> class 决定用哪套（style.css 里 .person.fr-… 开头的规则），classic 是原来那套。
  * 有的卡框要用到 SVG 画的框线、窗形、纹样，这里生成后挂在根元素的 CSS 变量（--fr-…）上。
  */
 
@@ -15,29 +15,37 @@ export const FRAMES: ReadonlyArray<{ id: FrameId; name: string; latin: string; a
   { id: "codex", name: "圣典", latin: "CODEX", about: "中世纪泥金手抄本：羊皮纸卡面、描金边框、罪色的菱格底纹衬着人物，名字用朱红书写，数值盖成两枚火漆印。" },
   { id: "reliquary", name: "圣物匣", latin: "RELIQUARY", about: "鎏金的圣物匣：厚重的金框和四角卷草，顶上嵌一颗罪色宝石，人物在圆拱玻璃窗后，名字刻在金绶带上；攻是金盾，血是一滴红宝石。" },
   { id: "arcana", name: "塔罗", latin: "ARCANA", about: "塔罗大阿卡纳：立绘铺满整张牌，罪色的光芒从头后放射，新艺术风格的细金线勾出拱形画框，数值像扑克牌角标一样写在两角。" },
-  { id: "classic", name: "经典", latin: "CLASSICUS", about: "现在用的卡框：深色牌面、金线、圆形数值徽记。" },
+  { id: "classic", name: "经典", latin: "CLASSICUS", about: "最早的那套卡框：深色牌面、金线、圆形数值徽记，最朴素。" },
 ];
 
 const KEY = "sinsquad.frame";
 const isFrame = (s: string | null): s is FrameId => !!s && FRAMES.some((f) => f.id === s);
 
-/** 网址里的 ?frame= 优先（并记住），其次是上次选的，默认还是原来那套。 */
-export function currentFrame(): FrameId {
+/** 网址里的 ?frame= 优先（并记住），其次是上次选的，默认花窗。 */
+function initialFrame(): FrameId {
   const q = new URLSearchParams(location.search).get("frame");
   if (isFrame(q)) { saveFrame(q); return q; }
   try {
     const v = localStorage.getItem(KEY);
     if (isFrame(v)) return v;
   } catch { /* 无所谓 */ }
-  return "classic";
+  return "vitrail";
 }
+
+let active: FrameId = initialFrame();
+
+/** 现在用的卡框。 */
+export const currentFrame = () => active;
 
 function saveFrame(id: FrameId) {
   try { localStorage.setItem(KEY, id); } catch { /* 无所谓 */ }
 }
 
-export function applyFrame(id: FrameId) {
-  document.documentElement.dataset.frame = id;
+/** 换卡框并记住；调用方负责重画。 */
+export function setFrame(id: string) {
+  if (!isFrame(id)) return;
+  active = id;
+  saveFrame(id);
 }
 
 // ───────────────────────── 卡框用到的 SVG ─────────────────────────
@@ -220,14 +228,13 @@ export function installFrames() {
     "--ic-quatrefoil": url(ICONS.quatrefoil),
   };
   for (const [k, val] of Object.entries(vars)) root.setProperty(k, val);
-  applyFrame(currentFrame());
 }
 
 // ───────────────────────── 卡框一览（?frames） ─────────────────────────
 
 export interface GalleryBody { atk: number; hp: number; startHp: number; shape: AttackShape; armor: number; barrier: number }
 export interface GalleryHooks {
-  card(id: string | null, o: { body?: GalleryBody; equip?: string | null; dead?: boolean; cls?: string; flag?: string; down?: boolean; backText?: string }): string;
+  card(id: string | null, o: { body?: GalleryBody; equip?: string | null; dead?: boolean; cls?: string; flag?: string; down?: boolean; backText?: string; frame?: FrameId }): string;
 }
 
 const HERO_IDS = ["PR3", "LU1", "SL4", "GR2", "WR1"];
@@ -244,21 +251,21 @@ function base(id: string): GalleryBody {
 export function showGallery(hooks: GalleryHooks) {
   const chosen = currentFrame();
   const compare = new URLSearchParams(location.search).get("frames") === "compare";
-  // 一览页里每节自己带 data-frame，根元素上的去掉，免得两套规则叠在一起
-  delete document.documentElement.dataset.frame;
-  const hero = HERO_IDS.map((id) => hooks.card(id, {})).join("");
-  const states = [
-    hooks.card("EN1", { body: { ...base("EN1"), hp: 3 }, flag: "受伤" }),
-    hooks.card("WR3", { equip: "E01" }),
-    hooks.card("PR2", { cls: "shielded" }),
-    hooks.card("SL2", { cls: "selected" }),
-    hooks.card("GL2", { dead: true }),
-    hooks.card(null, { backText: "布阵中…" }),
-  ].join("");
-  const small = CHARACTERS.slice(0, 8).map((c) => hooks.card(c.id, {})).join("");
-  const tiny = CHARACTERS.slice(8, 16).map((c) => hooks.card(c.id, {})).join("");
-  const sections = FRAMES.map((fr) => `
-    <section class="fg-sec" id="fr-${fr.id}" data-frame="${fr.id}">
+  const sections = FRAMES.map((fr) => {
+    const frame = fr.id;
+    const hero = HERO_IDS.map((id) => hooks.card(id, { frame })).join("");
+    const states = [
+      hooks.card("EN1", { body: { ...base("EN1"), hp: 3 }, flag: "受伤", frame }),
+      hooks.card("WR3", { equip: "E01", frame }),
+      hooks.card("PR2", { cls: "shielded", frame }),
+      hooks.card("SL2", { cls: "selected", frame }),
+      hooks.card("GL2", { dead: true, frame }),
+      hooks.card(null, { backText: "布阵中…", frame }),
+    ].join("");
+    const small = CHARACTERS.slice(0, 8).map((c) => hooks.card(c.id, { frame })).join("");
+    const tiny = CHARACTERS.slice(8, 16).map((c) => hooks.card(c.id, { frame })).join("");
+    return `
+    <section class="fg-sec" id="fr-${fr.id}">
       <header class="fg-head">
         <div><h2>${fr.name}<i>${fr.latin}</i>${fr.id === chosen ? `<em class="fg-on">使用中</em>` : ""}</h2><p>${esc(fr.about)}</p></div>
         <div class="fg-btns">
@@ -270,7 +277,8 @@ export function showGallery(hooks: GalleryHooks) {
       <div class="fg-felt"><div class="fg-felt-in">${states}</div></div>
       <div class="fg-row fg-small">${small}</div>
       <div class="fg-row fg-tiny">${tiny}</div>
-    </section>`).join("");
+    </section>`;
+  }).join("");
   const nav = FRAMES.map((fr) => `<a href="#fr-${fr.id}">${fr.name}<i>${fr.latin}</i></a>`).join("");
   const page = document.createElement("div");
   page.id = "frames";
@@ -280,7 +288,7 @@ export function showGallery(hooks: GalleryHooks) {
   page.addEventListener("click", (ev) => {
     const b = (ev.target as HTMLElement).closest<HTMLElement>("[data-frame-pick]");
     if (!b) return;
-    saveFrame(b.dataset.framePick as FrameId);
+    setFrame(b.dataset.framePick!);
     page.remove();
     showGallery(hooks);
     document.getElementById(`fr-${b.dataset.framePick}`)?.scrollIntoView();
