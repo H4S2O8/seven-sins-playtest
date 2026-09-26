@@ -1,7 +1,8 @@
+import type { CampaignBattleRules } from "../battle/engine.js";
 import { character } from "../content/characters.js";
 import { other, type EatChoice, type Seat } from "../types.js";
 import type { Action, Phase } from "./actions.js";
-import type { Table } from "./table.js";
+import { MAX_RAISES, type Table } from "./table.js";
 
 /**
  * 某个座位此刻能看到的全部信息。
@@ -21,13 +22,17 @@ export interface Observation {
   arenaId: string | null;
   /** 场地在战斗里生效（战役前几关的主场只当背景）。 */
   arenaActive: boolean;
+  /** 战役的战斗规则（魔神牌是公开的）；自由牌桌为 null。 */
+  battleRules: CampaignBattleRules | null;
   ruleId: string | null;
   publicEffectId: string | null;
   publicEffectActive: boolean | null;
   me: {
     pool: string[];
     dealt: string[];
-    placement: { slots: (string | null)[]; reveal: number; eat: EatChoice | null } | null;
+    placement: { slots: (string | null)[]; reveal: number; reveal2: number | null; eat: EatChoice | null } | null;
+    /** 第二次翻开时自己暗选的位置（翻开前只有自己知道）。 */
+    reveal2Pick: number | null;
     equipment: (string | null)[];
     offers: string[] | null;
     peek: { pos: number; characterId: string } | null;
@@ -41,6 +46,8 @@ export interface Observation {
     placed: boolean;
     /** 亮出的那名（布完阵才有）。 */
     revealed: { pos: number; characterId: string } | null;
+    /** 第二次翻开的那一名（双方一起翻开之后才有）。 */
+    revealed2: { pos: number; characterId: string } | null;
     /** 空出来的位置（被饕餮吞掉）是公开的。 */
     emptyPositions: number[];
     equipment: (string | null)[];
@@ -56,6 +63,10 @@ export interface Observation {
     betOrRaiseCount: [number, number];
     checkCount: [number, number];
     opsPaid: [number, number];
+    /** 固定额下注：这一轮每次下注 / 加注的额度；自由金额时为 null。 */
+    step: number | null;
+    /** 固定额下注：这一轮还能加注几次。 */
+    raisesLeft: number;
   };
   opFee: number;
   bidCap: number;
@@ -81,13 +92,15 @@ export function observe(t: Table, seat: Seat): Observation {
     stacks: [t.stacks[0], t.stacks[1]], pot: h.pot, invested: [h.invested[0], h.invested[1]],
     arenaOptions: h.arenaOptions, arenaId: h.arenaId,
     arenaActive: !t.campaign || t.campaign.arenaActive,
+    battleRules: t.campaign?.battle ?? null,
     ruleId: h.ruleRevealed ? h.ruleId : null,
     publicEffectId: h.peRevealed ? h.publicEffectId : null,
     publicEffectActive: h.peRevealed && phase !== "vote" && phase !== "bid" ? h.peActive : null,
     me: {
       pool: t.pools[seat].slice(),
       dealt: h.dealt[seat].slice(),
-      placement: myPl ? { slots: myPl.slots.slice(), reveal: myPl.reveal, eat: myPl.eat } : null,
+      placement: myPl ? { slots: myPl.slots.slice(), reveal: myPl.reveal, reveal2: myPl.reveal2, eat: myPl.eat } : null,
+      reveal2Pick: h.reveal2Pick[seat],
       equipment: h.equipment[seat].slice(),
       offers: h.offers[seat] ? h.offers[seat]!.slice() : null,
       peek: h.peek[seat],
@@ -100,6 +113,7 @@ export function observe(t: Table, seat: Seat): Observation {
       removedCount: t.removedCount[o],
       placed: !!foePl,
       revealed: foePl ? { pos: foePl.reveal, characterId: foePl.slots[foePl.reveal]! } : null,
+      revealed2: foePl && foePl.reveal2 !== null ? { pos: foePl.reveal2, characterId: foePl.slots[foePl.reveal2]! } : null,
       emptyPositions: foePl ? foePl.slots.flatMap((c, i) => (c === null ? [i] : [])) : [],
       equipment: h.equipment[o].slice(),
       submitted: foeSubmitted,
@@ -114,6 +128,8 @@ export function observe(t: Table, seat: Seat): Observation {
       betOrRaiseCount: [h.stats[0].betOrRaise, h.stats[1].betOrRaise],
       checkCount: [h.stats[0].checks, h.stats[1].checks],
       opsPaid: [h.stats[0].opsPaid, h.stats[1].opsPaid],
+      step: t.betStep(),
+      raisesLeft: Math.max(0, MAX_RAISES - h.raises),
     },
     opFee: h.opFee,
     bidCap: h.bidCap,
@@ -173,9 +189,24 @@ export function legalActions(t: Table, seat: Seat): Action[] {
       }
       return out;
     }
+    case "reveal2":
+      return t.hiddenPositions(seat).map((pos) => ({ type: "reveal2", pos }) as Action);
     case "bet": {
       const out: Action[] = [];
       const me = h.roundBet[seat];
+      const step = t.betStep();
+      if (step !== null) {
+        // 固定额下注：过牌 / 跟注 / 弃牌，外加一个固定额的下注或加注；筹码不够时才全押
+        if (me === h.target) out.push({ type: "check" });
+        if (h.target > me) out.push({ type: "call" });
+        if (t.canFold(seat)) out.push({ type: "fold" });
+        const toCall = h.target - me;
+        const capped = h.target > 0 && h.raises >= MAX_RAISES;
+        const need = h.target === 0 ? step : toCall + step;
+        if (!capped && stack >= need) out.push(h.target === 0 ? { type: "bet", amount: step } : { type: "raise", to: h.target + step });
+        else if (stack > toCall && !capped) out.push({ type: "allIn" });
+        return out;
+      }
       const minBet = t.options.minBet;
       if (me === h.target) out.push({ type: "check" });
       if (h.target > me) out.push({ type: "call" });

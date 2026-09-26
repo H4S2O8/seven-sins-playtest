@@ -8,6 +8,8 @@ export interface Unit {
   def: CharacterDef | null;
   exists: boolean;
   alive: boolean;
+  /** 降临的魔神。 */
+  demon: boolean;
   atk: number;
   hp: number;
   /** 开战血量：健康度的分母。 */
@@ -65,7 +67,7 @@ export function health(u: Unit): number {
 
 export function emptyUnit(seat: Seat, pos: number): Unit {
   return {
-    seat, pos, def: null, exists: false, alive: false,
+    seat, pos, def: null, exists: false, alive: false, demon: false,
     atk: 0, hp: 0, startHp: 1, maxHp: 1, shape: "heavy",
     armorBase: 0, armorEquip: 0, barrier: 0, equipmentIds: [], eqAtk: 0, eqHp: 0,
     bonded: false, charmed: false, skipRounds: 0, skipNext: false,
@@ -91,6 +93,7 @@ export interface UnitSnapshot {
   pos: number;
   characterId: string | null;
   alive: boolean;
+  demon: boolean;
   atk: number;
   hp: number;
   startHp: number;
@@ -103,7 +106,7 @@ export interface UnitSnapshot {
 
 export function snapshot(u: Unit): UnitSnapshot {
   return {
-    seat: u.seat, pos: u.pos, characterId: u.def?.id ?? null, alive: u.alive,
+    seat: u.seat, pos: u.pos, characterId: u.def?.id ?? null, alive: u.alive, demon: u.demon,
     atk: u.atk, hp: u.hp, startHp: u.startHp, shape: u.shape,
     armor: armorOf(u), barrier: u.barrier, equipment: u.equipmentIds.slice(),
   };
