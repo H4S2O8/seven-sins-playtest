@@ -31,8 +31,8 @@ export interface GateHooks {
   /** 开一张新桌，返回开局信息（牌池、庄家等）。 */
   start(style: Style): Opening;
   resume(): void;
-  /** 打开牌桌那边的弹层：规则 / 人物图鉴 / 调试。 */
-  sheet(kind: "help" | "chars" | "debug"): void;
+  /** 打开牌桌那边的弹层：规则 / 人物图鉴 / 卡框 / 调试。 */
+  sheet(kind: "help" | "chars" | "frames" | "debug"): void;
   /** 入场流程结束，把画面交给牌桌。 */
   done(): void;
   /** 从牌桌里点“新桌”进来时，可以回到原来的牌桌。 */
@@ -128,7 +128,7 @@ export class Gate {
     switch (what) {
       case "play": this.screen = { kind: "opponent" }; break;
       case "resume": this.hide(); this.hooks.resume(); return;
-      case "help": case "chars": case "debug": this.hooks.sheet(what); return;
+      case "help": case "chars": case "frames": case "debug": this.hooks.sheet(what); return;
       case "back":
         if (this.hooks.canReturn()) { this.hide(); this.hooks.done(); return; }
         this.screen = { kind: "title" };
@@ -225,6 +225,7 @@ export class Gate {
         <div class="gate-row">
           <button data-go="help">规则</button>
           <button data-go="chars">人物图鉴</button>
+          <button data-go="frames">卡框</button>
         </div>
       </div>
       <button class="gate-debug" data-go="debug">调试开局</button>
