@@ -1184,7 +1184,7 @@ table.ref td.ref-pic img { display: block; width: 84px; aspect-ratio: 1216 / 832
 .gate-panel h2 { margin: 0 0 4px; color: var(--gold); font-size: 22px; letter-spacing: 2px; }
 .gate-sub { margin: 0 0 14px; color: #d9d0c2; }
 .gate-warn { margin: -8px 0 12px; color: #ffb8a4; font-size: 13px; }
-.gate-back { position: absolute; top: 12px; left: 12px; min-height: 30px; padding: 2px 10px; font-size: 13px; background: #2a221a; }
+.gate-back { position: absolute; top: 12px; left: 12px; min-height: 30px; padding: 2px 10px; font-size: 13px; background: #2a221a; z-index: 5; }
 
 /* 选对手 */
 .foe-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
