@@ -136,7 +136,7 @@ class Battle {
       }
       eater.atk += eaten.def!.atk;
       eater.hp += eaten.def!.hp;
-      this.trig(eater, "饕餮", `吞掉${eaten.def!.name}：+${eaten.def!.atk}/+${eaten.def!.hp}`);
+      this.trig(eater, "饕餮", `吞掉${eaten.def!.name}：攻 +${eaten.def!.atk}、血 +${eaten.def!.hp}`);
       team[setup.eat.eaten] = emptyUnit(seat, setup.eat.eaten);
     }
     return team;
@@ -181,7 +181,7 @@ class Battle {
             }
             case "豪商": {
               const k = Math.min(4, Math.floor(me.invested / 10));
-              if (k) { u.atk += k; u.hp += k; this.trig(u, name, `投入 ${me.invested}：+${k}/+${k}`); }
+              if (k) { u.atk += k; u.hp += k; this.trig(u, name, `投入 ${me.invested}：攻 +${k}、血 +${k}`); }
               break;
             }
             case "赎罪券商": {
@@ -196,7 +196,7 @@ class Battle {
               if (me.checkCount) { u.atk += 2 * me.checkCount; this.trig(u, name, `过牌 ${me.checkCount} 次：攻 +${2 * me.checkCount}`); }
               break;
             case "孔雀":
-              if (me.revealedPos === u.pos) { u.atk += 3; u.hp += 4; this.trig(u, name, "被亮出：+3/+4"); }
+              if (me.revealedPos === u.pos) { u.atk += 3; u.hp += 4; this.trig(u, name, "被亮出：攻 +3、血 +4"); }
               break;
             case "金库守卫":
               if ((me.stack ?? 0) > (foe.stack ?? 0)) { this.addBarrier(u, 1, false); this.trig(u, name, "筹码领先：屏障 +1"); }
@@ -507,11 +507,11 @@ class Battle {
     if (this.has("P23") && health(a) < 0.3) d += Math.max(1, Math.floor(d * 0.25));
     // 人物能力的攻击加值（先加，再按下面的翻倍类效果乘）
     const bonus = (name: string, n: number, text: string) => { d += n; this.trig(a, name, text); };
-    if (this.abilityOn(a, "大野狼") && this.alive(other(a.seat)).length === 1) bonus("大野狼", 4, "收割：攻 +4");
-    if (t.seat !== a.seat && this.abilityOn(a, "影子") && this.bet[t.seat].revealedPos === t.pos) bonus("影子", 2, "看穿亮牌：攻 +2");
-    if (this.abilityOn(a, "守夜人") && r >= 3) bonus("守夜人", 3, "后期发力：攻 +3");
-    if (this.abilityOn(a, "无瑕刺客") && a.hp >= a.maxHp) { d *= 2; this.trig(a, "无瑕刺客", "满血：攻击翻倍"); }
-    if (this.abilityOn(a, "清算者") && r === 1 && this.bet[other(a.seat)].betOrRaiseCount > 0) { d *= 2; this.trig(a, "清算者", "对手加过注：首轮翻倍"); }
+    if (this.abilityOn(a, "大野狼") && this.alive(other(a.seat)).length === 1) bonus("大野狼", 4, "收割：伤害 +4");
+    if (t.seat !== a.seat && this.abilityOn(a, "影子") && this.bet[t.seat].revealedPos === t.pos) bonus("影子", 2, "看穿亮牌：伤害 +2");
+    if (this.abilityOn(a, "守夜人") && r >= 3) bonus("守夜人", 3, "入夜：伤害 +3");
+    if (this.abilityOn(a, "无瑕刺客") && a.hp >= a.maxHp) { d *= 2; this.trig(a, "无瑕刺客", "满血：伤害翻倍"); }
+    if (this.abilityOn(a, "清算者") && r === 1 && this.bet[other(a.seat)].betOrRaiseCount > 0) { d *= 2; this.trig(a, "清算者", "对手下过注：首轮伤害翻倍"); }
     if (this.has("P11") && (no === 3 || no === 6)) d *= 2;
     if (this.has("P26") && a.pos === 1) d = Math.round(d * 1.25);
     const parts = a.shape === "multi" ? splitMulti(d) : [d];
@@ -696,7 +696,7 @@ class Battle {
         if (this.abilityOn(u, "食腐鸦")) {
           const n = newlyDead.length;
           u.atk += n; u.hp += 3 * n; u.maxHp += 3 * n;
-          this.trig(u, "食腐鸦", `+${n}/+${3 * n}`);
+          this.trig(u, "食腐鸦", `攻 +${n}、血 +${3 * n}`);
         }
       }
       for (const v of newlyDead) {
