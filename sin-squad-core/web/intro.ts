@@ -2,7 +2,7 @@ import type { Style } from "../src/ai/agents.js";
 import { character } from "../src/content/characters.js";
 import type { Seat, Sin } from "../src/types.js";
 import {
-  adultConfirmed, ageView, briefView, campaignView, confirmAdult, poolView, resultView, rewardView,
+  adultConfirmed, ageView, briefView, campaignView, confirmAdult, poolView, resultView, rewardLabel, rewardView,
   type CampaignCtx, type StageResult, type StageSave,
 } from "./campaign.js";
 import type { CampaignProgress } from "../src/campaign/progress.js";
@@ -160,8 +160,9 @@ export class Gate {
       case "enter": this.hide(); this.hooks.startStage(Number(arg)); return;
       case "resumeStage": this.hide(); this.hooks.resumeStage(); return;
       case "reward": this.screen = { kind: "reward", pick: null, remove: null }; break;
-      case "rpick": if (s?.kind === "reward") s.pick = arg ?? null; break;
-      case "rremove": if (s?.kind === "reward") s.remove = s.remove === arg ? null : arg ?? null; break;
+      // 挑人、划掉：只改选中状态，不重画（重画会让候选牌从头再升起来一遍）
+      case "rpick": if (s?.kind === "reward") { s.pick = arg ?? null; this.patchReward(s); } return;
+      case "rremove": if (s?.kind === "reward") { s.remove = s.remove === arg ? null : arg ?? null; this.patchReward(s); } return;
       case "rdone": {
         if (s?.kind !== "reward" || !s.pick) return;
         this.hooks.pickReward(s.pick, s.remove);
@@ -212,6 +213,16 @@ export class Gate {
     if (now?.kind === "seat") {
       this.timer = window.setTimeout(() => { if (this.screen === now) this.go("sit"); }, 2600);
     }
+  }
+
+  private patchReward(s: { pick: string | null; remove: string | null }) {
+    this.root.querySelectorAll<HTMLElement>(".reward-opt").forEach((el) => el.classList.toggle("on", el.dataset.arg === s.pick));
+    this.root.querySelectorAll<HTMLElement>(".reward-pool").forEach((el) => el.classList.toggle("on", el.dataset.arg === s.remove));
+    const done = this.root.querySelector<HTMLElement>("[data-go=rdone]");
+    if (!done) return;
+    done.classList.toggle("disabled", !s.pick);
+    done.toggleAttribute("aria-disabled", !s.pick);
+    done.textContent = rewardLabel(s.pick, s.remove);
   }
 
   private draw() {
