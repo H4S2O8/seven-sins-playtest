@@ -68,7 +68,7 @@ export const STAGES: readonly StageDef[] = [
     arenaId: "A08", arenaActive: false, style: "novice",
     buyIn: 30, baseAnte: 10, blindEvery: 99, deal: 3, betting: false,
     foePool: ["WR2", "GR3", "GL1", "GL3", "LU1", "SL4", "GL5", "LU5"], signature: [], demon: null, portrait: "campaign-barmaid",
-    intro: "“新来的？这牌叫七罪暗队。先不赌钱，排好你的三个人，看他们自己打。”",
+    intro: "“新来的？这牌叫七宗罪-德州战棋。先不赌钱，排好你的三个人，看他们自己打。”",
     outro: "“等等，这把不算……哎，蜡烛怎么变成红的了？”",
     taunts: [
       ["“没事没事，第一次都这样。”", "“再来一把？我让你先排。”"],

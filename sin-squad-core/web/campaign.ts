@@ -67,7 +67,7 @@ export function ageView(refused: boolean): string {
   return `<div class="age-stage">
     <div class="age-seal"><span>XVIII</span></div>
     <div class="logo-latin">SEPTEM · PECCATA · MORTALIA</div>
-    <h1 class="logo small">七罪暗队</h1>
+    <h1 class="logo small">七宗罪-德州战棋</h1>
     ${body}
   </div>`;
 }

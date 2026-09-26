@@ -49,7 +49,10 @@ export class HeuristicAgent implements Agent {
       case "peek": return acts[0].type === "peek" ? this.rng.pick(acts) : this.chooseSwap(obs, acts);
       case "reveal2": return this.chooseReveal2(obs, acts);
       case "bet": return this.chooseBet(obs, acts);
-      case "operate": return { type: "operate", draft: obs.opFee <= Math.max(10, obs.stacks[seat] * 0.25) };
+      case "operate": {
+        if (obs.opFee > Math.max(10, obs.stacks[seat] * 0.25)) return { type: "operate", operation: "pass" };
+        return { type: "operate", operation: "draft" };
+      }
       case "draft": return this.chooseDraft(obs, acts);
       case "vote": return this.chooseVote(obs);
       case "bid": return this.chooseBid(obs, acts);
@@ -119,7 +122,8 @@ export class HeuristicAgent implements Agent {
   // ── 各阶段 ──
 
   private choosePlacement(obs: Observation, acts: Action[]): Action {
-    const candidates = this.rng.sample(acts, Math.min(12, acts.length));
+    const placeActs = acts.filter((a) => a.type === "place");
+    const candidates = this.rng.sample(placeActs, Math.min(12, placeActs.length));
     let best = candidates[0];
     let bestScore = -1;
     for (const a of candidates) {

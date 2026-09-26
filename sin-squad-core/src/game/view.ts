@@ -34,6 +34,7 @@ export interface Observation {
     /** 第二次翻开时自己暗选的位置（翻开前只有自己知道）。 */
     reveal2Pick: number | null;
     equipment: (string | null)[];
+    attackTargets: [number, number, number];
     offers: string[] | null;
     peek: { pos: number; characterId: string } | null;
     vote: boolean | null;
@@ -51,6 +52,8 @@ export interface Observation {
     /** 空出来的位置（被饕餮吞掉）是公开的。 */
     emptyPositions: number[];
     equipment: (string | null)[];
+    /** 对手公开的优先攻击目标。 */
+    attackTargets: [number, number, number];
     submitted: boolean;
   };
   betting: {
@@ -102,6 +105,7 @@ export function observe(t: Table, seat: Seat): Observation {
       placement: myPl ? { slots: myPl.slots.slice(), reveal: myPl.reveal, reveal2: myPl.reveal2, eat: myPl.eat } : null,
       reveal2Pick: h.reveal2Pick[seat],
       equipment: h.equipment[seat].slice(),
+      attackTargets: [...h.attackTargets[seat]],
       offers: h.offers[seat] ? h.offers[seat]!.slice() : null,
       peek: h.peek[seat],
       vote: h.votes[seat],
@@ -116,6 +120,7 @@ export function observe(t: Table, seat: Seat): Observation {
       revealed2: foePl && foePl.reveal2 !== null ? { pos: foePl.reveal2, characterId: foePl.slots[foePl.reveal2]! } : null,
       emptyPositions: foePl ? foePl.slots.flatMap((c, i) => (c === null ? [i] : [])) : [],
       equipment: h.equipment[o].slice(),
+      attackTargets: [...h.attackTargets[o]],
       submitted: foeSubmitted,
     },
     betting: {
@@ -147,6 +152,12 @@ function perms3(n: number): Array<[number, number, number]> {
   return out;
 }
 
+function permsTargets(): Array<[number, number, number]> {
+  const out: Array<[number, number, number]> = [];
+  for (let a = 0; a < 3; a++) for (let b = 0; b < 3; b++) for (let c = 0; c < 3; c++) out.push([a, b, c]);
+  return out;
+}
+
 /**
  * 当前座位可以提交的动作（下注金额只给出一组常用档位；
  * 任意合法金额也可以直接提交给 Table.apply）。
@@ -161,6 +172,17 @@ export function legalActions(t: Table, seat: Seat): Action[] {
     case "place": {
       const dealt = h.dealt[seat];
       const out: Action[] = [];
+      if (!t.campaign) {
+        for (let pos = 0; pos < 3; pos++) if (!h.placeRerolls[seat][pos]) out.push({ type: "rerollPlace", pos: pos as 0 | 1 | 2 });
+        for (const a of t.placeCandidates(seat, 0)) for (const b of t.placeCandidates(seat, 1)) for (const c of t.placeCandidates(seat, 2)) {
+          const picks: [number, number, number] = [a, b, c];
+          const slots = picks.map((i) => dealt[i]);
+          const eats: Array<EatChoice | null> = [null];
+          slots.forEach((id, eater) => { if (id === "GL2") for (let eaten = 0; eaten < 3; eaten++) if (eaten !== eater) eats.push({ eater, eaten }); });
+          for (const eat of eats) for (let reveal = 0; reveal < 3; reveal++) if (!eat || eat.eaten !== reveal) out.push({ type: "place", picks, eat, reveal });
+        }
+        return out;
+      }
       for (const picks of perms3(dealt.length)) {
         const slots = picks.map((i) => dealt[i]);
         const eats: Array<EatChoice | null> = [null];
@@ -224,7 +246,11 @@ export function legalActions(t: Table, seat: Seat): Action[] {
       return out;
     }
     case "operate":
-      return [{ type: "operate", draft: false }, { type: "operate", draft: true }];
+      return [
+        { type: "operate", operation: "pass" },
+        { type: "operate", operation: "draft" },
+        ...permsTargets().map((targets) => ({ type: "operate", operation: "retarget", targets } as Action)),
+      ];
     case "draft": {
       const out: Action[] = [];
       const slots = h.placement[seat]!.slots;

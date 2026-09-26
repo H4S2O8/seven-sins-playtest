@@ -77,6 +77,7 @@ interface Ui {
   place: { slots: (number | null)[]; reveal: number | null; eaten: number | null };
   betAmount: number | null;
   draft: { offer: number | null; pos: number | null };
+  retarget: [number, number, number];
   bid: number;
   removeIdx: number | null;
   notice: { text: string; good: boolean | null } | null;
@@ -254,6 +255,7 @@ const ui: Ui = {
   place: { slots: [null, null, null], reveal: null, eaten: null },
   betAmount: null,
   draft: { offer: null, pos: null },
+  retarget: [0, 1, 2],
   bid: 0,
   removeIdx: null,
   notice: null,
@@ -1123,7 +1125,7 @@ function shownMoney(o: Observation): { stacks: [number, number]; pot: number } {
 
 function topBar(o: Observation) {
   return `<header class="top">
-    <div class="brand"${BUILD ? ` title="构建 ${BUILD}"` : ""}>七罪暗队<small>${VERSION} 试玩</small></div>
+    <div class="brand"${BUILD ? ` title="构建 ${BUILD}"` : ""}>七宗罪-德州战棋<small>${VERSION} 试玩</small></div>
     ${debug ? btn("调试", "sheet", "debug", "debug-chip") : ""}
     <div class="hand-no">第 ${o.handNo} 手 · 底注 ${o.ante}${o.handNo % 5 === 0 ? " · 下手升盲" : ""}</div>
     <nav>${musicBtn()}${btn("记录", "sheet", "log")}${btn("牌池", "sheet", "pool")}${btn("规则", "sheet", "help")}${btn("卡框", "sheet", "frames")}${campaignStage === null ? btn("新桌", "newTable") : btn("离桌", "leaveStage")}</nav>
@@ -1382,6 +1384,27 @@ function arenaDock(o: Observation, mine: boolean) {
 
 function placeDock(o: Observation, mine: boolean) {
   const dealt = o.me.dealt;
+  if (mine && !table!.campaign && dealt.length >= 18) {
+    const groups = [0, 1, 2].map((pos) => {
+      const choices = table!.placeCandidates(HUMAN, pos);
+      const selected = ui.place.slots[pos];
+      const cards = choices.map((i) => card(dealt[i], {
+        key: dealtKey(o, i), cls: `small ${selected === i ? "selected" : ""}`, act: "slotPick", arg: `${pos}-${i}`,
+      })).join("");
+      const used = table!.hand.placeRerolls[HUMAN][pos];
+      return `<div class="place-choice"><b>${posName(pos)}</b><div class="tray hand">${cards}</div>
+        <div class="actions compact">${btn(used ? "已换过" : "D：换一组", "rerollPlace", pos, used ? "disabled" : "")}</div></div>`;
+    }).join("");
+    const filled = ui.place.slots.every((x) => x !== null);
+    const ids = ui.place.slots.map((i) => i === null ? null : dealt[i]);
+    const gl2 = ids.indexOf("GL2");
+    let ok = filled && ui.place.reveal !== null;
+    let eat = "";
+    if (gl2 >= 0 && filled) eat = `<div class="actions compact"><span class="label">饕餮吞队友：</span>${btn("不吞", "eat", -1, ui.place.eaten === null ? "on" : "")}${[0,1,2].filter((p) => p !== gl2).map((p) => btn(posName(p), "eat", p, ui.place.eaten === p ? "on" : "")).join("")}</div>`;
+    if (ui.place.eaten === ui.place.reveal) ok = false;
+    return prompt("每个位置三选一", "每个位置最多 D 一次；换掉的三张不会回来。选完后点场上的一张设为亮牌。") +
+      `<div class="place-choices">${groups}</div>${eat}<div class="actions">${btn("确认布阵", "place", undefined, `primary big ${ok ? "" : "disabled"}`)}</div>`;
+  }
   // 手牌：已经放上场的牌离开手牌；可以拖到场上，也可以点一下放到第一个空位
   const placedKeys = new Set(o.me.placement ? myKeys(o, o.me.placement.slots) : []);
   const tray = (mineNow: boolean) => {
@@ -1488,8 +1511,12 @@ function betDock(o: Observation) {
 }
 
 function operateDock(o: Observation) {
-  return prompt(`付 ${o.opFee} 操作费，从 3 件装备里挑 1 件？`, "装备装在谁身上对手看得到") +
-    `<div class="actions">${btn("不拿", "operate", 0, "big")}${btn(`付 ${o.opFee} 拿装备`, "operate", 1, "primary big")}</div>`;
+  const targets = o.me.attackTargets.map((x, i) => `<label>${posName(i)}优先打
+    <select data-input="target-${i}">${[0,1,2].map((p) => `<option value="${p}" ${x === p ? "selected" : ""}>${posName(p)}${p === i ? "（对位）" : ""}</option>`).join("")}</select></label>`).join("");
+  return prompt(`操作阶段：一次操作，费用 ${o.opFee}`, "拿装备或公开改一次攻击指向；改指向的费用也进入奖池") +
+    `<div class="actions">${btn("跳过", "operate", 0, "big")}${btn(`付 ${o.opFee} 拿装备`, "operate", 1, "primary big")}</div>
+    <div class="retarget-editor"><p>改指向（公开给对手，本轮默认仍会攻击）：</p>${targets}
+    <div class="actions">${btn(`付 ${o.opFee} 改指向`, "retarget", undefined, "big")}</div></div>`;
 }
 
 function draftDock(o: Observation) {
@@ -1658,7 +1685,7 @@ function sheetView(): string {
     case "pool": {
       const o = observe(table!, HUMAN);
       const picks = o.opponent.publicPicks;
-      return wrap("drawer", `<h2>我的牌池<small>${o.me.pool.length} 名 · 每手从这里随机发 4 名</small></h2>
+      return wrap("drawer", `<h2>我的牌池<small>${o.me.pool.length} 名 · 传统牌桌每个位置各看 3 名候选</small></h2>
         <div class="gallery">${o.me.pool.map((id) => card(id, { cls: "small" })).join("")}</div>
         <h2>对手<small>牌池 ${o.opponent.poolSize} 名${o.opponent.removedCount ? ` · 移除过 ${o.opponent.removedCount} 名` : ""}</small></h2>
         ${picks.length ? `<p class="muted">从市场公开挑入：</p><div class="gallery">${picks.map((id) => card(id, { cls: "small" })).join("")}</div>` : `<p class="muted">还没从市场挑过人；其余都是未知的。</p>`}`);
@@ -1723,6 +1750,19 @@ function onAct(name: string, arg: string | undefined) {
       ui.error = null;
       return render();
     }
+    case "slotPick": {
+      const [pos, pick] = (arg ?? "").split("-").map(Number);
+      if (ui.place.slots[pos] === pick) ui.place.reveal = pos;
+      else ui.place.slots[pos] = pick;
+      if (ui.place.reveal === null) ui.place.reveal = pos;
+      ui.place.eaten = null;
+      return render();
+    }
+    case "rerollPlace": {
+      ui.place.slots[n] = null;
+      if (ui.place.reveal === n) ui.place.reveal = null;
+      return act({ type: "rerollPlace", pos: n as 0 | 1 | 2 });
+    }
     case "reveal": ui.place.reveal = n; ui.error = null; return render();
     case "eat": ui.place.eaten = n < 0 ? null : n; if (ui.place.reveal === ui.place.eaten) ui.place.reveal = null; return render();
     case "clearPlace": resetInputs(); return render();
@@ -1751,7 +1791,8 @@ function onAct(name: string, arg: string | undefined) {
       const amount = ui.betAmount!;
       return act(o!.betting.target === 0 ? { type: "bet", amount } : { type: "raise", to: amount });
     }
-    case "operate": return act({ type: "operate", draft: n === 1 });
+    case "operate": return act({ type: "operate", operation: n === 1 ? "draft" : "pass" });
+    case "retarget": return act({ type: "operate", operation: "retarget", targets: ui.retarget });
     case "draftOffer": ui.draft.offer = n; return render();
     case "draftPos": ui.draft.pos = n; return render();
     case "draft": return act({ type: "draft", offerIndex: ui.draft.offer!, pos: ui.draft.pos! });
@@ -1913,6 +1954,14 @@ app.addEventListener("input", (ev) => {
   app.querySelectorAll<HTMLInputElement>(`[data-input="${key}"]`).forEach((x) => { if (x !== el) x.value = String(v); });
   app.querySelectorAll(`[data-bind="${key}"]`).forEach((x) => { x.textContent = String(v); });
   app.querySelectorAll<HTMLElement>(".chip-btn").forEach((x) => x.classList.toggle("on", Number(x.dataset.arg) === v));
+});
+
+app.addEventListener("change", (ev) => {
+  const el = ev.target as HTMLSelectElement;
+  const key = el.dataset.input;
+  if (!key?.startsWith("target-")) return;
+  const pos = Number(key.slice(7));
+  if (pos >= 0 && pos < 3) ui.retarget[pos] = Number(el.value);
 });
 
 // ───────────────────────── 入场 ─────────────────────────

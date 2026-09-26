@@ -4,6 +4,8 @@ import type { AttackShape, CharacterDef, Seat } from "../types.js";
 export interface Unit {
   seat: Seat;
   pos: number;
+  /** 优先攻击的敌方位置。 */
+  targetPos: number;
   /** 空位（没人或被饕餮吞掉）时为 null。 */
   def: CharacterDef | null;
   exists: boolean;
@@ -67,7 +69,7 @@ export function health(u: Unit): number {
 
 export function emptyUnit(seat: Seat, pos: number): Unit {
   return {
-    seat, pos, def: null, exists: false, alive: false, demon: false,
+    seat, pos, targetPos: pos, def: null, exists: false, alive: false, demon: false,
     atk: 0, hp: 0, startHp: 1, maxHp: 1, shape: "heavy",
     armorBase: 0, armorEquip: 0, barrier: 0, equipmentIds: [], eqAtk: 0, eqHp: 0,
     bonded: false, charmed: false, skipRounds: 0, skipNext: false,

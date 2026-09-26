@@ -86,12 +86,29 @@ type Screen =
   | { kind: "reward"; pick: string | null; remove: string | null }
   | { kind: "cpool" }
   | { kind: "title" }
+  | { kind: "tutorial"; step: number; forced: boolean }
   | { kind: "opponent" }
   | { kind: "pool"; open: Opening }
   | { kind: "toss"; open: Opening; landed: boolean }
   | { kind: "seat"; open: Opening };
 
 const FAST_KEY = "sinsquad.fastStart.v1";
+const TUTORIAL_KEY = "sinsquad.tutorial.v2";
+const TUTORIAL: Array<[string, string]> = [
+  ["欢迎来到七宗罪-德州战棋", "你要用下注和布阵影响一场自动战斗。目标是赢光对手的筹码；每手牌结束后，筹码少的一方会交底注，直到一方归零。"],
+  ["筹码、底注和奖池", "每手开始双方先交底注，底注进入奖池。下注时可以过牌、下注、跟注、加注、全押或弃牌。弃牌会立刻输掉本手已经投入的筹码。"],
+  ["三选一布阵", "1、2、3 号位会依次各出现 3 名候选人物。每个位置选 1 名；如果这一组三张都不想要，可以 D 一次换另一组三张。每个位置最多 D 一次，换掉的旧三张永久不能回来；三个位置选定后才能确认队伍。"],
+  ["亮牌与隐藏信息", "布阵后选择一名人物亮牌。对手只能确定这张牌，其他位置仍然是暗牌；下注就是你在用公开信息讲故事。"],
+  ["场地、规则和公共效果", "场地会改变战斗。胜利规则决定怎样赢，公共效果先由双方表决；意见不一致时进入暗标，出价高的人决定效果是否生效，并支付自己的出价。"],
+  ["操作阶段", "下注匹配后会显示操作费，费用等于本轮下注匹配额。你可以付费从三件装备里选一件，或付相同费用公开改一次全队攻击指向；两者只能选一个。"],
+  ["攻击指向", "每个位置默认攻击敌方同号位。你可以把 1、2、3 号位分别指向敌方任意位置；这个选择会公开显示给对手。指定目标倒下后，人物按原有转线规则寻找新目标。"],
+  ["战斗怎么进行", "双方轮流出手，每个存活人物每轮一次。攻击是碰撞：攻击者造成伤害，被攻击者通常会用自己的攻击反击。屏障、护甲、连击和人物能力会在动画中逐步结算。"],
+  ["战斗回放", "牌桌会播放抬牌、冲撞、伤害数字、屏障破碎、倒下和转线动画。暂停、加速或跳到结果都不会改变规则，只会改变观看方式。"],
+  ["市场与下一手", "战斗结束后，市场翻出人物，输家先挑一张加入自己的牌池；然后你可以从自己的牌池移除一张（至少保留规定数量）。下一手会从新的牌池重新发候选。"],
+  ["你已经准备好了", "记住三件事：先看场地和规则，再安排位置和亮牌；下注是在管理奖池和信息；操作阶段可以拿装备，也可以公开改指向。现在开始你的第一手牌。"],
+];
+function tutorialDone(): boolean { try { return localStorage.getItem(TUTORIAL_KEY) === "1"; } catch { return false; } }
+function markTutorialDone() { try { localStorage.setItem(TUTORIAL_KEY, "1"); } catch { /* ignore */ } }
 function readFast(): boolean {
   try { return localStorage.getItem(FAST_KEY) === "1"; } catch { return false; }
 }
@@ -148,7 +165,7 @@ export class Gate {
 
   show(kind: "title" | "opponent" | "campaign" | "result") {
     // 没确认过 18+ 之前哪儿也去不了
-    this.screen = adultConfirmed() ? { kind } : { kind: "age", refused: false };
+    this.screen = adultConfirmed() ? (kind === "title" && !tutorialDone() ? { kind: "tutorial", step: 0, forced: true } : { kind }) : { kind: "age", refused: false };
     // 第一次赢下这一层：先播关后剧情，再看结算
     const r = kind === "result" ? this.hooks.stageResult() : null;
     if (r?.won && r.firstClear && this.screen?.kind === "result") this.screen = this.story(r.stage, "after", this.screen, r.retries);
@@ -199,7 +216,15 @@ export class Gate {
       case "play": this.screen = { kind: "opponent" }; break;
       case "age": this.screen = { kind: "age", refused: false }; break;
       case "refuse": this.screen = { kind: "age", refused: true }; break;
-      case "adult": confirmAdult(); this.screen = { kind: "title" }; break;
+      case "adult": confirmAdult(); this.screen = tutorialDone() ? { kind: "title" } : { kind: "tutorial", step: 0, forced: true }; break;
+      case "tutorial": this.screen = { kind: "tutorial", step: 0, forced: false }; break;
+      case "tutorialNext": {
+        if (s?.kind !== "tutorial") break;
+        if (s.step + 1 >= TUTORIAL.length) { markTutorialDone(); this.screen = { kind: "title" }; }
+        else s.step++;
+        break;
+      }
+      case "tutorialBack": if (s?.kind === "tutorial" && s.step > 0) s.step--; break;
       case "campaign": this.screen = { kind: "campaign" }; break;
       case "brief": {
         const no = Number(arg);
@@ -359,6 +384,7 @@ export class Gate {
         return r ? resultView(this.ctx(), r) : campaignView(this.ctx());
       }
       case "title": return this.titleView();
+      case "tutorial": return this.tutorialView(s);
       case "opponent": return this.opponentView();
       case "pool": return this.poolView(s.open);
       case "toss": return this.tossView(s.open, s.landed);
@@ -375,12 +401,13 @@ export class Gate {
     return `<div class="title-stage">
       <div class="heroes" data-tilt="5">${heroes}</div>
       <div class="logo-latin">SEPTEM · PECCATA · MORTALIA</div>
-      <h1 class="logo">七罪暗队</h1>
+      <h1 class="logo">七宗罪-德州战棋</h1>
       <p class="tagline">德州扑克的下注 × 酒馆战棋的自动战斗<br><small>只亮一张牌，剩下的全靠你讲故事</small></p>
       <div class="gate-actions">
         <button class="primary big" data-go="campaign" autofocus>炼狱战役<small>${cp.saved ? `第 ${cp.saved.handNo} 手没打完 · ` : ""}${floor}</small></button>
         ${save ? `<button class="big" data-go="resume">继续自由牌桌<small>第 ${save.handNo} 手 · 你 ${save.stacks[HUMAN]} 筹码 · 对手${OPPONENTS[save.style].title}</small></button>` : ""}
         <button class="big" data-go="play">${save ? "开一张新的自由牌桌" : "自由牌桌"}<small>完整规则，随机牌池</small></button>
+        <button class="big" data-go="tutorial">新手教程<small>随时重新查看完整说明</small></button>
         <div class="gate-row">
           <button data-go="help">规则</button>
           <button data-go="chars">人物图鉴</button>
@@ -390,6 +417,17 @@ export class Gate {
       <button class="gate-debug" data-go="debug">调试开局</button>
       <div class="gate-version">${VERSION} 试玩${BUILD ? ` · ${BUILD}` : ""}</div>
     </div>`;
+  }
+
+  private tutorialView(s: { step: number; forced: boolean }) {
+    const [title, body] = TUTORIAL[s.step];
+    const last = s.step === TUTORIAL.length - 1;
+    return `<div class="gate-panel tutorial-panel"><div class="tutorial-progress">教程 ${s.step + 1} / ${TUTORIAL.length}</div>
+      <h2>${title}</h2><p class="tutorial-copy">${body}</p>
+      <div class="tutorial-dots">${TUTORIAL.map((_, i) => `<i class="${i === s.step ? "on" : ""}"></i>`).join("")}</div>
+      <div class="gate-actions row">${s.step ? `<button data-go="tutorialBack">‹ 上一步</button>` : ""}
+      <button class="primary big" data-go="tutorialNext">${last ? "完成教程，开始游戏" : "下一步 ›"}</button></div>
+      ${s.forced ? `<small class="gate-sub">首次进入必须完成教程；之后可在开始界面再次打开。</small>` : ""}</div>`;
   }
 
   private opponentView() {
@@ -436,7 +474,7 @@ export class Gate {
     const foe = Array.from({ length: Math.min(open.foePoolSize, 8) }, () => `<i></i>`).join("");
     return `<div class="gate-panel wide">
       <h2>你的起始牌池</h2>
-      <p class="gate-sub">从全部人物里随机抽了 ${n} 名。每手从这里随机发 4 名，挑 3 名上场。</p>
+      <p class="gate-sub">从全部人物里随机抽了 ${n} 名。传统牌桌会为每个位置提供候选人物，再由你决定谁上场。</p>
       <div class="pool-mat"><div class="pool-cards">${cards}</div></div>
       <div class="pool-sum" style="--delay:${n * 120 + 500}ms">
         <div class="sin-chips">${sinChips}</div>
