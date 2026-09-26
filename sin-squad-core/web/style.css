@@ -886,11 +886,8 @@ table.ref tr { border-bottom: 1px solid #ffffff12; }
   to { --fx: 82%; --fy: 74%; --fry: -5deg; --frx: 1deg; }
 }
 .big-card .card > .lift { transform: translateZ(var(--z0)) rotateY(var(--fry)) rotateX(var(--frx)); }
-/* 影子落在光的反方向：光在左上，影子往右下 */
-.big-card .card > .shade {
-  transform: translate(calc((50% - var(--fx)) * 0.12 + 6px), calc((50% - var(--fy)) * 0.1 + 6px)) skewY(-3deg);
-  opacity: .5;
-}
+/* 大卡是拿在手里转的，不落影子（桌上那种影子在这里看着像一块错位的暗板） */
+.big-card .card > .shade { display: none; }
 .card-info .stats b { color: var(--gold); }
 .card-info .ability { font-size: 15px; background: #0004; border-left: 3px solid var(--gold); padding: 8px 10px; border-radius: 6px; }
 .card-info .equip-line { color: #d8f0b8; }
@@ -1823,6 +1820,7 @@ table.ref td.ref-pic img { display: block; width: 84px; aspect-ratio: 1216 / 832
  *   .sheen    烫金：一道暖白色的斜向反光扫过，color-dodge 只在本来就亮的金框、金字上亮起来，深色纸面几乎不变
  *   .varnish  立绘上的光油：立绘窗比牌框更亮一点，像局部上了 UV
  *   .gloss    整张牌面的柔光反射，screen 叠加（和真实反光一样只加亮）
+ * 大卡本身不带影子（.shade 隐藏）。
  * 光的位置是 --fx / --fy（0–100%），牌的角度是 --frx / --fry。五套卡框通用。 */
 @property --fx { syntax: "<percentage>"; inherits: true; initial-value: 50%; }
 @property --fy { syntax: "<percentage>"; inherits: true; initial-value: 50%; }
