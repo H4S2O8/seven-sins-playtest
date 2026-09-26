@@ -1,7 +1,7 @@
 /**
  * 背景音乐：画面每次重画时告诉这里「现在是什么场景」，这里负责换曲和交叉淡入淡出。
  *
- * 曲子放在 web/audio/<曲名>.mp3（Suno 生成，已统一响度），打包时复制到 sin-squad-v3/audio/。
+ * 曲子放在 web/audio/<曲名>.m4a（Suno 生成，已统一响度），打包时复制到 sin-squad-v3/audio/。
  * 菜单、牌桌、战斗三首循环播放：快到结尾时从头再起一份，和旧的交叉淡化，听不出接缝。
  * 胜利、失败只播一次，播完就安静，等下一次换场景。
  * 浏览器要等玩家第一次点击后才允许出声，所以在第一次点击时才真正开始播。
@@ -43,7 +43,7 @@ function readMuted(): boolean {
 }
 
 function makeDeck(track: Track): Deck {
-  const audio = new Audio(`audio/${track}.mp3`);
+  const audio = new Audio(`audio/${track}.m4a`);
   audio.preload = "auto";
   audio.volume = 0;
   const deck: Deck = { track, audio, gain: 0, target: 1 };
