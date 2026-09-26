@@ -1,6 +1,6 @@
 import type { BattleEvent, BattleResult } from "../src/battle/engine.js";
 import { character } from "../src/content/characters.js";
-import { arena, equipment, publicEffect, rule } from "../src/content/tables.js";
+import { arena, gear, publicEffect, rule } from "../src/content/tables.js";
 import type { TableEvent } from "../src/game/table.js";
 import type { AttackShape, Seat, Sin } from "../src/types.js";
 
@@ -52,8 +52,8 @@ export function logLine(e: TableEvent): string | null {
       return `操作：你${d(0)}，对手${d(1)}`;
     }
     case "installed": {
-      const eq = equipment(e.equipmentId);
-      return `${who(e.seat)}给 ${posName(e.pos)} 装上「${eq.name}」（${eq.text}）`;
+      const eq = gear(e.cardId);
+      return `${who(e.seat)}给 ${posName(e.pos)} 装上${e.slotKind === "effect" ? "效果" : "装备"}「${eq.name}」（${eq.text}）`;
     }
     case "reveal":
       return `翻开胜利规则「${rule(e.ruleId).name}」` +

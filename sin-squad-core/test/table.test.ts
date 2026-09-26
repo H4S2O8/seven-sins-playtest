@@ -4,6 +4,8 @@ import type { Action, Phase } from "../src/game/actions.js";
 import { Table } from "../src/game/table.js";
 import { legalActions, observe } from "../src/game/view.js";
 import type { Seat } from "../src/types.js";
+import { CHARACTERS } from "../src/content/characters.js";
+import { SLOT_EFFECTS } from "../src/content/tables.js";
 
 /** 被动策略：能过牌就过牌、要跟就跟，其余取第一个合法动作。 */
 function passive(t: Table, seat: Seat): Action {
@@ -26,6 +28,15 @@ function driveUntil(t: Table, phase: Phase, policy = passive) {
 }
 
 describe("整张牌桌", () => {
+  it("扩展人物池为每罪 8 人，槽位效果减半为 25 张", () => {
+    expect(CHARACTERS).toHaveLength(56);
+    for (const sin of ["愤怒", "贪婪", "暴食", "嫉妒", "怠惰", "傲慢", "色欲"]) {
+      expect(CHARACTERS.filter((c) => c.sin === sin)).toHaveLength(8);
+    }
+    expect(SLOT_EFFECTS).toHaveLength(25);
+    expect(new Set(SLOT_EFFECTS.map((x) => x.id)).size).toBe(25);
+  });
+
   it("随机对手打几百张牌桌：不卡死、筹码守恒、最后有人赢", () => {
     for (let seed = 1; seed <= 300; seed++) {
       const t = new Table({ seed });

@@ -5,6 +5,13 @@ import { Rng } from "../src/rng.js";
 import { afterHit, battle, hpAfter, team } from "./helpers.js";
 
 describe("形状克制环", () => {
+  it("效果槽牌会按新版攻/血面板参与战斗", () => {
+    const base = battle(team(["GR3", null, null]), team(["SL1", null, null]));
+    const boosted = battle({ ...team(["GR3", null, null]), slots: [{ characterId: "GR3", equipmentId: null, effectId: "FX01" }, { characterId: null, equipmentId: null }, { characterId: null, equipmentId: null }] }, team(["SL1", null, null]));
+    // 看开战那一刻的面板：第 1 轮结束时收藏家可能已经击倒敌人、又拿了 +2
+    expect(boosted.start[0][0].atk).toBe(base.start[0][0].atk + 2);
+  });
+
   it("重击打护甲：每下减去护甲", () => {
     const r = battle(team(["GR3", null, null]), team(["SL1", null, null]));
     const hit = afterHit(r, 1); // 收藏家先手打瞌睡客

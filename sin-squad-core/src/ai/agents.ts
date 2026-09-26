@@ -82,7 +82,9 @@ export class HeuristicAgent implements Agent {
   private myTeam(obs: Observation): TeamSetup | null {
     const p = obs.me.placement;
     if (!p) return null;
-    const slots: SlotSetup[] = p.slots.map((c, i) => ({ characterId: c, equipmentId: c ? obs.me.equipment[i] : null }));
+    const slots: SlotSetup[] = p.slots.map((c, i) => ({
+      characterId: c, equipmentId: c ? obs.me.equipment[i] : null, effectId: c ? obs.me.slotEffects[i] : null,
+    }));
     return { slots, eat: null, bet: this.betCtx(obs, obs.seat, p.reveal) };
   }
 
@@ -105,7 +107,7 @@ export class HeuristicAgent implements Agent {
       if (o.revealed && o.revealed.pos === pos) id = o.revealed.characterId;
       else if (obs.me.peek && obs.me.peek.pos === pos) id = obs.me.peek.characterId;
       else id = this.rng.pick(pool);
-      return { characterId: id, equipmentId: o.equipment[pos] };
+      return { characterId: id, equipmentId: o.equipment[pos], effectId: o.slotEffects[pos] };
     });
     return { slots, eat: null, bet: this.betCtx(obs, other(obs.seat), o.revealed?.pos ?? 0) };
   }
@@ -173,7 +175,10 @@ export class HeuristicAgent implements Agent {
     for (const a of acts) {
       if (a.type !== "draft") continue;
       const team: TeamSetup = { ...base, slots: base.slots.map((s) => ({ ...s })) };
-      team.slots[a.pos].equipmentId = obs.me.offers![a.offerIndex];
+      const id = obs.me.offers![a.offerIndex];
+      // 效果槽牌装进效果槽，不顶掉已经装着的装备
+      if (id.startsWith("FX")) team.slots[a.pos].effectId = id;
+      else team.slots[a.pos].equipmentId = id;
       const s = this.estimate(obs, team, {}, 4);
       if (s > bestScore) { bestScore = s; best = a; }
     }

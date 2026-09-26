@@ -27,6 +27,7 @@ export interface Observation {
     dealt: string[];
     placement: { slots: (string | null)[]; reveal: number; eat: EatChoice | null } | null;
     equipment: (string | null)[];
+    slotEffects: (string | null)[];
     offers: string[] | null;
     peek: { pos: number; characterId: string } | null;
     vote: boolean | null;
@@ -42,6 +43,7 @@ export interface Observation {
     /** 空出来的位置（被饕餮吞掉）是公开的。 */
     emptyPositions: number[];
     equipment: (string | null)[];
+    slotEffects: (string | null)[];
     submitted: boolean;
   };
   betting: {
@@ -86,6 +88,7 @@ export function observe(t: Table, seat: Seat): Observation {
       dealt: h.dealt[seat].slice(),
       placement: myPl ? { slots: myPl.slots.slice(), reveal: myPl.reveal, eat: myPl.eat } : null,
       equipment: h.equipment[seat].slice(),
+      slotEffects: h.slotEffects[seat].slice(),
       offers: h.offers[seat] ? h.offers[seat]!.slice() : null,
       peek: h.peek[seat],
       vote: h.votes[seat],
@@ -99,6 +102,7 @@ export function observe(t: Table, seat: Seat): Observation {
       revealed: foePl ? { pos: foePl.reveal, characterId: foePl.slots[foePl.reveal]! } : null,
       emptyPositions: foePl ? foePl.slots.flatMap((c, i) => (c === null ? [i] : [])) : [],
       equipment: h.equipment[o].slice(),
+      slotEffects: h.slotEffects[o].slice(),
       submitted: foeSubmitted,
     },
     betting: {

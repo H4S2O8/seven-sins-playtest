@@ -1,5 +1,5 @@
 import { character } from "../content/characters.js";
-import { equipment } from "../content/tables.js";
+import { gear } from "../content/tables.js";
 import { other, type BetContext, type Seat, type TeamSetup } from "../types.js";
 import {
   armorOf, emptyUnit, health, MAX_BARRIER, snapshot, unitFrom,
@@ -127,6 +127,8 @@ class Battle {
     team.forEach((u, i) => {
       const e = setup.slots[i].equipmentId;
       if (u.exists && e) u.equipmentIds.push(e);
+      const fx = setup.slots[i].effectId;
+      if (u.exists && fx) u.equipmentIds.push(fx);
     });
     if (setup.eat) {
       const eater = team[setup.eat.eater];
@@ -158,7 +160,7 @@ class Battle {
           u.equipmentIds.push(...before.get(o)!);
           o.equipmentIds = o.equipmentIds.filter((id) => !before.get(o)!.includes(id));
           if (before.get(o)!.length) {
-            this.trig(u, "夺装者", `夺走「${before.get(o)!.map((id) => equipment(id).name).join("、")}」`);
+            this.trig(u, "夺装者", `夺走「${before.get(o)!.map((id) => gear(id).name).join("、")}」`);
             this.trig(o, "夺装者", "装备被夺走");
           }
         }
@@ -265,7 +267,8 @@ class Battle {
   }
 
   private applyEquipment(u: Unit, id: string) {
-    const e = equipment(id).effect;
+    const definition = gear(id).effect;
+    const e = definition;
     switch (e.kind) {
       case "stat": u.atk += e.atk; u.hp += e.hp; u.eqAtk += e.atk; u.eqHp += e.hp; break;
       case "shape": u.shape = e.shape; u.atk += e.atk; u.eqAtk += e.atk; break;

@@ -2,7 +2,7 @@ import { HeuristicAgent, type Style } from "../src/ai/agents.js";
 import { splitMulti, type BattleEvent, type BattleResult } from "../src/battle/engine.js";
 import type { UnitSnapshot } from "../src/battle/unit.js";
 import { CHARACTERS, character } from "../src/content/characters.js";
-import { ARENAS, EQUIPMENT, PUBLIC_EFFECTS, RULES, arena, equipment, publicEffect, rule } from "../src/content/tables.js";
+import { ARENAS, EQUIPMENT, PUBLIC_EFFECTS, RULES, SLOT_EFFECTS, arena, gear, publicEffect, rule } from "../src/content/tables.js";
 import type { Action } from "../src/game/actions.js";
 import { Table, validatePlacement, type Placement, type TableRig } from "../src/game/table.js";
 import { legalActions, observe, type Observation } from "../src/game/view.js";
@@ -57,7 +57,7 @@ interface Playback {
 
 type Sheet =
   | { kind: "help" }
-  | { kind: "card"; id: string; equip: string | null }
+  | { kind: "card"; id: string; equip: string[] }
   | { kind: "env"; which: "arena" | "rule" | "pe" }
   | { kind: "log" }
   | { kind: "pool" }
@@ -638,26 +638,31 @@ interface Body {
   barrier: number;
 }
 
-/** 卡面数值：人物面板 + 装备（和战斗引擎的装备结算一致）。开战时的能力加成要等战斗里才看得到。 */
-function bodyOf(id: string, equip: string | null): Body {
+/**
+ * 卡面数值：人物面板 + 身上的装备和效果槽牌（和战斗引擎的结算一致）。开战时的能力加成要等战斗里才看得到。
+ */
+function bodyOf(id: string, gearIds: string[]): Body {
   const c = character(id);
   const b: Body = { atk: c.atk, hp: c.hp, startHp: c.hp, shape: c.shape, armor: c.armor, barrier: c.barrier };
-  if (equip) {
-    const e = equipment(equip).effect;
+  for (const g of gearIds) {
+    const e = gear(g).effect;
     switch (e.kind) {
       case "stat": b.atk += e.atk; b.hp += e.hp; break;
       case "shape": b.shape = e.shape; b.atk += e.atk; break;
       case "armor": b.armor += e.armor; b.hp += e.hp; break;
       case "barrier": b.barrier = Math.min(2, b.barrier + e.barrier); b.atk += e.atk; break;
     }
-    b.startHp = b.hp;
   }
+  b.startHp = b.hp;
   return b;
 }
 
+/** 某个位置身上的牌：装备一件 + 效果槽牌一张（都可能没有）。 */
+const gearAt = (equipment: (string | null)[], effects: (string | null)[], pos: number) =>
+  [equipment[pos], effects[pos]].filter((x): x is string => !!x);
+
 interface CardOpts {
-  equip?: string | null;
-  /** 战斗中身上的全部装备（夺装者可能让一人带两件）；给了就不看 equip。 */
+  /** 身上的装备和效果槽牌（战斗中夺装者可能让一人带更多）。 */
   equipList?: string[];
   body?: Body;
   dead?: boolean;
@@ -706,11 +711,11 @@ function shapeTag(shape: AttackShape, atk: number): string {
 /** 正面：立绘窗、名牌、能力、底栏（攻 · 攻击形状 · 血），护甲和屏障是立绘左上角的小标。 */
 function cardFront(id: string, o: CardOpts) {
   const c = character(id);
-  const equip = o.equip ?? null;
-  const b = o.body ?? bodyOf(id, equip);
+  const ids = o.equipList ?? [];
+  const b = o.body ?? bodyOf(id, ids);
   const atkCls = b.atk > c.atk ? "up" : b.atk < c.atk ? "down" : "";
   const hpCls = b.hp < b.startHp ? "hurt" : b.hp > c.hp ? "up" : "";
-  const eqs = (o.equipList ?? (equip ? [equip] : [])).map((x) => equipment(x));
+  const eqs = ids.map((x) => gear(x));
   const defs = (b.armor ? `<span class="def armor" title="护甲 ${b.armor}">${b.armor}</span>` : "") +
     (b.barrier ? `<span class="def barrier" title="屏障 ${b.barrier}">${b.barrier}</span>` : "");
   return `<div class="art ${ART.has(id) ? "has-portrait" : ""}"><span class="glyph">${SIN_LATIN[c.sin]}</span>${ART.has(id) ? `<img class="portrait" src="art/${id}.webp" alt="" draggable="false">` : ""}
@@ -725,7 +730,7 @@ function cardFront(id: string, o: CardOpts) {
       <span class="stat hp ${hpCls}" title="血">${num(Math.max(0, b.hp))}</span>
     </div>
     ${o.dead ? `<span class="dead-mark">倒下</span>` : ""}
-    <button class="info-btn" data-act="inspect" data-arg="${id}|${equip ?? ""}" aria-label="查看${c.name}">?</button>`;
+    <button class="info-btn" data-act="inspect" data-arg="${id}|${ids.join("+")}" aria-label="查看${c.name}">?</button>`;
 }
 
 /**
@@ -736,8 +741,8 @@ function cardFront(id: string, o: CardOpts) {
 function card(id: string | null, o: CardOpts = {}) {
   const c = id ? character(id) : null;
   const down = o.down ?? !id;
-  const b = id ? (o.body ?? bodyOf(id, o.equip ?? null)) : null;
-  const eq = o.equip ? equipment(o.equip) : null;
+  const b = id ? (o.body ?? bodyOf(id, o.equipList ?? [])) : null;
+  const eqs = (o.equipList ?? []).map((x) => gear(x));
   const style = [
     c ? `--sin:${SIN_COLOR[c.sin]}` : "", o.fan !== undefined ? `--fan:${o.fan}` : "", o.flipDelay ? `--flip-delay:${o.flipDelay}ms` : "",
     o.lane ? `--lane:${o.lane}` : "",
@@ -751,7 +756,7 @@ function card(id: string | null, o: CardOpts = {}) {
     <div class="lift"><div class="flip">
       <i class="edge top"></i><i class="edge bottom"></i><i class="edge left"></i><i class="edge right"></i>
       <div class="face front">${id ? cardFront(id, o) : ""}</div>
-      <div class="face back">${o.backText ? `<div class="back-text">${o.backText}</div>` : ""}${eq ? `<div class="equip" title="${esc(`${eq.name}：${eq.text}`)}">${eq.name}</div>` : ""}</div>
+      <div class="face back">${o.backText ? `<div class="back-text">${o.backText}</div>` : ""}${eqs.length ? `<div class="equip" title="${esc(eqs.map((e) => `${e.name}：${e.text}`).join("；"))}">${eqs.map((e) => e.name).join("、")}</div>` : ""}</div>
     </div>${o.flag ? `<span class="flag">${o.flag}</span>` : ""}${o.lane ? `<span class="lane-tag">${o.lane < 0 ? "← 转线" : "转线 →"}</span>` : ""}</div>
   </div>`;
 }
@@ -974,14 +979,14 @@ function foeRow(o: Observation): string {
   if (lb) return battleUnits(lb.result.final[AI], lb.teams[AI].reveal, o);
   const peeking = o.phase === "peek" && o.toAct.includes(HUMAN) && !o.me.peek; // 偷看过一次就不能再点
   return [0, 1, 2].map((pos) => {
-    const eq = opp.equipment[pos];
+    const eq = gearAt(opp.equipment, opp.slotEffects, pos);
     const base = { unit: `${AI}-${pos}`, key: foeKey(o, pos) };
     if (!opp.placed) return card(null, { ...base, backText: o.phase === "arena" ? "" : "布阵中…" });
     if (opp.emptyPositions.includes(pos)) return slot("空位<br><small>被饕餮吞掉</small>", { unit: base.unit });
-    if (opp.revealed?.pos === pos) return card(opp.revealed.characterId, { ...base, equip: eq, flag: "亮" });
-    if (o.me.peek?.pos === pos) return card(o.me.peek.characterId, { ...base, equip: eq, flag: "偷看" });
-    if (peeking) return card(null, { ...base, equip: eq, backText: "点这里偷看", act: "peek", arg: pos, cls: "target" });
-    return card(null, { ...base, equip: eq });
+    if (opp.revealed?.pos === pos) return card(opp.revealed.characterId, { ...base, equipList: eq, flag: "亮" });
+    if (o.me.peek?.pos === pos) return card(o.me.peek.characterId, { ...base, equipList: eq, flag: "偷看" });
+    if (peeking) return card(null, { ...base, equipList: eq, backText: "点这里偷看", act: "peek", arg: pos, cls: "target" });
+    return card(null, { ...base, equipList: eq });
   }).join("");
 }
 
@@ -1007,14 +1012,20 @@ function myRow(o: Observation): string {
   const keys = myKeys(o, pl.slots);
   return pl.slots.map((id, pos) => {
     if (!id) return slot("空位<br><small>被吞掉</small>");
-    let equip = o.me.equipment[pos];
+    const eqs = [...o.me.equipment];
+    const fxs = [...o.me.slotEffects];
     let cls = "";
     if (drafting) {
       cls = ui.draft.pos === pos ? "selected" : "target";
-      if (ui.draft.pos === pos) equip = o.me.offers![ui.draft.offer!];
+      // 预览：挑中的牌装上去的样子（效果槽牌进效果槽，装备顶替原来的装备）
+      if (ui.draft.pos === pos) {
+        const pick = o.me.offers![ui.draft.offer!];
+        if (pick.startsWith("FX")) fxs[pos] = pick;
+        else eqs[pos] = pick;
+      }
     }
     return card(id, {
-      key: keys[pos], unit: `${HUMAN}-${pos}`, equip, flag: pos === pl.reveal ? "亮" : "暗", cls,
+      key: keys[pos], unit: `${HUMAN}-${pos}`, equipList: gearAt(eqs, fxs, pos), flag: pos === pl.reveal ? "亮" : "暗", cls,
       act: drafting ? "draftPos" : undefined, arg: pos,
     });
   }).join("");
@@ -1177,12 +1188,13 @@ function operateDock(o: Observation) {
 function draftDock(o: Observation) {
   const offers = o.me.offers!;
   const tiles = offers.map((id, i) => {
-    const e = equipment(id);
-    return `<div class="option clickable ${ui.draft.offer === i ? "selected" : ""}"${attrs({ act: "draftOffer", arg: i })}><b>⚙ ${e.name}</b><p>${e.text}</p></div>`;
+    const e = gear(id);
+    const fx = id.startsWith("FX");
+    return `<div class="option clickable ${fx ? "fx" : ""} ${ui.draft.offer === i ? "selected" : ""}"${attrs({ act: "draftOffer", arg: i })}><b>${fx ? "✦" : "⚙"} ${e.name}</b><small>${fx ? "效果" : "装备"}</small><p>${e.text}</p></div>`;
   }).join("");
   const ready = ui.draft.offer !== null && ui.draft.pos !== null;
   const sub = ui.draft.offer === null ? "先选一件" : ui.draft.pos === null ? "再点上面你的一张牌，装给它" : `装到 ${posName(ui.draft.pos)}`;
-  return prompt("挑一件装备", sub) + `<div class="tray options three">${tiles}</div>
+  return prompt("挑一张：装备或效果", sub) + `<div class="tray options three">${tiles}</div>
     <div class="actions">${btn("确认装备", "draft", undefined, `primary big ${ready ? "" : "disabled"}`)}</div>`;
 }
 
@@ -1256,7 +1268,9 @@ function sheetView(): string {
         case "play": body = HOW_TO_PLAY + `<div class="actions">${btn("重新显示新手提示", "tipsReset")}</div>`; break;
         case "chars": body = `<p class="muted">开桌时每人的牌池从全部人物里随机 8 名。市场里，第 1–5 手只出第一阶段人物，第 6 手起只出标“二”的人物。点卡上的 ? 看能力。</p>
           <div class="gallery">${CHARACTERS.map((c) => card(c.id, { cls: "small", flag: c.stage === 2 ? "二" : undefined })).join("")}</div>`; break;
-        case "equip": body = refTable(EQUIPMENT.map((e) => [e.name, e.text])); break;
+        case "equip": body = `<h3>装备</h3>${refTable(EQUIPMENT.map((e) => [`⚙ ${e.name}`, e.text]))}
+          <h3>效果槽牌</h3><p class="muted">操作时从装备和效果槽牌混在一起的牌里挑。每人身上一件装备、一张效果槽牌，互不顶替。</p>
+          ${refTable(SLOT_EFFECTS.map((e) => [`✦ ${e.name}`, e.text]))}`; break;
         case "rules": body = refTable(RULES.map((r) => [`${r.name}<small>${r.family} · 最多 ${r.maxRounds} 轮</small>`, r.text, r.id])); break;
         case "arenas": body = refTable(ARENAS.map((a) => [`${a.name}<small>${a.kind}</small>`, a.text, a.id])); break;
         case "effects": body = refTable(PUBLIC_EFFECTS.map((p) => [`${p.name}<small>${p.kind}</small>`, p.text, p.id])); break;
@@ -1266,12 +1280,12 @@ function sheetView(): string {
     }
     case "card": {
       const c = character(s.id);
-      const eq = s.equip ? equipment(s.equip) : null;
-      return wrap("card-sheet", `${ART.has(s.id) ? `<img class="full-portrait" src="art/${s.id}.webp" alt="${c.name}立绘">` : ""}<div class="big-card">${card(s.id, { equip: s.equip, cls: "large" })}</div>
+      const eqs = s.equip.map((x) => gear(x));
+      return wrap("card-sheet", `${ART.has(s.id) ? `<img class="full-portrait" src="art/${s.id}.webp" alt="${c.name}立绘">` : ""}<div class="big-card">${card(s.id, { equipList: s.equip, cls: "large" })}</div>
         <div class="card-info"><h2>${c.name}<small><span class="latin">${SIN_LATIN[c.sin]}</span> ${c.sin} · ${c.tag}${c.stage === 2 ? " · 第二阶段" : ""}</small></h2>
         <p class="stats">攻 <b>${c.atk}</b> · 血 <b>${c.hp}</b> · ${shapeLabel(c.shape, c.atk)}${c.armor ? ` · 护甲 ${c.armor}` : ""}${c.barrier ? ` · 屏障 ${c.barrier}` : ""}</p>
         <p class="ability">${esc(c.ability)}</p>
-        ${eq ? `<p class="equip-line">⚙ ${eq.name}：${eq.text}</p>` : ""}
+        ${eqs.map((e, i) => `<p class="equip-line">${s.equip[i].startsWith("FX") ? "✦" : "⚙"} ${e.name}：${e.text}</p>`).join("")}
         <p class="muted">重击 → 护甲 → 连击 → 屏障 → 重击：前者克后者。</p></div>`);
     }
     case "env": {
@@ -1359,7 +1373,7 @@ function onAct(name: string, arg: string | undefined) {
     case "tipsReset": resetTips(); ui.sheet = null; return render();
     case "inspect": {
       const [id, eq] = (arg ?? "").split("|");
-      ui.sheet = { kind: "card", id, equip: eq || null };
+      ui.sheet = { kind: "card", id, equip: eq ? eq.split("+") : [] };
       return render();
     }
     case "tab": ui.helpTab = arg as Ui["helpTab"]; return render();
