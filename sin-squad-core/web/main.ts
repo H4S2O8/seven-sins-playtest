@@ -19,6 +19,7 @@ import { isMuted, setScene, toggleMuted } from "./music.js";
 import { FRAMES, currentFrame, installFrames, setFrame, showGallery, type FrameId } from "./frames.js";
 import { SIN_LATIN, installSigil } from "./sigil.js";
 import { installLight, relight } from "./light.js";
+import { BUILD, VERSION } from "./version.js";
 import { installTilt } from "./tilt.js";
 import { disableTips, dismissTip, resetTips, tipHtml } from "./tips.js";
 
@@ -985,7 +986,7 @@ function shownMoney(o: Observation): { stacks: [number, number]; pot: number } {
 
 function topBar(o: Observation) {
   return `<header class="top">
-    <div class="brand">七罪暗队<small>v0.3 试玩</small></div>
+    <div class="brand"${BUILD ? ` title="构建 ${BUILD}"` : ""}>七罪暗队<small>${VERSION} 试玩</small></div>
     ${debug ? btn("调试", "sheet", "debug", "debug-chip") : ""}
     <div class="hand-no">第 ${o.handNo} 手 · 底注 ${o.ante}${o.handNo % 5 === 0 ? " · 下手升盲" : ""}</div>
     <nav>${musicBtn()}${btn("记录", "sheet", "log")}${btn("牌池", "sheet", "pool")}${btn("规则", "sheet", "help")}${btn("卡框", "sheet", "frames")}${btn("新桌", "newTable")}</nav>

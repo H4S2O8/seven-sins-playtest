@@ -1,8 +1,8 @@
 {
   "name": "sin-squad-core",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
-  "description": "七罪暗队 v0.3 规则核心：战斗、下注、牌桌与模拟器（无画面）",
+  "description": "七罪暗队规则核心：战斗、下注、牌桌与模拟器（无画面）",
   "type": "module",
   "scripts": {
     "build": "tsc -p tsconfig.json",

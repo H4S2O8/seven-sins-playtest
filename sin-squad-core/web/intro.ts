@@ -5,6 +5,7 @@ import { turnCard } from "./motion.js";
 import { isMuted, toggleMuted } from "./music.js";
 import { SIN_LATIN } from "./sigil.js";
 import { HUMAN, SIN_COLOR } from "./text.js";
+import { BUILD, VERSION } from "./version.js";
 
 /**
  * 进入牌桌之前的几屏：标题 → 选对手 → 起始牌池 → 抛筹码定庄 → 入座。
@@ -229,7 +230,7 @@ export class Gate {
         </div>
       </div>
       <button class="gate-debug" data-go="debug">调试开局</button>
-      <div class="gate-version">v0.3 试玩</div>
+      <div class="gate-version">${VERSION} 试玩${BUILD ? ` · ${BUILD}` : ""}</div>
     </div>`;
   }
 
