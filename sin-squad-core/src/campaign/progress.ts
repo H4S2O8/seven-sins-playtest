@@ -1,4 +1,5 @@
 import { CHARACTERS } from "../content/characters.js";
+import { demonId } from "../content/demons.js";
 import type { TableOptions } from "../game/table.js";
 import { Rng } from "../rng.js";
 import { MIN_CAMPAIGN_POOL, STAGES, STARTING_POOL, stage } from "./stages.js";
@@ -55,9 +56,13 @@ export function unlocked(p: CampaignProgress, no: number): boolean {
   return no >= 0 && no < STAGES.length && no <= p.cleared;
 }
 
-/** 这一关的牌桌设置。seat 0 是你，seat 1 是她。 */
-export function stageTable(p: CampaignProgress, no: number, seed: number): TableOptions {
+/**
+ * 这一关的牌桌设置。seat 0 是你，seat 1 是她。
+ * demon：你这张牌桌带的魔神牌（名字，从已经拿到的里挑；null = 不带）。
+ */
+export function stageTable(p: CampaignProgress, no: number, seed: number, demon: string | null = null): TableOptions {
   const s = stage(no);
+  if (demon !== null && !p.demons.includes(demon)) throw new Error(`还没拿到魔神牌：${demon}`);
   return {
     seed,
     buyIn: s.buyIn,
@@ -70,6 +75,12 @@ export function stageTable(p: CampaignProgress, no: number, seed: number): Table
       pools: [p.pool.slice(), s.foePool.slice()],
       deal: s.deal,
       betting: s.betting,
+      battle: {
+        hellfire: true,
+        cards: true,
+        nearest: true,
+        demons: [demon && demonId(demon), s.demon && demonId(s.demon)],
+      },
     },
   };
 }

@@ -1,3 +1,4 @@
+import type { CampaignBattleRules } from "../battle/engine.js";
 import { character } from "../content/characters.js";
 import { other, type EatChoice, type Seat } from "../types.js";
 import type { Action, Phase } from "./actions.js";
@@ -21,6 +22,8 @@ export interface Observation {
   arenaId: string | null;
   /** 场地在战斗里生效（战役前几关的主场只当背景）。 */
   arenaActive: boolean;
+  /** 战役的战斗规则（魔神牌是公开的）；自由牌桌为 null。 */
+  battleRules: CampaignBattleRules | null;
   ruleId: string | null;
   publicEffectId: string | null;
   publicEffectActive: boolean | null;
@@ -81,6 +84,7 @@ export function observe(t: Table, seat: Seat): Observation {
     stacks: [t.stacks[0], t.stacks[1]], pot: h.pot, invested: [h.invested[0], h.invested[1]],
     arenaOptions: h.arenaOptions, arenaId: h.arenaId,
     arenaActive: !t.campaign || t.campaign.arenaActive,
+    battleRules: t.campaign?.battle ?? null,
     ruleId: h.ruleRevealed ? h.ruleId : null,
     publicEffectId: h.peRevealed ? h.publicEffectId : null,
     publicEffectActive: h.peRevealed && phase !== "vote" && phase !== "bid" ? h.peActive : null,

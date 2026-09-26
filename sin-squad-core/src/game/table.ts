@@ -1,4 +1,4 @@
-import { runBattle, type BattleResult } from "../battle/engine.js";
+import { runBattle, type BattleResult, type CampaignBattleRules } from "../battle/engine.js";
 import { CHARACTERS, character } from "../content/characters.js";
 import { ARENAS, EQUIPMENT, PUBLIC_EFFECTS, RULES } from "../content/tables.js";
 import { Rng } from "../rng.js";
@@ -48,6 +48,8 @@ export interface CampaignRules {
   deal: 3 | 4;
   /** false：不下注，布完阵直接开打（序章）。 */
   betting: boolean;
+  /** 战斗规则：炼狱业火、打最近的敌人、战役卡面、双方的魔神牌。 */
+  battle?: CampaignBattleRules;
 }
 
 /**
@@ -144,6 +146,8 @@ export type TableEvent =
   | { type: "market"; candidates: string[]; firstPicker: Seat }
   | { type: "marketPick"; seat: Seat; characterId: string }
   | { type: "marketRemove"; seat: Seat; removed: boolean }
+  /** 金山的利息：奖池分完之后，对手再付给 seat 这么多筹码。 */
+  | { type: "interest"; seat: Seat; amount: number; stacks: [number, number] }
   | { type: "tableOver"; winner: Seat };
 
 const GRAND_ID = "GL2"; // 饕餮
@@ -670,6 +674,7 @@ export class Table {
       publicEffectId: h.peActive ? h.publicEffectId : null,
       pot: h.pot,
       firstSeat: other(h.dealer), // 非庄家先手：庄家后布阵、有信息优势
+      campaign: this.campaign?.battle,
     });
     h.battle = result;
     this.log.push({
@@ -685,6 +690,14 @@ export class Table {
     h.pot = 0;
     h.outcome = { winner: result.winner, by: "battle", pot };
     this.log.push({ type: "settle", winner: result.winner, pot, stacks: [this.stacks[0], this.stacks[1]] });
+    // 金山的利息：输了也收，但不超过对手剩下的筹码
+    for (const s of SEATS) {
+      const amount = Math.min(result.interest[s], this.stacks[other(s)]);
+      if (amount <= 0) continue;
+      this.stacks[other(s)] -= amount;
+      this.stacks[s] += amount;
+      this.log.push({ type: "interest", seat: s, amount, stacks: [this.stacks[0], this.stacks[1]] });
+    }
     this.checkInvariant();
     if (this.endIfBroke()) return;
     this.openMarket(result.winner === null ? other(h.dealer) : other(result.winner));
