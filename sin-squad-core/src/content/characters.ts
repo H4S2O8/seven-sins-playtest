@@ -20,7 +20,7 @@ export const CHARACTERS: readonly CharacterDef[] = [
   { id: "GR3", name: "收藏家", sin: "贪婪", atk: 4, hp: 7, shape: "heavy", armor: 0, barrier: 0,
     ability: "击倒敌人后，攻 +2 并拿走对方的装备加成", tag: "收割者", stage: 1 },
   // 暴食
-  { id: "GL1", name: "血蛭", sin: "暴食", atk: 3, hp: 8, shape: "multi", armor: 0, barrier: 0,
+  { id: "GL1", name: "放血师", sin: "暴食", atk: 3, hp: 8, shape: "multi", armor: 0, barrier: 0,
     ability: "吸血：自己攻击每打中一段，回复 1 血（反击不算）", tag: "吸血续航", stage: 1 },
   { id: "GL2", name: "饕餮", sin: "暴食", atk: 3, hp: 8, shape: "heavy", armor: 0, barrier: 0,
     ability: "布阵时可以吞掉一名队友，获得它的攻和血（该位置空出）", tag: "三合一", stage: 2 },

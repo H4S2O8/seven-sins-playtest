@@ -570,12 +570,12 @@ class Battle {
 
     // 吸血：自己主动攻击每打中一段回 1（反击不算）
     const bites = hit.segs;
-    if (bites > 0 && a.hp > 0 && this.abilityOn(a, "血蛭")) {
+    if (bites > 0 && a.hp > 0 && this.abilityOn(a, "放血师")) {
       let heal = bites;
       if (this.has("P19")) heal -= 1;
       if (this.has("P18") && r >= 4) heal -= 1;
       if (heal > 0) {
-        if (a.hp < a.maxHp) this.trig(a, "血蛭", `吸血 +${heal}`);
+        if (a.hp < a.maxHp) this.trig(a, "放血师", `吸血 +${heal}`);
         this.heal(a, heal);
       }
     }
