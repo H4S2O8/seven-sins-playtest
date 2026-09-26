@@ -14,7 +14,7 @@ export const CHARACTERS: readonly CharacterDef[] = [
     ability: "若对手本手下注或加注过，第 1 轮出手伤害翻倍", tag: "首轮爆发", stage: 2 },
   // 贪婪
   { id: "GR1", name: "豪商", sin: "贪婪", atk: 1, hp: 5, shape: "heavy", armor: 0, barrier: 0,
-    ability: "开战时：你本手每投入 10 筹码（含底注、操作费），攻 +1、血 +1，最多各 +4", tag: "花钱养成", stage: 2 },
+    ability: "开战时：你本手每投入 10 筹码（含底注、操作费），+1/+1，最多 +4/+4", tag: "花钱养成", stage: 2 },
   { id: "GR2", name: "赎罪券商", sin: "贪婪", atk: 3, hp: 8, shape: "heavy", armor: 0, barrier: 0,
     ability: "开战时：你本手每付一次操作费，屏障 +1（最多 +2）", tag: "花钱买护盾", stage: 1 },
   { id: "GR3", name: "收藏家", sin: "贪婪", atk: 4, hp: 7, shape: "heavy", armor: 0, barrier: 0,
@@ -25,7 +25,7 @@ export const CHARACTERS: readonly CharacterDef[] = [
   { id: "GL2", name: "饕餮", sin: "暴食", atk: 3, hp: 8, shape: "heavy", armor: 0, barrier: 0,
     ability: "布阵时可吞掉一名队友，获得它卡面的攻和血，该位置留空", tag: "三合一", stage: 2 },
   { id: "GL3", name: "食腐鸦", sin: "暴食", atk: 2, hp: 7, shape: "heavy", armor: 0, barrier: 0,
-    ability: "战斗中每有一名人物倒下（不论敌我），攻 +1、血 +3", tag: "血战养成", stage: 1 },
+    ability: "战斗中每有一名人物倒下（不论敌我），+1/+3", tag: "血战养成", stage: 1 },
   // 嫉妒
   { id: "EN1", name: "密探", sin: "嫉妒", atk: 3, hp: 8, shape: "multi", armor: 0, barrier: 0,
     ability: "亮牌后：偷看对手一张暗牌，然后可交换自己两张暗牌的位置（对手不知道）", tag: "情报", stage: 1 },
@@ -42,7 +42,7 @@ export const CHARACTERS: readonly CharacterDef[] = [
     ability: "开战时：若你本手没付过操作费，全队血 +5", tag: "不操作的奖励", stage: 1 },
   // 傲慢
   { id: "PR1", name: "孔雀", sin: "傲慢", atk: 2, hp: 7, shape: "heavy", armor: 0, barrier: 0,
-    ability: "被亮出：开战时攻 +3、血 +4", tag: "爱被看见", stage: 1 },
+    ability: "被亮出：开战时 +3/+4", tag: "爱被看见", stage: 1 },
   { id: "PR2", name: "无瑕刺客", sin: "傲慢", atk: 3, hp: 3, shape: "heavy", armor: 0, barrier: 1,
     ability: "满血时，出手伤害翻倍", tag: "满血就疼", stage: 2 },
   { id: "PR3", name: "僭王", sin: "傲慢", atk: 3, hp: 7, shape: "heavy", armor: 1, barrier: 0,

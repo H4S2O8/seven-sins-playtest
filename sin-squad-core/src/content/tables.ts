@@ -2,8 +2,8 @@ import type { ArenaDef, EquipmentDef, PublicEffectDef, RuleDef } from "../types.
 
 /** 装备：约一半是身材牌，另一半改变攻击形状或防御。 */
 export const EQUIPMENT: readonly EquipmentDef[] = [
-  { id: "E01", name: "校准刃", text: "+3/+0", effect: { kind: "stat", atk: 3, hp: 0 } },
-  { id: "E02", name: "厚衬背心", text: "+0/+6", effect: { kind: "stat", atk: 0, hp: 6 } },
+  { id: "E01", name: "校准刃", text: "攻 +3", effect: { kind: "stat", atk: 3, hp: 0 } },
+  { id: "E02", name: "厚衬背心", text: "血 +6", effect: { kind: "stat", atk: 0, hp: 6 } },
   { id: "E03", name: "轻摆齿轮", text: "+1/+4", effect: { kind: "stat", atk: 1, hp: 4 } },
   { id: "E04", name: "铁拳套", text: "+2/+3", effect: { kind: "stat", atk: 2, hp: 3 } },
   { id: "E05", name: "行军斗篷", text: "+1/+5", effect: { kind: "stat", atk: 1, hp: 5 } },

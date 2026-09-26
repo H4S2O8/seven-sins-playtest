@@ -136,7 +136,7 @@ class Battle {
       }
       eater.atk += eaten.def!.atk;
       eater.hp += eaten.def!.hp;
-      this.trig(eater, "饕餮", `吞掉${eaten.def!.name}：攻 +${eaten.def!.atk}、血 +${eaten.def!.hp}`);
+      this.trig(eater, "饕餮", `吞掉${eaten.def!.name}：+${eaten.def!.atk}/+${eaten.def!.hp}`);
       team[setup.eat.eaten] = emptyUnit(seat, setup.eat.eaten);
     }
     return team;
@@ -181,7 +181,7 @@ class Battle {
             }
             case "豪商": {
               const k = Math.min(4, Math.floor(me.invested / 10));
-              if (k) { u.atk += k; u.hp += k; this.trig(u, name, `投入 ${me.invested}：攻 +${k}、血 +${k}`); }
+              if (k) { u.atk += k; u.hp += k; this.trig(u, name, `投入 ${me.invested}：+${k}/+${k}`); }
               break;
             }
             case "赎罪券商": {
@@ -196,7 +196,7 @@ class Battle {
               if (me.checkCount) { u.atk += 2 * me.checkCount; this.trig(u, name, `过牌 ${me.checkCount} 次：攻 +${2 * me.checkCount}`); }
               break;
             case "孔雀":
-              if (me.revealedPos === u.pos) { u.atk += 3; u.hp += 4; this.trig(u, name, "被亮出：攻 +3、血 +4"); }
+              if (me.revealedPos === u.pos) { u.atk += 3; u.hp += 4; this.trig(u, name, "被亮出：+3/+4"); }
               break;
             case "金库守卫":
               if ((me.stack ?? 0) > (foe.stack ?? 0)) { this.addBarrier(u, 1, false); this.trig(u, name, "筹码领先：屏障 +1"); }
@@ -696,7 +696,7 @@ class Battle {
         if (this.abilityOn(u, "食腐鸦")) {
           const n = newlyDead.length;
           u.atk += n; u.hp += 3 * n; u.maxHp += 3 * n;
-          this.trig(u, "食腐鸦", `攻 +${n}、血 +${3 * n}`);
+          this.trig(u, "食腐鸦", `+${n}/+${3 * n}`);
         }
       }
       for (const v of newlyDead) {

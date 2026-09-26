@@ -197,7 +197,7 @@ describe("触发事件", () => {
       team(["GR3", "GR2", null]),
     );
     const trig = r.events.filter((e) => e.type === "trigger");
-    expect(trig).toContainEqual({ round: 0, type: "trigger", seat: 0, pos: 0, name: "孔雀", text: "被亮出：攻 +3、血 +4" });
+    expect(trig).toContainEqual({ round: 0, type: "trigger", seat: 0, pos: 0, name: "孔雀", text: "被亮出：+3/+4" });
     expect(trig.some((e) => e.round === 1 && e.name === "狂战士")).toBe(true);
   });
 });
