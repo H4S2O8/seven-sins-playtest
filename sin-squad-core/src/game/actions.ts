@@ -6,9 +6,9 @@ export type Action =
   | { type: "chooseArena"; index: 0 | 1 }
   /** 从发到的 4 名里挑 3 名布阵：picks[i] 是放在 i 号位的那张（发牌序号）。 */
   | { type: "place"; picks: [number, number, number]; eat: EatChoice | null; reveal: number }
-  /** 窥视者：暗中查看对手一个暗置位置。 */
+  /** 密探：暗中查看对手一个暗置位置。 */
   | { type: "peek"; pos: number }
-  /** 窥视者偷看之后：交换自己两名暗置人物的位置（null = 不交换）。对手不会知道。 */
+  /** 密探偷看之后：交换自己两名暗置人物的位置（null = 不交换）。对手不会知道。 */
   | { type: "peekSwap"; swap: [number, number] | null }
   | { type: "check" }
   | { type: "bet"; amount: number }

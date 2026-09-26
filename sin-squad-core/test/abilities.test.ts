@@ -26,31 +26,31 @@ describe("第二批人物", () => {
     expect(battle(solo("GR4", { stack: 60 }), solo("GR2", { stack: 80 })).start[0][0].barrier).toBe(0);
   });
 
-  it("双生誓：站在 2 号位、两侧都有队友，全队血 +2", () => {
+  it("双子：站在 2 号位、两侧都有队友，全队血 +2", () => {
     const mid = battle(team(["GR1", "LU5", "GL3"]), solo("GR2")).start[0];
     expect(mid.map((u) => u.hp)).toEqual([hp("GR1") + 2, hp("LU5") + 2, hp("GL3") + 2]);
     const side = battle(team(["LU5", "GR1", "GL3"]), solo("GR2")).start[0];
     expect(side.map((u) => u.hp)).toEqual([hp("LU5"), hp("GR1"), hp("GL3")]);
   });
 
-  it("窥伺刀：打被亮出的敌人攻 +2", () => {
+  it("影子：打被亮出的敌人攻 +2", () => {
     const seen = battle(solo("EN4"), team(["GR4", null, null], [null, null, null], { revealedPos: 0 }));
     const hidden = battle(solo("EN4"), team(["GR4", null, null], [null, null, null], { revealedPos: 1 }));
     expect(afterHit(seen, 1)[1][0].hp).toBe(hp("GR4") - dealt("EN4", atk("EN4") + 2, arm("GR4")));
     expect(afterHit(hidden, 1)[1][0].hp).toBe(hp("GR4") - dealt("EN4", atk("EN4"), arm("GR4")));
   });
 
-  it("终餐者：敌方只剩一人时攻 +4", () => {
+  it("大野狼：敌方只剩一人时攻 +4", () => {
     expect(afterHit(battle(solo("GL5"), solo("GR4")), 1)[1][0].hp).toBe(hp("GR4") - dealt("GL5", atk("GL5") + 4, arm("GR4")));
     expect(afterHit(battle(solo("GL5"), team(["GR4", "GR4", null])), 1)[1][0].hp).toBe(hp("GR4") - dealt("GL5", atk("GL5"), arm("GR4")));
   });
 
-  it("终止符：第三轮起才加攻", () => {
+  it("守夜人：第三轮起才加攻", () => {
     const rng = new Rng(7);
     let seen = false;
     for (let i = 0; i < 400; i++) {
       for (const e of randomRun(rng).events) {
-        if (e.type !== "trigger" || e.name !== "终止符") continue;
+        if (e.type !== "trigger" || e.name !== "守夜人") continue;
         expect(e.round).toBeGreaterThanOrEqual(3);
         seen = true;
       }
@@ -58,25 +58,25 @@ describe("第二批人物", () => {
     expect(seen).toBe(true);
   });
 
-  it("酸液兽：打中带护甲的人，腐蚀掉 1 点护甲（每人一次）", () => {
+  it("噬铁软泥：打中带护甲的人，腐蚀掉 1 点护甲（每人一次）", () => {
     const r = battle(solo("GL4"), solo("GR4"));
     expect(afterHit(r, 1)[1][0].armor).toBe(arm("GR4") - 1);
-    expect(r.events.filter((e) => e.type === "trigger" && e.name === "酸液兽")).toHaveLength(1);
+    expect(r.events.filter((e) => e.type === "trigger" && e.name === "噬铁软泥")).toHaveLength(1);
   });
 
-  it("破阵者：第一次打破屏障，攻 +2（只一次）", () => {
+  it("攻城锤手：第一次打破屏障，攻 +2（只一次）", () => {
     const r = battle(solo("WR4"), solo("PR2"));
-    expect(fired(r, "破阵者")).toBe(true);
+    expect(fired(r, "攻城锤手")).toBe(true);
     expect(afterHit(r, 1)[0][0].atk).toBe(atk("WR4") + 2);
-    expect(r.events.filter((e) => e.type === "trigger" && e.name === "破阵者")).toHaveLength(1);
+    expect(r.events.filter((e) => e.type === "trigger" && e.name === "攻城锤手")).toHaveLength(1);
   });
 
-  it("诱导者：转线的敌人优先打它", () => {
-    // 我方 1 号位的对位是空的，转线后本该打血最少的金主，被诱导者嘲讽
+  it("交际花：转线的敌人优先打它", () => {
+    // 我方 1 号位的对位是空的，转线后本该打血最少的豪商，被交际花嘲讽
     const r = battle(solo("WR3"), team([null, "GR1", "LU4"]));
     const first = r.events.find((e) => e.type === "attack" && e.seat === 0);
     expect(first?.type === "attack" && first.targetPos).toBe(2);
-    expect(fired(r, "诱导者")).toBe(true);
+    expect(fired(r, "交际花")).toBe(true);
   });
 
   it("全部人物混打几千场：不出错、血量和攻都是整数", () => {

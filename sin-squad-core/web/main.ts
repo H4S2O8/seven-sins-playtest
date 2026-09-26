@@ -663,7 +663,7 @@ function bodyOf(id: string, equip: string | null): Body {
 
 interface CardOpts {
   equip?: string | null;
-  /** 战斗中身上的全部装备（夺装者可能让一人带两件）；给了就不看 equip。 */
+  /** 战斗中身上的全部装备（扒手可能让一人带两件）；给了就不看 equip。 */
   equipList?: string[];
   body?: Body;
   dead?: boolean;
@@ -1180,9 +1180,9 @@ function placeDock(o: Observation, mine: boolean) {
     ${btn("确认布阵", "place", undefined, `primary big ${ok ? "" : "disabled"}`)}</div>`;
 }
 
-/** 窥视者：先暗中偷看，再决定要不要交换自己两名暗置人物。 */
+/** 密探：先暗中偷看，再决定要不要交换自己两名暗置人物。 */
 function peekDock(o: Observation) {
-  if (!o.me.peek) return prompt("你的窥视者可以暗中偷看一张暗牌", "点对手的一张暗牌；对手不会知道你看过");
+  if (!o.me.peek) return prompt("你的密探可以暗中偷看一张暗牌", "点对手的一张暗牌；对手不会知道你看过");
   const pl = o.me.placement!;
   const seen = `${posName(o.me.peek.pos)} 是 ${character(o.me.peek.characterId).name}`;
   const swaps = legalActions(table!, HUMAN).flatMap((a) => (a.type === "peekSwap" && a.swap ? [a.swap] : []));
@@ -1206,7 +1206,7 @@ function betDock(o: Observation) {
   const quick = acts.flatMap((a) => (a.type === "bet" ? [a.amount] : a.type === "raise" ? [a.to] : []));
   const verb = opening ? "下注" : "加注到";
   const toCall = Math.min(b.toCall, stack);
-  const sub = b.canFold ? "" : "对手亮出了冠冕者：第 1 轮不能弃牌";
+  const sub = b.canFold ? "" : "对手亮出了僭王：第 1 轮不能弃牌";
   return prompt(toCall ? `对手下注，你要跟 ${toCall}` : `第 ${b.round} 轮下注`, sub) +
     (canSize ? `<div class="sizer">
       ${quick.map((x) => btn(String(x), "setBet", x, `chip-btn ${x === ui.betAmount ? "on" : ""}`)).join("")}

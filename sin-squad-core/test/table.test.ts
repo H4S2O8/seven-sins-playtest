@@ -96,18 +96,18 @@ describe("下注与操作费", () => {
     expect(t.toAct()).toEqual([folder]); // 输家先挑
   });
 
-  it("冠冕者被亮出时，对手第 1 轮不能弃牌", () => {
+  it("僭王被亮出时，对手第 1 轮不能弃牌", () => {
     const t = new Table({ seed: 1, rig: { dealer: 1, deal: [["PR3"], null] } }); // 你（座位 0）先布阵
     driveUntil(t, "place");
-    t.apply(0, { type: "place", picks: [0, 1, 2], eat: null, reveal: 0 }); // 冠冕者在 1 号位亮出
+    t.apply(0, { type: "place", picks: [0, 1, 2], eat: null, reveal: 0 }); // 僭王在 1 号位亮出
     driveUntil(t, "bet");
     expect(t.canFold(1)).toBe(false);
     expect(legalActions(t, 1).some((a) => a.type === "fold")).toBe(false);
   });
 });
 
-describe("窥视者", () => {
-  /** 固定发牌：座位 0 先布阵，把窥视者暗置在 2 号位；对手没有窥视者。 */
+describe("密探", () => {
+  /** 固定发牌：座位 0 先布阵，把密探暗置在 2 号位；对手没有密探。 */
   function toPeek() {
     const t = new Table({ seed: 3, rig: { dealer: 1, deal: [["WR3", "EN1", "GR2", "SL1"], ["LU1", "GR3", "PR1", "WR2"]] } });
     driveUntil(t, "place");
