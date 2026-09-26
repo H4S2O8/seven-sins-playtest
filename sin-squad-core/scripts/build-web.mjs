@@ -43,9 +43,9 @@ const roomFiles = (await readdir(roomDir).catch(() => [])).filter((f) => f.endsW
 await mkdir(join(out, "room"), { recursive: true });
 for (const f of roomFiles) await copyFile(join(roomDir, f), join(out, "room", f));
 
-// 背景音乐：web/audio/<曲名>.mp3（曲名见 web/music.ts）
+// 背景音乐：web/audio/<曲名>.m4a（曲名见 web/music.ts）
 const audioDir = join(web, "audio");
-const audioFiles = (await readdir(audioDir).catch(() => [])).filter((f) => f.endsWith(".mp3"));
+const audioFiles = (await readdir(audioDir).catch(() => [])).filter((f) => f.endsWith(".m4a"));
 await mkdir(join(out, "audio"), { recursive: true });
 for (const f of audioFiles) await copyFile(join(audioDir, f), join(out, "audio", f));
 console.log(`已输出到 ${out}（版本 ${version}，app.js ${(js.length / 1024).toFixed(1)} KB，立绘 ${artIds.length} 张，音乐 ${audioFiles.length} 首）`);
