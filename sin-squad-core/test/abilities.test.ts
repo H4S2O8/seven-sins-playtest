@@ -71,12 +71,14 @@ describe("第二批人物", () => {
     expect(r.events.filter((e) => e.type === "trigger" && e.name === "攻城锤手")).toHaveLength(1);
   });
 
-  it("交际花：转线的敌人优先打它", () => {
-    // 我方 1 号位的对位是空的，转线后本该打血最少的豪商，被交际花嘲讽
-    const r = battle(solo("WR3"), team([null, "GR1", "LU4"]));
-    const first = r.events.find((e) => e.type === "attack" && e.seat === 0);
-    expect(first?.type === "attack" && first.targetPos).toBe(2);
-    expect(fired(r, "交际花")).toBe(true);
+  it("交际花：打中它的敌人下一次攻击 -2（每个敌人一次）", () => {
+    // 痴情骑士第一下被屏障挡掉；交际花出手时被它反击打中，它下一次攻击 -2
+    const r = battle(solo("LU1"), team(["LU4", "GR4", null]));
+    const flirts = r.events.filter((e) => e.type === "trigger" && e.name === "交际花");
+    expect(flirts).toHaveLength(1);
+    const sum = (e: (typeof r.events)[number] | undefined) => (e?.type === "attack" ? e.segments.reduce((s, x) => s + x, 0) : null);
+    const next = r.events.slice(r.events.indexOf(flirts[0])).find((e) => e.type === "attack" && e.seat === 0);
+    expect(sum(next)).toBe(atk("LU1") - 2);
   });
 
   it("全部人物混打几千场：不出错、血量和攻都是整数", () => {

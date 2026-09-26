@@ -55,7 +55,7 @@ export const CHARACTERS: readonly CharacterDef[] = [
   { id: "LU3", name: "塞壬", sin: "色欲", atk: 3, hp: 5, shape: "heavy", armor: 0, barrier: 0,
     ability: "开战时：魅惑对位敌人，它第 1 轮改打自己身边血最少的队友（身边没人则照常）", tag: "让敌人内讧", stage: 2 },
 
-  // 第二批：每罪补一两名，能力都和原有 21 人不重复（破盾、筹码领先、腐蚀护甲、终局收割、看穿亮牌、后期发力、嘲讽、布阵站位）
+  // 第二批：每罪补一两名，能力都和原有 21 人不重复（破盾、筹码领先、腐蚀护甲、终局收割、看穿亮牌、后期发力、削弱攻击者、布阵站位）
   { id: "WR4", name: "攻城锤手", sin: "愤怒", atk: 4, hp: 6, shape: "heavy", armor: 0, barrier: 0,
     ability: "第一次打掉敌人一层屏障后，攻 +2", tag: "破盾", stage: 1 },
   { id: "GR4", name: "金库守卫", sin: "贪婪", atk: 2, hp: 9, shape: "heavy", armor: 1, barrier: 0,
@@ -69,7 +69,7 @@ export const CHARACTERS: readonly CharacterDef[] = [
   { id: "SL4", name: "守夜人", sin: "怠惰", atk: 4, hp: 8, shape: "heavy", armor: 0, barrier: 0,
     ability: "从第 3 轮起，出手伤害 +3", tag: "后期发力", stage: 2 },
   { id: "LU4", name: "交际花", sin: "色欲", atk: 3, hp: 6, shape: "heavy", armor: 0, barrier: 1,
-    ability: "嘲讽：对位倒下、转线改打别人的敌人，必定先打它", tag: "嘲讽", stage: 2 },
+    ability: "逢场作戏：打中它的敌人，下一次攻击 -2（每个敌人一次）", tag: "削弱", stage: 2 },
   { id: "LU5", name: "双子", sin: "色欲", atk: 3, hp: 9, shape: "multi", armor: 0, barrier: 0,
     ability: "开战时：若站在 2 号位且两侧都有队友，全队血 +2", tag: "布阵", stage: 2 },
 ];
