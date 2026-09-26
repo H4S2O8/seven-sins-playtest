@@ -198,6 +198,25 @@ function arcana() {
   return { mask, frame };
 }
 
+/** 闪卡的闪粉：一片随机的小亮点和几颗四角星，铺满后跟着光的位置平移。 */
+function glitter() {
+  let seed = 11;
+  const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  let dots = "";
+  for (let i = 0; i < 150; i++) {
+    const x = f(rnd() * 200);
+    const y = f(rnd() * 200);
+    const v = rnd();
+    if (v > 0.93) {
+      const r = 1.6 + rnd() * 2.2;
+      dots += `<path d='M${x} ${f(+y - r)}L${f(+x + r * 0.22)} ${f(+y - r * 0.22)}L${f(+x + r)} ${y}L${f(+x + r * 0.22)} ${f(+y + r * 0.22)}L${x} ${f(+y + r)}L${f(+x - r * 0.22)} ${f(+y + r * 0.22)}L${f(+x - r)} ${y}L${f(+x - r * 0.22)} ${f(+y - r * 0.22)}Z' fill='#fff'/>`;
+    } else {
+      dots += `<circle cx='${x}' cy='${y}' r='${f(0.35 + v * 0.8)}' fill='#fff' fill-opacity='${f(0.35 + rnd() * 0.65)}'/>`;
+    }
+  }
+  return `<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'>${dots}</svg>`;
+}
+
 /** 数值图标（遮罩用，颜色由 CSS 给）：剑、心、盾、血滴。 */
 const ICONS = {
   sword: svg("0 0 24 24", `<path d='M12 .8L15.2 4.2V14.2H8.8V4.2Z M3.6 14.2H20.4V17H3.6Z M10.4 17H13.6V20.6H10.4Z' fill='#000'/><circle cx='12' cy='21.6' r='2.2' fill='#000'/>`),
@@ -226,6 +245,7 @@ export function installFrames() {
     "--ic-sword": url(ICONS.sword),
     "--ic-heart": url(ICONS.heart),
     "--ic-quatrefoil": url(ICONS.quatrefoil),
+    "--fx-glitter": url(glitter()),
   };
   for (const [k, val] of Object.entries(vars)) root.setProperty(k, val);
 }

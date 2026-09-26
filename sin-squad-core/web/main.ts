@@ -667,6 +667,8 @@ interface CardOpts {
   equip?: string | null;
   /** 用哪套卡框（默认是玩家选的那套）；选卡框的弹层里每个选项用自己的。 */
   frame?: FrameId;
+  /** 闪卡：彩虹箔、闪粉、高光，跟着光的位置流动（只用在详情大卡上）。 */
+  foil?: boolean;
   /** 战斗中身上的全部装备（扒手可能让一人带两件）；给了就不看 equip。 */
   equipList?: string[];
   body?: Body;
@@ -723,7 +725,7 @@ function cardFront(id: string, o: CardOpts) {
   const eqs = (o.equipList ?? (equip ? [equip] : [])).map((x) => equipment(x));
   const defs = (b.armor ? `<span class="def armor" title="护甲 ${b.armor}">${b.armor}</span>` : "") +
     (b.barrier ? `<span class="def barrier" title="屏障 ${b.barrier}">${b.barrier}</span>` : "");
-  return `<div class="art ${ART.has(id) ? "has-portrait" : ""}"><span class="glyph">${SIN_LATIN[c.sin]}</span>${ART.has(id) ? `<img class="portrait" src="art/${id}.webp" alt="" draggable="false">` : ""}
+  return `<div class="art ${ART.has(id) ? "has-portrait" : ""}"><span class="glyph">${SIN_LATIN[c.sin]}</span>${o.foil ? `<i class="foil-bg"></i>` : ""}${ART.has(id) ? `<img class="portrait" src="art/${id}.webp" alt="" draggable="false">` : ""}
       ${defs ? `<div class="defs">${defs}</div>` : ""}
       ${eqs.length ? `<div class="equip" title="${esc(eqs.map((e) => `${e.name}：${e.text}`).join("；"))}">${eqs.map((e) => e.name).join("、")}</div>` : ""}
     </div>
@@ -736,7 +738,8 @@ function cardFront(id: string, o: CardOpts) {
       <span class="stat hp ${hpCls}" title="血">${num(Math.max(0, b.hp))}</span>
     </div>
     ${o.dead ? `<span class="dead-mark">倒下</span>` : ""}
-    <button class="info-btn" data-act="inspect" data-arg="${id}|${equip ?? ""}" aria-label="查看${c.name}">?</button>`;
+    <button class="info-btn" data-act="inspect" data-arg="${id}|${equip ?? ""}" aria-label="查看${c.name}">?</button>
+    ${o.foil ? `<i class="foil"></i><i class="sparkle"></i><i class="glare"></i>` : ""}`;
 }
 
 /**
@@ -754,7 +757,7 @@ function card(id: string | null, o: CardOpts = {}) {
     o.lane ? `--lane:${o.lane}` : "",
   ].filter(Boolean).join(";");
   const cls = [
-    "card person", `fr-${o.frame ?? currentFrame()}`, o.cls ?? "", down ? "down" : "", o.dead ? "dead" : "", o.act ? "clickable" : "", b?.barrier && !down ? "shielded" : "",
+    "card person", `fr-${o.frame ?? currentFrame()}`, o.foil ? "foiled" : "", o.cls ?? "", down ? "down" : "", o.dead ? "dead" : "", o.act ? "clickable" : "", b?.barrier && !down ? "shielded" : "",
     o.fan !== undefined ? "fanned" : "", o.lane ? "switching" : "",
   ].filter(Boolean).join(" ");
   return `<div class="${cls}"${style ? ` style="${style}"` : ""}${o.key ? ` data-key="${o.key}"` : ""}${o.unit ? ` data-unit="${o.unit}"` : ""}${o.acting ? " data-acting" : ""}${attrs(o)}${c && !down ? ` title="${esc(`${c.name}（${c.sin}）：${c.ability}`)}"` : ""}>
@@ -1334,7 +1337,7 @@ function sheetView(): string {
     case "card": {
       const c = character(s.id);
       const eq = s.equip ? equipment(s.equip) : null;
-      return wrap("card-sheet", `${ART.has(s.id) ? `<img class="full-portrait" src="art/${s.id}.webp" alt="${c.name}立绘">` : ""}<div class="big-card">${card(s.id, { equip: s.equip, cls: "large" })}</div>
+      return wrap("card-sheet", `${ART.has(s.id) ? `<img class="full-portrait" src="art/${s.id}.webp" alt="${c.name}立绘">` : ""}<div class="big-card" data-tilt="18">${card(s.id, { equip: s.equip, cls: "large", foil: true })}</div>
         <div class="card-info"><h2>${c.name}<small><span class="latin">${SIN_LATIN[c.sin]}</span> ${c.sin} · ${c.tag}${c.stage === 2 ? " · 第二阶段" : ""}</small></h2>
         <p class="stats">攻 <b>${c.atk}</b> · 血 <b>${c.hp}</b> · ${shapeLabel(c.shape, c.atk)}${c.armor ? ` · 护甲 ${c.armor}` : ""}${c.barrier ? ` · 屏障 ${c.barrier}` : ""}</p>
         <p class="ability">${esc(c.ability)}</p>

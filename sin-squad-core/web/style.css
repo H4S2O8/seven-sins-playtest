@@ -872,10 +872,20 @@ table.ref td { padding: 6px 0; }
 table.ref tr { border-bottom: 1px solid #ffffff12; }
 .sheet.card-sheet { display: flex; gap: 22px; align-items: center; max-width: 760px; }
 .full-portrait { flex: none; height: min(60dvh, 420px); filter: drop-shadow(0 6px 14px #000c); }
+/* 详情里的大卡：斜过来露出牌的厚度，是一张闪卡。没有鼠标时自己慢慢晃、光跟着扫；鼠标移上去就跟着鼠标转（tilt.ts）。
+ * 转的是牌自己（.lift），不是外面这层：外层 [data-tilt] 的默认倾斜在这里关掉。 */
 .big-card { padding: 12px 8px; flex: none; perspective: 900px; }
-/* 详情里的大卡斜过来一点，露出牌的厚度 */
-.big-card .card > .lift { transform: translateZ(var(--z0)) rotateY(-16deg) rotateX(5deg); transition: transform .4s; }
-.big-card .card:hover > .lift { transform: translateZ(var(--z0)) rotateY(-4deg) rotateX(2deg); }
+.big-card[data-tilt] {
+  transform: none;
+  animation: foil-idle 7s ease-in-out infinite alternate;
+  transition: --fx .3s, --fy .3s, --frx .3s, --fry .3s;
+}
+.big-card[data-tilting] { animation: none; --fx: var(--gx); --fy: var(--gy); --frx: var(--rx); --fry: var(--ry); }
+@keyframes foil-idle {
+  from { --fx: 18%; --fy: 22%; --fry: -20deg; --frx: 7deg; }
+  to { --fx: 82%; --fy: 74%; --fry: -5deg; --frx: 1deg; }
+}
+.big-card .card > .lift { transform: translateZ(var(--z0)) rotateY(var(--fry)) rotateX(var(--frx)); }
 .big-card .card > .shade { transform: translateX(8px) skewY(-4deg); opacity: .5; }
 .card-info .stats b { color: var(--gold); }
 .card-info .ability { font-size: 15px; background: #0004; border-left: 3px solid var(--gold); padding: 8px 10px; border-radius: 6px; }
@@ -1800,4 +1810,64 @@ table.ref td.ref-pic img { display: block; width: 84px; aspect-ratio: 1216 / 832
   #frames .fg-felt-in { --cw: 26vw; gap: 12px; padding: 18px 8px 22px; }
   #frames .fg-small { --cw: 21vw; gap: 8px; }
   #frames .fg-tiny { --cw: 15vw; gap: 6px; }
+}
+
+
+/* ───────── 闪卡反光（详情大卡，.card.foiled） ─────────
+ * 光的位置是 --fx / --fy（0–100%），牌的角度是 --frx / --fry；详情大卡上由 foil-idle 动画或鼠标（tilt.ts）驱动。
+ * 叠四层，都用混合模式压在卡面上，所以五套卡框都通用：
+ *   .foil-bg  立绘窗里、人物背后的彩虹箔：人物本身不反光，像实体卡的“反向闪”
+ *   .foil     整张牌面一层淡彩虹，color-dodge 只在本来就亮的地方（金框、高光）爆出颜色，暗处几乎不动
+ *   .sparkle  闪粉：只在光附近亮，平移得比彩虹慢，有一点视差
+ *   .glare    镜面高光 + 纸面细颗粒 */
+@property --fx { syntax: "<percentage>"; inherits: true; initial-value: 50%; }
+@property --fy { syntax: "<percentage>"; inherits: true; initial-value: 50%; }
+@property --frx { syntax: "<angle>"; inherits: true; initial-value: 5deg; }
+@property --fry { syntax: "<angle>"; inherits: true; initial-value: -16deg; }
+.card .foil, .card .sparkle, .card .glare, .card .foil-bg {
+  position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+}
+.card.foiled {
+  --rainbow: repeating-linear-gradient(115deg,
+    hsl(355 90% 62%) 0%, hsl(40 95% 60%) 5%, hsl(90 80% 58%) 10%, hsl(170 85% 56%) 15%,
+    hsl(215 90% 64%) 20%, hsl(285 80% 66%) 25%, hsl(355 90% 62%) 30%);
+}
+.card.foiled .foil-bg {
+  background: var(--rainbow) calc(50% + (var(--fx) - 50%) * 2.4) calc(50% + (var(--fy) - 50%) * 2.4) / 400% 400%;
+  mix-blend-mode: color-dodge;
+  opacity: .6;
+  /* 只有光扫到的一条亮，离光远的地方基本还是原来的底色 */
+  -webkit-mask: radial-gradient(farthest-side circle at var(--fx) var(--fy), #000 0%, #0006 55%, #0000 100%);
+  mask: radial-gradient(farthest-side circle at var(--fx) var(--fy), #000 0%, #0006 55%, #0000 100%);
+}
+.card.foiled .foil {
+  z-index: 5;
+  background:
+    repeating-linear-gradient(-45deg, #0000 0 2px, #ffffff1c 2px 3px),
+    var(--rainbow) calc(50% + (var(--fx) - 50%) * 2) calc(50% + (var(--fy) - 50%) * 2) / 300% 300%;
+  mix-blend-mode: color-dodge;
+  opacity: .2;
+  -webkit-mask: radial-gradient(farthest-corner circle at var(--fx) var(--fy), #000 0%, #0007 35%, #0000 80%);
+  mask: radial-gradient(farthest-corner circle at var(--fx) var(--fy), #000 0%, #0007 35%, #0000 80%);
+}
+.card.foiled .sparkle {
+  z-index: 5;
+  background: var(--fx-glitter) calc(var(--fx) * 0.6) calc(var(--fy) * 0.6) / calc(var(--cw) * 0.9) auto;
+  mix-blend-mode: color-dodge;
+  opacity: .9;
+  -webkit-mask: radial-gradient(circle at var(--fx) var(--fy), #000 0%, #0008 18%, #0000 42%);
+  mask: radial-gradient(circle at var(--fx) var(--fy), #000 0%, #0008 18%, #0000 42%);
+}
+.card.foiled .glare {
+  z-index: 6;
+  background:
+    radial-gradient(farthest-corner circle at var(--fx) var(--fy), #ffffff90 0%, #ffffff38 18%, #0000 50%),
+    var(--fr-grain) 0 0 / 160px 160px;
+  mix-blend-mode: overlay;
+}
+/* 翻到背面、倒下时不反光 */
+.card.foiled.down .foil, .card.foiled.down .sparkle, .card.foiled.down .glare, .card.foiled.dead .foil, .card.foiled.dead .sparkle { display: none; }
+/* 减少动态效果：不晃、不扫，光停在左上 */
+@media (prefers-reduced-motion: reduce) {
+  .big-card[data-tilt] { animation: none; --fx: 30%; --fy: 25%; }
 }
