@@ -64,7 +64,7 @@ export const STAGES: readonly StageDef[] = [
   {
     no: 0, foe: "看板娘", title: "酒馆的招牌，嘴快，牌技一般但很会教", sin: null,
     teaches: "布阵、对位、碰撞（不下注）",
-    rules: ["V01"], ruleName: "全灭", ruleText: "全灭对方即胜",
+    rules: ["V01"], ruleName: "酒馆规矩", ruleText: "把对面三个人全部打倒就赢",
     arenaId: "A08", arenaActive: false, style: "novice",
     buyIn: 30, baseAnte: 10, blindEvery: 99, deal: 3, betting: false,
     foePool: ["WR2", "GR3", "GL1", "GL3", "LU1", "SL4", "GL5", "LU5"], signature: [], demon: null, portrait: null,

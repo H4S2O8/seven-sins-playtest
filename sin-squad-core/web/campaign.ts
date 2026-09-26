@@ -159,7 +159,7 @@ export function campaignView(c: CampaignCtx): string {
       <div class="floor-plate">
         <small>${s.no === 0 ? "PROLOGUS" : `${ROMAN[s.no]} · ${stageLatin(s)}`}</small>
         <b>${open ? s.foe : "？？？"}</b>
-        <span class="floor-rule">${open ? esc(s.ruleName) : (s.sin ?? "")}</span>
+        <span class="floor-rule">${open ? `规则「${esc(s.ruleName)}」` : (s.sin ?? "")}</span>
         ${note}${saved}
       </div>
     </div>`;
