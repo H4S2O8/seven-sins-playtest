@@ -1437,7 +1437,9 @@ function traditionalDraftDock(o: Observation) {
 
 function traditionalCombineDock(o: Observation) {
   const d = o.me.traditional!;
-  return prompt("把三张固定数字自由配给三张效果", `数字：${d.numbers.join("、")}；效果：${d.kept.map((id) => character(id).name).join("、")}`) + `<div class="actions">${btn("确认配对", "traditionalPlace", undefined, "primary big")}</div>`;
+  const maps = [[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]];
+  const choices = maps.map((m) => `<button data-act="traditionalPlace" data-arg="${m.join(",")}" class="primary">${m.map((n,i)=>`${character(d.kept[i]).name}=${d.numbers[n]}`).join(" / ")}</button>`).join("");
+  return prompt("把三张固定数字自由配给三张效果", `数字：${d.numbers.join("、")}；效果：${d.kept.map((id) => character(id).name).join("、")}`) + `<div class="actions">${choices}</div>`;
 }
 
 /** 密探：先暗中偷看，再决定要不要交换自己两名暗置人物。 */
@@ -1752,7 +1754,7 @@ function onAct(name: string, arg: string | undefined) {
     }
     case "traditionalKeep": return act({ type: "traditionalKeep", index: n });
     case "traditionalReroll": return act({ type: "traditionalReroll" });
-    case "traditionalPlace": return act({ type: "traditionalPlace", effects: [0, 1, 2], numbers: [0, 1, 2] });
+    case "traditionalPlace": { const m = (arg ?? "0,1,2").split(",").map(Number) as [number, number, number]; return act({ type: "traditionalPlace", effects: [0, 1, 2], numbers: m }); }
     case "peek": return act({ type: "peek", pos: n });
     case "reveal2": return act({ type: "reveal2", pos: n });
     case "peekSwap": {

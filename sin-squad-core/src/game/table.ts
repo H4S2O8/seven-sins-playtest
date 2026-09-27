@@ -1,4 +1,5 @@
 import { runBattle, type BattleResult, type CampaignBattleRules } from "../battle/engine.js";
+import { runTraditionalBattle } from "../battle/traditional.js";
 import { CHARACTERS, character } from "../content/characters.js";
 import { ARENAS, EQUIPMENT, PUBLIC_EFFECTS, RULES } from "../content/tables.js";
 import { Rng } from "../rng.js";
@@ -87,6 +88,7 @@ export interface Placement {
   reveal: number;
   /** 第二次翻开的那一名（还没翻为 null）。 */
   reveal2: number | null;
+  traditionalNumbers?: [number, number, number];
 }
 
 /** 传统牌桌的新式发牌：数字与人物效果分开发，效果可 D 一次。 */
@@ -421,7 +423,7 @@ export class Table {
     if (new Set(effects).size !== 3 || effects.some((i) => !Number.isInteger(i) || i < 0 || i >= d.kept.length)) throw new Error("效果配对非法");
     if (new Set(numbers).size !== 3 || numbers.some((i) => !Number.isInteger(i) || i < 0 || i > 2)) throw new Error("数字配对非法");
     const slots = effects.map((i) => d.kept[i]) as [string, string, string];
-    this.hand.placement[seat] = { slots, eat: null, eatenId: null, reveal: 0, reveal2: null };
+    this.hand.placement[seat] = { slots, eat: null, eatenId: null, reveal: 0, reveal2: null, traditionalNumbers: numbers.slice() as [number, number, number] };
     d.complete = true;
     this.log.push({ type: "traditionalPlaced", seat, numbers, effects: slots });
     if (this.hand.placement[0] && this.hand.placement[1]) this.afterPlacement();
@@ -849,7 +851,7 @@ export class Table {
 
   private fight() {
     const h = this.hand;
-    const result = runBattle({
+    const result = this.campaign ? runBattle({
       teams: this.battleTeams(),
       ruleId: h.ruleId,
       arenaId: this.battleArena(),
@@ -857,7 +859,13 @@ export class Table {
       pot: h.pot,
       firstSeat: other(h.dealer), // 非庄家先手：庄家后布阵、有信息优势
       campaign: this.campaign?.battle,
-    });
+    }) : runTraditionalBattle({
+      teams: SEATS.map((s) => {
+        const p = h.placement[s]!;
+        const nums = p.traditionalNumbers ?? [0, 0, 0];
+        return p.slots.map((effectId, i) => ({ effectId: effectId!, number: nums[i], equipmentId: h.equipment[s][i] }));
+      }) as any,
+    }) as BattleResult;
     h.battle = result;
     this.log.push({
       type: "battle", winner: result.winner, reason: result.reason,
