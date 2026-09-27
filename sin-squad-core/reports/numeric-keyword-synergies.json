@@ -1,0 +1,85 @@
+{
+  "definition": "Curated 9 small and 4 longer synergy families, not exhaustive card combinations. 2000 player lineups from 1000 hands. Prepared means structural ingredients present; coactivated means keyword traces occurred on that side, NOT proof each caused the next or caused a win. Families overlap; do not sum.",
+  "small": [
+    {
+      "name": "支援→共鸣",
+      "preparedLineups": 551,
+      "showdownPreparedLineups": 403,
+      "coactivatedLineups": 229
+    },
+    {
+      "name": "任意强化→蓄能",
+      "preparedLineups": 633,
+      "showdownPreparedLineups": 457,
+      "coactivatedLineups": 429
+    },
+    {
+      "name": "吞食→遗赠",
+      "preparedLineups": 69,
+      "showdownPreparedLineups": 55,
+      "coactivatedLineups": 53
+    },
+    {
+      "name": "护送→护盾",
+      "preparedLineups": 237,
+      "showdownPreparedLineups": 175,
+      "coactivatedLineups": 9
+    },
+    {
+      "name": "关键词多样性→激励",
+      "preparedLineups": 1037,
+      "showdownPreparedLineups": 741,
+      "coactivatedLineups": 692
+    },
+    {
+      "name": "护盾/护送队友→统御",
+      "preparedLineups": 232,
+      "showdownPreparedLineups": 209,
+      "coactivatedLineups": 195
+    },
+    {
+      "name": "双关键词→结盟",
+      "preparedLineups": 290,
+      "showdownPreparedLineups": 282,
+      "coactivatedLineups": 260
+    },
+    {
+      "name": "领先主力→追猎",
+      "preparedLineups": 729,
+      "showdownPreparedLineups": 507,
+      "coactivatedLineups": 202
+    },
+    {
+      "name": "减力/截流→激怒",
+      "preparedLineups": 314,
+      "showdownPreparedLineups": 218,
+      "coactivatedLineups": 68
+    }
+  ],
+  "large": [
+    {
+      "name": "吞食→遗赠→蓄能",
+      "preparedLineups": 12,
+      "showdownPreparedLineups": 10,
+      "coactivatedLineups": 8
+    },
+    {
+      "name": "支援→共鸣→蓄能",
+      "preparedLineups": 206,
+      "showdownPreparedLineups": 181,
+      "coactivatedLineups": 124
+    },
+    {
+      "name": "双关键词结盟→共鸣→蓄能",
+      "preparedLineups": 56,
+      "showdownPreparedLineups": 56,
+      "coactivatedLineups": 46
+    },
+    {
+      "name": "护送/护盾→统御→追猎",
+      "preparedLineups": 14,
+      "showdownPreparedLineups": 14,
+      "coactivatedLineups": 4
+    }
+  ]
+}

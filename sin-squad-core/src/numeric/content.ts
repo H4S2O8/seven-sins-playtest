@@ -1,10 +1,12 @@
-/** Isolated numeric-mode content. Text and execution are derived from the same rules. */
+import { KeywordCombat, KEYWORDS, keywordText, type KeywordSpec } from './keywords.js';
+import { CHARACTER_KEYWORDS, CHARACTER_SUMMARIES, EQUIPMENT_KEYWORDS, EQUIPMENT_SUMMARIES } from './design.js';
+/** Numeric rules and bounded keyword reactions. */
 export type NumericEquipmentTier = "normal" | "replace-1" | "replace-2";
 export type NumericSeat = 0 | 1;
 export interface NumericSlot { number: number; effectId: string; equipment: { id: string; tier: NumericEquipmentTier } | null }
 export interface NumericTeam { slots: (NumericSlot | null)[] }
 export interface NumericStats { invested?: number; betOrRaise?: number; betOrRaiseCount?: number; checks?: number; opsPaid?: number; stack?: number; round?: number }
-export interface NumericCard { id: string; name: string; text: string; kind: string }
+export interface NumericCard { id: string; name: string; text: string; kind: string; summary?:string; keywords?:readonly KeywordSpec[]; icon?:string }
 type Ref = "raw" | "foeRaw" | "leftRaw" | "rightRaw" | "otherRawSum" | "teamRawSum" | "foeRawSum" | "teamRawMax" | "teamRawMin" | "foeRawMax" | "foeRawMin" | "pos" | "equipCount" | "foeEquip" | "ownEquip" | "invested" | "raises" | "foeRaises" | "checks" | "ops" | "stack" | "foeStack" | "round" | "silenced" | "foeSilenced" | "environmentPower";
 type Expr = number | Ref | { op: "add" | "sub" | "mul" | "div" | "min" | "max" | "abs"; args: Expr[] };
 type Cond = { left: Expr; cmp: "<" | "<=" | "=" | ">=" | ">" | "!="; right: Expr } | { all: Cond[] } | { any: Cond[] };
@@ -17,7 +19,7 @@ export interface NumericArena extends NumericCard { rules: NumericClause[] }
 export interface NumericEffect extends NumericCard { rules: NumericClause[] }
 type ScoreMetric = "wins" | "sum" | "centerWin" | "edgeWins" | "upsets" | "silentWins" | "minPower" | "maxPower" | "cappedMargins";
 export interface NumericRule extends NumericCard { metrics: ScoreMetric[] }
-export interface NumericTrace { sourceId: string; seat: NumericSeat; pos: number; targetSeat: NumericSeat; targetPos: number; before: number; after: number; text: string; stage: "environment" | "control" | "character" | "equipment" }
+export interface NumericTrace { sourceId: string; seat: NumericSeat; pos: number; targetSeat: NumericSeat; targetPos: number; before: number; after: number; text: string; stage: "environment" | "control" | "character" | "equipment" | "keyword" }
 export interface NumericResolution { winner: NumericSeat | null; powers: [number[], number[]]; lineWinners: (NumericSeat | null)[]; lines: string[]; scores: [number, number]; scoreVectors: [number[], number[]]; trace: NumericTrace[]; silenced: [boolean[], boolean[]]; sealed: [boolean[], boolean[]]; teams: [NumericTeam, NumericTeam] }
 export interface NumericResolutionInput { teams: [NumericTeam, NumericTeam] | [NumericSlot[], NumericSlot[]]; arenaId: string; ruleId: string; activeEffectIds?: string[]; stats?: [NumericStats, NumericStats] | { pot: number }; recordTrace?: boolean }
 
@@ -57,20 +59,24 @@ function actionText(a: Action): string {
 }
 export function numericRulesText(rules: NumericClause[]): string { return rules.map(r => `${r.when ? `若${conditionText(r.when)}：` : ""}${r.actions.map(actionText).join("；")}`).join("。") + "。"; }
 function card<T extends NumericCard>(data: Omit<T, "text"> & { rules: NumericClause[] }): T { return { ...data, text: numericRulesText(data.rules) } as unknown as T; }
-const ch = (id: string, name: string, tag: string, rules: NumericClause[]): NumericCharacter => card<NumericCharacter>({ id, name, tag, kind: "人物效果", rules });
+const ch = (id: string, name: string, tag: string, rules: NumericClause[]): NumericCharacter => {
+ const keywords=CHARACTER_KEYWORDS[id]??[];
+ const c=card<NumericCharacter>({ id, name, tag, kind: "人物效果", rules, keywords, summary:CHARACTER_SUMMARIES[id] });
+ c.text=`${c.summary} ${keywordText(keywords)} 精确规则：${c.text}`;return c;
+};
 
 /** All 29 original character names/IDs are retained. No ability needs health, damage, or changing targets. */
 export const NUMERIC_CHARACTERS: readonly NumericCharacter[] = [
   ch("WR1", "小红帽", "反加注", [rule([power(E("min", 3, "foeRaises"))])]),
-  ch("WR2", "狂战士", "以小搏大", [rule([power(4)], lowerBy(2))]),
+  ch("WR2", "狂战士", "激怒", [rule([power(2)], lowerBy(2))]),
   ch("WR3", "清算者", "重注清算", [rule([power(E("div", "raw", 2))], cmp("foeRaises", ">", 0))]),
   ch("GR1", "豪商", "花钱养成", [rule([power(E("min", 4, E("div", "invested", 10)))])]),
   ch("GR2", "赎罪券商", "付费积累", [rule([power(E("min", 3, "ops"))])]),
   ch("GR3", "收藏家", "装备收藏", [rule([power("equipCount")])]),
   ch("GL1", "放血师", "力量汲取", [rule([power(2), power(-2, "foe")], lowerBy(1))]),
   ch("GL2", "饕餮", "吞食左邻", [rule([silence("left"), power(E("div", "leftRaw", 2))], cmp("pos", ">", 1))]),
-  ch("GL3", "食腐鸦", "弱位拾遗", [rule([power(3)], all(cmp("raw", "=", "teamRawMin"), cmp("foeRaw", "<=", 7)))]),
-  ch("EN1", "密探", "精确猜测", [rule([power(3)], cmp(E("abs", E("sub", "raw", "foeRaw")), "<=", 1))]),
+  ch("GL3", "食腐鸦", "遗赠", [rule([power(2)], all(cmp("raw", "=", "teamRawMin"), cmp("foeRaw", "<=", 7)))]),
+  ch("EN1", "密探", "截流", [rule([power(1)], cmp(E("abs", E("sub", "raw", "foeRaw")), "<=", 1))]),
   ch("EN2", "镜中人", "映照原数", [rule([power(E("max", 0, E("sub", "foeRaw", "raw")))])]),
   ch("EN3", "扒手", "装备截取", [rule([seal("foe"), power(1)], hasFoeEquipment)]),
   ch("SL1", "冬眠熊", "过牌蓄力", [rule([power(E("min", 3, "checks"))])]),
@@ -85,8 +91,8 @@ export const NUMERIC_CHARACTERS: readonly NumericCharacter[] = [
   ch("WR4", "攻城锤手", "破装强攻", [rule([power(3)], hasFoeEquipment)]),
   ch("GR4", "金库守卫", "守财优势", [rule([power(3)], cmp("stack", ">", "foeStack"))]),
   ch("GL4", "噬铁软泥", "腐蚀装备", [rule([power(-2, "foe")], hasFoeEquipment)]),
-  ch("GL5", "大野狼", "追猎弱位", [rule([power(3)], cmp("foeRaw", "=", "foeRawMin"))]),
-  ch("EN4", "影子", "高位影袭", [rule([power(3)], foeHigh)]),
+  ch("GL5", "大野狼", "追猎", [rule([power(1)], cmp("foeRaw", "=", "foeRawMin"))]),
+  ch("EN4", "影子", "截流", [rule([power(1)], foeHigh)]),
   ch("SL4", "守夜人", "后程发力", [rule([power(3)], cmp("round", ">=", 4))]),
   ch("LU4", "交际花", "借势削弱", [rule([power(-2, "foe"), power(1, "right")], lowerBy(1))]),
   ch("LU5", "双子", "中央联动", [rule([power(1, "team")], posIs(2))]),
@@ -112,14 +118,14 @@ const EQUIPMENT_DESIGNS: EquipmentDesign[] = [
   equip("E13", "逆差线圈", "以小搏大", v => [rule([power(v)], lowerBy(3))], [6, 3, 1]),
   equip("E14", "右翼扣", "右位支援", v => [rule([power(v, "right")])], [4, 2, 1]),
   equip("E15", "双翼连杆", "双线支援", v => [rule([power(v, "others")], all(posIs(2), selfHigh))]),
-  equip("E16", "夹心垫", "夹心阵", v => [rule([power(v)], all(posIs(2), cmp("leftRaw", ">", "raw"), cmp("rightRaw", ">", "raw")))], [6, 3, 1]),
-  equip("E17", "山峰冠", "山峰阵", v => [rule([power(v)], all(posIs(2), cmp("leftRaw", "<", "raw"), cmp("rightRaw", "<", "raw")))], [5, 3, 1]),
+  equip("E16", "谷地垫", "弱位补偿", v => [rule([power(v)], cmp("raw", "=", "teamRawMin"))], [5, 3, 2]),
+  equip("E17", "山峰冠", "强位强化", v => [rule([power(v)], cmp("raw", "=", "teamRawMax"))], [5, 3, 2]),
   equip("E18", "逆风帆", "整队逆差", v => [rule([power(v)], cmp("teamRawSum", "<", "foeRawSum"))], [4, 2, 1]),
-  equip("E19", "顺风旗", "整队压制", v => [rule([power(v)], cmp("teamRawMin", ">=", 7))], [5, 3, 1]),
+  equip("E19", "顺风旗", "整队压制", v => [rule([power(v)], cmp("teamRawSum", ">=", 21))], [5, 3, 2]),
   equip("E20", "静默保险", "沉默补偿", v => [rule([power(v)], cmp("silenced", "=", 1))], [5, 3, 1]),
   equip("E21", "封口钉", "沉默针对", v => [rule([power(v)], cmp("foeSilenced", "=", 1))], [5, 3, 1]),
-  equip("E22", "借力滑轮", "混合比较", v => [rule([power(v)], all(cmp("otherRawSum", ">=", E("mul", "raw", 2)), lowerBy(1)))], [6, 3, 1]),
-  equip("E23", "等差尺", "数字结构", v => [rule([power(v)], all(posIs(2), cmp(E("sub", "raw", "leftRaw"), "=", E("sub", "rightRaw", "raw"))))], [5, 3, 1]),
+  equip("E22", "借力滑轮", "借力", v => [rule([power(v)], cmp("otherRawSum", ">=", E("mul", "raw", 2)))], [5, 3, 2]),
+  equip("E23", "平衡尺", "数字结构", v => [rule([power(v)], all(cmp("raw", ">", "teamRawMin"),cmp("raw", "<", "teamRawMax")))], [5, 3, 2]),
   equip("E24", "互惠结", "双边条件", v => [rule([power(v)], all(cmp("leftRaw", ">=", 8), cmp("foeRaw", "<=", 4)))], [6, 3, 1]),
 ];
 const tierIndex: Record<NumericEquipmentTier, number> = { normal: 0, "replace-1": 1, "replace-2": 2 };
@@ -127,7 +133,12 @@ export function equipmentById(id: string, tier: NumericEquipmentTier = "normal")
   const d = EQUIPMENT_DESIGNS.find(c => c.id === id);
   if (!d) throw new Error(`未知数字装备：${id}`);
   if (!(tier in tierIndex)) throw new Error(`未知装备档位：${tier}`);
-  return card<NumericEquipment>({ id: d.id, name: d.name, kind: d.kind, tier, rules: d.rules(d.magnitudes[tierIndex[tier]]) });
+  const i=tierIndex[tier], v=d.magnitudes[i], design=EQUIPMENT_KEYWORDS[id];
+  const floor=[2,1,1][i], bonus=Math.max(0,v-floor);
+  const keywords:KeywordSpec[]=design?[{kind:design.kind,value:design.values[i]},...(design.extra?[{kind:design.extra.kind,value:design.extra.values[i]}]:[])]:[];
+  const summary=design?`力量 +${design.base[i]}。${keywords.map(k=>`${KEYWORDS[k.kind].name}${['ward','guard'].includes(k.kind)?'':` ${k.value}`}`).join(' · ')}。`:id==='E01'?`力量 +${v}。`:`力量 +${floor}。${EQUIPMENT_SUMMARIES[id]?.(bonus)??''}`;
+  const c=card<NumericEquipment>({ id:d.id,name:design?.name??d.name,kind:design?KEYWORDS[design.kind].name:d.kind,tier,rules:design?[rule([power(design.base[i])])]:id==='E01'?d.rules(v):[rule([power(floor)]),...d.rules(bonus)],keywords,summary,icon:design?.icon??(['低数','低位补偿'].includes(d.kind)?'▽':d.kind==='高数'?'▲':'✦') });
+  c.text=`${summary} ${keywordText(keywords)} 精确规则：${c.text}`;return c;
 }
 export const NUMERIC_EQUIPMENT: readonly NumericEquipment[] = EQUIPMENT_DESIGNS.map(c => equipmentById(c.id));
 const env = (id: string, name: string, kind: string, rules: NumericClause[]): NumericArena => card<NumericArena>({ id, name, kind, rules });
@@ -222,11 +233,15 @@ export function runNumericResolution(input: NumericResolutionInput): NumericReso
   const powers = slots.map(t => t.map(s => s.number)) as [number[], number[]];
   const silenced: [boolean[], boolean[]] = [[false, false, false], [false, false, false]], sealed: [boolean[], boolean[]] = [[false, false, false], [false, false, false]];
   const trace: NumericTrace[] = [];
+  const combat = new KeywordCombat(slots.map(t=>t.map(s=>characterById(s.effectId))),slots.map(t=>t.map(s=>s.equipment?equipmentById(s.equipment.id,s.equipment.tier):null)),slots.map(t=>t.map(s=>s.number)),powers,silenced,sealed,(h,before,after)=>{if(input.recordTrace!==false)trace.push({...h,before,after,stage:h.stage as NumericTrace['stage']});});
   const makePackets = (card: NumericCard & { rules: NumericClause[] }, ctx: Context) => packets(card, ctx, input.recordTrace !== false);
   let environment = powers.map(p => [...p]);
   const contexts = () => ([0, 1] as NumericSeat[]).flatMap(seat => [0, 1, 2].map(pos => ({ seat, pos, teams: slots, stats, environment, silenced: silenced.map(t => [...t]), sealed: sealed.map(t => [...t]) })));
   const apply = (ps: Packet[], stage: NumericTrace["stage"]) => {
-    for (const p of ps) {
+    for (const original of ps) {
+      const p={...original};
+      if(stage==='control'){const pos=combat.control(p.ctx.seat,p.ctx.pos,p.targetSeat,p.targetPos);if(pos===null)continue;p.targetPos=pos;}
+      if(stage==='character'||stage==='equipment') {combat.power({sourceId:p.sourceId,seat:p.ctx.seat,pos:p.ctx.pos,targetSeat:p.targetSeat,targetPos:p.targetPos,amount:p.amount,text:p.text,stage});continue;}
       const before = powers[p.targetSeat][p.targetPos];
       if (p.action.kind === "power") powers[p.targetSeat][p.targetPos] += p.amount;
       else if (p.action.kind === "silence") silenced[p.targetSeat][p.targetPos] = true;
@@ -237,9 +252,14 @@ export function runNumericResolution(input: NumericResolutionInput): NumericReso
   apply(contexts().flatMap(c => [arena, ...effects].flatMap(a => makePackets(a, c))), "environment");
   environment = powers.map(p => [...p]);
   const controlContexts = contexts();
+  combat.lockControl();
   apply(controlContexts.filter(c => !c.silenced[c.seat][c.pos]).flatMap(c => makePackets(characterById(slots[c.seat][c.pos].effectId), c)).filter(p => p.action.kind !== "power"), "control");
+  combat.legacies();
+  combat.formations();
   apply(contexts().filter(c => !c.silenced[c.seat][c.pos]).flatMap(c => makePackets(characterById(slots[c.seat][c.pos].effectId), c)).filter(p => p.action.kind === "power"), "character");
+  combat.flush();
   apply(contexts().filter(c => !c.sealed[c.seat][c.pos] && !!slots[c.seat][c.pos].equipment).flatMap(c => { const e = slots[c.seat][c.pos].equipment!; return makePackets(equipmentById(e.id, e.tier), c); }), "equipment");
+  combat.finish();
   powers.forEach(t => t.forEach((v, i) => { t[i] = Math.max(0, Math.floor(v)); }));
   const lineWinners = [0, 1, 2].map(i => powers[0][i] === powers[1][i] ? null : powers[0][i] > powers[1][i] ? 0 : 1) as (NumericSeat | null)[];
   function metric(m: ScoreMetric, seat: NumericSeat): number {
@@ -266,4 +286,4 @@ export function runNumericResolution(input: NumericResolutionInput): NumericReso
 }
 
 /** Public rules shared by tutorial and replay; no card has a private second description. */
-export const NUMERIC_SETTLEMENT_TEXT = "原始数字范围3～10；低=3～4，中=5～7，高=8～10。位置固定1对1、2对2、3对3。场地及已启用效果同时修正→锁定人物沉默/装备封印→未沉默人物力量效果→未封印装备力量效果→最终力量最低为0→对位比较→按胜利规则依次比较。沉默只影响人物，封印只影响装备；已锁定的控制不被同阶段沉默撤销。左右指相邻位置，越界时不存在、不提供任何收益；并列最高/最低均满足条件。所有除法向下取整。";
+export const NUMERIC_SETTLEMENT_TEXT = "低=3～4，中=5～7，高=8～10。1对1、2对2、3对3。场地→锁定控制（护盾、护送）→遗赠与阵容关键词→人物→装备→激怒与蓄能释放→追猎→力量最低0→按本手胜利规则比较。条件默认看原始数字，追猎看释放后的力量快照。每阶段从左到右；双方互不共享触发次数。沉默关人物，但遗赠明确例外；封印关装备。控制按场地结束快照锁定，不被同阶段沉默撤销。护盾、护送、截流、共鸣每手各一次；同位同关键词取较强值、不叠加次数。衍生增益可蓄能，但不再触发截流或共鸣；蓄能释放不触发任何反应；追猎仅一轮，追猎减力发生在激怒之后。并列最低目标选左侧，邻位越界无收益。除法向下取整。锁阵后不能换位，读出劣势可以弃牌止损。";

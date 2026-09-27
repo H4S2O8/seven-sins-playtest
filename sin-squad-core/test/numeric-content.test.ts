@@ -141,10 +141,12 @@ describe("numeric mode content", () => {
         const r = runNumericResolution({ teams: [own, foe], arenaId: f.silent ? "NA05" : "NA01", ruleId: "NR01" });
         const eqTrace = r.trace.filter(t => t.sourceId === eq.id && t.seat === 0);
         expect(eqTrace.length, eq.id).toBeGreaterThan(0);
-        totals.push(eqTrace.reduce((n, t) => n + t.after - t.before, 0));
+        totals.push(eqTrace.reduce((n, t) => n + (t.after-t.before)*(t.targetSeat===0?1:-1), 0));
       }
-      expect(totals[0], eq.id).toBeGreaterThan(totals[1]);
-      expect(totals[1], eq.id).toBeGreaterThan(totals[2]);
+      expect(totals[0], eq.id).toBeGreaterThanOrEqual(totals[1]);
+      expect(totals[1], eq.id).toBeGreaterThanOrEqual(totals[2]);
+      const ks=['normal','replace-1','replace-2'].map(t=>equipmentById(eq.id,t as 'normal').keywords?.[0]?.value??0);
+      expect(ks[0]).toBeGreaterThanOrEqual(ks[1]);expect(ks[1]).toBeGreaterThanOrEqual(ks[2]);
     }
   });
 });

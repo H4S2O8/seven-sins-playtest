@@ -1,5 +1,7 @@
 # 数字模式 AI 修复与 1000 手评估
 
+> 历史基线：此报告对应关键词重构前的版本。当前脚本已更新；新版数据与复现说明见 `numeric-keywords-evaluation-2026-09-28.md`。
+
 ## 口径和复现
 
 运行 `npx tsx scripts/numeric-evaluate.ts`。固定种子 700001–701400，生产默认六样本 AI。

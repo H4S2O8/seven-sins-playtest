@@ -74,8 +74,8 @@ export class NumericTable {
 
   private draw(s: Seat) {
     const p = this.players[s];
-    const pool = NUMERIC_CHARACTER_IDS.filter(x => !p.seen.includes(x));
-    p.current = this.rng.sample(pool, Math.min(9, pool.length)); p.seen.push(...p.current);
+    // Each candidate is an independent copy; identical characters may coexist.
+    p.current = Array.from({length:9},()=>this.rng.pick(NUMERIC_CHARACTER_IDS)); p.seen.push(...p.current);
   }
   private pay(s: Seat, amount: number) {
     const paid = Math.min(this.players[s].stack, amount);
@@ -112,10 +112,10 @@ export class NumericTable {
     this.history.push({seat:s,action:structuredClone(a)});
   }
   save() {
-    return { version:1 as const, initial:{...this.initial}, history:structuredClone(this.history), agents:[...this.agents.entries()].map(([key,a])=>({key,state:a.save()})) };
+    return { version:2 as const, initial:{...this.initial}, history:structuredClone(this.history), agents:[...this.agents.entries()].map(([key,a])=>({key,state:a.save()})) };
   }
   static restore(data: ReturnType<NumericTable["save"]>) {
-    if (data?.version !== 1 || !data.initial || !Number.isSafeInteger(data.initial.seed) || !Array.isArray(data.history) || data.history.length > 100000 || !Array.isArray(data.agents)) throw Error("数字模式存档无效或版本不兼容");
+    if (data?.version !== 2 || !data.initial || !Number.isSafeInteger(data.initial.seed) || !Array.isArray(data.history) || data.history.length > 100000 || !Array.isArray(data.agents)) throw Error("数字模式存档无效或版本不兼容");
     const t = new NumericTable(data.initial);
     for (const row of data.history) { if (row.seat !== 0 && row.seat !== 1) throw Error("存档座位无效"); t.apply(row.seat,row.action); }
     for (const row of data.agents) t.agents.set(row.key,NumericAgent.restore(row.state as AgentSave));
