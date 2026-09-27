@@ -63,7 +63,7 @@ export function logLine(e: TableEvent): string | null {
     }
     case "reveal":
       return `翻开胜利规则「${rule(e.ruleId).name}」` +
-        (e.publicEffectId ? `和公共效果「${publicEffect(e.publicEffectId).name}」` : "（已全押，公共效果不翻开）");
+        (e.publicEffectId ? `和公共效果「${publicEffect(e.publicEffectId).name}」` : e.allIn ? "（已全押，公共效果不翻开）" : "");
     case "votes":
       return `表决：你投${e.votes[0] ? "生效" : "不生效"}，对手投${e.votes[1] ? "生效" : "不生效"}`;
     case "bids":

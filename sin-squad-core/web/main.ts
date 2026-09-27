@@ -42,6 +42,10 @@ import { disableTips, dismissTip, resetTips, tipHtml } from "./tips.js";
 // ───────────────────────── 状态 ─────────────────────────
 
 interface Playback {
+  /** 第几手的战斗（战役里播放时牌桌已经开了下一手）。 */
+  hand: number;
+  /** 结算之前的筹码：播放时一直这样显示，免得提前看出胜负。 */
+  money: { stacks: [number, number]; pot: number };
   result: BattleResult;
   teams: [Placement, Placement];
   equipment: [(string | null)[], (string | null)[]];
@@ -207,6 +211,8 @@ revealLayer.addEventListener("click", hideReveal);
 let record: Array<[Seat, Action]> = [];
 /** 这次打开页面后亲眼看过战斗动画的那一手（种子-手数）；读档摆出来的战斗不算，不放胜负曲。 */
 let watchedBattle: string | null = null;
+/** 结算提示是跟着下一手的开局一起到的（战役没有市场），留到你下一次出手再收起。 */
+let noticeCarried = false;
 
 // ───────────────────────── 战役 ─────────────────────────
 
@@ -359,6 +365,7 @@ function initTable(s: Style, tableSeed: number, stageNo: number | null = null, p
   logCursor = 0;
   ui.battle = null;
   ui.notice = null;
+  noticeCarried = false;
   ui.lastBattle = null;
   ui.sheet = null;
   resetInputs();
@@ -484,6 +491,7 @@ function consumeLog(play: boolean): { reveal: { ruleId: string; publicEffectId: 
   let reveal: { ruleId: string; publicEffectId: string | null } | null = null;
   const fresh = t.log.slice(logCursor);
   logCursor = t.log.length;
+  let settled = false;
   for (const e of fresh) {
     const line = logLine(e);
     if (line) logLines.push(line);
@@ -491,24 +499,28 @@ function consumeLog(play: boolean): { reveal: { ruleId: string; publicEffectId: 
     if (e.type === "reveal" && play && (!t.campaign || t.campaign.rules.length > 1)) reveal = { ruleId: e.ruleId, publicEffectId: e.publicEffectId };
     if (e.type === "marketPick") lastPick = { seat: e.seat, id: e.characterId };
     if (e.type === "handStart") {
-      ui.notice = null;
+      // 同一批里刚结算过（战役没有市场，结算完直接开下一手）：结果提示留到你下一次出手
+      if (settled) noticeCarried = true;
+      else ui.notice = null;
       ui.lastBattle = null;
       resetInputs();
     }
-    if (e.type === "battle" && t.hand.battle) {
-      const h = t.hand;
-      ui.lastBattle = { hand: h.no, result: h.battle!, teams: e.teams, equipment: e.equipment };
-      if (play) watchedBattle = `${seed}-${h.no}`;
+    // 战斗的数据都从这条记录里拿：战役里读到它时，t.hand 可能已经是下一手
+    if (e.type === "battle") {
+      ui.lastBattle = { hand: e.hand, result: e.result, teams: e.teams, equipment: e.equipment };
+      if (play) watchedBattle = `${seed}-${e.hand}`;
       if (play) ui.battle = {
-        result: h.battle!, teams: e.teams, equipment: e.equipment,
-        ruleId: h.ruleId, arenaId: h.arenaId!, peId: h.peActive ? h.publicEffectId : null,
-        snap: h.battle!.start, round: 0, actor: null, started: false,
+        hand: e.hand, money: { stacks: e.stacks, pot: e.pot },
+        result: e.result, teams: e.teams, equipment: e.equipment,
+        ruleId: e.ruleId, arenaId: e.arenaId, peId: e.publicEffectId,
+        snap: e.result.start, round: 0, actor: null, started: false,
         paused: false, speed: 1, caption: ["揭开双方队伍"], done: false, switching: new Map(),
       };
     }
     if (e.type === "settle") {
+      settled = true;
       const pot = e.pot;
-      if (t.hand.outcome?.by === "fold") {
+      if (e.by === "fold") {
         ui.notice = e.winner === HUMAN ? { text: `对手弃牌 · 你拿下奖池 ${pot}`, good: true } : { text: `你弃牌 · 对手拿下奖池 ${pot}`, good: false };
       } else {
         ui.notice = e.winner === null ? { text: "平局 · 双方拿回投入", good: null }
@@ -547,6 +559,7 @@ function act(action: Action) {
     return;
   }
   resetInputs();
+  if (noticeCarried) { ui.notice = null; noticeCarried = false; }
   afterApply();
 }
 
@@ -1113,22 +1126,7 @@ function roomView(o: Observation): string {
 
 /** 战斗动画播放时，筹码还停在结算之前，免得提前看出胜负。 */
 function shownMoney(o: Observation): { stacks: [number, number]; pot: number } {
-  const out = table!.hand.outcome;
-  if (!ui.battle || !out || out.by !== "battle") return { stacks: o.stacks, pot: o.pot };
-  const stacks: [number, number] = [o.stacks[0], o.stacks[1]];
-  if (out.winner === null) {
-    stacks[0] -= o.invested[0];
-    stacks[1] -= o.invested[1];
-  } else {
-    stacks[out.winner] -= out.pot;
-  }
-  // 金山的利息也是战斗之后才付的
-  const log = table!.log;
-  for (let i = log.length - 1; i >= 0 && log[i].type !== "battle"; i--) {
-    const e = log[i];
-    if (e.type === "interest") { stacks[e.seat] -= e.amount; stacks[other(e.seat)] += e.amount; }
-  }
-  return { stacks, pot: out.pot };
+  return ui.battle ? ui.battle.money : { stacks: o.stacks, pot: o.pot };
 }
 
 function topBar(o: Observation) {
