@@ -494,6 +494,14 @@ code { background: #0005; border-radius: 4px; padding: 0 4px; font-size: 12px; }
   font-size: max(10px, calc(var(--cw) * 0.1)); font-weight: 800; line-height: 1.3; padding: 0 7px; border-radius: 3px;
   color: #eaf6ff; background: linear-gradient(#5d7fa8, #354e70); box-shadow: 0 0 0 1px #1c2a3c, 0 1px 3px #000a;
 }
+/* 攻击指向不是对位：牌下挂“打 N 号位”（双方都看得到） */
+.card .aim-tag {
+  position: absolute; left: 50%; bottom: 0; z-index: 3; white-space: nowrap; pointer-events: none;
+  transform: translate(-50%, 60%) translateZ(calc(var(--t) / 2 + 1px));
+  font-size: max(10px, calc(var(--cw) * 0.1)); font-weight: 800; line-height: 1.3; padding: 0 7px; border-radius: 3px;
+  color: #fff1e6; background: linear-gradient(#b0503a, #74281c); box-shadow: 0 0 0 1px #3c140c, 0 1px 3px #000a;
+}
+.aim-row .label { min-width: 5.5em; text-align: right; }
 .card[data-acting] .face.front { box-shadow: 0 0 0 2px #ffe7a8, 0 0 22px #ffd27a; }
 
 /* 立绘窗：长方形，一道金线，底部渐暗接名牌 */

@@ -7,7 +7,7 @@ import type { UnitSnapshot } from "../src/battle/unit.js";
 import { CHARACTERS, character } from "../src/content/characters.js";
 import { campaignCard } from "../src/content/campaign-cards.js";
 import { ARENAS, EQUIPMENT, PUBLIC_EFFECTS, RULES, arena, equipment, publicEffect, rule } from "../src/content/tables.js";
-import type { Action } from "../src/game/actions.js";
+import type { Action, Aim } from "../src/game/actions.js";
 import { MAX_RAISES, Table, validatePlacement, type Placement, type TableRig } from "../src/game/table.js";
 import { legalActions, observe, type Observation } from "../src/game/view.js";
 import { other, type AttackShape, type CharacterDef, type Seat } from "../src/types.js";
@@ -77,6 +77,10 @@ interface Ui {
   place: { slots: (number | null)[]; reveal: number | null; eaten: number | null };
   betAmount: number | null;
   draft: { offer: number | null; pos: number | null };
+  /** 正在改攻击指向（操作阶段点了“改攻击指向”之后）：改到一半的样子；null = 没在改。 */
+  aim: Aim | null;
+  /** 改攻击指向的面板开着。 */
+  aimOpen: boolean;
   bid: number;
   removeIdx: number | null;
   notice: { text: string; good: boolean | null } | null;
@@ -254,6 +258,8 @@ const ui: Ui = {
   place: { slots: [null, null, null], reveal: null, eaten: null },
   betAmount: null,
   draft: { offer: null, pos: null },
+  aim: null,
+  aimOpen: false,
   bid: 0,
   removeIdx: null,
   notice: null,
@@ -271,6 +277,8 @@ function resetInputs() {
   ui.place = { slots: [null, null, null], reveal: null, eaten: null };
   ui.betAmount = null;
   ui.draft = { offer: null, pos: null };
+  ui.aim = null;
+  ui.aimOpen = false;
   ui.bid = 0;
   ui.removeIdx = null;
   ui.error = null;
@@ -364,10 +372,10 @@ function initTable(s: Style, tableSeed: number, stageNo: number | null = null, p
  * 存档靠“种子 + 每一步操作”重放。人物表、规则一变，同一个种子发的牌就不一样了，旧存档会重放成另一局，
  * 所以这类改动要升版本号，旧版本的存档直接丢掉。v2：加入第二批 8 名人物。
  */
-const SAVE_KEY = "sinsquad.save.v4";
+const SAVE_KEY = "sinsquad.save.v5";
 /** 战役里没打完的那一关单独存，和自由牌桌互不覆盖。 */
 const STAGE_SAVE_KEY = "sinsquad.campaign.table.v1";
-try { localStorage.removeItem("sinsquad.save.v1"); localStorage.removeItem("sinsquad.save.v2"); localStorage.removeItem("sinsquad.save.v3"); } catch { /* 无所谓 */ }
+try { localStorage.removeItem("sinsquad.save.v1"); localStorage.removeItem("sinsquad.save.v2"); localStorage.removeItem("sinsquad.save.v3"); localStorage.removeItem("sinsquad.save.v4"); } catch { /* 无所谓 */ }
 interface SaveData {
   seed: number; style: Style; rig: TableRig | null; debugText: string; actions: Array<[Seat, Action]>;
   /** 战役：第几关、开这一关时你的牌池、带的魔神牌。 */
@@ -820,6 +828,8 @@ interface CardOpts {
   flipDelay?: number;
   /** 转线中：往哪边偏（-1 左、1 右）。 */
   lane?: number;
+  /** 攻击指向不是对位时，打的是敌方几号位（牌下挂“打 N 号位”）。 */
+  aim?: number;
   /** 可以拖动：hand:发牌序号 / slot:位置。 */
   drag?: string;
   /** 可以放下：hand / slot:位置。 */
@@ -898,7 +908,7 @@ function card(id: string | null, o: CardOpts = {}) {
       <i class="edge top"></i><i class="edge bottom"></i><i class="edge left"></i><i class="edge right"></i>
       <div class="face front">${id ? cardFront(id, o) : ""}</div>
       <div class="face back"><i class="sheen"></i><i class="gloss"></i>${o.backText ? `<div class="back-text">${o.backText}</div>` : ""}${eq ? `<div class="equip" title="${esc(`${eq.name}：${eq.text}`)}">${eq.name}</div>` : ""}</div>
-    </div>${o.flag ? `<span class="flag">${o.flag}</span>` : ""}${o.lane ? `<span class="lane-tag">${o.lane < 0 ? "←" : "→"}</span>` : ""}</div>
+    </div>${o.flag ? `<span class="flag">${o.flag}</span>` : ""}${o.lane ? `<span class="lane-tag">${o.lane < 0 ? "←" : "→"}</span>` : ""}${o.aim !== undefined ? `<span class="aim-tag">打${posName(o.aim)}</span>` : ""}</div>
   </div>`;
 }
 
@@ -1248,7 +1258,7 @@ function phaseLabel(o: Observation): string {
     case "peek": return o.toAct.includes(HUMAN) ? "窥视" : "布阵完成";
     case "reveal2": return "再翻开一名";
     case "bet": return `第 ${o.betting.round} 轮下注`;
-    case "operate": return "操作：拿装备？";
+    case "operate": return o.opFee > 0 ? "操作：拿装备？" : "改攻击指向？";
     case "draft": return "挑装备";
     case "vote": return "公共效果表决";
     case "bid": return "暗标";
@@ -1266,7 +1276,7 @@ function foeRow(o: Observation): string {
   const peeking = o.phase === "peek" && o.toAct.includes(HUMAN) && !o.me.peek; // 偷看过一次就不能再点
   return [0, 1, 2].map((pos) => {
     const eq = opp.equipment[pos];
-    const base = { unit: `${AI}-${pos}`, key: foeKey(o, pos) };
+    const base = { unit: `${AI}-${pos}`, key: foeKey(o, pos), aim: aimTag(opp.aim, pos) };
     if (!opp.placed) return card(null, { ...base, backText: o.phase === "arena" ? "" : "布阵中…" });
     if (opp.emptyPositions.includes(pos)) return slot("空位<br><small>被饕餮吞掉</small>", { unit: base.unit });
     if (opp.revealed?.pos === pos) return card(opp.revealed.characterId, { ...base, equip: eq, cls: "lit" });
@@ -1297,6 +1307,7 @@ function myRow(o: Observation): string {
   if (!pl) return [0, 1, 2].map((pos) => slot(posName(pos))).join("");
   const drafting = o.phase === "draft" && !!o.me.offers && o.toAct.includes(HUMAN) && ui.draft.offer !== null;
   const keys = myKeys(o, pl.slots);
+  const aim = ui.aim ?? o.me.aim; // 改指向时先按改到一半的样子显示
   return pl.slots.map((id, pos) => {
     if (!id) return slot("空位<br><small>被吞掉</small>");
     let equip = o.me.equipment[pos];
@@ -1307,10 +1318,13 @@ function myRow(o: Observation): string {
     }
     return card(id, {
       key: keys[pos], unit: `${HUMAN}-${pos}`, equip, cls: `${cls} ${pos === pl.reveal || pos === pl.reveal2 ? "lit" : "dark"}`,
-      act: drafting ? "draftPos" : undefined, arg: pos,
+      act: drafting ? "draftPos" : undefined, arg: pos, aim: aimTag(aim, pos),
     });
   }).join("");
 }
+
+/** 指向不是对位时才挂牌子。 */
+const aimTag = (aim: Aim, pos: number) => (aim[pos] === pos ? undefined : aim[pos]);
 
 function battleUnits(snaps: UnitSnapshot[], reveal: number, o: Observation, acting: string | null = null, lanes: Map<string, number> = new Map()) {
   const seat = snaps[0]?.seat ?? HUMAN;
@@ -1362,7 +1376,7 @@ function phaseDock(o: Observation, mine: boolean): string {
     case "peek": return mine ? peekDock(o) : waiting("等待对手");
     case "reveal2": return mine ? reveal2Dock(o) : waiting("对手在选翻开谁");
     case "bet": return mine ? betDock(o) : waiting(`对手在考虑第 ${o.betting.round} 轮下注`);
-    case "operate": return mine ? operateDock(o) : waiting("等对手决定要不要拿装备");
+    case "operate": return mine ? operateDock(o) : waiting("等对手决定要不要操作");
     case "draft": return mine && o.me.offers ? draftDock(o) : waiting("对手在挑装备");
     case "vote": return mine ? voteDock(o) : waiting("等对手表决");
     case "bid": return mine ? bidDock(o) : waiting("等对手暗标出价");
@@ -1488,8 +1502,30 @@ function betDock(o: Observation) {
 }
 
 function operateDock(o: Observation) {
-  return prompt(`付 ${o.opFee} 操作费，从 3 件装备里挑 1 件？`, "装备装在谁身上对手看得到") +
-    `<div class="actions">${btn("不拿", "operate", 0, "big")}${btn(`付 ${o.opFee} 拿装备`, "operate", 1, "primary big")}</div>`;
+  if (ui.aimOpen && ui.aim) return aimDock(o, ui.aim);
+  const changed = ui.aim ? "指向改好了，确认后和对手的选择一起公开" : "攻击指向随时可以免费改；双方都选完才一起公开";
+  const edit = btn(ui.aim ? "再改指向…" : "改攻击指向…", "aimEdit", undefined, "big");
+  if (o.opFee <= 0) return prompt("要改攻击指向吗？", `没人下注，这一轮拿不了装备。${changed}`) +
+    `<div class="actions">${edit}${btn("确认", "operate", 0, "primary big")}</div>`;
+  return prompt(`付 ${o.opFee} 操作费拿装备？`, changed) +
+    `<div class="actions">${edit}${btn("不拿装备", "operate", 0, "big")}${btn(`付 ${o.opFee} 拿装备`, "operate", 1, "primary big")}</div>`;
+}
+
+/** 改攻击指向：每个人点它要打对面哪个位置（知道是谁的写上名字）。 */
+function aimDock(o: Observation, aim: Aim) {
+  const pl = o.me.placement!;
+  const opp = o.opponent;
+  const known = (p: number) =>
+    opp.revealed?.pos === p ? opp.revealed.characterId : opp.revealed2?.pos === p ? opp.revealed2.characterId : o.me.peek?.pos === p ? o.me.peek.characterId : null;
+  const label = (p: number, self: number) => {
+    const id = known(p);
+    return `${posName(p)}${id ? ` ${character(id).name}` : ""}${p === self ? "（对位）" : ""}`;
+  };
+  const rows = pl.slots.map((id, i) => !id ? "" : `<div class="actions compact aim-row"><span class="label">${character(id).name}打</span>${
+    [0, 1, 2].map((p) => btn(label(p, i), "aimPick", `${i}-${p}`, `${aim[i] === p ? "on" : ""}${opp.emptyPositions.includes(p) ? " disabled" : ""}`)).join("")
+  }</div>`).join("");
+  return prompt("改攻击指向（不花钱）", "指向的敌人倒下后改打对位，对位也倒下了才转线。双方都选完后，对手会看到新的指向") + rows +
+    `<div class="actions">${btn("不改了", "aimCancel", undefined, "big")}${btn("改好了", "aimDone", undefined, "primary big")}</div>`;
 }
 
 function draftDock(o: Observation) {
@@ -1751,7 +1787,18 @@ function onAct(name: string, arg: string | undefined) {
       const amount = ui.betAmount!;
       return act(o!.betting.target === 0 ? { type: "bet", amount } : { type: "raise", to: amount });
     }
-    case "operate": return act({ type: "operate", draft: n === 1 });
+    case "operate": return act(ui.aim ? { type: "operate", draft: n === 1, aim: [...ui.aim] } : { type: "operate", draft: n === 1 });
+    case "aimEdit": ui.aim ??= [...o!.me.aim]; ui.aimOpen = true; ui.error = null; return render();
+    case "aimPick": {
+      const [i, p] = (arg ?? "").split("-").map(Number);
+      if (ui.aim) ui.aim[i] = p;
+      return render();
+    }
+    case "aimCancel": ui.aim = null; ui.aimOpen = false; ui.error = null; return render();
+    case "aimDone":
+      if (ui.aim?.every((x, i) => x === o!.me.aim[i])) ui.aim = null; // 改回原样就当没改
+      ui.aimOpen = false;
+      return render();
     case "draftOffer": ui.draft.offer = n; return render();
     case "draftPos": ui.draft.pos = n; return render();
     case "draft": return act({ type: "draft", offerIndex: ui.draft.offer!, pos: ui.draft.pos! });

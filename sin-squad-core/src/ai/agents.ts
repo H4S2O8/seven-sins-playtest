@@ -1,7 +1,7 @@
 import { runBattle } from "../battle/engine.js";
 import { CHARACTERS, character } from "../content/characters.js";
 import { PUBLIC_EFFECTS, RULES } from "../content/tables.js";
-import type { Action } from "../game/actions.js";
+import type { Action, Aim } from "../game/actions.js";
 import type { Table } from "../game/table.js";
 import { legalActions, observe, type Observation } from "../game/view.js";
 import { Rng } from "../rng.js";
@@ -22,6 +22,9 @@ export class RandomAgent implements Agent {
   act(table: Table, seat: Seat): Action {
     let acts = legalActions(table, seat);
     if (acts.some((a) => a.type === "check")) acts = acts.filter((a) => a.type !== "fold");
+    // 改指向有二十几种写法，只算一个选项，不然随机对手几乎每次都改指向
+    const aims = acts.filter((a) => a.type === "operate" && a.aim);
+    if (aims.length) acts = [...acts.filter((a) => !(a.type === "operate" && a.aim)), this.rng.pick(aims)];
     return this.rng.pick(acts);
   }
 }
@@ -49,7 +52,7 @@ export class HeuristicAgent implements Agent {
       case "peek": return acts[0].type === "peek" ? this.rng.pick(acts) : this.chooseSwap(obs, acts);
       case "reveal2": return this.chooseReveal2(obs, acts);
       case "bet": return this.chooseBet(obs, acts);
-      case "operate": return { type: "operate", draft: obs.opFee <= Math.max(10, obs.stacks[seat] * 0.25) };
+      case "operate": return this.chooseOperation(obs);
       case "draft": return this.chooseDraft(obs, acts);
       case "vote": return this.chooseVote(obs);
       case "bid": return this.chooseBid(obs, acts);
@@ -65,7 +68,12 @@ export class HeuristicAgent implements Agent {
   estimate(obs: Observation, mine?: TeamSetup, opts: { peActive?: boolean } = {}, n = this.samples): number {
     const me = mine ?? this.myTeam(obs);
     if (!me) return 0.5;
-    let score = 0;
+    return this.compare(obs, [me], opts, n)[0];
+  }
+
+  /** 同一批猜出来的对手、规则、效果下，分别算几支我方队伍的胜率（配对比较，差值比分开估算稳得多）。 */
+  private compare(obs: Observation, mine: TeamSetup[], opts: { peActive?: boolean } = {}, n = this.samples): number[] {
+    const score = mine.map(() => 0);
     for (let i = 0; i < n; i++) {
       const foe = this.guessFoe(obs);
       const ruleId = obs.ruleId ?? this.rng.pick(RULES).id;
@@ -73,20 +81,22 @@ export class HeuristicAgent implements Agent {
         ? (opts.peActive ?? obs.publicEffectActive ?? this.rng.next() < 0.5) ? obs.publicEffectId : null
         : this.rng.next() < 0.3 ? this.rng.pick(PUBLIC_EFFECTS).id : null;
       const arenaId = obs.arenaActive ? obs.arenaId ?? obs.arenaOptions[0] : "NONE";
-      const teams: [TeamSetup, TeamSetup] = obs.seat === 0 ? [me, foe] : [foe, me];
-      const r = runBattle({
-        teams, ruleId, arenaId, publicEffectId: peId, pot: obs.pot, firstSeat: other(obs.dealer),
-        campaign: obs.battleRules ?? undefined,
+      mine.forEach((me, k) => {
+        const teams: [TeamSetup, TeamSetup] = obs.seat === 0 ? [me, foe] : [foe, me];
+        const r = runBattle({
+          teams, ruleId, arenaId, publicEffectId: peId, pot: obs.pot, firstSeat: other(obs.dealer),
+          campaign: obs.battleRules ?? undefined,
+        });
+        score[k] += r.winner === obs.seat ? 1 : r.winner === null ? 0.5 : 0;
       });
-      score += r.winner === obs.seat ? 1 : r.winner === null ? 0.5 : 0;
     }
-    return score / n;
+    return score.map((s) => s / n);
   }
 
   private myTeam(obs: Observation): TeamSetup | null {
     const p = obs.me.placement;
     if (!p) return null;
-    const slots: SlotSetup[] = p.slots.map((c, i) => ({ characterId: c, equipmentId: c ? obs.me.equipment[i] : null }));
+    const slots: SlotSetup[] = p.slots.map((c, i) => ({ characterId: c, equipmentId: c ? obs.me.equipment[i] : null, aim: obs.me.aim[i] }));
     return { slots, eat: null, bet: this.betCtx(obs, obs.seat, p.reveal) };
   }
 
@@ -111,7 +121,7 @@ export class HeuristicAgent implements Agent {
       else if (o.revealed2 && o.revealed2.pos === pos) id = o.revealed2.characterId;
       else if (obs.me.peek && obs.me.peek.pos === pos) id = obs.me.peek.characterId;
       else id = this.rng.pick(pool);
-      return { characterId: id, equipmentId: o.equipment[pos] };
+      return { characterId: id, equipmentId: o.equipment[pos], aim: o.aim[pos] };
     });
     return { slots, eat: null, bet: this.betCtx(obs, other(obs.seat), o.revealed?.pos ?? 0) };
   }
@@ -134,6 +144,31 @@ export class HeuristicAgent implements Agent {
       if (s > bestScore) { bestScore = s; best = a; }
     }
     return best;
+  }
+
+  /**
+   * 拿装备：有操作费、而且付得起（不超过 10 或四分之一筹码里较多的那个）就拿。
+   * 改指向不花钱，另外算：试“全队集火某一个位置”和“都打对位”，和现在的指向放在同一批猜出来的对手里比，
+   * 胜率高出 4 个百分点才改（门槛挡掉估算的噪声）。
+   */
+  private chooseOperation(obs: Observation): Action {
+    const draft = obs.opFee > 0 && obs.opFee <= Math.max(10, obs.stacks[obs.seat] * 0.25);
+    const aim = this.chooseAim(obs);
+    return aim ? { type: "operate", draft, aim } : { type: "operate", draft };
+  }
+
+  private chooseAim(obs: Observation): Aim | null {
+    const base = this.myTeam(obs)!;
+    const cur = obs.me.aim;
+    const same = (a: Aim, b: Aim) => a.every((x, i) => x === b[i]);
+    const options = ([[0, 1, 2]] as Aim[])
+      .concat([0, 1, 2].filter((p) => !obs.opponent.emptyPositions.includes(p)).map((p): Aim => [p, p, p]))
+      .filter((aim) => !same(aim, cur));
+    if (!options.length) return null;
+    const withAim = (aim: Aim): TeamSetup => ({ ...base, slots: base.slots.map((s, i) => ({ ...s, aim: aim[i] })) });
+    const [now, ...alt] = this.compare(obs, [base, ...options.map(withAim)], {}, 24);
+    const best = alt.indexOf(Math.max(...alt));
+    return alt[best] - now >= 0.04 ? options[best] : null;
   }
 
   private chooseBet(obs: Observation, acts: Action[]): Action {

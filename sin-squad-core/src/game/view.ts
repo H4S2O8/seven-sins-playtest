@@ -1,7 +1,7 @@
 import type { CampaignBattleRules } from "../battle/engine.js";
 import { character } from "../content/characters.js";
 import { other, type EatChoice, type Seat } from "../types.js";
-import type { Action, Phase } from "./actions.js";
+import type { Action, Aim, Phase } from "./actions.js";
 import { MAX_RAISES, type Table } from "./table.js";
 
 /**
@@ -34,6 +34,8 @@ export interface Observation {
     /** 第二次翻开时自己暗选的位置（翻开前只有自己知道）。 */
     reveal2Pick: number | null;
     equipment: (string | null)[];
+    /** 自己的攻击指向（公开的）。 */
+    aim: Aim;
     offers: string[] | null;
     peek: { pos: number; characterId: string } | null;
     vote: boolean | null;
@@ -51,6 +53,8 @@ export interface Observation {
     /** 空出来的位置（被饕餮吞掉）是公开的。 */
     emptyPositions: number[];
     equipment: (string | null)[];
+    /** 对手的攻击指向：公开的，改了之后双方操作都选完才更新。 */
+    aim: Aim;
     submitted: boolean;
   };
   betting: {
@@ -102,6 +106,7 @@ export function observe(t: Table, seat: Seat): Observation {
       placement: myPl ? { slots: myPl.slots.slice(), reveal: myPl.reveal, reveal2: myPl.reveal2, eat: myPl.eat } : null,
       reveal2Pick: h.reveal2Pick[seat],
       equipment: h.equipment[seat].slice(),
+      aim: [...h.aim[seat]],
       offers: h.offers[seat] ? h.offers[seat]!.slice() : null,
       peek: h.peek[seat],
       vote: h.votes[seat],
@@ -116,6 +121,7 @@ export function observe(t: Table, seat: Seat): Observation {
       revealed2: foePl && foePl.reveal2 !== null ? { pos: foePl.reveal2, characterId: foePl.slots[foePl.reveal2]! } : null,
       emptyPositions: foePl ? foePl.slots.flatMap((c, i) => (c === null ? [i] : [])) : [],
       equipment: h.equipment[o].slice(),
+      aim: [...h.aim[o]],
       submitted: foeSubmitted,
     },
     betting: {
@@ -223,8 +229,19 @@ export function legalActions(t: Table, seat: Seat): Action[] {
       }
       return out;
     }
-    case "operate":
-      return [{ type: "operate", draft: false }, { type: "operate", draft: true }];
+    case "operate": {
+      // 拿不拿装备（操作费为 0 时只能不拿）× 指向不改 / 改成另外 26 种之一
+      const out: Action[] = [];
+      const cur = h.aim[seat];
+      for (const draft of h.opFee > 0 ? [false, true] : [false]) {
+        out.push({ type: "operate", draft });
+        for (let a = 0; a < 27; a++) {
+          const aim: Aim = [a % 3, Math.floor(a / 3) % 3, Math.floor(a / 9)];
+          if (aim.some((x, i) => x !== cur[i])) out.push({ type: "operate", draft, aim });
+        }
+      }
+      return out;
+    }
     case "draft": {
       const out: Action[] = [];
       const slots = h.placement[seat]!.slots;
