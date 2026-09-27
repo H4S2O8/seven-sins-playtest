@@ -169,6 +169,9 @@ class Battle {
       s.characterId ? unitFrom(this.card(s.characterId), seat, pos) : emptyUnit(seat, pos),
     );
     team.forEach((u, i) => {
+      const aim = setup.slots[i].aim ?? i;
+      if (!Number.isInteger(aim) || aim < 0 || aim > 2) throw new Error(`攻击指向必须是 0、1、2：${aim}`);
+      u.aim = aim;
       const e = setup.slots[i].equipmentId;
       if (u.exists && e) u.equipmentIds.push(e);
     });
@@ -591,10 +594,17 @@ class Battle {
     return null;
   }
 
-  /** 对位已倒下、这一轮还要花时间转线的人。 */
+  /** 眼前要打的人：指向的敌人还活着就打它，倒下了就打对位；两个都倒下了返回 null（要转线）。 */
+  private aimed(u: Unit): Unit | null {
+    const foes = this.teams[other(u.seat)];
+    if (foes[u.aim].alive) return foes[u.aim];
+    return foes[u.pos].alive ? foes[u.pos] : null;
+  }
+
+  /** 指向的敌人和对位都已倒下、这一轮还要花时间转线的人。 */
   private switching(u: Unit): boolean {
     if (this.rules.nearest || this.isDemon(u, "永眠")) return false; // 永眠从不出手，也就不用转线，照样反击
-    if (this.teams[other(u.seat)][u.pos].alive) return false;
+    if (this.aimed(u)) return false;
     if (u.charmed && this.round === 1) return false;
     return (u.switchRemaining ?? this.switchCost(u.pos)) > 0;
   }
@@ -630,9 +640,10 @@ class Battle {
       if (adj.length) { target = minBy(adj, (x) => x.hp); this.trig(u, "塞壬", "被魅惑：攻击队友"); }
     }
     if (!target) {
-      if (o.alive) {
-        target = o;
-        opposite = true;
+      const aim = this.aimed(u);
+      if (aim) {
+        target = aim;
+        opposite = aim === o;
       } else if (this.rules.nearest) {
         target = this.nearestFoe(u);
         if (!target) return;

@@ -1,6 +1,9 @@
 import type { EatChoice } from "../types.js";
 
 /** 玩家能提交的所有动作。 */
+/** 三个位置各自优先攻击的敌方位置（0/1/2）。 */
+export type Aim = [number, number, number];
+
 export type Action =
   /** 落后方从两张场地里选一张。 */
   | { type: "chooseArena"; index: 0 | 1 }
@@ -21,6 +24,8 @@ export type Action =
   | { type: "fold" }
   /** 下注匹配后，是否付操作费拿装备。 */
   | { type: "operate"; draft: boolean }
+  /** 同一次操作的另一种用法：付同样的操作费，公开改三个位置各自优先攻击的敌方位置（aim[i] = i 号位打谁）。 */
+  | { type: "aim"; aim: Aim }
   /** 从三张候选装备里选一张，装到 pos 号位。 */
   | { type: "draft"; offerIndex: number; pos: number }
   /** 公共效果：投生效 / 不生效。 */

@@ -66,6 +66,28 @@ describe("下注与操作费", () => {
     expect(t.hand.opFee).toBe(20); // 短码跟注后只剩 20
   });
 
+  it("改攻击指向：付操作费、算一次操作，双方都选完才公开；没改动的不收", () => {
+    const t = new Table({ seed: 3 });
+    driveUntil(t, "bet");
+    const a = t.toAct()[0];
+    const b: Seat = a === 0 ? 1 : 0;
+    t.apply(a, { type: "bet", amount: 20 });
+    t.apply(b, { type: "call" });
+    expect(t.phase).toBe("operate");
+    expect(() => t.apply(a, { type: "aim", aim: [0, 1, 2] })).toThrow("没有变化");
+    expect(() => t.apply(a, { type: "aim", aim: [0, 1, 3] })).toThrow("攻击指向");
+    const [stack, pot] = [t.stacks[a], t.hand.pot];
+    t.apply(a, { type: "aim", aim: [2, 2, 1] });
+    expect(observe(t, b).opponent.aim).toEqual([0, 1, 2]); // 对手还没选，看不到
+    t.apply(b, { type: "operate", draft: false });
+    expect(t.phase).not.toBe("draft");
+    expect(t.stacks[a]).toBe(stack - 20);
+    expect(t.hand.pot).toBe(pot + 20);
+    expect(t.hand.stats[a].opsPaid).toBe(1);
+    expect(observe(t, b).opponent.aim).toEqual([2, 2, 1]);
+    expect(t.teamSetup(a).slots.map((s) => s.aim)).toEqual([2, 2, 1]);
+  });
+
   it("全押时退回本轮对方跟不上的部分", () => {
     const t = new Table({ seed: 4 });
     t.stacks = [140, 50];

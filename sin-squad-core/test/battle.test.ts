@@ -46,6 +46,32 @@ describe("对位、转线与守护", () => {
     expect(hpAfter(stairs3, 1, 1, 1)).toBe(9 - 3); // 3 号位第 1 轮就打到冬眠熊；冬眠熊还在转线，不反击
   });
 
+  it("攻击指向：先打指向的敌人，它倒下后改打对位，不用转线", () => {
+    const a = team(["GR3", null, null]);
+    a.slots[0].aim = 1; // 收藏家指向 2 号位的豪商
+    const r = battle(a, team(["SL1", "GR1", null]));
+    const hits = r.events.flatMap((e) => (e.type === "attack" && e.seat === 0 ? [e.targetPos] : []));
+    expect(hits.slice(0, 2)).toEqual([1, 1]); // 4 + 4 打倒 5 血的豪商
+    expect(hits.slice(2).every((p) => p === 0)).toBe(true); // 然后回头打对位的冬眠熊
+    expect(r.events.some((e) => e.type === "switch" && e.seat === 0)).toBe(false);
+  });
+
+  it("攻击指向：对位空着但指向的敌人还在，第 1 轮就出手（也照常反击）", () => {
+    const a = team(["GR3", null, null]);
+    a.slots[0].aim = 1;
+    const r = battle(a, team([null, "SL1", null]));
+    expect(hpAfter(r, 1, 1, 1)).toBe(9 - 3); // 不像上面的“对位空着先转线”，第 1 轮就打到冬眠熊（4 − 护甲 1）
+    const pointless = team(["GR3", null, null]);
+    pointless.slots[0].aim = 2; // 指向空位：等于没改，照打对位
+    expect(battle(pointless, team(["SL1", null, null])).events.find((e) => e.type === "attack" && e.seat === 0)).toMatchObject({ targetPos: 0 });
+  });
+
+  it("攻击指向只能是 0、1、2", () => {
+    const a = team(["GR3", null, null]);
+    a.slots[0].aim = 3;
+    expect(() => battle(a, team(["SL1", null, null]))).toThrow("攻击指向");
+  });
+
   it("守护：相邻队友受到的攻击改由痴情骑士承受", () => {
     const r = battle(team(["GR3", null, null]), team(["WR2", "LU1", null]));
     const hit = afterHit(r, 1);

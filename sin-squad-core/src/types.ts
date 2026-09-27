@@ -71,6 +71,8 @@ export interface PublicEffectDef {
 export interface SlotSetup {
   characterId: string | null; // null = 空位（例如被饕餮吞掉）
   equipmentId: string | null;
+  /** 优先攻击的敌方位置（0/1/2）；不给就打对位。 */
+  aim?: number;
 }
 
 /** 饕餮在布阵时吞掉队友：eater、eaten 都是位置编号。 */

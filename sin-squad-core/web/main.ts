@@ -7,7 +7,7 @@ import type { UnitSnapshot } from "../src/battle/unit.js";
 import { CHARACTERS, character } from "../src/content/characters.js";
 import { campaignCard } from "../src/content/campaign-cards.js";
 import { ARENAS, EQUIPMENT, PUBLIC_EFFECTS, RULES, arena, equipment, publicEffect, rule } from "../src/content/tables.js";
-import type { Action } from "../src/game/actions.js";
+import type { Action, Aim } from "../src/game/actions.js";
 import { MAX_RAISES, Table, validatePlacement, type Placement, type TableRig } from "../src/game/table.js";
 import { legalActions, observe, type Observation } from "../src/game/view.js";
 import { other, type AttackShape, type CharacterDef, type Seat } from "../src/types.js";
@@ -77,6 +77,8 @@ interface Ui {
   place: { slots: (number | null)[]; reveal: number | null; eaten: number | null };
   betAmount: number | null;
   draft: { offer: number | null; pos: number | null };
+  /** 正在改攻击指向（操作阶段点了“改攻击指向”之后）：改到一半的样子；null = 没在改。 */
+  aim: Aim | null;
   bid: number;
   removeIdx: number | null;
   notice: { text: string; good: boolean | null } | null;
@@ -254,6 +256,7 @@ const ui: Ui = {
   place: { slots: [null, null, null], reveal: null, eaten: null },
   betAmount: null,
   draft: { offer: null, pos: null },
+  aim: null,
   bid: 0,
   removeIdx: null,
   notice: null,
@@ -271,6 +274,7 @@ function resetInputs() {
   ui.place = { slots: [null, null, null], reveal: null, eaten: null };
   ui.betAmount = null;
   ui.draft = { offer: null, pos: null };
+  ui.aim = null;
   ui.bid = 0;
   ui.removeIdx = null;
   ui.error = null;
@@ -820,6 +824,8 @@ interface CardOpts {
   flipDelay?: number;
   /** 转线中：往哪边偏（-1 左、1 右）。 */
   lane?: number;
+  /** 攻击指向不是对位时，打的是敌方几号位（牌下挂“打 N 号位”）。 */
+  aim?: number;
   /** 可以拖动：hand:发牌序号 / slot:位置。 */
   drag?: string;
   /** 可以放下：hand / slot:位置。 */
@@ -898,7 +904,7 @@ function card(id: string | null, o: CardOpts = {}) {
       <i class="edge top"></i><i class="edge bottom"></i><i class="edge left"></i><i class="edge right"></i>
       <div class="face front">${id ? cardFront(id, o) : ""}</div>
       <div class="face back"><i class="sheen"></i><i class="gloss"></i>${o.backText ? `<div class="back-text">${o.backText}</div>` : ""}${eq ? `<div class="equip" title="${esc(`${eq.name}：${eq.text}`)}">${eq.name}</div>` : ""}</div>
-    </div>${o.flag ? `<span class="flag">${o.flag}</span>` : ""}${o.lane ? `<span class="lane-tag">${o.lane < 0 ? "←" : "→"}</span>` : ""}</div>
+    </div>${o.flag ? `<span class="flag">${o.flag}</span>` : ""}${o.lane ? `<span class="lane-tag">${o.lane < 0 ? "←" : "→"}</span>` : ""}${o.aim !== undefined ? `<span class="aim-tag">打${posName(o.aim)}</span>` : ""}</div>
   </div>`;
 }
 
@@ -1248,7 +1254,7 @@ function phaseLabel(o: Observation): string {
     case "peek": return o.toAct.includes(HUMAN) ? "窥视" : "布阵完成";
     case "reveal2": return "再翻开一名";
     case "bet": return `第 ${o.betting.round} 轮下注`;
-    case "operate": return "操作：拿装备？";
+    case "operate": return "操作：装备或改指向";
     case "draft": return "挑装备";
     case "vote": return "公共效果表决";
     case "bid": return "暗标";
@@ -1266,7 +1272,7 @@ function foeRow(o: Observation): string {
   const peeking = o.phase === "peek" && o.toAct.includes(HUMAN) && !o.me.peek; // 偷看过一次就不能再点
   return [0, 1, 2].map((pos) => {
     const eq = opp.equipment[pos];
-    const base = { unit: `${AI}-${pos}`, key: foeKey(o, pos) };
+    const base = { unit: `${AI}-${pos}`, key: foeKey(o, pos), aim: aimTag(opp.aim, pos) };
     if (!opp.placed) return card(null, { ...base, backText: o.phase === "arena" ? "" : "布阵中…" });
     if (opp.emptyPositions.includes(pos)) return slot("空位<br><small>被饕餮吞掉</small>", { unit: base.unit });
     if (opp.revealed?.pos === pos) return card(opp.revealed.characterId, { ...base, equip: eq, cls: "lit" });
@@ -1297,6 +1303,7 @@ function myRow(o: Observation): string {
   if (!pl) return [0, 1, 2].map((pos) => slot(posName(pos))).join("");
   const drafting = o.phase === "draft" && !!o.me.offers && o.toAct.includes(HUMAN) && ui.draft.offer !== null;
   const keys = myKeys(o, pl.slots);
+  const aim = ui.aim ?? o.me.aim; // 改指向时先按改到一半的样子显示
   return pl.slots.map((id, pos) => {
     if (!id) return slot("空位<br><small>被吞掉</small>");
     let equip = o.me.equipment[pos];
@@ -1307,10 +1314,13 @@ function myRow(o: Observation): string {
     }
     return card(id, {
       key: keys[pos], unit: `${HUMAN}-${pos}`, equip, cls: `${cls} ${pos === pl.reveal || pos === pl.reveal2 ? "lit" : "dark"}`,
-      act: drafting ? "draftPos" : undefined, arg: pos,
+      act: drafting ? "draftPos" : undefined, arg: pos, aim: aimTag(aim, pos),
     });
   }).join("");
 }
+
+/** 指向不是对位时才挂牌子。 */
+const aimTag = (aim: Aim, pos: number) => (aim[pos] === pos ? undefined : aim[pos]);
 
 function battleUnits(snaps: UnitSnapshot[], reveal: number, o: Observation, acting: string | null = null, lanes: Map<string, number> = new Map()) {
   const seat = snaps[0]?.seat ?? HUMAN;
@@ -1362,7 +1372,7 @@ function phaseDock(o: Observation, mine: boolean): string {
     case "peek": return mine ? peekDock(o) : waiting("等待对手");
     case "reveal2": return mine ? reveal2Dock(o) : waiting("对手在选翻开谁");
     case "bet": return mine ? betDock(o) : waiting(`对手在考虑第 ${o.betting.round} 轮下注`);
-    case "operate": return mine ? operateDock(o) : waiting("等对手决定要不要拿装备");
+    case "operate": return mine ? operateDock(o) : waiting("等对手决定要不要操作");
     case "draft": return mine && o.me.offers ? draftDock(o) : waiting("对手在挑装备");
     case "vote": return mine ? voteDock(o) : waiting("等对手表决");
     case "bid": return mine ? bidDock(o) : waiting("等对手暗标出价");
@@ -1488,8 +1498,27 @@ function betDock(o: Observation) {
 }
 
 function operateDock(o: Observation) {
-  return prompt(`付 ${o.opFee} 操作费，从 3 件装备里挑 1 件？`, "装备装在谁身上对手看得到") +
-    `<div class="actions">${btn("不拿", "operate", 0, "big")}${btn(`付 ${o.opFee} 拿装备`, "operate", 1, "primary big")}</div>`;
+  if (ui.aim) return aimDock(o, ui.aim);
+  return prompt(`付 ${o.opFee} 操作费做一次操作？`, "从 3 件装备里挑 1 件，或者公开改攻击指向，二选一；选了什么对手看得到") +
+    `<div class="actions">${btn("不操作", "operate", 0, "big")}${btn(`付 ${o.opFee} 拿装备`, "operate", 1, "primary big")}${btn("改攻击指向…", "aimEdit", undefined, "big")}</div>`;
+}
+
+/** 改攻击指向：每个人点它要打对面哪个位置（知道是谁的写上名字）。 */
+function aimDock(o: Observation, aim: Aim) {
+  const pl = o.me.placement!;
+  const opp = o.opponent;
+  const known = (p: number) =>
+    opp.revealed?.pos === p ? opp.revealed.characterId : opp.revealed2?.pos === p ? opp.revealed2.characterId : o.me.peek?.pos === p ? o.me.peek.characterId : null;
+  const label = (p: number, self: number) => {
+    const id = known(p);
+    return `${posName(p)}${id ? ` ${character(id).name}` : ""}${p === self ? "（对位）" : ""}`;
+  };
+  const rows = pl.slots.map((id, i) => !id ? "" : `<div class="actions compact aim-row"><span class="label">${character(id).name}打</span>${
+    [0, 1, 2].map((p) => btn(label(p, i), "aimPick", `${i}-${p}`, `${aim[i] === p ? "on" : ""}${opp.emptyPositions.includes(p) ? " disabled" : ""}`)).join("")
+  }</div>`).join("");
+  const changed = aim.some((x, i) => x !== o.me.aim[i]);
+  return prompt(`付 ${o.opFee} 改攻击指向`, "指向的敌人倒下后改打对位，对位也倒下了才转线。双方操作都选完后，对手会看到新的指向") + rows +
+    `<div class="actions">${btn("返回", "aimCancel", undefined, "big")}${btn(`付 ${o.opFee} 改指向`, "aim", undefined, `primary big${changed ? "" : " disabled"}`)}</div>`;
 }
 
 function draftDock(o: Observation) {
@@ -1752,6 +1781,14 @@ function onAct(name: string, arg: string | undefined) {
       return act(o!.betting.target === 0 ? { type: "bet", amount } : { type: "raise", to: amount });
     }
     case "operate": return act({ type: "operate", draft: n === 1 });
+    case "aimEdit": ui.aim = [...o!.me.aim]; ui.error = null; return render();
+    case "aimPick": {
+      const [i, p] = (arg ?? "").split("-").map(Number);
+      if (ui.aim) ui.aim[i] = p;
+      return render();
+    }
+    case "aimCancel": ui.aim = null; ui.error = null; return render();
+    case "aim": return act({ type: "aim", aim: [...ui.aim!] });
     case "draftOffer": ui.draft.offer = n; return render();
     case "draftPos": ui.draft.pos = n; return render();
     case "draft": return act({ type: "draft", offerIndex: ui.draft.offer!, pos: ui.draft.pos! });
