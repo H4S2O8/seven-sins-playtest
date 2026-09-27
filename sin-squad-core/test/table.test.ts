@@ -66,7 +66,7 @@ describe("下注与操作费", () => {
     expect(t.hand.opFee).toBe(20); // 短码跟注后只剩 20
   });
 
-  it("改攻击指向：付操作费、算一次操作，双方都选完才公开；没改动的不收", () => {
+  it("改攻击指向：不花钱、不算操作，可以和拿装备一起做，双方都选完才公开", () => {
     const t = new Table({ seed: 3 });
     driveUntil(t, "bet");
     const a = t.toAct()[0];
@@ -74,18 +74,35 @@ describe("下注与操作费", () => {
     t.apply(a, { type: "bet", amount: 20 });
     t.apply(b, { type: "call" });
     expect(t.phase).toBe("operate");
-    expect(() => t.apply(a, { type: "aim", aim: [0, 1, 2] })).toThrow("没有变化");
-    expect(() => t.apply(a, { type: "aim", aim: [0, 1, 3] })).toThrow("攻击指向");
+    expect(() => t.apply(a, { type: "operate", draft: false, aim: [0, 1, 3] })).toThrow("攻击指向");
     const [stack, pot] = [t.stacks[a], t.hand.pot];
-    t.apply(a, { type: "aim", aim: [2, 2, 1] });
+    t.apply(a, { type: "operate", draft: false, aim: [2, 2, 1] });
     expect(observe(t, b).opponent.aim).toEqual([0, 1, 2]); // 对手还没选，看不到
-    t.apply(b, { type: "operate", draft: false });
-    expect(t.phase).not.toBe("draft");
-    expect(t.stacks[a]).toBe(stack - 20);
-    expect(t.hand.pot).toBe(pot + 20);
-    expect(t.hand.stats[a].opsPaid).toBe(1);
+    t.apply(b, { type: "operate", draft: true, aim: [1, 1, 1] });
+    expect(t.stacks[a]).toBe(stack); // 改指向不收钱
+    expect(t.hand.pot).toBe(pot + 20); // 只有对手拿装备付了 20
+    expect(t.hand.stats[a].opsPaid).toBe(0);
+    expect(t.hand.stats[b].opsPaid).toBe(1);
     expect(observe(t, b).opponent.aim).toEqual([2, 2, 1]);
+    expect(observe(t, a).opponent.aim).toEqual([1, 1, 1]);
     expect(t.teamSetup(a).slots.map((s) => s.aim)).toEqual([2, 2, 1]);
+    expect(t.phase).toBe("draft");
+  });
+
+  it("没人下注也停下来改指向，但拿不了装备", () => {
+    const t = new Table({ seed: 3 });
+    driveUntil(t, "bet");
+    const a = t.toAct()[0];
+    const b: Seat = a === 0 ? 1 : 0;
+    t.apply(a, { type: "check" });
+    t.apply(b, { type: "check" });
+    expect(t.phase).toBe("operate");
+    expect(t.hand.opFee).toBe(0);
+    expect(() => t.apply(a, { type: "operate", draft: true })).toThrow("拿不了装备");
+    t.apply(a, { type: "operate", draft: false, aim: [1, 1, 1] });
+    t.apply(b, { type: "operate", draft: false });
+    expect(t.phase).not.toBe("operate");
+    expect(t.hand.aim[a]).toEqual([1, 1, 1]);
   });
 
   it("全押时退回本轮对方跟不上的部分", () => {

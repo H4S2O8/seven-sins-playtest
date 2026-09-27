@@ -1,6 +1,6 @@
 import { runBattle } from "../battle/engine.js";
 import { CHARACTERS, character } from "../content/characters.js";
-import { EQUIPMENT, PUBLIC_EFFECTS, RULES } from "../content/tables.js";
+import { PUBLIC_EFFECTS, RULES } from "../content/tables.js";
 import type { Action, Aim } from "../game/actions.js";
 import type { Table } from "../game/table.js";
 import { legalActions, observe, type Observation } from "../game/view.js";
@@ -22,9 +22,9 @@ export class RandomAgent implements Agent {
   act(table: Table, seat: Seat): Action {
     let acts = legalActions(table, seat);
     if (acts.some((a) => a.type === "check")) acts = acts.filter((a) => a.type !== "fold");
-    // 改指向有二十几种写法，只算一个选项，不然随机对手几乎每次都付费改指向
-    const aims = acts.filter((a) => a.type === "aim");
-    if (aims.length) acts = [...acts.filter((a) => a.type !== "aim"), this.rng.pick(aims)];
+    // 改指向有二十几种写法，只算一个选项，不然随机对手几乎每次都改指向
+    const aims = acts.filter((a) => a.type === "operate" && a.aim);
+    if (aims.length) acts = [...acts.filter((a) => !(a.type === "operate" && a.aim)), this.rng.pick(aims)];
     return this.rng.pick(acts);
   }
 }
@@ -147,32 +147,28 @@ export class HeuristicAgent implements Agent {
   }
 
   /**
-   * 操作费付得起（不超过 10 或四分之一筹码里较多的那个）才操作，然后在拿装备和改指向之间挑。
-   * 改指向试“全队集火某一个位置”几种；拿装备的价值按随便抽两组候选装备、各挑最好的一件估。
-   * 都放在同一批猜出来的对手里比，改指向要比拿装备高出 3 个百分点才改。
+   * 拿装备：有操作费、而且付得起（不超过 10 或四分之一筹码里较多的那个）就拿。
+   * 改指向不花钱，另外算：试“全队集火某一个位置”和“都打对位”，和现在的指向放在同一批猜出来的对手里比，
+   * 胜率高出 4 个百分点才改（门槛挡掉估算的噪声）。
    */
   private chooseOperation(obs: Observation): Action {
-    const draft: Action = { type: "operate", draft: true };
-    if (obs.opFee > Math.max(10, obs.stacks[obs.seat] * 0.25)) return { type: "operate", draft: false };
+    const draft = obs.opFee > 0 && obs.opFee <= Math.max(10, obs.stacks[obs.seat] * 0.25);
+    const aim = this.chooseAim(obs);
+    return aim ? { type: "operate", draft, aim } : { type: "operate", draft };
+  }
+
+  private chooseAim(obs: Observation): Aim | null {
     const base = this.myTeam(obs)!;
     const cur = obs.me.aim;
-    const focus = [0, 1, 2]
-      .filter((p) => !obs.opponent.emptyPositions.includes(p))
-      .map((p): Aim => [p, p, p])
-      .filter((aim) => aim.some((x, i) => x !== cur[i]));
-    if (!focus.length) return draft;
+    const same = (a: Aim, b: Aim) => a.every((x, i) => x === b[i]);
+    const options = ([[0, 1, 2]] as Aim[])
+      .concat([0, 1, 2].filter((p) => !obs.opponent.emptyPositions.includes(p)).map((p): Aim => [p, p, p]))
+      .filter((aim) => !same(aim, cur));
+    if (!options.length) return null;
     const withAim = (aim: Aim): TeamSetup => ({ ...base, slots: base.slots.map((s, i) => ({ ...s, aim: aim[i] })) });
-    const kits: TeamSetup[][] = [0, 1].map(() =>
-      this.rng.sample(EQUIPMENT.map((e) => e.id), 3).flatMap((e) =>
-        base.slots.flatMap((s, pos) => (s.characterId ? [{ ...base, slots: base.slots.map((x, i) => (i === pos ? { ...x, equipmentId: e } : x)) }] : [])),
-      ),
-    );
-    const scores = this.compare(obs, [...focus.map(withAim), ...kits.flat()], {}, 24);
-    const aims = scores.slice(0, focus.length);
-    let at = focus.length;
-    const kitValue = kits.map((k) => Math.max(...scores.slice(at, (at += k.length))));
-    const best = aims.indexOf(Math.max(...aims));
-    return aims[best] - kitValue.reduce((a, b) => a + b, 0) / kits.length >= 0.03 ? { type: "aim", aim: focus[best] } : draft;
+    const [now, ...alt] = this.compare(obs, [base, ...options.map(withAim)], {}, 24);
+    const best = alt.indexOf(Math.max(...alt));
+    return alt[best] - now >= 0.04 ? options[best] : null;
   }
 
   private chooseBet(obs: Observation, acts: Action[]): Action {
