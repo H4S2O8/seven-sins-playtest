@@ -19,7 +19,7 @@ type ScoreMetric = "wins" | "sum" | "centerWin" | "edgeWins" | "upsets" | "silen
 export interface NumericRule extends NumericCard { metrics: ScoreMetric[] }
 export interface NumericTrace { sourceId: string; seat: NumericSeat; pos: number; targetSeat: NumericSeat; targetPos: number; before: number; after: number; text: string; stage: "environment" | "control" | "character" | "equipment" }
 export interface NumericResolution { winner: NumericSeat | null; powers: [number[], number[]]; lineWinners: (NumericSeat | null)[]; lines: string[]; scores: [number, number]; scoreVectors: [number[], number[]]; trace: NumericTrace[]; silenced: [boolean[], boolean[]]; sealed: [boolean[], boolean[]]; teams: [NumericTeam, NumericTeam] }
-export interface NumericResolutionInput { teams: [NumericTeam, NumericTeam] | [NumericSlot[], NumericSlot[]]; arenaId: string; ruleId: string; activeEffectIds?: string[]; stats?: [NumericStats, NumericStats] | { pot: number } }
+export interface NumericResolutionInput { teams: [NumericTeam, NumericTeam] | [NumericSlot[], NumericSlot[]]; arenaId: string; ruleId: string; activeEffectIds?: string[]; stats?: [NumericStats, NumericStats] | { pot: number }; recordTrace?: boolean }
 
 const E = (op: "add" | "sub" | "mul" | "div" | "min" | "max" | "abs", ...args: Expr[]): Expr => ({ op, args });
 const cmp = (left: Expr, comparison: "<" | "<=" | "=" | ">=" | ">" | "!=", right: Expr): Cond => ({ left, cmp: comparison, right });
@@ -199,8 +199,8 @@ function targets(target: Target, c: Context): [NumericSeat, number][] {
   switch (target) { case "self": return [[c.seat, c.pos]]; case "foe": return [[other(c.seat), c.pos]]; case "left": return c.pos > 0 ? [[c.seat, c.pos - 1]] : []; case "right": return c.pos < 2 ? [[c.seat, c.pos + 1]] : []; case "neighbors": return [c.pos - 1, c.pos + 1].filter(p => p >= 0 && p < 3).map(p => [c.seat, p]); case "others": return [0, 1, 2].filter(p => p !== c.pos).map(p => [c.seat, p]); case "team": return [0, 1, 2].map(p => [c.seat, p]); }
 }
 type Packet = { sourceId: string; text: string; ctx: Context; action: Action; targetSeat: NumericSeat; targetPos: number; amount: number };
-function packets(card: NumericCard & { rules: NumericClause[] }, ctx: Context): Packet[] {
-  return card.rules.flatMap(r => matches(r.when, ctx) ? r.actions.flatMap(a => targets(a.target, ctx).map(([targetSeat, targetPos]) => ({ sourceId: card.id, text: numericRulesText([r]), ctx, action: a, targetSeat, targetPos, amount: a.kind === "power" ? evaluate(a.amount, ctx) : 0 }))) : []);
+function packets(card: NumericCard & { rules: NumericClause[] }, ctx: Context, recordTrace = true): Packet[] {
+  return card.rules.flatMap(r => matches(r.when, ctx) ? r.actions.flatMap(a => targets(a.target, ctx).map(([targetSeat, targetPos]) => ({ sourceId: card.id, text: recordTrace ? numericRulesText([r]) : "", ctx, action: a, targetSeat, targetPos, amount: a.kind === "power" ? evaluate(a.amount, ctx) : 0 }))) : []);
 }
 
 /**
@@ -222,6 +222,7 @@ export function runNumericResolution(input: NumericResolutionInput): NumericReso
   const powers = slots.map(t => t.map(s => s.number)) as [number[], number[]];
   const silenced: [boolean[], boolean[]] = [[false, false, false], [false, false, false]], sealed: [boolean[], boolean[]] = [[false, false, false], [false, false, false]];
   const trace: NumericTrace[] = [];
+  const makePackets = (card: NumericCard & { rules: NumericClause[] }, ctx: Context) => packets(card, ctx, input.recordTrace !== false);
   let environment = powers.map(p => [...p]);
   const contexts = () => ([0, 1] as NumericSeat[]).flatMap(seat => [0, 1, 2].map(pos => ({ seat, pos, teams: slots, stats, environment, silenced: silenced.map(t => [...t]), sealed: sealed.map(t => [...t]) })));
   const apply = (ps: Packet[], stage: NumericTrace["stage"]) => {
@@ -230,15 +231,15 @@ export function runNumericResolution(input: NumericResolutionInput): NumericReso
       if (p.action.kind === "power") powers[p.targetSeat][p.targetPos] += p.amount;
       else if (p.action.kind === "silence") silenced[p.targetSeat][p.targetPos] = true;
       else sealed[p.targetSeat][p.targetPos] = true;
-      if (p.amount !== 0 || p.action.kind !== "power") trace.push({ sourceId: p.sourceId, seat: p.ctx.seat, pos: p.ctx.pos, targetSeat: p.targetSeat, targetPos: p.targetPos, before, after: powers[p.targetSeat][p.targetPos], text: p.text, stage });
+      if (input.recordTrace !== false && (p.amount !== 0 || p.action.kind !== "power")) trace.push({ sourceId: p.sourceId, seat: p.ctx.seat, pos: p.ctx.pos, targetSeat: p.targetSeat, targetPos: p.targetPos, before, after: powers[p.targetSeat][p.targetPos], text: p.text, stage });
     }
   };
-  apply(contexts().flatMap(c => [arena, ...effects].flatMap(a => packets(a, c))), "environment");
+  apply(contexts().flatMap(c => [arena, ...effects].flatMap(a => makePackets(a, c))), "environment");
   environment = powers.map(p => [...p]);
   const controlContexts = contexts();
-  apply(controlContexts.filter(c => !c.silenced[c.seat][c.pos]).flatMap(c => packets(characterById(slots[c.seat][c.pos].effectId), c)).filter(p => p.action.kind !== "power"), "control");
-  apply(contexts().filter(c => !c.silenced[c.seat][c.pos]).flatMap(c => packets(characterById(slots[c.seat][c.pos].effectId), c)).filter(p => p.action.kind === "power"), "character");
-  apply(contexts().filter(c => !c.sealed[c.seat][c.pos] && !!slots[c.seat][c.pos].equipment).flatMap(c => { const e = slots[c.seat][c.pos].equipment!; return packets(equipmentById(e.id, e.tier), c); }), "equipment");
+  apply(controlContexts.filter(c => !c.silenced[c.seat][c.pos]).flatMap(c => makePackets(characterById(slots[c.seat][c.pos].effectId), c)).filter(p => p.action.kind !== "power"), "control");
+  apply(contexts().filter(c => !c.silenced[c.seat][c.pos]).flatMap(c => makePackets(characterById(slots[c.seat][c.pos].effectId), c)).filter(p => p.action.kind === "power"), "character");
+  apply(contexts().filter(c => !c.sealed[c.seat][c.pos] && !!slots[c.seat][c.pos].equipment).flatMap(c => { const e = slots[c.seat][c.pos].equipment!; return makePackets(equipmentById(e.id, e.tier), c); }), "equipment");
   powers.forEach(t => t.forEach((v, i) => { t[i] = Math.max(0, Math.floor(v)); }));
   const lineWinners = [0, 1, 2].map(i => powers[0][i] === powers[1][i] ? null : powers[0][i] > powers[1][i] ? 0 : 1) as (NumericSeat | null)[];
   function metric(m: ScoreMetric, seat: NumericSeat): number {

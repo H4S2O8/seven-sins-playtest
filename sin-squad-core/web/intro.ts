@@ -41,6 +41,8 @@ export interface GateHooks {
   start(style: Style): Opening;
   /** 开启新的单数值传统牌桌；由独立 NumericTable 驱动，旧牌桌状态不复用。 */
   numericStart?(style: Style): void;
+  numericSaved?(): boolean;
+  numericResume?(): void;
   resume(): void;
   /** 打开牌桌那边的弹层：规则 / 人物图鉴 / 卡框 / 调试。 */
   sheet(kind: "help" | "chars" | "frames" | "debug"): void;
@@ -198,6 +200,7 @@ export class Gate {
     const s = this.screen;
     switch (what) {
       case "play": this.screen = { kind: "opponent" }; break;
+      case "numericResume": this.hide(); this.hooks.numericResume?.(); return;
       case "numericPlay": this.screen = { kind: "numericOpponent" }; break;
       case "campaign": this.screen = { kind: "campaign" }; break;
       case "brief": {
@@ -388,6 +391,7 @@ export class Gate {
         ${save ? `<button class="big" data-go="resume">继续自由牌桌<small>第 ${save.handNo} 手 · 你 ${save.stacks[HUMAN]} 筹码 · 对手${OPPONENTS[save.style].title}</small></button>` : ""}
         <button class="big" data-go="play">${save ? "开一张新的自由牌桌" : "自由牌桌"}<small>完整规则，随机牌池</small></button>
         <button class="primary big numeric-mode-entry" data-go="numericPlay">七宗罪-德州战棋（新模式）<small>单数值比较 · 九选三 · 公开装备</small></button>
+        ${this.hooks.numericSaved?.() ? `<button class="big" data-go="numericResume">继续数字模式<small>恢复筹码、牌面和当前决定</small></button>` : ""}
         <div class="gate-row">
           <button data-go="help">规则</button>
           <button data-go="chars">人物图鉴</button>
@@ -427,6 +431,7 @@ export class Gate {
 
   /** 新数字模式的入口。它使用同一套朋友版本立绘，但有独立的 NumericTable 和状态机。 */
   private numericOpponentView() {
+    const descriptions: Record<Style,string> = { cautious:"更看重胜率与跟注成本，少诈唬，弱势时会弃牌。", aggressive:"下注更积极，愿意承担更多跟注风险。", bluff:"会混入弱势下注，用更大的注额施压；也可能弃牌。" };
     const cards = (Object.keys(OPPONENTS) as Style[]).map((k) => {
       const o = OPPONENTS[k];
       return `<div class="foe-card numeric-foe-card" data-go="numericPick" data-arg="${k}" role="button" tabindex="0" data-tilt="12">
@@ -434,8 +439,8 @@ export class Gate {
         <div class="foe-info">
           <b>${o.title}</b>
           <q>${o.quote}</q>
-          <p>数字模式练习对手：自动跟注或过牌，练习组队与结算。</p>
-          <span class="foe-level">数字模式 · 相同练习策略，不分难度</span>
+          <p>${descriptions[k]}</p>
+          <span class="foe-level">数字模式 · ${k === "cautious" ? "谨慎" : k === "aggressive" ? "激进" : "混合诈唬"}</span>
         </div>
       </div>`;
     }).join("");

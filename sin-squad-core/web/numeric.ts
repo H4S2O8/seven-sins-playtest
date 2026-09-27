@@ -16,18 +16,21 @@ import { isMuted, toggleMuted, setScene } from "./music.js";
  * 不读取旧 Table 的内部状态，因此可以和朋友的战役、自由牌桌并存。
  */
 export interface NumericTableLike {
+  save?(): unknown;
   observe(seat: 0 | 1): NumericObservation;
   apply(seat: 0 | 1, action: NumericAction): void;
   aiAction?(seat: 1, style: Style): NumericAction | null;
 }
 
 export interface NumericModeHooks {
+  restore(data: unknown): NumericTableLike;
   create(style: Style): NumericTableLike;
   exit(): void;
   art: Set<string>;
 }
 
 const TUTORIAL_KEY = "sinsquad.numeric.tutorial.v2";
+const SAVE_KEY = "sinsquad.numeric.save.v1";
 const readTutorial = () => { try { return localStorage.getItem(TUTORIAL_KEY) === "1"; } catch { return false; } };
 const saveTutorial = () => { try { localStorage.setItem(TUTORIAL_KEY, "1"); } catch { /* 无痕模式不影响游玩 */ } };
 
@@ -52,6 +55,24 @@ function lookUp<T extends { id: string; name: string; text: string }>(fn: (id: s
 }
 
 export class NumericMode {
+  static hasSave() { try { return localStorage.getItem(SAVE_KEY) !== null; } catch { return false; } }
+  resume() {
+    try {
+      const data = JSON.parse(localStorage.getItem(SAVE_KEY) ?? "null");
+      if (!data || !["cautious","aggressive","bluff"].includes(data.style)) throw Error("存档格式不兼容");
+      this.start(data.style, this.hooks.restore(data.table));
+      if ([data.effects,data.numbers].every(xs=>Array.isArray(xs) && xs.length===3 && new Set(xs).size===3 && xs.every((x:number)=>Number.isInteger(x)&&x>=0&&x<3))) {
+        this.selectedEffects=data.effects; this.selectedNumbers=data.numbers; this.draw(); this.persist();
+      }
+    } catch { this.start("cautious"); this.error = "原存档无法读取，已开始新桌。"; this.draw(); }
+  }
+  private persist() {
+    if (!this.table?.save) return;
+    try {
+      if (this.obs()?.phase === "over") localStorage.removeItem(SAVE_KEY);
+      else localStorage.setItem(SAVE_KEY,JSON.stringify({style:this.style,table:this.table.save(),effects:this.selectedEffects,numbers:this.selectedNumbers}));
+    } catch { this.error = "浏览器无法保存进度，请勿刷新或关闭本局。"; }
+  }
   private readonly root: HTMLElement;
   private table: NumericTableLike | null = null;
   private style: Style = "cautious";
@@ -105,6 +126,7 @@ export class NumericMode {
       if (!mapping) return;
       const picked = Number(el.value), at = mapping.indexOf(picked);
       [mapping[i], mapping[at]] = [mapping[at], mapping[i]];
+      this.persist();
       this.draw();
     });
     this.root.addEventListener("keydown", (ev) => {
@@ -125,9 +147,11 @@ export class NumericMode {
     document.body.appendChild(this.root);
   }
 
-  start(style: Style) {
+  start(style: Style, restored?: NumericTableLike) {
+    if (this.aiTimer !== null) window.clearTimeout(this.aiTimer);
+    this.aiTimer = null;
     this.style = style;
-    this.table = this.hooks.create(style);
+    this.table = restored ?? this.hooks.create(style);
     this.tutorialOpen = !readTutorial();
     this.tutorialPage = 0;
     this.layoutHand = -1;
@@ -140,6 +164,7 @@ export class NumericMode {
     const old = document.querySelector<HTMLElement>("#app");
     old?.classList.add("numeric-hidden");
     this.draw();
+    this.persist();
     this.runAi();
   }
 
@@ -167,7 +192,7 @@ export class NumericMode {
       try {
         if (this.table.observe(0).toAct.includes(1)) {
           const a = this.table.aiAction?.(1, this.style);
-          if (a) this.table.apply(1, a);
+          if (a) { this.table.apply(1, a); this.persist(); }
         }
       } catch (e) { this.error = e instanceof Error ? e.message : String(e); }
       this.draw();
@@ -180,6 +205,7 @@ export class NumericMode {
     try {
       this.table.apply(0, action);
       this.error = "";
+      this.persist();
       this.runAi();
       this.draw();
     } catch (e) { this.error = e instanceof Error ? e.message : String(e); this.draw(); }

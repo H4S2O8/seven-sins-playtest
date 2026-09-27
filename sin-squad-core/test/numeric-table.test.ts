@@ -6,7 +6,7 @@ function finish(t: NumericTable) {
   while (t.phase !== "result" && t.phase !== "over" && guard++ < 200) {
     const o = t.observe(0);
     for (const s of o.toAct) {
-      const a = t.aiAction?.(s as 1);
+      const a = t.baselineAction(s as 1);
       if (a) t.apply(s as 1, a);
     }
     if (!o.toAct.length) break;

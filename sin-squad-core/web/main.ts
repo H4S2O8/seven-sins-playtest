@@ -1986,6 +1986,8 @@ const gate = new Gate({
     };
   },
   numericStart(s) { numericMode.start(s); },
+  numericSaved: () => NumericMode.hasSave(),
+  numericResume() { numericMode.resume(); },
   resume() { if (!resumeGame()) gate.show("title"); },
   sheet(kind) {
     if (kind === "chars") { ui.helpTab = "chars"; ui.sheet = { kind: "help" }; } else ui.sheet = { kind };
@@ -2011,6 +2013,7 @@ const gate = new Gate({
   },
 }, ART);
 const numericMode = new NumericMode({
+  restore: data => NumericTable.restore(data as ReturnType<NumericTable["save"]>),
   create: () => new NumericTable({ seed: Math.floor(Math.random() * 1e9) }),
   exit: () => gate.show("title"),
   art: ART,

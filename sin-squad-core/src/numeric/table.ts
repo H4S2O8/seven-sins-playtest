@@ -1,6 +1,7 @@
 import { Rng } from "../rng.js";
 import { NUMERIC_CHARACTER_IDS, NUMERIC_ARENAS, NUMERIC_RULES, NUMERIC_EFFECTS, NUMERIC_EQUIPMENT, runNumericResolution, type NumericSlot, type NumericTeam } from "./content.js";
 import type { NumericAction, NumericObservation } from "./types.js";
+import { NumericAgent, type NumericStyle, type AgentSave } from "./ai.js";
 
 type Seat = 0 | 1;
 type Equipment = NonNullable<NumericSlot["equipment"]>;
@@ -14,6 +15,9 @@ interface Player {
 
 /** A complete heads-up table. Private choices only enter the public observation at reveal. */
 export class NumericTable {
+  private readonly initial: {seed:number;buyIn:number};
+  private history: {seat:Seat;action:NumericAction}[] = [];
+  private agents = new Map<string,NumericAgent>();
   readonly rng: Rng;
   readonly players: [Player, Player];
   phase = "draft";
@@ -41,7 +45,8 @@ export class NumericTable {
   private outcome: NumericObservation["result"] = null;
 
   constructor(opts: { seed?: number; buyIn?: number } = {}) {
-    this.rng = new Rng(opts.seed ?? Date.now());
+    this.initial = {seed:opts.seed ?? Date.now(), buyIn:opts.buyIn ?? 100};
+    this.rng = new Rng(this.initial.seed);
     const buy = opts.buyIn ?? 100;
     if (!Number.isSafeInteger(buy) || buy < 3) throw Error("起始筹码至少为 3，且须为整数");
     const player = (): Player => ({ numbers: [], current: [], seen: [], kept: [], rerolled: false, slots: null, equipment: [null, null, null], stack: buy });
@@ -87,6 +92,7 @@ export class NumericTable {
   observe(s: Seat): NumericObservation {
     const p = this.players[s], f = this.players[other(s)];
     return {
+      seat:s, publicStats:[0,1].map(i=>({invested:this.invested[i],betOrRaise:this.raises[i],checks:this.checks[i],opsPaid:this.ops[i],stack:this.players[i].stack,round:this.round})) as NumericObservation["publicStats"],
       phase: this.phase, handNo: this.handNo, round: this.round, dealer: this.dealer,
       stacks: [this.players[0].stack, this.players[1].stack], pot: this.pot, toAct: [...this.actors],
       arenaId: this.arenaId, ruleId: this.ruleId, effects: this.effects.map(x => ({ ...x })),
@@ -102,6 +108,25 @@ export class NumericTable {
   }
 
   apply(s: Seat, a: NumericAction) {
+    this.applyAction(s,a);
+    this.history.push({seat:s,action:structuredClone(a)});
+  }
+  save() {
+    return { version:1 as const, initial:{...this.initial}, history:structuredClone(this.history), agents:[...this.agents.entries()].map(([key,a])=>({key,state:a.save()})) };
+  }
+  static restore(data: ReturnType<NumericTable["save"]>) {
+    if (data?.version !== 1 || !data.initial || !Number.isSafeInteger(data.initial.seed) || !Array.isArray(data.history) || data.history.length > 100000 || !Array.isArray(data.agents)) throw Error("数字模式存档无效或版本不兼容");
+    const t = new NumericTable(data.initial);
+    for (const row of data.history) { if (row.seat !== 0 && row.seat !== 1) throw Error("存档座位无效"); t.apply(row.seat,row.action); }
+    for (const row of data.agents) t.agents.set(row.key,NumericAgent.restore(row.state as AgentSave));
+    return t;
+  }
+  aiAction(s: Seat, style:NumericStyle="cautious"): NumericAction|null {
+    const key = `${s}:${style}`;
+    if (!this.agents.has(key)) this.agents.set(key,new NumericAgent(style,(this.initial.seed ^ (s+1)*17011)>>>0));
+    return this.agents.get(key)!.act(this.observe(s));
+  }
+  private applyAction(s: Seat, a: NumericAction) {
     if (!this.actors.includes(s)) throw Error("请等待对手完成行动");
     const p = this.players[s];
     if (this.phase === "draft") {
@@ -233,7 +258,7 @@ export class NumericTable {
     const r = runNumericResolution({ teams, arenaId: this.arenaId, ruleId: this.ruleId, activeEffectIds: this.effects.filter(x => x.status === "active").map(x => x.id), stats });
     this.settle({ winner: r.winner, teams: teams.map(t => t.slots.map(x => ({ effectId: x!.effectId, number: x!.number, equipmentId: x!.equipment?.id ?? null }))), powers: r.powers, lineWinners: r.lineWinners, trace: r.trace, lines: r.lines });
   }
-  aiAction(s: Seat): NumericAction | null {
+  baselineAction(s: Seat): NumericAction | null {
     const o = this.observe(s);
     if (!o.toAct.includes(s)) return null;
     if (o.phase === "draft") return { type: "keep", index: 0 };
