@@ -1,11 +1,11 @@
 import type { Style } from "../src/ai/agents.js";
 import type { NumericAction, NumericObservation } from "../src/numeric/types.js";
 import { character } from "../src/content/characters.js";
-import { characterById, equipmentById, arenaById, ruleById, effectById, type NumericEquipmentTier } from "../src/numeric/content.js";
+import { characterById, equipmentById, arenaById, ruleById, effectById, NUMERIC_SETTLEMENT_TEXT, type NumericEquipmentTier } from "../src/numeric/content.js";
 import { esc, SIN_COLOR } from "./text.js";
 import { cardArt } from "./campaign.js";
 import { currentFrame } from "./frames.js";
-import { flip, measure, reducedMotion, strike, pulse } from "./motion.js";
+import { reducedMotion } from "./motion.js";
 import { morph } from "./morph.js";
 import { relight } from "./light.js";
 import { SIN_LATIN } from "./sigil.js";
@@ -27,13 +27,13 @@ export interface NumericModeHooks {
   art: Set<string>;
 }
 
-const TUTORIAL_KEY = "sinsquad.numeric.tutorial.v1";
+const TUTORIAL_KEY = "sinsquad.numeric.tutorial.v2";
 const readTutorial = () => { try { return localStorage.getItem(TUTORIAL_KEY) === "1"; } catch { return false; } };
 const saveTutorial = () => { try { localStorage.setItem(TUTORIAL_KEY, "1"); } catch { /* 无痕模式不影响游玩 */ } };
 
 const styleName: Record<Style, string> = { cautious: "谨慎的税官", aggressive: "激进的挑衅者", bluff: "爱诈唬的魅惑者" };
 const phaseName: Record<string, string> = {
-  draft: "九选三 / D 一次", place: "数字与效果排位", bet: "下注", operate: "操作费与装备", equip: "安装装备",
+  draft: "选三个人物 / 可换一批", place: "数字与效果排位", bet: "下注", operate: "操作费与装备", equip: "安装装备",
   vote: "场地效果表决", bid: "场地效果暗标", result: "结算", over: "牌桌结束",
 };
 
@@ -70,22 +70,12 @@ export class NumericMode {
   private detail: { title: string; text: string } | null = null;
   private readonly hover: HTMLElement;
   private readonly tutorial = [
-    ["你要赢的是筹码", "双方带相同筹码入座。每手先交底注形成奖池，赢家获得这手的奖池。一张牌桌由多手组成，直到一方筹码用完。下面先学怎么组队，再学怎么下注。"],
-    ["先收到三张数字", "三张原始数字直接随机发给你，不能选、不能重抽。数字代表基础力量，人物没有攻击与血量两套数值。大数正面较强，小数可能通过克制、乘法或邻位配合反超。"],
-    ["对手究竟知道什么", "你知道自己的三个精确数字；对手只知道这三个数字的高、中、低构成，构成的排列不对应桌上的位置。双方都看不到对方人物效果、效果候选和装备候选。装好的装备及安装位置公开。"],
-    ["先读公开环境", "数字发出后，基础场地和胜利规则公开，再挑人物效果。基础场地调整数字或位置价值；胜利规则决定这手怎样判赢家。三张额外效果会在前三轮逐张决定是否生效。高牌阵容或小牌阵容可能有优势，但不会只凭牌型自动获胜。"],
-    ["九张效果里留下三张", "初始发九张不同的人物效果。点击卡牌锁定，最多保留三张。你可以直接留三张；也可以先留零、一或两张，再使用一次 D。看不到第二批候选时，就必须决定第一批留下什么。"],
-    ["D 是一次不可回头的决定", "D 会永久刷走本批所有未留下的效果，保留的效果锁定。新发九张候选不包含已刷走和已保留的牌，之后从新一批补足三张。支持 0+3、1+2、2+1、3+0；D 不重抽你的数字。"],
-    ["数字、人物、顺序独立组合", "三张数字和三个人物效果各用一次。你可以交换数字，让同一人物拿到另一个数字；也可以交换人物位置，让效果针对另一条线。确认以后同时暗中锁定，看到装备后不能重新排人。"],
-    ["固定对位，靠效果针对", "1号位只和敌方1号位比，2对2、3对3。若猜敌方2号位是小数，可以把针对小数的人物放在你的2号位。原始数字指发牌时的数；当前力量指效果按顺序计算到当时的数。请以每张卡写明的条件为准。"],
-    ["下注、跟注、加注、弃牌", "无人下注时可以过牌，或下注开价；有人下注后，你可以补齐差额跟注、提高本轮总额加注，或弃牌放弃奖池。加注输入的是“加到多少”，不是“再加多少”。已经投入的筹码不会因弃牌退还。"],
-    ["拿装备还有操作费", "双方本轮下注跟齐后，可以额外付操作费拿装备。操作费显示在按钮上，付费后从三张候选选一件并选位置。双方安装决定锁定后一起公开；你可以不拿。前三轮是普通装备，只能装空位，一位最多一件。"],
-    ["额外效果由你们争取", "前三轮各处理一张额外效果。双方暗中投“启用”或“不启用”；意见一致直接确定，意见不同再暗标竞拍。出价在双方提交前保密，确定后的效果状态持续到本手结束。"],
-    ["替换装备是有限补救", "第4、5轮只发第一档替换版，第6、7轮发更弱的第二档替换版。它们是相同装备机制的低数值版本，可以覆盖已有装备或装到空位。覆盖后旧装备彻底失效。数值档位只影响新拿的牌，已经装好的装备不会自己衰减。"],
-    ["什么时候开战", "前三轮双方都过牌、不拿装备，也要处理完三张额外效果。从第4轮起，某整轮双方都没追加筹码、没拿装备，就开战。第7轮后不再拿装备，但仍能继续加注；没有人继续加钱时开战。"],
-    ["全押与提前结束", "全押后，对手仍可弃牌或跟注。跟注后退回无法匹配的超额，立即开战：已确定的额外效果保留，尚未定夺的一律关闭，后续装备窗口取消。全押会锁定当前环境，使用前先看清提示。"],
-    ["看清为什么赢", "开战才揭开双方精确数字、人物效果与排列。各效果按固定阶段结算，然后三条线分别比较最终力量，最后按本手公开的胜利规则判定。查看结算明细可追溯每次修正；所有相等和特殊条件也以本手胜利规则为准。"],
-    ["现在开始，随时可回来", "先看自己的数字和场地，再挑互相配合的效果。悬停或点详情可读完整卡面；不要只看牌名。顶栏“教程”可随时重新打开，本次读完后以后进入不再强制。"],
+    ["先记住这一个目标", "赢筹码。每手双方先放 2 枚底注进奖池，再组队、下注、比大小；不足 2 枚时双方按较少的一方交底注。赢家拿走奖池，平局平分，单出的 1 枚给本手庄家（每手轮换）。结算后重新发牌，直到一方筹码归零。"],
+    ["先挑人物，再搭配数字", "你会拿到 3 个数字（3～10），它们不能重抽。先看场地与胜利规则，再从 9 个人物中点选 3 个。想换候选时，可先保留 0～2 个再点“换一批”：已选的不变，未选的永久换走，每手只能换一次。点选即保留，选满 3 个后进入排位。"],
+    ["三个位置，各比各的", "把 3 个人物与 3 张数字自由搭配；下拉框会自动交换，重复的数字也算不同的两张牌。锁定前可调整，锁定后不可改。1号位对1号位，2对2，3对3。最终胜负看本手的胜利规则，不一定是总和更大就赢。点卡牌详情可看条件。"],
+    ["每轮只做眼前的决定", "先下注：不想加钱就过牌；对手下注后可跟注、加注或弃牌。下注最少 2 枚；加注填写本轮总额，例如已投 5、加到 8，就是再付 3。筹码不足可全押；对手跟注后立即开战，无法匹配的多余下注退回。弃牌则让对手拿走奖池。"],
+    ["装备与额外效果，到时再选", "下注跟齐后可跳过装备，或付 2 枚看三选一（不足 2 枚付剩余筹码）；看过再放弃也不退费。双方决定完才一起公开装备。前三轮只能装空位，第4～7轮可以替换。前三轮各表决一张额外效果；意见不同才暗标，现场会显示出价上限和规则。"],
+    ["什么时候比大小？", "前三轮要处理完额外效果。从第4轮起，双方整轮都没追加筹码、没付装备费，就开战；第7轮后只剩下注。有人把剩余筹码用完时，在当前必要的跟注或装备决定完成后开战，未表决的效果关闭。开战后公开双方牌面与计算明细。无需背完：每个阶段都有提示，随时点“教程”重看。"],
   ] as const;
 
   constructor(private readonly hooks: NumericModeHooks) {
@@ -97,7 +87,7 @@ export class NumericMode {
     document.body.appendChild(this.hover);
     this.root.addEventListener("click", (ev) => {
       const el = (ev.target as HTMLElement).closest<HTMLElement>("[data-nact]");
-      if (!el || el.classList.contains("disabled")) return;
+      if (!el || el.classList.contains("disabled") || el.hasAttribute("disabled")) return;
       this.onAction(el.dataset.nact!, el.dataset.arg);
     });
     this.root.addEventListener("input", (ev) => {
@@ -186,7 +176,7 @@ export class NumericMode {
   }
 
   private send(action: NumericAction) {
-    if (!this.table) return;
+    if (!this.table || !this.obs()?.toAct.includes(0)) return;
     try {
       this.table.apply(0, action);
       this.error = "";
@@ -203,11 +193,12 @@ export class NumericMode {
       else this.tutorialPage++;
       this.draw(); this.runAi(); return;
     }
+    if (type === "tutorialSkip") { this.tutorialOpen = false; saveTutorial(); this.draw(); this.runAi(); return; }
     if (type === "tutorialPrev") { this.tutorialPage = Math.max(0, this.tutorialPage - 1); return this.draw(); }
     if (type === "music") { toggleMuted(); return this.draw(); }
     if (type === "info") { const el = this.root.querySelector<HTMLElement>(`[data-info="${arg}"]`); if (el) this.detail = { title: el.dataset.ntitle ?? "详情", text: el.dataset.ntext ?? "" }; return this.draw(); }
     if (type === "closeInfo") { this.detail = null; return this.draw(); }
-    if (this.tutorialOpen) return;
+    if (this.tutorialOpen || this.detail) return;
     if (type === "replay") { this.outcomeHand = -1; return this.draw(); }
     if (type === "keep" || type === "reroll") return this.send(type === "keep" ? { type, index: Number(arg) } : { type });
     if (type === "place") return this.send({ type, effects: this.selectedEffects as [number, number, number], numbers: this.selectedNumbers as [number, number, number] });
@@ -225,10 +216,9 @@ export class NumericMode {
     const o = this.obs();
     this.root.classList.add("open");
     if (!o) { this.root.innerHTML = ""; return; }
-    if (this.layoutHand !== o.handNo) { this.layoutHand = o.handNo; this.selectedEffects = [0, 1, 2]; this.selectedNumbers = [0, 1, 2]; this.replayLine = -1; }
-    const before = measure(this.root);
+    if (this.layoutHand !== o.handNo) { this.layoutHand = o.handNo; this.selectedEffects = [0, 1, 2]; this.selectedNumbers = [0, 1, 2]; this.replayLine = -1; this.replayToken++; this.replaying = false; this.amount = 5; }
     morph(this.root, `${this.header(o)}${this.environment(o)}${this.board(o)}${this.error ? `<p class="numeric-error" role="alert">${esc(this.error)}</p>` : ""}${this.dock(o)}${this.tutorialOpen ? this.tutorialView() : ""}${this.detail ? `<div class="numeric-tutorial"><div class="numeric-tutorial-panel" role="dialog" aria-modal="true"><h2>${esc(this.detail.title)}</h2><p>${esc(this.detail.text)}</p><button data-nact="closeInfo">关闭详情</button></div></div>` : ""}`);
-    flip(this.root, before);
+    this.hover.style.display = "none";
     relight();
     if (o.result?.teams && this.outcomeHand !== o.handNo && !this.replaying) void this.playComparison(o);
   }
@@ -260,7 +250,7 @@ export class NumericMode {
     const infoId = `slot-${seat}-${i}`;
     let art = "", sin = "#6a5640";
     if (x) { const c = character(x.effectId), a = cardArt(x.effectId); sin = SIN_COLOR[c.sin]; if (this.hooks.art.has(a)) art = `<img src="art/${a}.webp" alt="" draggable="false">`; }
-    const detail = x ? `${effectText(x.effectId)}${eq ? `\n装备公开：${equipmentById(eq.id, eq.tier as NumericEquipmentTier).text}` : ""}` : "人物和精确数字在战斗前隐藏。装备及其安装位置公开。";
+    const detail = `${x ? effectText(x.effectId) : "人物和精确数字在开战前隐藏。低=3～4，中=5～7，高=8～10；构成不代表位置。"}${eq ? `\n装备：${installLabel(eq)}。${equipmentById(eq.id, eq.tier as NumericEquipmentTier).text}` : ""}`;
     return `<div class="numeric-slot ${seat === 1 ? "foe-slot" : ""} ${x ? "revealed" : "concealed"}" data-key="numeric-${o.handNo}-${seat}-${i}" data-unit="${seat}-${i}" style="--sin:${sin}" data-info="${infoId}" data-ntitle="${esc(x ? effectName(x.effectId) : "隐藏人物")}" data-ntext="${esc(detail)}"><small>${i+1}号位</small><div class="numeric-slot-art">${art || `<span>${x ? "" : "?"}</span>`}</div><b>${esc(x ? effectName(x.effectId) : o.opponent.placed ? "已暗置" : "等待布阵")}</b><span class="numeric-slot-power">${x ? pow !== undefined ? `原数 ${x.number} → 力量 ${pow}` : `原始数字 ${x.number}` : "数字 · 效果隐藏"}</span>${this.equipPill(eq)}<button class="numeric-info" data-nact="info" data-arg="${infoId}">详情</button></div>`;
   }
 
@@ -269,7 +259,7 @@ export class NumericMode {
   private draftDock(o: NumericObservation) {
     const cards = o.me.current.map((id, i) => this.effectCard(id, i, o.me.kept.includes(id))).join("");
     const kept = o.me.kept.map((id) => `<span data-ntitle="${esc(effectName(id))}" data-ntext="${esc(effectText(id))}">${esc(effectName(id))}</span>`).join("");
-    return `<section class="numeric-dock"><h3>候选人物效果 · 已锁 ${o.me.kept.length}/3</h3><p class="numeric-hint">${o.me.rerolled ? "D 已使用，旧牌不会回来。请从新候选补满三张。" : "先锁 0～3 张，可 D 一次。锁满三张后进入排位。"}</p><div class="numeric-kept">已留：${kept || "还没选择"}</div><div class="numeric-cards">${cards}</div><div class="numeric-actions">${!o.me.rerolled && o.me.kept.length < 3 ? `<button class="primary" data-nact="reroll">D 一次（刷走未锁定牌）</button>` : ""}</div></section>`;
+    return `<section class="numeric-dock"><h3>候选人物效果 · 已锁 ${o.me.kept.length}/3</h3><p class="numeric-hint">${o.me.rerolled ? "本手已换过一批。请补满三个人物；原来的未选人物不会回来。" : "点选即保留，不能撤销；选满三个后进入排位。可先保留一两个，再换一批候选。"}</p><div class="numeric-kept">已留：${kept || "还没选择"}</div><div class="numeric-cards">${cards}</div><div class="numeric-actions">${!o.me.rerolled && o.me.kept.length < 3 ? `<button class="primary" data-nact="reroll">换一批（每手一次）</button>` : ""}</div></section>`;
   }
 
   private effectCard(id: string, index: number, selected: boolean) {
@@ -293,33 +283,39 @@ export class NumericMode {
   }
 
   private bettingDock(o: NumericObservation) {
-    const call = o.betting.toCall > 0 ? `<button class="call" data-nact="call">跟注 ${o.betting.toCall}</button>` : `<button data-nact="check">过牌</button>`;
-    return `<section class="numeric-dock"><h3>下注 · 目标 ${o.betting.target} · 本轮投入 ${o.betting.roundBet[0]}</h3><div class="numeric-bet-form"><input type="number" min="0" step="1" data-ninput="amount" value="${this.amount}"><button data-nact="bet">下注</button><button class="raise" data-nact="raise">加到 ${this.amount}</button>${call}<button class="allin" data-nact="allIn">全押</button><button class="fold" data-nact="fold">弃牌</button></div></section>`;
+    const call = o.betting.toCall > 0 ? `<button class="call" data-nact="call">跟注 ${Math.min(o.stacks[0], o.betting.toCall)}${o.betting.toCall >= o.stacks[0] ? "（全押）" : ""}</button>` : `<button data-nact="check">过牌</button>`;
+    const canRaise = o.stacks[0] > o.betting.toCall;
+    return `<section class="numeric-dock"><h3>下注 · 本轮已投 ${o.betting.roundBet[0]} · 对手要价 ${o.betting.target}</h3><p>过牌不花筹码。加注填“本轮加到多少”；至少加到 ${o.betting.minRaiseTo}。全押被跟注后立即开战，未定的额外效果关闭。</p><div class="numeric-bet-form">${canRaise ? `<label>${o.betting.target ? "加到" : "下注"} <input aria-label="下注金额" type="number" min="${o.betting.minRaiseTo}" max="${o.betting.roundBet[0] + o.stacks[0]}" step="1" data-ninput="amount" value="${this.amount}"></label><button data-nact="${o.betting.target ? "raise" : "bet"}">${o.betting.target ? "加到" : "下注"} <span data-amount>${this.amount}</span></button>` : ""}${call}<button class="allin" data-nact="allIn">全押 ${o.stacks[0]}</button><button class="fold" data-nact="fold">弃牌</button></div></section>`;
   }
 
   private equipDock(o: NumericObservation) {
     const tier = o.round <= 3 ? "normal" : o.round <= 5 ? "replace-1" : "replace-2";
-    const offers = o.me.offers?.map((id, i) => [id, i] as const).map(([id, i]) => { const e = equipmentById(id, tier as NumericEquipmentTier); return `<div class="numeric-offer" data-ntitle="${esc(e.name)}" data-ntext="${esc(e.text)}"><b>${esc(installLabel({ id, tier }))}</b><span>${esc(e.text)}</span><div>${[0, 1, 2].map((p) => `<button data-nact="equip" data-arg="${i},${p}">装到 ${p + 1}号位</button>`).join("")}</div></div>`; }).join("") ?? "";
-    return `<section class="numeric-dock"><h3>装备（公开安装）</h3><div class="numeric-offers">${offers}</div><button data-nact="operate" data-arg="0">不拿装备，继续</button></section>`;
+    const offers = o.me.offers?.map((id, i) => [id, i] as const).map(([id, i]) => { const e = equipmentById(id, tier as NumericEquipmentTier); return `<div class="numeric-offer" data-ntitle="${esc(e.name)}" data-ntext="${esc(e.text)}"><b>${esc(installLabel({ id, tier }))}</b><span>${esc(e.text)}</span><div>${[0, 1, 2].map((p) => `<button data-nact="equip" data-arg="${i},${p}" ${o.round <= 3 && o.me.equipment[p] ? "disabled" : ""}>${o.round <= 3 && o.me.equipment[p] ? "已占用 " : o.me.equipment[p] ? "替换 " : "装到 "}${p + 1}号位</button>`).join("")}</div></div>`; }).join("") ?? "";
+    return `<section class="numeric-dock"><h3>选择装备与位置</h3><p>操作费已付，即使放弃也不退。双方决定完才一起公开；替换时旧装备失效。</p><div class="numeric-offers">${offers}</div><button data-nact="operate" data-arg="0">放弃安装（不退操作费）</button></section>`;
   }
 
   private dock(o: NumericObservation) {
     if (o.result || o.phase === "result" || o.phase === "over") return this.resultDock(o);
+    if (!o.toAct.includes(0)) return `<section class="numeric-dock numeric-wait" role="status">你的决定已提交，请等待对手完成行动。候选与选择暂不公开。</section>`;
     if (o.phase === "draft") return this.draftDock(o);
     if (o.phase === "place") return this.placeDock(o);
     if (o.phase === "bet") return this.bettingDock(o);
-    if (o.phase === "operate") return `<section class="numeric-dock"><h3>第 ${o.round} 轮 · 装备机会</h3><p>你可以看三张装备并安装一张，也可以不拿。前三轮是普通装备；第4—7轮是逐渐变弱的替换装备。</p><button class="primary" data-nact="operate" data-arg="1">看装备</button><button data-nact="operate" data-arg="0">不拿装备</button></section>`;
+    if (o.phase === "operate") return `<section class="numeric-dock"><h3>第 ${o.round} 轮 · 装备机会</h3><p>${o.round <= 3 ? "普通装备只能装空位。" : `本轮为替换${o.round <= 5 ? "Ⅰ" : "Ⅱ"}，可覆盖原装备，新装备数值更低。`}付费后看三选一，放弃不退费；双方决定完一起公开。</p><button class="primary" data-nact="operate" data-arg="1" ${o.canEquip ? "" : "disabled"}>付 ${o.opFee} 筹码看装备</button><button data-nact="operate" data-arg="0">跳过（免费）</button></section>`;
     if (o.phase === "equip") return this.equipDock(o);
-    if (o.phase === "vote") return `<section class="numeric-dock"><h3>额外效果是否生效</h3><button class="primary" data-nact="vote" data-arg="1">启用</button><button data-nact="vote" data-arg="0">不启用</button></section>`;
-    if (o.phase === "bid") return `<section class="numeric-dock"><h3>暗标决定额外效果</h3><input type="number" data-ninput="amount" value="${this.amount}"><button class="primary" data-nact="bid">出价</button></section>`;
+    const effect = o.effects[o.round - 1];
+    const d = effect ? effectById(effect.id) : null;
+    if (o.phase === "vote") return `<section class="numeric-dock"><h3>本轮表决：${esc(d?.name ?? "额外效果")}</h3><p>${esc(d?.text ?? "")}</p><p>双方选同一个答案就直接确定；意见不同时再暗标决定。</p><button class="primary" data-nact="vote" data-arg="1">启用</button><button data-nact="vote" data-arg="0">不启用</button></section>`;
+    if (o.phase === "bid") return `<section class="numeric-dock"><h3>意见不同：暗标决定「${esc(d?.name ?? "额外效果") }」</h3><p>双方秘密出价，较高者的表决生效。双方都付出价，筹码进入奖池；同价按本手庄家（${o.dealer === 0 ? "你" : "对手"}）的表决。可以出 0，上限 ${o.bidCap}。</p><label>暗标出价 <input aria-label="暗标出价" type="number" min="0" max="${o.bidCap}" step="1" data-ninput="amount" value="${this.amount}"></label><button data-nact="bid">出价</button></section>`;
     return `<section class="numeric-dock"><p>等待双方锁定……</p></section>`;
   }
 
   private resultDock(o: NumericObservation) {
     const r = o.result;
-    const lines = r?.trace?.map((x) => `<li>${esc(typeof x === "string" ? x : `${x.stage}：${x.text}（${x.before} → ${x.after}）`)}</li>`).join("") ?? r?.lines?.map((x) => `<li>${esc(x)}</li>`).join("") ?? "";
+    const stages = { environment: "场地", control: "沉默与封印", character: "人物", equipment: "装备" };
+    const lines = r?.trace?.map((x) => `<li>${esc(typeof x === "string" ? x : `${stages[x.stage]} · ${x.targetSeat === 0 ? "你" : "对手"}${x.targetPos + 1}号位：${x.text}（${x.before} → ${x.after}）`)}</li>`).join("") ?? "";
     const winner = r?.winner === 0 ? "你赢了" : r?.winner === 1 ? "对手获胜" : "平局";
-    return `<section class="numeric-dock numeric-result"><h2>${winner}</h2><ol>${lines}</ol>${o.phase !== "over" ? `<button class="primary" data-nact="next">下一手</button>` : `<button data-nact="exit">回到开始界面</button>`}</section>`;
+    const comparisons = r?.powers ? `<p>${[0,1,2].map(i => `${i+1}号位：你 ${r.powers![0][i]} / 对手 ${r.powers![1][i]}（${r.lineWinners?.[i] === null ? "平" : r.lineWinners?.[i] === 0 ? "你胜" : "对手胜"}）`).join("；")}</p>` : "";
+    return `<section class="numeric-dock numeric-result"><h2>${winner}</h2><p>本手奖池 ${r?.pot ?? 0} 已分配：你 +${r?.payouts?.[0] ?? 0}，对手 +${r?.payouts?.[1] ?? 0}。</p>${comparisons}<p>${esc(r?.lines?.join("；") ?? "")}</p><details><summary>查看逐步计算</summary><ol>${lines}</ol></details>${r?.powers ? `<button data-nact="replay">重看对位比较</button>` : ""}${o.phase !== "over" ? `<button class="primary" data-nact="next">下一手</button>` : `<p>一方筹码已归零，本桌结束。</p><button data-nact="exit">回到开始界面</button>`}</section>`;
   }
 
   /** 结算回放：先逐条高亮三条固定对位线，再留下完整公式日志。 */
@@ -344,6 +340,6 @@ export class NumericMode {
 
   private tutorialView() {
     const [title, body] = this.tutorial[this.tutorialPage];
-    return `<div class="numeric-tutorial"><div class="numeric-tutorial-panel"><small>新手教程 ${this.tutorialPage + 1}/${this.tutorial.length}</small><h2>${esc(title)}</h2><p>${esc(body)}</p><div class="numeric-tutorial-actions">${this.tutorialPage ? `<button data-nact="tutorialPrev">上一步</button>` : ""}<button class="primary" data-nact="tutorialNext">${this.tutorialPage + 1 === this.tutorial.length ? "开始对战" : "下一步"}</button></div></div></div>`;
+    return `<div class="numeric-tutorial"><div class="numeric-tutorial-panel" role="dialog" aria-modal="true" aria-label="新手教程"><small>新手教程 ${this.tutorialPage + 1}/${this.tutorial.length}</small><h2>${esc(title)}</h2><p>${esc(body)}</p><details><summary>按需查阅：术语与结算顺序</summary><p>“原始数字”是发牌时的数字；“力量”是算完加减后的结果。“对位”是对方相同编号的位置；左右邻位是你自己的相邻队友。沉默只关掉人物效果，封印只关掉装备效果。并列最高或最低也算满足条件。</p><p>${esc(NUMERIC_SETTLEMENT_TEXT)}</p><p>每轮最多看一次装备。第4、5轮为替换Ⅰ，第6、7轮为更弱的替换Ⅱ；已装的装备不会随轮数自动变弱。暗标每人最多20枚，也不能超过手中筹码；双方出价都进奖池，同价听本手庄家。教程中的筹码均为游戏内筹码。</p></details><div class="numeric-tutorial-actions"><button data-nact="tutorialSkip">先玩，稍后再看</button>${this.tutorialPage ? `<button data-nact="tutorialPrev">上一步</button>` : ""}<button class="primary" data-nact="tutorialNext">${this.tutorialPage + 1 === this.tutorial.length ? "开始对战" : "下一步"}</button></div></div></div>`;
   }
 }

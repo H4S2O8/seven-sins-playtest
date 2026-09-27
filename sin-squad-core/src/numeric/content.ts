@@ -40,10 +40,10 @@ function exprText(v: Expr): string {
   if (typeof v === "number") return String(v);
   if (typeof v === "string") return RAW_LABEL[v];
   const a = v.args.map(exprText);
-  if (v.op === "min") return `min(${a.join("，")})`;
-  if (v.op === "max") return `max(${a.join("，")})`;
+  if (v.op === "min") return typeof v.args[0] === "number" ? `${a[1]}（最多 ${a[0]}）` : `两者较小值（${a.join("，")}）`;
+  if (v.op === "max") return v.args[0] === 0 ? `${a[1]}（最低为 0）` : `两者较大值（${a.join("，")}）`;
   if (v.op === "abs") return `绝对值(${a[0]})`;
-  if (v.op === "div") return `⌊${a[0]} ÷ ${a[1]}⌋`;
+  if (v.op === "div") return `（${a[0]} ÷ ${a[1]}，舍去小数）`;
   return `(${a.join(v.op === "add" ? " + " : v.op === "sub" ? " − " : " × ")})`;
 }
 function conditionText(c: Cond): string { return "all" in c ? c.all.map(conditionText).join("且") : "any" in c ? `（${c.any.map(conditionText).join("或")}）` : `${exprText(c.left)} ${c.cmp} ${exprText(c.right)}`; }

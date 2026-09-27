@@ -2455,3 +2455,34 @@ table.ref td.ref-pic img { display: block; width: 84px; aspect-ratio: 1216 / 832
   .facts { flex-wrap: wrap; }
   .fact { flex: 1 1 28%; }
 }
+/* Numeric mode keeps every region in normal flow, including narrow app panels. */
+#numeric-mode.open > * { flex-shrink: 0; min-width: 0; }
+#numeric-mode .numeric-board { flex: none; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); }
+#numeric-mode .numeric-board > section { min-width: 0; }
+#numeric-mode .numeric-slots { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+#numeric-mode .numeric-slot { min-width: 0; overflow: hidden; }
+.numeric-slot-art { width: 100%; height: 110px; overflow: hidden; border-radius: 8px; background: #1b1420; }
+.numeric-slot-art img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 12%; }
+.numeric-slot-art > span { display: grid; place-items: center; height: 100%; font-size: 32px; }
+.numeric-slot-power { font-size: 12px; }
+#numeric-mode .numeric-top { position: static; height: auto; min-height: 42px; }
+#numeric-mode button:disabled { opacity: .45; cursor: not-allowed; }
+#numeric-mode input { max-width: 110px; }
+#numeric-mode .numeric-place-form label { flex-wrap: wrap; min-width: 0; }
+.numeric-tutorial-panel { max-height: calc(100dvh - 40px); overflow-y: auto; }
+.numeric-tutorial-actions { flex-wrap: wrap; }
+.numeric-dock p { line-height: 1.6; }
+.numeric-result details { margin: 12px 0; text-align: left; }
+.numeric-result summary { cursor: pointer; color: var(--gold); }
+.numeric-result button { margin: 4px; }
+@media (max-width: 850px) {
+  #numeric-mode .numeric-board { grid-template-columns: minmax(0, 1fr); }
+  #numeric-mode .numeric-vs { order: 2; }
+  #numeric-mode .numeric-board > section:last-child { order: 3; }
+}
+@media (max-width: 420px) {
+  #numeric-mode .numeric-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .numeric-slot-art { height: 80px; }
+  .numeric-tutorial { padding: 10px; }
+  .numeric-tutorial-panel { padding: 16px; }
+}

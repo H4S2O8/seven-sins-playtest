@@ -434,8 +434,8 @@ export class Gate {
         <div class="foe-info">
           <b>${o.title}</b>
           <q>${o.quote}</q>
-          <p>${o.about}</p>
-          <span class="foe-level">数字模式 · ${o.level}</span>
+          <p>数字模式练习对手：自动跟注或过牌，练习组队与结算。</p>
+          <span class="foe-level">数字模式 · 相同练习策略，不分难度</span>
         </div>
       </div>`;
     }).join("");
@@ -443,7 +443,7 @@ export class Gate {
       <button class="gate-back" data-go="back" aria-label="返回">‹ 返回</button>
       <h2>七宗罪-德州战棋</h2>
       <p class="gate-sub">数字先发，场地公开；人物效果隐藏，装备公开。固定对位比较，按本手胜利规则结算。</p>
-      <p class="gate-sub numeric-mode-note">直接发 3 张数字，再从 9 张效果中留下 3 张，可 D 一次。刷走的牌不会回来。</p>
+      <p class="gate-sub numeric-mode-note">直接发 3 张数字，再从 9 张效果中留下 3 张，可换一批候选。先看简短教程，也可直接开始，边玩边看提示。</p>
       <div class="foe-list">${cards}</div>
     </div>`;
   }
