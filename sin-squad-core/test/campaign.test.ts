@@ -70,6 +70,24 @@ describe("战役牌桌", () => {
     expect(t.log.some((e) => e.type === "betAction")).toBe(false);
   });
 
+  it("结算完直接开下一手，战斗记录自带回放要的结果和结算前的筹码", () => {
+    const t = new Table(stageTable(newProgress(), 0, 9));
+    const first = t.toAct()[0];
+    t.apply(first, { type: "place", picks: [2, 0, 1], eat: null, reveal: 0 });
+    t.apply(1 - first as 0 | 1, { type: "place", picks: [0, 1, 2], eat: null, reveal: 0 });
+    const battle = t.log.find((e) => e.type === "battle");
+    const settle = t.log.find((e) => e.type === "settle");
+    if (battle?.type !== "battle" || settle?.type !== "settle") throw new Error("没打");
+    if (t.phase === "over") return;
+    expect(t.hand.no).toBe(2); // 牌桌已经是下一手，读不到上一手的战斗
+    expect(t.hand.battle).toBeNull();
+    expect(battle.hand).toBe(1);
+    expect(battle.result.frames.length).toBeGreaterThan(0);
+    expect(battle.ruleId).toBe("V01");
+    expect(battle.stacks[0] + battle.stacks[1] + battle.pot).toBe(stage(0).buyIn * 2);
+    expect(settle.by).toBe("battle");
+  });
+
   it("牌池来自战役进度和她的固定牌池", () => {
     const p = newProgress();
     const t = new Table(stageTable(p, 3, 1));

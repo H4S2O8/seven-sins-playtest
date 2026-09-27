@@ -159,15 +159,24 @@ export type TableEvent =
   | { type: "refund"; seat: Seat; amount: number }
   | { type: "operate"; round: 1 | 2; fee: number; drafted: [boolean, boolean]; aimed: [Aim | null, Aim | null] }
   | { type: "installed"; seat: Seat; pos: number; equipmentId: string }
-  | { type: "reveal"; ruleId: string; publicEffectId: string | null }
+  /** allIn：全押直接开打，公共效果不翻开。 */
+  | { type: "reveal"; ruleId: string; publicEffectId: string | null; allIn: boolean }
   /** 第二次翻开：双方同时翻开的人物（不用翻的一方为 null）。 */
   | { type: "reveal2"; picks: [{ pos: number; characterId: string } | null, { pos: number; characterId: string } | null] }
   | { type: "votes"; votes: [boolean, boolean] }
   | { type: "bids"; bids: [number, number]; peActive: boolean }
   | { type: "peResult"; publicEffectId: string; active: boolean }
   | { type: "fold"; seat: Seat }
-  | { type: "battle"; winner: Seat | null; reason: string; teams: [Placement, Placement]; equipment: [(string | null)[], (string | null)[]] }
-  | { type: "settle"; winner: Seat | null; pot: number; stacks: [number, number] }
+  /**
+   * 战斗自带回放要用的东西：战役里结算完立刻开下一手，读记录时牌桌已经是新的一手了。
+   * stacks / pot 是结算之前的筹码。
+   */
+  | {
+    type: "battle"; hand: number; winner: Seat | null; reason: string; result: BattleResult;
+    teams: [Placement, Placement]; equipment: [(string | null)[], (string | null)[]];
+    ruleId: string; arenaId: string; publicEffectId: string | null; stacks: [number, number]; pot: number;
+  }
+  | { type: "settle"; winner: Seat | null; by: "fold" | "battle"; pot: number; stacks: [number, number] }
   | { type: "market"; candidates: string[]; firstPicker: Seat }
   | { type: "marketPick"; seat: Seat; characterId: string }
   | { type: "marketRemove"; seat: Seat; removed: boolean }
@@ -295,7 +304,7 @@ export class Table {
       // 战役：主场固定、专属规则开局就公开，直接发牌
       this.hand.arenaId = c.arenaId;
       this.hand.ruleRevealed = true;
-      this.log.push({ type: "reveal", ruleId: this.hand.ruleId, publicEffectId: null });
+      this.log.push({ type: "reveal", ruleId: this.hand.ruleId, publicEffectId: null, allIn: false });
       this.deal();
     }
   }
@@ -684,11 +693,11 @@ export class Table {
     h.ruleRevealed = true;
     if (h.allIn) {
       // 全押：尚未翻开的公共效果不生效
-      this.log.push({ type: "reveal", ruleId: h.ruleId, publicEffectId: null });
+      this.log.push({ type: "reveal", ruleId: h.ruleId, publicEffectId: null, allIn: true });
       return this.fight();
     }
     h.peRevealed = true;
-    this.log.push({ type: "reveal", ruleId: h.ruleId, publicEffectId: h.publicEffectId });
+    this.log.push({ type: "reveal", ruleId: h.ruleId, publicEffectId: h.publicEffectId, allIn: false });
     h.votes = [null, null];
     this.phase = "vote";
   }
@@ -786,8 +795,10 @@ export class Table {
     });
     h.battle = result;
     this.log.push({
-      type: "battle", winner: result.winner, reason: result.reason,
+      type: "battle", hand: h.no, winner: result.winner, reason: result.reason, result,
       teams: [h.placement[0]!, h.placement[1]!], equipment: [h.equipment[0].slice(), h.equipment[1].slice()],
+      ruleId: h.ruleId, arenaId: h.arenaId!, publicEffectId: h.peActive ? h.publicEffectId : null,
+      stacks: [this.stacks[0], this.stacks[1]], pot: h.pot,
     });
     const pot = h.pot;
     if (result.winner === null) {
@@ -797,7 +808,7 @@ export class Table {
     }
     h.pot = 0;
     h.outcome = { winner: result.winner, by: "battle", pot };
-    this.log.push({ type: "settle", winner: result.winner, pot, stacks: [this.stacks[0], this.stacks[1]] });
+    this.log.push({ type: "settle", winner: result.winner, by: "battle", pot, stacks: [this.stacks[0], this.stacks[1]] });
     // 金山的利息：输了也收，但不超过对手剩下的筹码
     for (const s of SEATS) {
       const amount = Math.min(result.interest[s], this.stacks[other(s)]);
@@ -818,7 +829,7 @@ export class Table {
     this.stacks[winner] += pot;
     h.pot = 0;
     h.outcome = { winner, by: "fold", pot };
-    this.log.push({ type: "settle", winner, pot, stacks: [this.stacks[0], this.stacks[1]] });
+    this.log.push({ type: "settle", winner, by: "fold", pot, stacks: [this.stacks[0], this.stacks[1]] });
     this.checkInvariant();
     if (this.endIfBroke()) return;
     this.openMarket(folder);
