@@ -89,6 +89,17 @@ export interface Placement {
   reveal2: number | null;
 }
 
+/** 传统牌桌的新式发牌：数字与人物效果分开发，效果可 D 一次。 */
+export interface TraditionalDraft {
+  numbers: [number, number, number];
+  initial: string[];
+  current: string[];
+  kept: string[];
+  discarded: string[];
+  rerolled: boolean;
+  complete: boolean;
+}
+
 export interface BetStats {
   betOrRaise: number;
   checks: number;
@@ -109,6 +120,7 @@ export interface HandState {
   peRevealed: boolean;
   peActive: boolean;
   dealt: [string[], string[]];
+  traditional: [TraditionalDraft | null, TraditionalDraft | null];
   placing: Seat | null;
   placement: [Placement | null, Placement | null];
   equipment: [(string | null)[], (string | null)[]];
@@ -149,6 +161,8 @@ export type TableEvent =
   | { type: "handStart"; no: number; dealer: Seat; ante: number; arenaOptions: [string, string]; chooser: Seat }
   | { type: "arenaChosen"; seat: Seat; arenaId: string }
   | { type: "placed"; seat: Seat; revealPos: number; characterId: string; eaten: number | null }
+  | { type: "traditionalDraft"; seat: Seat; reroll: boolean; kept: string[]; discarded: string[] }
+  | { type: "traditionalPlaced"; seat: Seat; numbers: [number, number, number]; effects: [string, string, string] }
   | { type: "betAction"; seat: Seat; round: 1 | 2; action: string; amount: number; stack: number; pot: number }
   | { type: "refund"; seat: Seat; amount: number }
   | { type: "operate"; round: 1 | 2; fee: number; drafted: [boolean, boolean] }
@@ -223,6 +237,11 @@ export class Table {
     switch (this.phase) {
       case "arena": return [h.arenaChooser];
       case "place": return h.placing === null ? [] : [h.placing];
+      case "traditionalDraft": return SEATS.filter((s) => {
+        const d = h.traditional[s];
+        return !!d && d.kept.length < 3;
+      });
+      case "traditionalCombine": return SEATS.filter((s) => !h.traditional[s]?.complete);
       case "peek": return SEATS.filter((s) => h.peekPending[s]);
       case "reveal2": return SEATS.filter((s) => h.reveal2Pending[s] && h.reveal2Pick[s] === null);
       case "bet": return [h.actor];
@@ -267,7 +286,7 @@ export class Table {
       ruleId: c ? this.rng.pick(c.rules) : pickOr(this.rng.pick(RULES).id, this.rig.ruleId),
       publicEffectId: c ? "" : pickOr(this.rng.pick(PUBLIC_EFFECTS).id, this.rig.publicEffectId),
       ruleRevealed: false, peRevealed: false, peActive: false,
-      dealt: [[], []], placing: null, placement: [null, null],
+      dealt: [[], []], traditional: [null, null], placing: null, placement: [null, null],
       equipment: [[null, null, null], [null, null, null]],
       peekPending: [false, false], peek: [null, null],
       pot: 0, invested: [0, 0],
@@ -308,6 +327,9 @@ export class Table {
     switch (action.type) {
       case "chooseArena": return this.onArena(seat, action.index);
       case "place": return this.onPlace(seat, action.picks, action.eat, action.reveal);
+      case "traditionalKeep": return this.onTraditionalKeep(seat, action.index);
+      case "traditionalReroll": return this.onTraditionalReroll(seat);
+      case "traditionalPlace": return this.onTraditionalPlace(seat, action.effects, action.numbers);
       case "peek": return this.onPeek(seat, action.pos);
       case "peekSwap": return this.onPeekSwap(seat, action.swap);
       case "reveal2": return this.onReveal2(seat, action.pos);
@@ -338,7 +360,18 @@ export class Table {
   /** 从各自牌池发牌，然后非庄家先布阵。 */
   private deal() {
     const h = this.hand;
-    const n = this.campaign?.deal ?? 4;
+    if (!this.campaign) {
+      for (const s of SEATS) {
+        const all = CHARACTERS.map((c) => c.id);
+        const initial = this.rng.sample(all, 9);
+        const numbers = [this.rng.int(9) + 2, this.rng.int(9) + 2, this.rng.int(9) + 2] as [number, number, number];
+        h.traditional[s] = { numbers, initial: initial.slice(), current: initial.slice(), kept: [], discarded: [], rerolled: false, complete: false };
+      }
+      h.placing = null;
+      this.phase = "traditionalDraft";
+      return;
+    }
+    const n = this.campaign.deal;
     for (const s of SEATS) {
       const idx = this.rng.sample([...this.pools[s].keys()], n);
       h.dealt[s] = idx.map((i) => this.pools[s][i]);
@@ -350,6 +383,61 @@ export class Table {
     }
     h.placing = other(h.dealer);
     this.phase = "place";
+  }
+
+  private onTraditionalKeep(seat: Seat, index: number) {
+    this.expect("traditionalDraft");
+    const d = this.hand.traditional[seat];
+    if (!d || d.complete) throw new Error("传统候选已经完成");
+    if (!Number.isInteger(index) || index < 0 || index >= d.current.length) throw new Error("候选序号非法");
+    const id = d.current[index];
+    const at = d.kept.indexOf(id);
+    if (at >= 0) d.kept.splice(at, 1);
+    else {
+      if (d.kept.length >= 3) throw new Error("最多锁定三张效果牌");
+      d.kept.push(id);
+    }
+    this.maybeAdvanceTraditionalDraft();
+  }
+
+  private onTraditionalReroll(seat: Seat) {
+    this.expect("traditionalDraft");
+    const d = this.hand.traditional[seat];
+    if (!d || d.rerolled) throw new Error("每手只能 D 一次");
+    if (d.kept.length > 3) throw new Error("锁定牌数量非法");
+    d.discarded.push(...d.current.filter((id) => !d.kept.includes(id)));
+    const banned = new Set([...d.discarded, ...d.kept]);
+    const pool = CHARACTERS.map((c) => c.id).filter((id) => !banned.has(id));
+    d.current = this.rng.sample(pool, Math.min(9, pool.length));
+    d.rerolled = true;
+    this.log.push({ type: "traditionalDraft", seat, reroll: true, kept: d.kept.slice(), discarded: d.discarded.slice() });
+    this.maybeAdvanceTraditionalDraft();
+  }
+
+  private onTraditionalPlace(seat: Seat, effects: [number, number, number], numbers: [number, number, number]) {
+    this.expect("traditionalCombine");
+    const d = this.hand.traditional[seat];
+    if (!d || d.kept.length !== 3) throw new Error("必须正好选出三张效果牌");
+    if (new Set(effects).size !== 3 || effects.some((i) => !Number.isInteger(i) || i < 0 || i >= d.kept.length)) throw new Error("效果配对非法");
+    if (new Set(numbers).size !== 3 || numbers.some((i) => !Number.isInteger(i) || i < 0 || i > 2)) throw new Error("数字配对非法");
+    const slots = effects.map((i) => d.kept[i]) as [string, string, string];
+    this.hand.placement[seat] = { slots, eat: null, eatenId: null, reveal: 0, reveal2: null };
+    d.complete = true;
+    this.log.push({ type: "traditionalPlaced", seat, numbers, effects: slots });
+    if (this.hand.placement[0] && this.hand.placement[1]) this.afterPlacement();
+  }
+
+  private maybeAdvanceTraditionalDraft() {
+    const ready = SEATS.every((s) => {
+      const d = this.hand.traditional[s];
+      return !!d && (d.kept.length === 3 || d.rerolled);
+    });
+    if (!ready) return;
+    for (const s of SEATS) {
+      const d = this.hand.traditional[s]!;
+      if (d.kept.length < 3) return;
+    }
+    this.phase = "traditionalCombine";
   }
 
   private onPlace(seat: Seat, picks: number[], eat: EatChoice | null, reveal: number) {

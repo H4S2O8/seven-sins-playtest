@@ -85,6 +85,10 @@ export function logLine(e: TableEvent): string | null {
       return `${who(e.seat)}挑走「${name(e.characterId)}」放进牌池`;
     case "marketRemove":
       return e.removed ? `${who(e.seat)}从牌池移除了一名人物` : null;
+    case "traditionalDraft":
+      return `${who(e.seat)}完成传统九选三${e.reroll ? "并 D 了一次" : ""}`;
+    case "traditionalPlaced":
+      return `${who(e.seat)}完成数字与效果配对`;
     case "tableOver":
       return `牌桌结束：${e.winner === HUMAN ? "你赢了！" : "对手赢了"}`;
   }

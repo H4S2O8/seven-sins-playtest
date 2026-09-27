@@ -45,6 +45,15 @@ export class HeuristicAgent implements Agent {
     const acts = legalActions(table, seat);
     switch (obs.phase) {
       case "arena": return this.rng.pick(acts);
+      case "traditionalDraft": {
+        const d = obs.me.traditional!;
+        if (d.kept.length < 3) {
+          const keep = acts.find((a) => a.type === "traditionalKeep" && !d.kept.includes(d.current[a.index]));
+          return keep ?? acts[0];
+        }
+        return acts.find((a) => a.type === "traditionalReroll") ?? acts[0];
+      }
+      case "traditionalCombine": return acts.find((a) => a.type === "traditionalPlace") ?? acts[0];
       case "place": return this.choosePlacement(obs, acts);
       case "peek": return acts[0].type === "peek" ? this.rng.pick(acts) : this.chooseSwap(obs, acts);
       case "reveal2": return this.chooseReveal2(obs, acts);

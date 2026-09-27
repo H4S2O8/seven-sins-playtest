@@ -38,6 +38,7 @@ export interface Observation {
     peek: { pos: number; characterId: string } | null;
     vote: boolean | null;
     bid: number | null;
+    traditional: { numbers: [number, number, number]; current: string[]; kept: string[]; discarded: string[]; rerolled: boolean; complete: boolean } | null;
   };
   opponent: {
     poolSize: number;
@@ -106,6 +107,7 @@ export function observe(t: Table, seat: Seat): Observation {
       peek: h.peek[seat],
       vote: h.votes[seat],
       bid: h.bids[seat],
+      traditional: h.traditional[seat] ? { ...h.traditional[seat]!, numbers: [...h.traditional[seat]!.numbers] as [number, number, number], current: h.traditional[seat]!.current.slice(), kept: h.traditional[seat]!.kept.slice(), discarded: h.traditional[seat]!.discarded.slice() } : null,
     },
     opponent: {
       poolSize: t.pools[o].length,
@@ -175,6 +177,20 @@ export function legalActions(t: Table, seat: Seat): Action[] {
         }
       }
       return out;
+    }
+    case "traditionalDraft": {
+      const d = h.traditional[seat];
+      if (!d) return [];
+      const out: Action[] = d.kept.length < 3 ? d.current.map((_, index) => ({ type: "traditionalKeep", index } as Action)) : [];
+      if (!d.rerolled && d.kept.length < 3) out.push({ type: "traditionalReroll" });
+      return out;
+    }
+    case "traditionalCombine": {
+      const d = h.traditional[seat];
+      if (!d || d.kept.length !== 3) return [];
+      const effects: [number, number, number] = [0, 1, 2];
+      const numbers: [number, number, number] = [0, 1, 2];
+      return [{ type: "traditionalPlace", effects, numbers }];
     }
     case "peek": {
       if (!h.peek[seat]) {

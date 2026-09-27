@@ -1245,6 +1245,8 @@ function phaseLabel(o: Observation): string {
   switch (o.phase) {
     case "arena": return "选场地";
     case "place": return "布阵";
+    case "traditionalDraft": return "九选三 / D 一次";
+    case "traditionalCombine": return "数字与效果配对";
     case "peek": return o.toAct.includes(HUMAN) ? "窥视" : "布阵完成";
     case "reveal2": return "再翻开一名";
     case "bet": return `第 ${o.betting.round} 轮下注`;
@@ -1359,6 +1361,8 @@ function phaseDock(o: Observation, mine: boolean): string {
     }
     case "arena": return arenaDock(o, mine);
     case "place": return placeDock(o, mine);
+    case "traditionalDraft": return mine ? traditionalDraftDock(o) : waiting("对手正在九选三");
+    case "traditionalCombine": return mine ? traditionalCombineDock(o) : waiting("对手正在配对数字与效果");
     case "peek": return mine ? peekDock(o) : waiting("等待对手");
     case "reveal2": return mine ? reveal2Dock(o) : waiting("对手在选翻开谁");
     case "bet": return mine ? betDock(o) : waiting(`对手在考虑第 ${o.betting.round} 轮下注`);
@@ -1422,6 +1426,18 @@ function placeDock(o: Observation, mine: boolean) {
   return head + tray(true) + eat + `<div class="actions">
     ${btn("清空", "clearPlace", undefined, ui.place.slots.some((x) => x !== null) ? "big" : "big disabled")}
     ${btn("确认布阵", "place", undefined, `primary big ${ok ? "" : "disabled"}`)}</div>`;
+}
+
+function traditionalDraftDock(o: Observation) {
+  const d = o.me.traditional!;
+  const cards = d.current.map((id, i) => card(id, { key: `td-${i}`, cls: d.kept.includes(id) ? "small selected" : "small", act: "traditionalKeep", arg: i }));
+  const reroll = !d.rerolled && d.kept.length <= 3 ? btn("D（刷走未锁定牌）", "traditionalReroll", undefined, "primary") : "";
+  return prompt(`九选三：已锁 ${d.kept.length}/3`, "先锁任意 0～3 张；D 后只能从新的一批补足，刷走的牌不能回来") + `<div class="tray hand fan">${cards.join("")}</div><div class="actions">${reroll}</div>`;
+}
+
+function traditionalCombineDock(o: Observation) {
+  const d = o.me.traditional!;
+  return prompt("把三张固定数字自由配给三张效果", `数字：${d.numbers.join("、")}；效果：${d.kept.map((id) => character(id).name).join("、")}`) + `<div class="actions">${btn("确认配对", "traditionalPlace", undefined, "primary big")}</div>`;
 }
 
 /** 密探：先暗中偷看，再决定要不要交换自己两名暗置人物。 */
@@ -1734,6 +1750,9 @@ function onAct(name: string, arg: string | undefined) {
         eat: ui.place.eaten !== null ? { eater: gl2, eaten: ui.place.eaten } : null,
       });
     }
+    case "traditionalKeep": return act({ type: "traditionalKeep", index: n });
+    case "traditionalReroll": return act({ type: "traditionalReroll" });
+    case "traditionalPlace": return act({ type: "traditionalPlace", effects: [0, 1, 2], numbers: [0, 1, 2] });
     case "peek": return act({ type: "peek", pos: n });
     case "reveal2": return act({ type: "reveal2", pos: n });
     case "peekSwap": {
