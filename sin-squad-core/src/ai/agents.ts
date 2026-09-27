@@ -48,13 +48,26 @@ export class HeuristicAgent implements Agent {
       case "traditionalDraft": {
         const d = obs.me.traditional!;
         if (d.kept.length < 3) {
+          if (!d.rerolled && d.kept.length <= (this.style === "aggressive" ? 1 : this.style === "bluff" ? 2 : 0)) {
+            return acts.find((a) => a.type === "traditionalReroll") ?? acts[0];
+          }
           const keep = acts.find((a) => a.type === "traditionalKeep" && !d.kept.includes(d.current[a.index]));
           return keep ?? acts[0];
         }
-        return acts.find((a) => a.type === "traditionalReroll") ?? acts[0];
+        return acts[0];
       }
-      case "traditionalCombine": return acts.find((a) => a.type === "traditionalPlace") ?? acts[0];
-      case "traditionalTarget": return acts.find((a) => a.type === "traditionalTargets") ?? acts[0];
+      case "traditionalCombine": {
+        const d = obs.me.traditional!;
+        const order = d.kept.map((id, i) => ({ i, v: ["WR3", "GR1", "EN2", "PR3", "LU2"].includes(id) ? 2 : 1 })).sort((a, b) => b.v - a.v).map((x) => x.i);
+        const nums = [0, 1, 2] as [number, number, number];
+        const hi = d.numbers.map((n, i) => ({ n, i })).sort((a, b) => b.n - a.n).map((x) => x.i);
+        const mapping = [0, 1, 2].map((_, i) => hi[order[i]]) as [number, number, number];
+        return { type: "traditionalPlace", effects: [0, 1, 2], numbers: mapping };
+      }
+      case "traditionalTarget": {
+        const targets: [number, number, number] = this.style === "aggressive" ? [1, 1, 2] : this.style === "bluff" ? [2, 0, 1] : [0, 1, 2];
+        return { type: "traditionalTargets", targets };
+      }
       case "place": return this.choosePlacement(obs, acts);
       case "peek": return acts[0].type === "peek" ? this.rng.pick(acts) : this.chooseSwap(obs, acts);
       case "reveal2": return this.chooseReveal2(obs, acts);
