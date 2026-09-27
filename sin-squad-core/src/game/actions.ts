@@ -6,6 +6,14 @@ export type Action =
   | { type: "chooseArena"; index: 0 | 1 }
   /** 从发到的 4 名里挑 3 名布阵：picks[i] 是放在 i 号位的那张（发牌序号）。 */
   | { type: "place"; picks: [number, number, number]; eat: EatChoice | null; reveal: number }
+  /** 传统牌桌：从当前 9 张候选中锁定/取消一张（最多锁 3 张）。 */
+  | { type: "traditionalKeep"; index: number }
+  /** 传统牌桌：把尚未锁定的候选全部刷走，并发一批新的候选；每手最多一次。 */
+  | { type: "traditionalReroll" }
+  /** 传统牌桌：把三张固定数字与三张已锁定效果自由配对到三个位置。 */
+  | { type: "traditionalPlace"; effects: [number, number, number]; numbers: [number, number, number] }
+  /** 传统牌桌：同时暗选三个攻击目标；默认是对位，不消耗筹码或行动次数。 */
+  | { type: "traditionalTargets"; targets: [number, number, number] }
   /** 密探：暗中查看对手一个暗置位置。 */
   | { type: "peek"; pos: number }
   /** 密探偷看之后：交换自己两名暗置人物的位置（null = 不交换）。对手不会知道。 */
@@ -35,6 +43,9 @@ export type Action =
 export type Phase =
   | "arena"
   | "place"
+  | "traditionalDraft"
+  | "traditionalCombine"
+  | "traditionalTarget"
   | "peek"
   | "reveal2"
   | "bet"

@@ -12,7 +12,7 @@ import { MAX_RAISES, Table, validatePlacement, type Placement, type TableRig } f
 import { legalActions, observe, type Observation } from "../src/game/view.js";
 import { other, type AttackShape, type CharacterDef, type Seat } from "../src/types.js";
 import {
-  AI, CARD_TEXT, HOW_TO_PLAY, HUMAN, REASON_TEXT, SIN_COLOR, battleLine, esc, logLine, num, posName, shapeName,
+  AI, CARD_TEXT, TRADITIONAL_CARD_TEXT, TRADITIONAL_EQUIPMENT_TEXT, HOW_TO_PLAY, HUMAN, REASON_TEXT, SIN_COLOR, battleLine, esc, logLine, num, posName, shapeName,
 } from "./text.js";
 import { Gate, type Opening, type SaveInfo } from "./intro.js";
 import { adultConfirmed, cardArt, stageRuleName, stageRuleText, type StageResult, type StageSave } from "./campaign.js";
@@ -772,6 +772,7 @@ function face(id: string, campaign = campaignStage !== null): CharacterDef {
 /** 能力文字：战役改写过的直接用新文字，其余照旧（带高亮的排版）。 */
 function abilityHtml(id: string, campaign: boolean): string {
   const c = face(id, campaign);
+  if (!campaign && table && table.phase !== "over") return TRADITIONAL_CARD_TEXT[id] ?? esc(c.ability);
   return campaign && c.ability !== character(id).ability ? esc(c.ability) : CARD_TEXT[id] ?? esc(c.ability);
 }
 
@@ -1245,6 +1246,9 @@ function phaseLabel(o: Observation): string {
   switch (o.phase) {
     case "arena": return "选场地";
     case "place": return "布阵";
+    case "traditionalDraft": return "九选三 / D 一次";
+    case "traditionalCombine": return "数字与效果配对";
+    case "traditionalTarget": return "暗中指定目标";
     case "peek": return o.toAct.includes(HUMAN) ? "窥视" : "布阵完成";
     case "reveal2": return "再翻开一名";
     case "bet": return `第 ${o.betting.round} 轮下注`;
@@ -1359,6 +1363,9 @@ function phaseDock(o: Observation, mine: boolean): string {
     }
     case "arena": return arenaDock(o, mine);
     case "place": return placeDock(o, mine);
+    case "traditionalDraft": return mine ? traditionalDraftDock(o) : waiting("对手正在九选三");
+    case "traditionalCombine": return mine ? traditionalCombineDock(o) : waiting("对手正在配对数字与效果");
+    case "traditionalTarget": return mine ? traditionalTargetDock(o) : waiting("双方正在暗中选择目标");
     case "peek": return mine ? peekDock(o) : waiting("等待对手");
     case "reveal2": return mine ? reveal2Dock(o) : waiting("对手在选翻开谁");
     case "bet": return mine ? betDock(o) : waiting(`对手在考虑第 ${o.betting.round} 轮下注`);
@@ -1422,6 +1429,24 @@ function placeDock(o: Observation, mine: boolean) {
   return head + tray(true) + eat + `<div class="actions">
     ${btn("清空", "clearPlace", undefined, ui.place.slots.some((x) => x !== null) ? "big" : "big disabled")}
     ${btn("确认布阵", "place", undefined, `primary big ${ok ? "" : "disabled"}`)}</div>`;
+}
+
+function traditionalDraftDock(o: Observation) {
+  const d = o.me.traditional!;
+  const cards = d.current.map((id, i) => card(id, { key: `td-${i}`, cls: d.kept.includes(id) ? "small selected" : "small", act: "traditionalKeep", arg: i }));
+  const reroll = !d.rerolled && d.kept.length <= 3 ? btn("D（刷走未锁定牌）", "traditionalReroll", undefined, "primary") : "";
+  return prompt(`九选三：已锁 ${d.kept.length}/3`, "先锁任意 0～3 张；D 后只能从新的一批补足，刷走的牌不能回来") + `<div class="tray hand fan">${cards.join("")}</div><div class="actions">${reroll}</div>`;
+}
+
+function traditionalCombineDock(o: Observation) {
+  const d = o.me.traditional!;
+  const maps = [[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]];
+  const choices = maps.map((m) => `<button data-act="traditionalPlace" data-arg="${m.join(",")}" class="primary">${m.map((n,i)=>`${character(d.kept[i]).name}=${d.numbers[n]}`).join(" / ")}</button>`).join("");
+  return prompt("把三张固定数字自由配给三张效果", `数字：${d.numbers.join("、")}；效果：${d.kept.map((id) => character(id).name).join("、")}`) + `<div class="actions">${choices}</div>`;
+}
+
+function traditionalTargetDock(o: Observation) {
+  return prompt("选择三个攻击目标", "默认对位；改指向不公开、不消耗行动或筹码，双方同时锁定后结算") + `<div class="actions">${btn("确认默认对位", "traditionalTargets", undefined, "primary big")}</div>`;
 }
 
 /** 密探：先暗中偷看，再决定要不要交换自己两名暗置人物。 */
@@ -1496,7 +1521,7 @@ function draftDock(o: Observation) {
   const offers = o.me.offers!;
   const tiles = offers.map((id, i) => {
     const e = equipment(id);
-    return `<div class="option clickable ${ui.draft.offer === i ? "selected" : ""}"${attrs({ act: "draftOffer", arg: i })}><b>⚙ ${e.name}</b><p>${e.text}</p></div>`;
+    return `<div class="option clickable ${ui.draft.offer === i ? "selected" : ""}"${attrs({ act: "draftOffer", arg: i })}><b>⚙ ${e.name}</b><p>${table?.campaign ? e.text : TRADITIONAL_EQUIPMENT_TEXT[e.id] ?? e.text}</p></div>`;
   }).join("");
   const ready = ui.draft.offer !== null && ui.draft.pos !== null;
   const sub = ui.draft.offer === null ? "先选一件" : ui.draft.pos === null ? "再点上面你的一张牌，装给它" : `装到 ${posName(ui.draft.pos)}`;
@@ -1734,6 +1759,10 @@ function onAct(name: string, arg: string | undefined) {
         eat: ui.place.eaten !== null ? { eater: gl2, eaten: ui.place.eaten } : null,
       });
     }
+    case "traditionalKeep": return act({ type: "traditionalKeep", index: n });
+    case "traditionalReroll": return act({ type: "traditionalReroll" });
+    case "traditionalPlace": { const m = (arg ?? "0,1,2").split(",").map(Number) as [number, number, number]; return act({ type: "traditionalPlace", effects: [0, 1, 2], numbers: m }); }
+    case "traditionalTargets": return act({ type: "traditionalTargets", targets: [0, 1, 2] });
     case "peek": return act({ type: "peek", pos: n });
     case "reveal2": return act({ type: "reveal2", pos: n });
     case "peekSwap": {

@@ -4,7 +4,7 @@
  */
 
 export type TipKey =
-  | "arena" | "place" | "peek" | "reveal2" | "bet" | "operate" | "draft" | "vote" | "bid" | "marketPick" | "marketRemove" | "battle";
+  | "arena" | "place" | "peek" | "reveal2" | "bet" | "operate" | "draft" | "vote" | "bid" | "marketPick" | "marketRemove" | "traditionalDraft" | "traditionalCombine" | "traditionalTarget" | "battle";
 
 const TIPS: Record<TipKey, [string, string]> = {
   arena: ["选场地", "场地会改变整场战斗。筹码少的一方从两张里挑一张；一样多时由非庄家挑。"],
@@ -18,6 +18,9 @@ const TIPS: Record<TipKey, [string, string]> = {
   bid: ["暗标", "双方暗中出价，出价高的一方决定公共效果生不生效，只付自己的出价。"],
   marketPick: ["市场", "每手打完，双方从市场挑一名人物放进牌池，输家先挑。挑了谁对手看得到。"],
   marketRemove: ["整理牌池", "可以从牌池里移除一名人物，让以后的发牌更集中。对手看不到你移除了谁。"],
+  traditionalDraft: ["九选三与 D", "这一手直接发九张候选。你可以先锁定 0 到 3 张；点击 D 后，未锁定的牌全部刷走且不能回来，再从新的一批里补足三张。可以先留 1 张再补 2 张，也可以先留 3 张不 D。"],
+  traditionalCombine: ["数字与效果配对", "三张数字牌是固定发来的，三张效果牌是你选出的。现在把数字自由配给效果，组成三个位置。每个位置会把数字和效果算成一个最终力量，再与对位比较。高数字能压制，但低数字可以靠加减、比较、位置条件和场地反制。"],
+  traditionalTarget: ["暗中指定目标", "每个位置默认攻击对位，也可以暗中改打对方任意位置。目标不会公开，不消耗行动或筹码；双方锁定后同时结算。"],
   battle: ["战斗", "双方轮流出手，每人打同号位的敌人。每次攻击都是碰撞：被打的人会把自己的攻打回来。先达成胜利规则的一方赢下奖池。"],
 };
 
