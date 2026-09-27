@@ -89,6 +89,7 @@ export interface Placement {
   /** 第二次翻开的那一名（还没翻为 null）。 */
   reveal2: number | null;
   traditionalNumbers?: [number, number, number];
+  traditionalTargets?: [number, number, number];
 }
 
 /** 传统牌桌的新式发牌：数字与人物效果分开发，效果可 D 一次。 */
@@ -123,6 +124,7 @@ export interface HandState {
   peActive: boolean;
   dealt: [string[], string[]];
   traditional: [TraditionalDraft | null, TraditionalDraft | null];
+  traditionalTarget: [boolean, boolean];
   placing: Seat | null;
   placement: [Placement | null, Placement | null];
   equipment: [(string | null)[], (string | null)[]];
@@ -244,6 +246,7 @@ export class Table {
         return !!d && d.kept.length < 3;
       });
       case "traditionalCombine": return SEATS.filter((s) => !h.traditional[s]?.complete);
+      case "traditionalTarget": return SEATS.filter((s) => !h.traditionalTarget[s]);
       case "peek": return SEATS.filter((s) => h.peekPending[s]);
       case "reveal2": return SEATS.filter((s) => h.reveal2Pending[s] && h.reveal2Pick[s] === null);
       case "bet": return [h.actor];
@@ -288,7 +291,7 @@ export class Table {
       ruleId: c ? this.rng.pick(c.rules) : pickOr(this.rng.pick(RULES).id, this.rig.ruleId),
       publicEffectId: c ? "" : pickOr(this.rng.pick(PUBLIC_EFFECTS).id, this.rig.publicEffectId),
       ruleRevealed: false, peRevealed: false, peActive: false,
-      dealt: [[], []], traditional: [null, null], placing: null, placement: [null, null],
+      dealt: [[], []], traditional: [null, null], traditionalTarget: [false, false], placing: null, placement: [null, null],
       equipment: [[null, null, null], [null, null, null]],
       peekPending: [false, false], peek: [null, null],
       pot: 0, invested: [0, 0],
@@ -332,6 +335,7 @@ export class Table {
       case "traditionalKeep": return this.onTraditionalKeep(seat, action.index);
       case "traditionalReroll": return this.onTraditionalReroll(seat);
       case "traditionalPlace": return this.onTraditionalPlace(seat, action.effects, action.numbers);
+      case "traditionalTargets": return this.onTraditionalTargets(seat, action.targets);
       case "peek": return this.onPeek(seat, action.pos);
       case "peekSwap": return this.onPeekSwap(seat, action.swap);
       case "reveal2": return this.onReveal2(seat, action.pos);
@@ -426,7 +430,16 @@ export class Table {
     this.hand.placement[seat] = { slots, eat: null, eatenId: null, reveal: 0, reveal2: null, traditionalNumbers: numbers.slice() as [number, number, number] };
     d.complete = true;
     this.log.push({ type: "traditionalPlaced", seat, numbers, effects: slots });
-    if (this.hand.placement[0] && this.hand.placement[1]) this.afterPlacement();
+    if (this.hand.placement[0] && this.hand.placement[1]) this.phase = "traditionalTarget";
+  }
+
+  private onTraditionalTargets(seat: Seat, targets: [number, number, number]) {
+    this.expect("traditionalTarget");
+    if (targets.some((x) => !Number.isInteger(x) || x < 0 || x > 2)) throw new Error("目标位置非法");
+    const p = this.hand.placement[seat]!;
+    p.traditionalTargets = targets.slice() as [number, number, number];
+    this.hand.traditionalTarget[seat] = true;
+    if (this.hand.traditionalTarget[0] && this.hand.traditionalTarget[1]) this.afterPlacement();
   }
 
   private maybeAdvanceTraditionalDraft() {
@@ -863,7 +876,7 @@ export class Table {
       teams: SEATS.map((s) => {
         const p = h.placement[s]!;
         const nums = p.traditionalNumbers ?? [0, 0, 0];
-        return p.slots.map((effectId, i) => ({ effectId: effectId!, number: nums[i], equipmentId: h.equipment[s][i] }));
+        return p.slots.map((effectId, i) => ({ effectId: effectId!, number: nums[i], equipmentId: h.equipment[s][i], target: p.traditionalTargets?.[i] ?? i }));
       }) as any,
     }) as BattleResult;
     h.battle = result;

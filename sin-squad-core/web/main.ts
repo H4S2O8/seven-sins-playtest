@@ -1248,6 +1248,7 @@ function phaseLabel(o: Observation): string {
     case "place": return "布阵";
     case "traditionalDraft": return "九选三 / D 一次";
     case "traditionalCombine": return "数字与效果配对";
+    case "traditionalTarget": return "暗中指定目标";
     case "peek": return o.toAct.includes(HUMAN) ? "窥视" : "布阵完成";
     case "reveal2": return "再翻开一名";
     case "bet": return `第 ${o.betting.round} 轮下注`;
@@ -1364,6 +1365,7 @@ function phaseDock(o: Observation, mine: boolean): string {
     case "place": return placeDock(o, mine);
     case "traditionalDraft": return mine ? traditionalDraftDock(o) : waiting("对手正在九选三");
     case "traditionalCombine": return mine ? traditionalCombineDock(o) : waiting("对手正在配对数字与效果");
+    case "traditionalTarget": return mine ? traditionalTargetDock(o) : waiting("双方正在暗中选择目标");
     case "peek": return mine ? peekDock(o) : waiting("等待对手");
     case "reveal2": return mine ? reveal2Dock(o) : waiting("对手在选翻开谁");
     case "bet": return mine ? betDock(o) : waiting(`对手在考虑第 ${o.betting.round} 轮下注`);
@@ -1441,6 +1443,10 @@ function traditionalCombineDock(o: Observation) {
   const maps = [[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]];
   const choices = maps.map((m) => `<button data-act="traditionalPlace" data-arg="${m.join(",")}" class="primary">${m.map((n,i)=>`${character(d.kept[i]).name}=${d.numbers[n]}`).join(" / ")}</button>`).join("");
   return prompt("把三张固定数字自由配给三张效果", `数字：${d.numbers.join("、")}；效果：${d.kept.map((id) => character(id).name).join("、")}`) + `<div class="actions">${choices}</div>`;
+}
+
+function traditionalTargetDock(o: Observation) {
+  return prompt("选择三个攻击目标", "默认对位；改指向不公开、不消耗行动或筹码，双方同时锁定后结算") + `<div class="actions">${btn("确认默认对位", "traditionalTargets", undefined, "primary big")}</div>`;
 }
 
 /** 密探：先暗中偷看，再决定要不要交换自己两名暗置人物。 */
@@ -1756,6 +1762,7 @@ function onAct(name: string, arg: string | undefined) {
     case "traditionalKeep": return act({ type: "traditionalKeep", index: n });
     case "traditionalReroll": return act({ type: "traditionalReroll" });
     case "traditionalPlace": { const m = (arg ?? "0,1,2").split(",").map(Number) as [number, number, number]; return act({ type: "traditionalPlace", effects: [0, 1, 2], numbers: m }); }
+    case "traditionalTargets": return act({ type: "traditionalTargets", targets: [0, 1, 2] });
     case "peek": return act({ type: "peek", pos: n });
     case "reveal2": return act({ type: "reveal2", pos: n });
     case "peekSwap": {

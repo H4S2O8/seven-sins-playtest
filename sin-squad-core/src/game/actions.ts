@@ -12,6 +12,8 @@ export type Action =
   | { type: "traditionalReroll" }
   /** 传统牌桌：把三张固定数字与三张已锁定效果自由配对到三个位置。 */
   | { type: "traditionalPlace"; effects: [number, number, number]; numbers: [number, number, number] }
+  /** 传统牌桌：同时暗选三个攻击目标；默认是对位，不消耗筹码或行动次数。 */
+  | { type: "traditionalTargets"; targets: [number, number, number] }
   /** 密探：暗中查看对手一个暗置位置。 */
   | { type: "peek"; pos: number }
   /** 密探偷看之后：交换自己两名暗置人物的位置（null = 不交换）。对手不会知道。 */
@@ -43,6 +45,7 @@ export type Phase =
   | "place"
   | "traditionalDraft"
   | "traditionalCombine"
+  | "traditionalTarget"
   | "peek"
   | "reveal2"
   | "bet"

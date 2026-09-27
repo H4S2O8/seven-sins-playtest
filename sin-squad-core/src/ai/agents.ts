@@ -54,6 +54,7 @@ export class HeuristicAgent implements Agent {
         return acts.find((a) => a.type === "traditionalReroll") ?? acts[0];
       }
       case "traditionalCombine": return acts.find((a) => a.type === "traditionalPlace") ?? acts[0];
+      case "traditionalTarget": return acts.find((a) => a.type === "traditionalTargets") ?? acts[0];
       case "place": return this.choosePlacement(obs, acts);
       case "peek": return acts[0].type === "peek" ? this.rng.pick(acts) : this.chooseSwap(obs, acts);
       case "reveal2": return this.chooseReveal2(obs, acts);

@@ -39,6 +39,7 @@ export interface Observation {
     vote: boolean | null;
     bid: number | null;
     traditional: { numbers: [number, number, number]; current: string[]; kept: string[]; discarded: string[]; rerolled: boolean; complete: boolean } | null;
+    targets: [number, number, number] | null;
   };
   opponent: {
     poolSize: number;
@@ -108,6 +109,7 @@ export function observe(t: Table, seat: Seat): Observation {
       vote: h.votes[seat],
       bid: h.bids[seat],
       traditional: h.traditional[seat] ? { ...h.traditional[seat]!, numbers: [...h.traditional[seat]!.numbers] as [number, number, number], current: h.traditional[seat]!.current.slice(), kept: h.traditional[seat]!.kept.slice(), discarded: h.traditional[seat]!.discarded.slice() } : null,
+      targets: h.placement[seat]?.traditionalTargets ?? null,
     },
     opponent: {
       poolSize: t.pools[o].length,
@@ -192,6 +194,8 @@ export function legalActions(t: Table, seat: Seat): Action[] {
       const numbers: [number, number, number] = [0, 1, 2];
       return [{ type: "traditionalPlace", effects, numbers }];
     }
+    case "traditionalTarget":
+      return [{ type: "traditionalTargets", targets: [0, 1, 2] }];
     case "peek": {
       if (!h.peek[seat]) {
         const foe = h.placement[other(seat)]!;
