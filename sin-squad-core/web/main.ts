@@ -79,6 +79,8 @@ interface Ui {
   draft: { offer: number | null; pos: number | null };
   /** 正在改攻击指向（操作阶段点了“改攻击指向”之后）：改到一半的样子；null = 没在改。 */
   aim: Aim | null;
+  /** 改攻击指向的面板开着。 */
+  aimOpen: boolean;
   bid: number;
   removeIdx: number | null;
   notice: { text: string; good: boolean | null } | null;
@@ -257,6 +259,7 @@ const ui: Ui = {
   betAmount: null,
   draft: { offer: null, pos: null },
   aim: null,
+  aimOpen: false,
   bid: 0,
   removeIdx: null,
   notice: null,
@@ -275,6 +278,7 @@ function resetInputs() {
   ui.betAmount = null;
   ui.draft = { offer: null, pos: null };
   ui.aim = null;
+  ui.aimOpen = false;
   ui.bid = 0;
   ui.removeIdx = null;
   ui.error = null;
@@ -368,10 +372,10 @@ function initTable(s: Style, tableSeed: number, stageNo: number | null = null, p
  * 存档靠“种子 + 每一步操作”重放。人物表、规则一变，同一个种子发的牌就不一样了，旧存档会重放成另一局，
  * 所以这类改动要升版本号，旧版本的存档直接丢掉。v2：加入第二批 8 名人物。
  */
-const SAVE_KEY = "sinsquad.save.v4";
+const SAVE_KEY = "sinsquad.save.v5";
 /** 战役里没打完的那一关单独存，和自由牌桌互不覆盖。 */
 const STAGE_SAVE_KEY = "sinsquad.campaign.table.v1";
-try { localStorage.removeItem("sinsquad.save.v1"); localStorage.removeItem("sinsquad.save.v2"); localStorage.removeItem("sinsquad.save.v3"); } catch { /* 无所谓 */ }
+try { localStorage.removeItem("sinsquad.save.v1"); localStorage.removeItem("sinsquad.save.v2"); localStorage.removeItem("sinsquad.save.v3"); localStorage.removeItem("sinsquad.save.v4"); } catch { /* 无所谓 */ }
 interface SaveData {
   seed: number; style: Style; rig: TableRig | null; debugText: string; actions: Array<[Seat, Action]>;
   /** 战役：第几关、开这一关时你的牌池、带的魔神牌。 */
@@ -1254,7 +1258,7 @@ function phaseLabel(o: Observation): string {
     case "peek": return o.toAct.includes(HUMAN) ? "窥视" : "布阵完成";
     case "reveal2": return "再翻开一名";
     case "bet": return `第 ${o.betting.round} 轮下注`;
-    case "operate": return "操作：装备或改指向";
+    case "operate": return o.opFee > 0 ? "操作：拿装备？" : "改攻击指向？";
     case "draft": return "挑装备";
     case "vote": return "公共效果表决";
     case "bid": return "暗标";
@@ -1498,9 +1502,13 @@ function betDock(o: Observation) {
 }
 
 function operateDock(o: Observation) {
-  if (ui.aim) return aimDock(o, ui.aim);
-  return prompt(`付 ${o.opFee} 操作费做一次操作？`, "从 3 件装备里挑 1 件，或者公开改攻击指向，二选一；选了什么对手看得到") +
-    `<div class="actions">${btn("不操作", "operate", 0, "big")}${btn(`付 ${o.opFee} 拿装备`, "operate", 1, "primary big")}${btn("改攻击指向…", "aimEdit", undefined, "big")}</div>`;
+  if (ui.aimOpen && ui.aim) return aimDock(o, ui.aim);
+  const changed = ui.aim ? "指向改好了，确认后和对手的选择一起公开" : "攻击指向随时可以免费改；双方都选完才一起公开";
+  const edit = btn(ui.aim ? "再改指向…" : "改攻击指向…", "aimEdit", undefined, "big");
+  if (o.opFee <= 0) return prompt("要改攻击指向吗？", `没人下注，这一轮拿不了装备。${changed}`) +
+    `<div class="actions">${edit}${btn("确认", "operate", 0, "primary big")}</div>`;
+  return prompt(`付 ${o.opFee} 操作费拿装备？`, changed) +
+    `<div class="actions">${edit}${btn("不拿装备", "operate", 0, "big")}${btn(`付 ${o.opFee} 拿装备`, "operate", 1, "primary big")}</div>`;
 }
 
 /** 改攻击指向：每个人点它要打对面哪个位置（知道是谁的写上名字）。 */
@@ -1516,9 +1524,8 @@ function aimDock(o: Observation, aim: Aim) {
   const rows = pl.slots.map((id, i) => !id ? "" : `<div class="actions compact aim-row"><span class="label">${character(id).name}打</span>${
     [0, 1, 2].map((p) => btn(label(p, i), "aimPick", `${i}-${p}`, `${aim[i] === p ? "on" : ""}${opp.emptyPositions.includes(p) ? " disabled" : ""}`)).join("")
   }</div>`).join("");
-  const changed = aim.some((x, i) => x !== o.me.aim[i]);
-  return prompt(`付 ${o.opFee} 改攻击指向`, "指向的敌人倒下后改打对位，对位也倒下了才转线。双方操作都选完后，对手会看到新的指向") + rows +
-    `<div class="actions">${btn("返回", "aimCancel", undefined, "big")}${btn(`付 ${o.opFee} 改指向`, "aim", undefined, `primary big${changed ? "" : " disabled"}`)}</div>`;
+  return prompt("改攻击指向（不花钱）", "指向的敌人倒下后改打对位，对位也倒下了才转线。双方都选完后，对手会看到新的指向") + rows +
+    `<div class="actions">${btn("不改了", "aimCancel", undefined, "big")}${btn("改好了", "aimDone", undefined, "primary big")}</div>`;
 }
 
 function draftDock(o: Observation) {
@@ -1780,15 +1787,18 @@ function onAct(name: string, arg: string | undefined) {
       const amount = ui.betAmount!;
       return act(o!.betting.target === 0 ? { type: "bet", amount } : { type: "raise", to: amount });
     }
-    case "operate": return act({ type: "operate", draft: n === 1 });
-    case "aimEdit": ui.aim = [...o!.me.aim]; ui.error = null; return render();
+    case "operate": return act(ui.aim ? { type: "operate", draft: n === 1, aim: [...ui.aim] } : { type: "operate", draft: n === 1 });
+    case "aimEdit": ui.aim ??= [...o!.me.aim]; ui.aimOpen = true; ui.error = null; return render();
     case "aimPick": {
       const [i, p] = (arg ?? "").split("-").map(Number);
       if (ui.aim) ui.aim[i] = p;
       return render();
     }
-    case "aimCancel": ui.aim = null; ui.error = null; return render();
-    case "aim": return act({ type: "aim", aim: [...ui.aim!] });
+    case "aimCancel": ui.aim = null; ui.aimOpen = false; ui.error = null; return render();
+    case "aimDone":
+      if (ui.aim?.every((x, i) => x === o!.me.aim[i])) ui.aim = null; // 改回原样就当没改
+      ui.aimOpen = false;
+      return render();
     case "draftOffer": ui.draft.offer = n; return render();
     case "draftPos": ui.draft.pos = n; return render();
     case "draft": return act({ type: "draft", offerIndex: ui.draft.offer!, pos: ui.draft.pos! });

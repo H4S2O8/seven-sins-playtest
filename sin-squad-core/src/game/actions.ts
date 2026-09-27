@@ -22,10 +22,11 @@ export type Action =
   | { type: "raise"; to: number }
   | { type: "allIn" }
   | { type: "fold" }
-  /** 下注匹配后，是否付操作费拿装备。 */
-  | { type: "operate"; draft: boolean }
-  /** 同一次操作的另一种用法：付同样的操作费，公开改三个位置各自优先攻击的敌方位置（aim[i] = i 号位打谁）。 */
-  | { type: "aim"; aim: Aim }
+  /**
+   * 每轮下注后：付操作费拿装备（没人下注、操作费为 0 时不能拿），同时可以免费改攻击指向
+   * （aim[i] = i 号位打敌方几号位；不给就不改）。
+   */
+  | { type: "operate"; draft: boolean; aim?: Aim }
   /** 从三张候选装备里选一张，装到 pos 号位。 */
   | { type: "draft"; offerIndex: number; pos: number }
   /** 公共效果：投生效 / 不生效。 */

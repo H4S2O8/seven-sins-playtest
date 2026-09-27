@@ -230,12 +230,15 @@ export function legalActions(t: Table, seat: Seat): Action[] {
       return out;
     }
     case "operate": {
-      // 改指向：27 种里去掉和现在一样的那种
-      const out: Action[] = [{ type: "operate", draft: false }, { type: "operate", draft: true }];
+      // 拿不拿装备（操作费为 0 时只能不拿）× 指向不改 / 改成另外 26 种之一
+      const out: Action[] = [];
       const cur = h.aim[seat];
-      for (let a = 0; a < 27; a++) {
-        const aim: Aim = [a % 3, Math.floor(a / 3) % 3, Math.floor(a / 9)];
-        if (aim.some((x, i) => x !== cur[i])) out.push({ type: "aim", aim });
+      for (const draft of h.opFee > 0 ? [false, true] : [false]) {
+        out.push({ type: "operate", draft });
+        for (let a = 0; a < 27; a++) {
+          const aim: Aim = [a % 3, Math.floor(a / 3) % 3, Math.floor(a / 9)];
+          if (aim.some((x, i) => x !== cur[i])) out.push({ type: "operate", draft, aim });
+        }
       }
       return out;
     }

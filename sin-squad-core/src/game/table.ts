@@ -132,8 +132,8 @@ export interface HandState {
   actor: Seat;
   allIn: boolean;
   opFee: number;
-  /** 这次操作各自选了什么：false = 不操作，true = 拿装备，Aim = 改指向。 */
-  opCommit: [boolean | Aim | null, boolean | Aim | null];
+  /** 这次操作各自选了什么：拿不拿装备，攻击指向改成什么（null = 不改）。 */
+  opCommit: [OpChoice | null, OpChoice | null];
   offers: [string[] | null, string[] | null];
   draftChoice: [{ offerIndex: number; pos: number } | null, { offerIndex: number; pos: number } | null];
   votes: [boolean | null, boolean | null];
@@ -147,6 +147,9 @@ export interface HandState {
   marketStep: 0 | 1;
   removeDone: [boolean, boolean];
 }
+
+/** 一次操作：拿不拿装备，攻击指向改成什么（null = 不改）。 */
+export type OpChoice = { draft: boolean; aim: Aim | null };
 
 export type TableEvent =
   | { type: "handStart"; no: number; dealer: Seat; ante: number; arenaOptions: [string, string]; chooser: Seat }
@@ -317,8 +320,7 @@ export class Table {
       case "reveal2": return this.onReveal2(seat, action.pos);
       case "check": case "bet": case "call": case "raise": case "allIn": case "fold":
         return this.onBet(seat, action);
-      case "operate": return this.onOperate(seat, action.draft);
-      case "aim": return this.onOperate(seat, validAim(action.aim, this.hand.aim[seat]));
+      case "operate": return this.onOperate(seat, action.draft, action.aim);
       case "draft": return this.onDraft(seat, action.offerIndex, action.pos);
       case "vote": return this.onVote(seat, action.activate);
       case "bid": return this.onBid(seat, action.amount);
@@ -606,7 +608,8 @@ export class Table {
     this.checkInvariant();
     if (this.stacks[0] === 0 || this.stacks[1] === 0) h.allIn = true;
     const B = low;
-    if (B > 0 && !h.allIn && !this.campaign) {
+    // 没人下注（操作费 0）也停一下：拿不了装备，但可以免费改攻击指向
+    if (!h.allIn && !this.campaign) {
       h.opFee = Math.min(B, this.stacks[0], this.stacks[1]);
       h.opCommit = [null, null];
       h.offers = [null, null];
@@ -617,22 +620,24 @@ export class Table {
     this.afterOperations();
   }
 
-  /** 双方各自暗选（不操作 / 拿装备 / 改指向），都选完才一起公开：改的指向对手这时才看得到。 */
-  private onOperate(seat: Seat, choice: boolean | Aim) {
+  /** 双方各自暗选（拿不拿装备、指向改不改），都选完才一起公开：改的指向对手这时才看得到。改指向不收钱。 */
+  private onOperate(seat: Seat, draft: boolean, aim?: Aim) {
     this.expect("operate");
     const h = this.hand;
-    h.opCommit[seat] = choice;
+    if (draft && h.opFee <= 0) throw new Error("没人下注，这一轮拿不了装备");
+    const next = aim ? validAim(aim) : null;
+    h.opCommit[seat] = { draft, aim: next && next.some((x, i) => x !== h.aim[seat][i]) ? next : null };
     if (h.opCommit[0] === null || h.opCommit[1] === null) return;
     const ops = [h.opCommit[0], h.opCommit[1]];
-    const drafted = ops.map((c) => c === true) as [boolean, boolean];
-    const aimed = ops.map((c) => (Array.isArray(c) ? c : null)) as [Aim | null, Aim | null];
+    const drafted = ops.map((c) => c.draft) as [boolean, boolean];
+    const aimed = ops.map((c) => c.aim) as [Aim | null, Aim | null];
     this.log.push({ type: "operate", round: h.betRound, fee: h.opFee, drafted, aimed });
     for (const s of SEATS) {
-      if (!ops[s]) continue;
+      if (aimed[s]) h.aim[s] = aimed[s]!;
+      if (!drafted[s]) continue;
       this.pay(s, h.opFee);
       h.stats[s].opsPaid++;
-      if (drafted[s]) h.offers[s] = this.rng.sample(EQUIPMENT.map((e) => e.id), 3);
-      else h.aim[s] = aimed[s]!;
+      h.offers[s] = this.rng.sample(EQUIPMENT.map((e) => e.id), 3);
     }
     this.checkInvariant();
     if (drafted[0] || drafted[1]) this.phase = "draft";
@@ -928,11 +933,10 @@ export function characterName(id: string | null): string {
   return id ? character(id).name : "（空）";
 }
 
-/** 改指向：三个位置都得是 0–2，而且至少改了一个（原样不动就不收这笔操作费）。 */
-function validAim(aim: unknown, current: Aim): Aim {
+/** 攻击指向：三个位置，每个是 0–2。 */
+function validAim(aim: unknown): Aim {
   if (!Array.isArray(aim) || aim.length !== 3 || aim.some((x) => !Number.isInteger(x) || x < 0 || x > 2)) {
     throw new Error("攻击指向要给三个位置，每个是 0、1、2");
   }
-  if (aim.every((x, i) => x === current[i])) throw new Error("攻击指向没有变化");
   return [aim[0], aim[1], aim[2]];
 }
