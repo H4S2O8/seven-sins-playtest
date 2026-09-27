@@ -27,6 +27,8 @@ import { installLight, relight } from "./light.js";
 import { BUILD, VERSION } from "./version.js";
 import { installTilt } from "./tilt.js";
 import { disableTips, dismissTip, resetTips, tipHtml } from "./tips.js";
+import { NumericTable } from "../src/numeric/table.js";
+import { NumericMode } from "./numeric.js";
 
 /**
  * 网页 demo：你（座位 0）对电脑（座位 1）。
@@ -1983,6 +1985,7 @@ const gate = new Gate({
       buyIn: table!.options.buyIn, blindEvery: table!.options.blindEvery, style: s,
     };
   },
+  numericStart(s) { numericMode.start(s); },
   resume() { if (!resumeGame()) gate.show("title"); },
   sheet(kind) {
     if (kind === "chars") { ui.helpTab = "chars"; ui.sheet = { kind: "help" }; } else ui.sheet = { kind };
@@ -2007,6 +2010,11 @@ const gate = new Gate({
     storeProgress();
   },
 }, ART);
+const numericMode = new NumericMode({
+  create: () => new NumericTable({ seed: Math.floor(Math.random() * 1e9) }),
+  exit: () => gate.show("title"),
+  art: ART,
+});
 
 window.addEventListener("resize", () => render(false));
 installTilt();
