@@ -35,7 +35,7 @@ const result = await build({
   define: { __ART_IDS__: JSON.stringify(artIds), __GAME_VERSION__: JSON.stringify(gameVersion), __BUILD__: JSON.stringify(buildId) },
 });
 const js = result.outputFiles[0].contents;
-const css = await readFile(join(web, "style.css"));
+const css = Buffer.concat([await readFile(join(web, "style.css")), Buffer.from('\n'), await readFile(join(web, "numeric.css"))]);
 const version = createHash("sha256").update(js).update(css).digest("hex").slice(0, 10);
 const html = (await readFile(join(web, "index.html"), "utf8")).replaceAll("__VERSION__", version).replaceAll("__GAME_VERSION__", gameVersion);
 

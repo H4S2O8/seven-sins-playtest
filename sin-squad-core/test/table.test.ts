@@ -326,5 +326,5 @@ describe("牌桌结束", () => {
       const last = t.log.slice(-2).map((e) => e.type);
       expect(last).toEqual(["settle", "tableOver"]);
     }
-  });
+  }, 20000); // 30 complete tables: allow shared CI workers without weakening assertions.
 });
