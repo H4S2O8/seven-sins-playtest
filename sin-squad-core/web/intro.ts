@@ -2,7 +2,7 @@ import type { Style } from "../src/ai/agents.js";
 import { character } from "../src/content/characters.js";
 import type { Seat, Sin } from "../src/types.js";
 import {
-  adultConfirmed, ageView, briefView, campaignView, confirmAdult, poolView, resultView, rewardLabel, rewardView,
+  briefView, campaignView, poolView, resultView, rewardLabel, rewardView,
   type CampaignCtx, type StageResult, type StageSave,
 } from "./campaign.js";
 import type { CampaignProgress } from "../src/campaign/progress.js";
@@ -78,7 +78,6 @@ export const OPPONENTS: Record<Style, { title: string; sin: Sin; quote: string; 
 const HEROES = ["WR3", "GR3", "GL2", "EN1", "SL2", "PR3", "LU3"];
 
 type Screen =
-  | { kind: "age"; refused: boolean }
   | { kind: "campaign" }
   | { kind: "brief"; no: number }
   | { kind: "result" }
@@ -147,8 +146,7 @@ export class Gate {
   get open(): boolean { return this.screen !== null; }
 
   show(kind: "title" | "opponent" | "campaign" | "result") {
-    // 没确认过 18+ 之前哪儿也去不了
-    this.screen = adultConfirmed() ? { kind } : { kind: "age", refused: false };
+    this.screen = { kind };
     // 第一次赢下这一层：先播关后剧情，再看结算
     const r = kind === "result" ? this.hooks.stageResult() : null;
     if (r?.won && r.firstClear && this.screen?.kind === "result") this.screen = this.story(r.stage, "after", this.screen, r.retries);
@@ -197,9 +195,6 @@ export class Gate {
     const s = this.screen;
     switch (what) {
       case "play": this.screen = { kind: "opponent" }; break;
-      case "age": this.screen = { kind: "age", refused: false }; break;
-      case "refuse": this.screen = { kind: "age", refused: true }; break;
-      case "adult": confirmAdult(); this.screen = { kind: "title" }; break;
       case "campaign": this.screen = { kind: "campaign" }; break;
       case "brief": {
         const no = Number(arg);
@@ -348,7 +343,6 @@ export class Gate {
 
   private view(s: Screen): string {
     switch (s.kind) {
-      case "age": return ageView(s.refused);
       case "campaign": return campaignView(this.ctx());
       case "brief": return briefView(this.ctx(), s.no, this.demon());
       case "story": return storyView(this.art, s.sc, s.lines, s.i);
