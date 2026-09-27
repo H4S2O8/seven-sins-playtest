@@ -2071,23 +2071,6 @@ table.ref td.ref-pic img { display: block; width: 84px; aspect-ratio: 1216 / 832
 .logo.small { font-size: clamp(32px, 6vw, 50px); }
 .tower-sub { margin: 6px auto 0; max-width: 34em; color: #d9d0c2; font-size: 14px; line-height: 1.6; }
 
-/* 18+ */
-.age-stage { position: relative; text-align: center; width: min(560px, 100%); animation: fade .8s both; }
-.age-seal {
-  width: 118px; aspect-ratio: 1; margin: 0 auto 10px; display: grid; place-items: center; position: relative;
-}
-.age-seal::before {
-  content: ""; position: absolute; inset: 0; background: var(--sigil) center / contain no-repeat;
-  filter: drop-shadow(0 0 18px #d9b25f55); animation: sigilSpin 90s linear infinite;
-}
-.age-seal span {
-  position: relative; font-family: var(--latin); font-weight: 700; font-size: 17px; letter-spacing: .08em; color: #f6e2a8;
-  width: 58px; aspect-ratio: 1; border-radius: 50%; display: grid; place-items: center;
-  background: radial-gradient(circle at 40% 35%, #7a1a2c, #2a0810 75%); border: 2px solid #d9b25f; box-shadow: 0 0 16px #0009;
-}
-.age-text { margin: 14px 0 20px; color: #e8dcc0; line-height: 1.8; }
-.age-text b { color: var(--gold); font-size: 1.15em; }
-
 /* ── 炼狱之馆：七层的塔 ── */
 .tower-stage { position: relative; width: min(760px, 100%); text-align: center; padding-top: 6px; }
 .tower-head { margin-bottom: 8px; }

@@ -6,7 +6,7 @@ import { SIN_LATIN } from "./sigil.js";
 import { SIN_COLOR, esc } from "./text.js";
 
 /**
- * 炼狱战役的几屏（画在入场那一层 #gate 里）：18+ 确认、炼狱之馆、关前、一关打完、挑人。
+ * 炼狱战役的几屏（画在入场那一层 #gate 里）：炼狱之馆、关前、一关打完、挑人。
  * 这里只生成 HTML；点击统一走 data-go，由 intro.ts 的 Gate 处理。
  *
  * 画面语言跟牌桌一样是哥特教堂：
@@ -39,37 +39,6 @@ export interface CampaignCtx {
   /** 看过的剧情编号（关前那段看过、或者这一层已经赢过，才能回看）。 */
   seen: Set<string>;
   card(id: string, cls?: string, down?: boolean): string;
-}
-
-// ───────── 18+ 确认 ─────────
-
-const ADULT_KEY = "sinsquad.adult.v1";
-
-/** 确认过一次就记在浏览器里，下次不再问。存不了（无痕模式等）就每次都问。 */
-export function adultConfirmed(): boolean {
-  try { return localStorage.getItem(ADULT_KEY) === "1"; } catch { return false; }
-}
-
-export function confirmAdult() {
-  try { localStorage.setItem(ADULT_KEY, "1"); } catch { /* 存不了只影响下次 */ }
-}
-
-/** 这一屏之前不加载任何立绘和 CG：只有文字和矢量纹章。 */
-export function ageView(refused: boolean): string {
-  const body = refused
-    ? `<p class="age-text">本游戏仅面向年满 18 岁的玩家。</p>
-       <div class="gate-actions row"><button data-go="age">返回</button></div>`
-    : `<p class="age-text">本游戏包含成人向的角色形象与剧情，<br>仅面向年满 <b>18</b> 岁的玩家。所有角色均为成年人。</p>
-       <div class="gate-actions row">
-         <button data-go="refuse">未满 18 岁，离开</button>
-         <button class="primary big" data-go="adult" autofocus>我已年满 18 岁</button>
-       </div>`;
-  return `<div class="age-stage">
-    <div class="age-seal"><span>XVIII</span></div>
-    <div class="logo-latin">SEPTEM · PECCATA · MORTALIA</div>
-    <h1 class="logo small">七罪暗队</h1>
-    ${body}
-  </div>`;
 }
 
 // ───────── 小部件 ─────────

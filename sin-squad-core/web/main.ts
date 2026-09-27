@@ -15,7 +15,7 @@ import {
   AI, CARD_TEXT, HOW_TO_PLAY, HUMAN, REASON_TEXT, SIN_COLOR, battleLine, esc, logLine, num, posName, shapeName,
 } from "./text.js";
 import { Gate, type Opening, type SaveInfo } from "./intro.js";
-import { adultConfirmed, cardArt, stageRuleName, stageRuleText, type StageResult, type StageSave } from "./campaign.js";
+import { cardArt, stageRuleName, stageRuleText, type StageResult, type StageSave } from "./campaign.js";
 import { morph } from "./morph.js";
 import {
   bubble as hudBubble, collect, crumble, discoverExit, flip, floater as hudFloater, laneShift, measure, pulse, reducedMotion, shake, shatter, strike, type Snapshot,
@@ -2013,7 +2013,7 @@ installTilt();
 installLight();
 // 调试模式：直接开桌，跳过入场
 if (gallery) showGallery({ card });
-else if (debug && adultConfirmed()) newTable(debug.style ?? "cautious");
+else if (debug) newTable(debug.style ?? "cautious");
 else { render(); gate.show("title"); }
 
 // 给自动化测试用：读当前牌桌（不影响游戏）
