@@ -23,6 +23,13 @@ export function runTraditionalBattle(input: TraditionalInput): TraditionalResult
     if (["SL1", "SL2", "SL4"].includes(id)) n += pos === 1 ? 1 : 0;
     if (["PR1", "PR2", "PR3"].includes(id)) n += n >= 8 ? 1 : 0;
     if (["LU1", "LU2", "LU3", "LU4", "LU5"].includes(id)) n += pos === 1 ? 2 : 0;
+    if (s.equipmentId) {
+      const e: Record<string, number> = { E01: 3, E03: 1, E04: 2, E05: 1, E06: 2, E07: 0, E08: 1, E09: 0, E10: 0, E11: 0, E12: 1, E02: 0 };
+      n += e[s.equipmentId] ?? 0;
+      if (s.equipmentId === "E07") n += pos === 0 || pos === 2 ? 1 : 0;
+      if (s.equipmentId === "E09" || s.equipmentId === "E10") n += foe.number <= 5 ? 1 : 0;
+      if (s.equipmentId === "E11" || s.equipmentId === "E12") n += team.reduce((a, x) => a + x.number, 0) >= 20 ? 1 : 0;
+    }
     return n;
   };
   let a = 0, b = 0;

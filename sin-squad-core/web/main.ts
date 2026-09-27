@@ -12,7 +12,7 @@ import { MAX_RAISES, Table, validatePlacement, type Placement, type TableRig } f
 import { legalActions, observe, type Observation } from "../src/game/view.js";
 import { other, type AttackShape, type CharacterDef, type Seat } from "../src/types.js";
 import {
-  AI, CARD_TEXT, HOW_TO_PLAY, HUMAN, REASON_TEXT, SIN_COLOR, battleLine, esc, logLine, num, posName, shapeName,
+  AI, CARD_TEXT, TRADITIONAL_CARD_TEXT, TRADITIONAL_EQUIPMENT_TEXT, HOW_TO_PLAY, HUMAN, REASON_TEXT, SIN_COLOR, battleLine, esc, logLine, num, posName, shapeName,
 } from "./text.js";
 import { Gate, type Opening, type SaveInfo } from "./intro.js";
 import { adultConfirmed, cardArt, stageRuleName, stageRuleText, type StageResult, type StageSave } from "./campaign.js";
@@ -772,6 +772,7 @@ function face(id: string, campaign = campaignStage !== null): CharacterDef {
 /** 能力文字：战役改写过的直接用新文字，其余照旧（带高亮的排版）。 */
 function abilityHtml(id: string, campaign: boolean): string {
   const c = face(id, campaign);
+  if (!campaign && table && table.phase !== "over") return TRADITIONAL_CARD_TEXT[id] ?? esc(c.ability);
   return campaign && c.ability !== character(id).ability ? esc(c.ability) : CARD_TEXT[id] ?? esc(c.ability);
 }
 
@@ -1514,7 +1515,7 @@ function draftDock(o: Observation) {
   const offers = o.me.offers!;
   const tiles = offers.map((id, i) => {
     const e = equipment(id);
-    return `<div class="option clickable ${ui.draft.offer === i ? "selected" : ""}"${attrs({ act: "draftOffer", arg: i })}><b>⚙ ${e.name}</b><p>${e.text}</p></div>`;
+    return `<div class="option clickable ${ui.draft.offer === i ? "selected" : ""}"${attrs({ act: "draftOffer", arg: i })}><b>⚙ ${e.name}</b><p>${table?.campaign ? e.text : TRADITIONAL_EQUIPMENT_TEXT[e.id] ?? e.text}</p></div>`;
   }).join("");
   const ready = ui.draft.offer !== null && ui.draft.pos !== null;
   const sub = ui.draft.offer === null ? "先选一件" : ui.draft.pos === null ? "再点上面你的一张牌，装给它" : `装到 ${posName(ui.draft.pos)}`;
