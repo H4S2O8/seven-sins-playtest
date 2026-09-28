@@ -1,0 +1,378 @@
+{
+  "method": "Fixed final plans: removing terrain is a mechanical attribution, not evidence that players would make the same decisions without terrain. Model hand-five old-route comparison uses revealed opponent only after play; it is a hindsight diagnostic, not an available winning strategy.",
+  "showdowns": 122,
+  "active": 71,
+  "changed": 64,
+  "lanes": 44,
+  "decisive": 20,
+  "fieldUse": {
+    "F1": 21,
+    "F6": 18,
+    "F4": 14,
+    "F2": 20,
+    "F5": 11,
+    "F3": 7
+  },
+  "examples": [
+    {
+      "hand": 9,
+      "arena": "A4",
+      "fields": [
+        "F2",
+        "F6"
+      ],
+      "before": [
+        [
+          8,
+          7,
+          9
+        ],
+        [
+          7,
+          11,
+          6
+        ]
+      ],
+      "after": [
+        [
+          9,
+          7,
+          8
+        ],
+        [
+          8,
+          8,
+          8
+        ]
+      ],
+      "winnerBefore": 0,
+      "winnerAfter": null
+    },
+    {
+      "hand": 13,
+      "arena": "A5",
+      "fields": [
+        "F3"
+      ],
+      "before": [
+        [
+          8,
+          7,
+          3
+        ],
+        [
+          10,
+          6,
+          1
+        ]
+      ],
+      "after": [
+        [
+          8,
+          8,
+          3
+        ],
+        [
+          10,
+          9,
+          1
+        ]
+      ],
+      "winnerBefore": 0,
+      "winnerAfter": 1
+    },
+    {
+      "hand": 25,
+      "arena": "A6",
+      "fields": [
+        "F2"
+      ],
+      "before": [
+        [
+          4,
+          8,
+          6
+        ],
+        [
+          8,
+          9,
+          1
+        ]
+      ],
+      "after": [
+        [
+          7,
+          8,
+          3
+        ],
+        [
+          6,
+          11,
+          1
+        ]
+      ],
+      "winnerBefore": 1,
+      "winnerAfter": 0
+    },
+    {
+      "hand": 40,
+      "arena": "A5",
+      "fields": [
+        "F2"
+      ],
+      "before": [
+        [
+          3,
+          13,
+          12
+        ],
+        [
+          9,
+          7,
+          10
+        ]
+      ],
+      "after": [
+        [
+          3,
+          10,
+          15
+        ],
+        [
+          6,
+          10,
+          10
+        ]
+      ],
+      "winnerBefore": 0,
+      "winnerAfter": null
+    },
+    {
+      "hand": 43,
+      "arena": "A5",
+      "fields": [
+        "F3",
+        "F6"
+      ],
+      "before": [
+        [
+          10,
+          1,
+          11
+        ],
+        [
+          6,
+          6,
+          9
+        ]
+      ],
+      "after": [
+        [
+          10,
+          4,
+          8
+        ],
+        [
+          6,
+          6,
+          9
+        ]
+      ],
+      "winnerBefore": 0,
+      "winnerAfter": 1
+    },
+    {
+      "hand": 68,
+      "arena": "A1",
+      "fields": [
+        "F4",
+        "F2"
+      ],
+      "before": [
+        [
+          7,
+          12,
+          10
+        ],
+        [
+          10,
+          11,
+          8
+        ]
+      ],
+      "after": [
+        [
+          8,
+          12,
+          9
+        ],
+        [
+          8,
+          12,
+          9
+        ]
+      ],
+      "winnerBefore": 0,
+      "winnerAfter": null
+    },
+    {
+      "hand": 71,
+      "arena": "A4",
+      "fields": [
+        "F5"
+      ],
+      "before": [
+        [
+          5,
+          0,
+          9
+        ],
+        [
+          7,
+          0,
+          2
+        ]
+      ],
+      "after": [
+        [
+          3,
+          0,
+          11
+        ],
+        [
+          7,
+          2,
+          0
+        ]
+      ],
+      "winnerBefore": null,
+      "winnerAfter": 1
+    },
+    {
+      "hand": 90,
+      "arena": "A2",
+      "fields": [
+        "F1"
+      ],
+      "before": [
+        [
+          11,
+          7,
+          7
+        ],
+        [
+          8,
+          8,
+          9
+        ]
+      ],
+      "after": [
+        [
+          9,
+          9,
+          7
+        ],
+        [
+          8,
+          8,
+          9
+        ]
+      ],
+      "winnerBefore": 1,
+      "winnerAfter": 0
+    }
+  ],
+  "five": [
+    {
+      "id": 1,
+      "fold": false,
+      "modelWon": false,
+      "tie": true,
+      "net": -1.5,
+      "decisions": 18,
+      "powers": [
+        [
+          5,
+          8,
+          9
+        ],
+        [
+          5,
+          8,
+          9
+        ]
+      ]
+    },
+    {
+      "id": 2,
+      "fold": false,
+      "modelWon": true,
+      "tie": false,
+      "net": 3,
+      "decisions": 20,
+      "powers": [
+        [
+          4,
+          14,
+          7
+        ],
+        [
+          7,
+          11,
+          8
+        ]
+      ]
+    },
+    {
+      "id": 3,
+      "fold": true,
+      "modelWon": false,
+      "tie": false,
+      "net": -2,
+      "decisions": 4
+    },
+    {
+      "id": 4,
+      "fold": true,
+      "modelWon": true,
+      "tie": false,
+      "net": 2,
+      "decisions": 4
+    },
+    {
+      "id": 5,
+      "fold": false,
+      "modelWon": false,
+      "tie": false,
+      "net": -15,
+      "decisions": 22,
+      "powers": [
+        [
+          8,
+          7,
+          5
+        ],
+        [
+          5,
+          11,
+          9
+        ]
+      ]
+    }
+  ],
+  "model5PreviousPlan": {
+    "powers": [
+      [
+        7,
+        11,
+        4
+      ],
+      [
+        5,
+        10,
+        9
+      ]
+    ],
+    "winner": 0
+  }
+}

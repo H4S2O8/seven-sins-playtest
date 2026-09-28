@@ -1,0 +1,1455 @@
+[
+  {
+    "id": 1,
+    "modelSeat": 0,
+    "complete": false,
+    "result": null,
+    "stacks": [
+      94,
+      93
+    ],
+    "fees": 4,
+    "modelDecisions": 12,
+    "modelBets": [
+      {
+        "round": 1,
+        "action": {
+          "type": "call"
+        },
+        "probability": 0.43,
+        "reason": "中路强化与右路翻面都可能争赢线，先小额跟注"
+      },
+      {
+        "round": 2,
+        "action": {
+          "type": "check"
+        },
+        "probability": 0.46,
+        "reason": "左中虽增强，敌方强化和翻面仍构成双线威胁"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "modelSeat": 1,
+    "complete": false,
+    "result": null,
+    "stacks": [
+      89,
+      87
+    ],
+    "fees": 2,
+    "modelDecisions": 12,
+    "modelBets": [
+      {
+        "round": 1,
+        "action": {
+          "type": "raise",
+          "to": 2
+        },
+        "probability": 0.6,
+        "reason": "左中成形，但敌方左位可能用王的尺度反制，先小注"
+      },
+      {
+        "round": 1,
+        "action": {
+          "type": "call"
+        },
+        "probability": 0.54,
+        "reason": "对手再加注降低信心，价格仍低，不继续抬价"
+      },
+      {
+        "round": 2,
+        "action": {
+          "type": "call"
+        },
+        "probability": 0.52,
+        "reason": "敌方改压中路，优势变小，但筹码价格仍允许继续"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "modelSeat": 0,
+    "complete": false,
+    "result": null,
+    "stacks": [
+      88,
+      72
+    ],
+    "fees": 4,
+    "modelDecisions": 12,
+    "modelBets": [
+      {
+        "round": 1,
+        "action": {
+          "type": "call"
+        },
+        "probability": 0.58,
+        "reason": "敌方首位箭头识别为塞壬，左镜强化会被截取，收紧投入"
+      },
+      {
+        "round": 2,
+        "action": {
+          "type": "call"
+        },
+        "probability": 0.65,
+        "reason": "敵方取消塞壬发动，延迟强化保住左线；两次复杂指向仍有风险"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "modelSeat": 1,
+    "complete": true,
+    "result": {
+      "winner": 1,
+      "fold": true,
+      "battle": null,
+      "payouts": [
+        0,
+        4
+      ]
+    },
+    "stacks": [
+      98,
+      102
+    ],
+    "fees": 0,
+    "modelDecisions": 4,
+    "modelBets": [
+      {
+        "round": 1,
+        "action": {
+          "type": "raise",
+          "to": 3
+        },
+        "probability": 0.68,
+        "reason": "敌方两路都指向中位，我仍有左、右两条备用赢线"
+      }
+    ],
+    "revealed": [
+      [
+        {
+          "id": "WR1",
+          "raw": 8,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "LU4",
+          "raw": 3,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GL1",
+          "raw": 6,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ],
+      [
+        {
+          "id": "GR4",
+          "raw": 10,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "ally",
+                "pos": 2
+              }
+            ],
+            "mode": 1
+          }
+        },
+        {
+          "id": "WR2",
+          "raw": 9,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 2
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "WR2",
+          "raw": 6,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ]
+    ]
+  },
+  {
+    "id": 5,
+    "modelSeat": 0,
+    "complete": true,
+    "result": {
+      "winner": 0,
+      "fold": true,
+      "battle": null,
+      "payouts": [
+        8,
+        0
+      ]
+    },
+    "stacks": [
+      104,
+      96
+    ],
+    "fees": 0,
+    "modelDecisions": 4,
+    "modelBets": [
+      {
+        "round": 1,
+        "action": {
+          "type": "raise",
+          "to": 6
+        },
+        "probability": 0.76,
+        "reason": "对手全低数，己方两条集中线强，但保留对复杂反制的余量"
+      }
+    ],
+    "revealed": [
+      [
+        {
+          "id": "GR2",
+          "raw": 9,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GL1",
+          "raw": 5,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "WR2",
+          "raw": 3,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ],
+      [
+        {
+          "id": "GR3",
+          "raw": 5,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "EN4",
+          "raw": 5,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 1
+          }
+        },
+        {
+          "id": "LU4",
+          "raw": 3,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "enemy",
+                "pos": 2
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ]
+    ]
+  },
+  {
+    "id": 6,
+    "modelSeat": 1,
+    "complete": false,
+    "result": null,
+    "stacks": [
+      85,
+      85
+    ],
+    "fees": 4,
+    "modelDecisions": 12,
+    "modelBets": [
+      {
+        "round": 1,
+        "action": {
+          "type": "raise",
+          "to": 3
+        },
+        "probability": 0.77,
+        "reason": "对方仅左侧翻面，王能向其追贡，其余两位未发动"
+      },
+      {
+        "round": 2,
+        "action": {
+          "type": "check"
+        },
+        "probability": 0.6,
+        "reason": "敌方中路新增强化，降低信心，先看其下注"
+      },
+      {
+        "round": 2,
+        "action": {
+          "type": "call"
+        },
+        "probability": 0.55,
+        "reason": "对方中路新强化令优势缩小，当前价格仍可接受"
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "modelSeat": 0,
+    "complete": false,
+    "result": null,
+    "stacks": [
+      91,
+      90
+    ],
+    "fees": 6,
+    "modelDecisions": 12,
+    "modelBets": [
+      {
+        "round": 1,
+        "action": {
+          "type": "raise",
+          "to": 4
+        },
+        "probability": 0.79,
+        "reason": "中位不发动仍可能吃左侧支援，密探能截取该入口"
+      },
+      {
+        "round": 2,
+        "action": {
+          "type": "check"
+        },
+        "probability": 0.6,
+        "reason": "敌方把支援目标移走，中路截取可能空转；不再按原胜率下注"
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "modelSeat": 1,
+    "complete": false,
+    "result": null,
+    "stacks": [
+      90,
+      88
+    ],
+    "fees": 4,
+    "modelDecisions": 12,
+    "modelBets": [
+      {
+        "round": 1,
+        "action": {
+          "type": "raise",
+          "to": 2
+        },
+        "probability": 0.62,
+        "reason": "敌人分别压两边，中路群援循环保持第二赢线"
+      },
+      {
+        "round": 2,
+        "action": {
+          "type": "check"
+        },
+        "probability": 0.58,
+        "reason": "敌方强化位的聚焦镜可能造出大主力，先不追加"
+      },
+      {
+        "round": 2,
+        "action": {
+          "type": "call"
+        },
+        "probability": 0.56,
+        "reason": "群援与整流仍有两条争胜线，跟小注不再加注"
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "modelSeat": 0,
+    "complete": true,
+    "result": {
+      "winner": 1,
+      "fold": true,
+      "battle": null,
+      "payouts": [
+        0,
+        10
+      ]
+    },
+    "stacks": [
+      93,
+      103
+    ],
+    "fees": 4,
+    "modelDecisions": 9,
+    "modelBets": [
+      {
+        "round": 1,
+        "action": {
+          "type": "call"
+        },
+        "probability": 0.48,
+        "reason": "敌方中右未发动，存在靠中位与左位争胜的机会，暂不直接认输"
+      },
+      {
+        "round": 2,
+        "action": {
+          "type": "fold"
+        },
+        "probability": 0.2,
+        "reason": "敌方新增高数右位翻面，且复杂技能改为支援中路并压我的中路，第二赢线难救"
+      }
+    ],
+    "revealed": [
+      [
+        {
+          "id": "EN2",
+          "raw": 5,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 1
+          }
+        },
+        {
+          "id": "GR2",
+          "raw": 7,
+          "gear": "G20",
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GL3",
+          "raw": 4,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ],
+      [
+        {
+          "id": "LU4",
+          "raw": 10,
+          "gear": "G07",
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 1
+              },
+              {
+                "side": "enemy",
+                "pos": 1
+              }
+            ],
+            "mode": 1
+          }
+        },
+        {
+          "id": "PR2",
+          "raw": 10,
+          "gear": null,
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "SL2",
+          "raw": 8,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 1
+          }
+        }
+      ]
+    ]
+  },
+  {
+    "id": 10,
+    "modelSeat": 1,
+    "complete": true,
+    "result": {
+      "winner": 1,
+      "fold": true,
+      "battle": null,
+      "payouts": [
+        0,
+        4
+      ]
+    },
+    "stacks": [
+      98,
+      102
+    ],
+    "fees": 0,
+    "modelDecisions": 4,
+    "modelBets": [
+      {
+        "round": 1,
+        "action": {
+          "type": "raise",
+          "to": 4
+        },
+        "probability": 0.86,
+        "reason": "敌人主要针对我的供体中位，左右主力压力较小"
+      }
+    ],
+    "revealed": [
+      [
+        {
+          "id": "LU5",
+          "raw": 4,
+          "gear": null,
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "WR1",
+          "raw": 4,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GL5",
+          "raw": 5,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 1
+              },
+              {
+                "side": "enemy",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ],
+      [
+        {
+          "id": "GR4",
+          "raw": 7,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "ally",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "WR2",
+          "raw": 5,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 2
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GL1",
+          "raw": 6,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ]
+    ]
+  },
+  {
+    "id": 11,
+    "modelSeat": 0,
+    "complete": false,
+    "result": null,
+    "stacks": [
+      72,
+      74
+    ],
+    "fees": 6,
+    "modelDecisions": 12,
+    "modelBets": [
+      {
+        "round": 1,
+        "action": {
+          "type": "raise",
+          "to": 6
+        },
+        "probability": 0.73,
+        "reason": "对手明显向左集中，我弃左争中右并以王追贡中位"
+      },
+      {
+        "round": 1,
+        "action": {
+          "type": "call"
+        },
+        "probability": 0.63,
+        "reason": "对方强烈向左集中，仍更看好自己的中右组合，但不再加注"
+      },
+      {
+        "round": 2,
+        "action": {
+          "type": "call"
+        },
+        "probability": 0.72,
+        "reason": "聚焦增强中路后还可册封右位，两线较稳，但不追着抬价"
+      }
+    ]
+  },
+  {
+    "id": 12,
+    "modelSeat": 1,
+    "complete": false,
+    "result": null,
+    "stacks": [
+      87,
+      85
+    ],
+    "fees": 2,
+    "modelDecisions": 12,
+    "modelBets": [
+      {
+        "round": 1,
+        "action": {
+          "type": "check"
+        },
+        "probability": 0.4,
+        "reason": "己方关系技能可能收不到礼物或伤债，先等调整窗口"
+      },
+      {
+        "round": 1,
+        "action": {
+          "type": "call"
+        },
+        "probability": 0.35,
+        "reason": "当前技能可能空转，跟一次获得调整机会，后续要止损"
+      },
+      {
+        "round": 2,
+        "action": {
+          "type": "call"
+        },
+        "probability": 0.52,
+        "reason": "对手改变贷款目标再次让收礼入口落空，但原数和延迟支援仍能争两线"
+      }
+    ]
+  },
+  {
+    "id": 13,
+    "modelSeat": 0,
+    "complete": false,
+    "result": null,
+    "stacks": [
+      91,
+      93
+    ],
+    "fees": 6,
+    "modelDecisions": 12,
+    "modelBets": [
+      {
+        "round": 1,
+        "action": {
+          "type": "check"
+        },
+        "probability": 0.55,
+        "reason": "两路敌方箭头直指两名主力，可能是截流，暂不放大底池"
+      },
+      {
+        "round": 2,
+        "action": {
+          "type": "call"
+        },
+        "probability": 0.6,
+        "reason": "敌方集中攻击中路，但左路完整；中路仍有一定余量"
+      }
+    ]
+  },
+  {
+    "id": 14,
+    "modelSeat": 1,
+    "complete": true,
+    "result": {
+      "winner": 1,
+      "fold": true,
+      "battle": null,
+      "payouts": [
+        0,
+        4
+      ]
+    },
+    "stacks": [
+      98,
+      102
+    ],
+    "fees": 0,
+    "modelDecisions": 4,
+    "modelBets": [
+      {
+        "round": 1,
+        "action": {
+          "type": "raise",
+          "to": 4
+        },
+        "probability": 0.84,
+        "reason": "原数和平均场地优势明显，敌方两个复杂技能未见稳定输出入口"
+      }
+    ],
+    "revealed": [
+      [
+        {
+          "id": "GL5",
+          "raw": 5,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 1
+              },
+              {
+                "side": "enemy",
+                "pos": 2
+              }
+            ],
+            "mode": 1
+          }
+        },
+        {
+          "id": "LU4",
+          "raw": 5,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 2
+              },
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GR3",
+          "raw": 7,
+          "gear": null,
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        }
+      ],
+      [
+        {
+          "id": "GR2",
+          "raw": 10,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GR3",
+          "raw": 5,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "SL4",
+          "raw": 9,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 1
+              },
+              {
+                "side": "ally",
+                "pos": 0
+              }
+            ],
+            "mode": 1
+          }
+        }
+      ]
+    ]
+  },
+  {
+    "id": 15,
+    "modelSeat": 0,
+    "complete": false,
+    "result": null,
+    "stacks": [
+      87,
+      87
+    ],
+    "fees": 2,
+    "modelDecisions": 12,
+    "modelBets": [
+      {
+        "round": 1,
+        "action": {
+          "type": "raise",
+          "to": 4
+        },
+        "probability": 0.82,
+        "reason": "对方两次指向我已放弃的中路，两翼计划受干扰少"
+      },
+      {
+        "round": 2,
+        "action": {
+          "type": "raise",
+          "to": 5
+        },
+        "probability": 0.8,
+        "reason": "敌人改为保护右侧而继续压我供体，左右主力仍可争胜"
+      }
+    ]
+  },
+  {
+    "id": 16,
+    "modelSeat": 1,
+    "complete": false,
+    "result": null,
+    "stacks": [
+      93,
+      91
+    ],
+    "fees": 2,
+    "modelDecisions": 12,
+    "modelBets": [
+      {
+        "round": 1,
+        "action": {
+          "type": "check"
+        },
+        "probability": 0.56,
+        "reason": "对方向左集中，右侧复杂技能可能压我冬眠熊，先观察"
+      },
+      {
+        "round": 1,
+        "action": {
+          "type": "call"
+        },
+        "probability": 0.5,
+        "reason": "低价跟注，对手右侧具体反制尚不确定"
+      },
+      {
+        "round": 2,
+        "action": {
+          "type": "call"
+        },
+        "probability": 0.45,
+        "reason": "对方改指中位，降低信心，但右侧冬眠仍避开主阶段截取"
+      }
+    ]
+  },
+  {
+    "id": 17,
+    "modelSeat": 0,
+    "complete": true,
+    "result": {
+      "winner": 0,
+      "fold": true,
+      "battle": null,
+      "payouts": [
+        8,
+        0
+      ]
+    },
+    "stacks": [
+      104,
+      96
+    ],
+    "fees": 0,
+    "modelDecisions": 4,
+    "modelBets": [
+      {
+        "round": 1,
+        "action": {
+          "type": "raise",
+          "to": 6
+        },
+        "probability": 0.8,
+        "reason": "敌方中位不发动让镜子暂时落空，但己方原数仍领先很多"
+      }
+    ],
+    "revealed": [
+      [
+        {
+          "id": "PR1",
+          "raw": 10,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "EN1",
+          "raw": 9,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "EN4",
+          "raw": 10,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 1
+              },
+              {
+                "side": "enemy",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ],
+      [
+        {
+          "id": "PR3",
+          "raw": 7,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 1
+              },
+              {
+                "side": "enemy",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GL4",
+          "raw": 6,
+          "gear": null,
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "EN4",
+          "raw": 5,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ]
+    ]
+  },
+  {
+    "id": 18,
+    "modelSeat": 1,
+    "complete": true,
+    "result": {
+      "winner": 0,
+      "fold": true,
+      "battle": null,
+      "payouts": [
+        4,
+        0
+      ]
+    },
+    "stacks": [
+      102,
+      98
+    ],
+    "fees": 0,
+    "modelDecisions": 5,
+    "modelBets": [
+      {
+        "round": 1,
+        "action": {
+          "type": "check"
+        },
+        "probability": 0.16,
+        "reason": "敌人支援左位并攻击我两条争胜线，当前形势很差"
+      },
+      {
+        "round": 1,
+        "action": {
+          "type": "fold"
+        },
+        "probability": 0.14,
+        "reason": "数字落后且敌方两条箭头压住争胜线，继续买装不值得"
+      }
+    ],
+    "revealed": [
+      [
+        {
+          "id": "EN3",
+          "raw": 4,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "WR2",
+          "raw": 8,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "EN3",
+          "raw": 8,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ],
+      [
+        {
+          "id": "WR2",
+          "raw": 5,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 2
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GR4",
+          "raw": 6,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 1
+              },
+              {
+                "side": "ally",
+                "pos": 0
+              }
+            ],
+            "mode": 1
+          }
+        },
+        {
+          "id": "WR2",
+          "raw": 4,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ]
+    ]
+  },
+  {
+    "id": 19,
+    "modelSeat": 0,
+    "complete": true,
+    "result": {
+      "winner": 0,
+      "fold": true,
+      "battle": null,
+      "payouts": [
+        4,
+        0
+      ]
+    },
+    "stacks": [
+      102,
+      98
+    ],
+    "fees": 0,
+    "modelDecisions": 4,
+    "modelBets": [
+      {
+        "round": 1,
+        "action": {
+          "type": "raise",
+          "to": 6
+        },
+        "probability": 0.88,
+        "reason": "双贷款主力已成形，敌方一条箭头打低数供体"
+      }
+    ],
+    "revealed": [
+      [
+        {
+          "id": "GR4",
+          "raw": 9,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "ally",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GR4",
+          "raw": 8,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 1
+              },
+              {
+                "side": "ally",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GR2",
+          "raw": 4,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        }
+      ],
+      [
+        {
+          "id": "SL1",
+          "raw": 4,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GL2",
+          "raw": 6,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GL1",
+          "raw": 4,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 2
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ]
+    ]
+  },
+  {
+    "id": 20,
+    "modelSeat": 1,
+    "complete": false,
+    "result": null,
+    "stacks": [
+      89,
+      89
+    ],
+    "fees": 4,
+    "modelDecisions": 12,
+    "modelBets": [
+      {
+        "round": 1,
+        "action": {
+          "type": "raise",
+          "to": 3
+        },
+        "probability": 0.7,
+        "reason": "对手只有左侧复杂技能发动，己方中右有独立赢线"
+      },
+      {
+        "round": 2,
+        "action": {
+          "type": "check"
+        },
+        "probability": 0.6,
+        "reason": "对方改指我的中位且中位新发动强化，需要重新评估"
+      },
+      {
+        "round": 2,
+        "action": {
+          "type": "call"
+        },
+        "probability": 0.58,
+        "reason": "对手压中路但左右还有机会，不跟着抬价"
+      }
+    ]
+  }
+]

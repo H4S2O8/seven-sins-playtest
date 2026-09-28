@@ -1,0 +1,10254 @@
+[
+  {
+    "hand": 0,
+    "opening": "F1",
+    "layoutChanged": true,
+    "positive": false,
+    "validationGap": 0.07437499999999941,
+    "fieldContribution": -0.037499999999999645,
+    "chosen": [
+      {
+        "id": "PR3",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "SL2",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 1
+        }
+      },
+      {
+        "id": "SL4",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 1
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "PR3",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "SL4",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL2",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      0,
+      1
+    ]
+  },
+  {
+    "hand": 1,
+    "opening": "F2",
+    "layoutChanged": true,
+    "positive": true,
+    "validationGap": 0.8937500000000043,
+    "fieldContribution": 1.1837500000000036,
+    "chosen": [
+      {
+        "id": "PR3",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR1",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL3",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "GR1",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL3",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "PR3",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      2,
+      2
+    ]
+  },
+  {
+    "hand": 2,
+    "opening": "F1",
+    "layoutChanged": true,
+    "positive": true,
+    "validationGap": 0.48312500000000225,
+    "fieldContribution": 0.5162500000000014,
+    "chosen": [
+      {
+        "id": "GR4",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "GL5",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "GL5",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 1
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "GL5",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "GR4",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "GL5",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      0,
+      2
+    ]
+  },
+  {
+    "hand": 3,
+    "opening": "F5",
+    "layoutChanged": false,
+    "positive": false,
+    "validationGap": 0,
+    "fieldContribution": 0.25250000000000306,
+    "chosen": [
+      {
+        "id": "LU2",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL2",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 1
+        }
+      },
+      {
+        "id": "GL5",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "LU2",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL2",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 1
+        }
+      },
+      {
+        "id": "GL5",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      0,
+      2
+    ]
+  },
+  {
+    "hand": 4,
+    "opening": "F4",
+    "layoutChanged": true,
+    "positive": false,
+    "validationGap": -0.37749999999999906,
+    "fieldContribution": 0.5350000000000017,
+    "chosen": [
+      {
+        "id": "SL1",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL4",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR4",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "GL4",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL1",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR4",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      1,
+      1
+    ]
+  },
+  {
+    "hand": 5,
+    "opening": "F8",
+    "layoutChanged": true,
+    "positive": true,
+    "validationGap": 1.7687499999999998,
+    "fieldContribution": 2.229375000000001,
+    "chosen": [
+      {
+        "id": "GR2",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL2",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR4",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "GR2",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL2",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 1
+        }
+      },
+      {
+        "id": "GR4",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 1
+        }
+      }
+    ],
+    "tiers": [
+      1,
+      1,
+      2
+    ]
+  },
+  {
+    "hand": 6,
+    "opening": "F1",
+    "layoutChanged": true,
+    "positive": false,
+    "validationGap": -0.5837500000000024,
+    "fieldContribution": -0.4900000000000031,
+    "chosen": [
+      {
+        "id": "LU1",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "LU1",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR1",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "WR1",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "LU1",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "LU1",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      0,
+      2
+    ]
+  },
+  {
+    "hand": 7,
+    "opening": "F3",
+    "layoutChanged": false,
+    "positive": false,
+    "validationGap": 0,
+    "fieldContribution": 0,
+    "chosen": [
+      {
+        "id": "PR3",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "EN2",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 1
+        }
+      },
+      {
+        "id": "EN3",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "PR3",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "EN2",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 1
+        }
+      },
+      {
+        "id": "EN3",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      2,
+      2
+    ]
+  },
+  {
+    "hand": 8,
+    "opening": "F6",
+    "layoutChanged": false,
+    "positive": false,
+    "validationGap": 0,
+    "fieldContribution": 0,
+    "chosen": [
+      {
+        "id": "GR2",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL4",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "GL4",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "GR2",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL4",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "GL4",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      1,
+      2,
+      2
+    ]
+  },
+  {
+    "hand": 9,
+    "opening": "F5",
+    "layoutChanged": true,
+    "positive": false,
+    "validationGap": 0.08187499999999992,
+    "fieldContribution": -0.03874999999999984,
+    "chosen": [
+      {
+        "id": "SL4",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "GL4",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL5",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "GL4",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL4",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "GL5",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      1,
+      1,
+      1
+    ]
+  },
+  {
+    "hand": 10,
+    "opening": "F3",
+    "layoutChanged": true,
+    "positive": false,
+    "validationGap": -0.43687500000000234,
+    "fieldContribution": -0.002500000000000391,
+    "chosen": [
+      {
+        "id": "GL1",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL3",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR4",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 1
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "SL3",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL1",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR4",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      0,
+      1
+    ]
+  },
+  {
+    "hand": 11,
+    "opening": "F7",
+    "layoutChanged": true,
+    "positive": true,
+    "validationGap": 0.9350000000000058,
+    "fieldContribution": 2.374375000000005,
+    "chosen": [
+      {
+        "id": "WR3",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR4",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "GR3",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "GR3",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR4",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "WR3",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      2,
+      2,
+      2
+    ]
+  },
+  {
+    "hand": 12,
+    "opening": "F4",
+    "layoutChanged": true,
+    "positive": true,
+    "validationGap": 0.86,
+    "fieldContribution": 1.9649999999999999,
+    "chosen": [
+      {
+        "id": "GR3",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "LU5",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "GL3",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "GR3",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "LU5",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL3",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      2,
+      2
+    ]
+  },
+  {
+    "hand": 13,
+    "opening": "F7",
+    "layoutChanged": true,
+    "positive": false,
+    "validationGap": -0.2093750000000001,
+    "fieldContribution": 1.0950000000000002,
+    "chosen": [
+      {
+        "id": "WR4",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "EN3",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "PR3",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "EN3",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "PR3",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR4",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      0,
+      1
+    ]
+  },
+  {
+    "hand": 14,
+    "opening": "F7",
+    "layoutChanged": true,
+    "positive": true,
+    "validationGap": 0.7912500000000042,
+    "fieldContribution": 0.5793750000000042,
+    "chosen": [
+      {
+        "id": "LU4",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL1",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR3",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "GL1",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR3",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "LU4",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      0,
+      2
+    ]
+  },
+  {
+    "hand": 15,
+    "opening": "F2",
+    "layoutChanged": false,
+    "positive": false,
+    "validationGap": 0.8937500000000069,
+    "fieldContribution": 1.8818750000000084,
+    "chosen": [
+      {
+        "id": "GL1",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR4",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "GR4",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 1
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "GL1",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR4",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR4",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      1,
+      1
+    ]
+  },
+  {
+    "hand": 16,
+    "opening": "F7",
+    "layoutChanged": true,
+    "positive": true,
+    "validationGap": 1.0275000000000023,
+    "fieldContribution": 1.0268750000000024,
+    "chosen": [
+      {
+        "id": "GL4",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR4",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR2",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "GL4",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR4",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "GR2",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      1,
+      2,
+      2
+    ]
+  },
+  {
+    "hand": 17,
+    "opening": "F3",
+    "layoutChanged": false,
+    "positive": false,
+    "validationGap": 0,
+    "fieldContribution": 0,
+    "chosen": [
+      {
+        "id": "LU4",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR3",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR2",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "LU4",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR3",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR2",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      2,
+      2,
+      2
+    ]
+  },
+  {
+    "hand": 18,
+    "opening": "F5",
+    "layoutChanged": true,
+    "positive": true,
+    "validationGap": 0.4693749999999999,
+    "fieldContribution": 0.5062500000000014,
+    "chosen": [
+      {
+        "id": "WR1",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR1",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "EN1",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "EN1",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR1",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR1",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      1,
+      2,
+      2
+    ]
+  },
+  {
+    "hand": 19,
+    "opening": "F4",
+    "layoutChanged": true,
+    "positive": true,
+    "validationGap": 1.1218750000000037,
+    "fieldContribution": 1.0481250000000033,
+    "chosen": [
+      {
+        "id": "GL2",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL4",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "EN3",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "SL4",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL2",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "EN3",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      1,
+      2,
+      2
+    ]
+  },
+  {
+    "hand": 20,
+    "opening": "F7",
+    "layoutChanged": true,
+    "positive": true,
+    "validationGap": 0.3218750000000017,
+    "fieldContribution": 0.39937500000000115,
+    "chosen": [
+      {
+        "id": "EN1",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "PR3",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "PR1",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "PR3",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "PR1",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "EN1",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      1,
+      1,
+      2
+    ]
+  },
+  {
+    "hand": 21,
+    "opening": "F1",
+    "layoutChanged": true,
+    "positive": false,
+    "validationGap": -0.7843749999999995,
+    "fieldContribution": 0.3924999999999995,
+    "chosen": [
+      {
+        "id": "PR3",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "EN2",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 1
+        }
+      },
+      {
+        "id": "LU3",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 0
+            },
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "LU3",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 1
+            },
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "PR3",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "EN2",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 1
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      2,
+      2
+    ]
+  },
+  {
+    "hand": 22,
+    "opening": "F3",
+    "layoutChanged": true,
+    "positive": false,
+    "validationGap": 0.09875000000000034,
+    "fieldContribution": 0.00749999999999984,
+    "chosen": [
+      {
+        "id": "WR1",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR1",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL5",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "WR1",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL5",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR1",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      1,
+      1,
+      1
+    ]
+  },
+  {
+    "hand": 23,
+    "opening": "F4",
+    "layoutChanged": false,
+    "positive": false,
+    "validationGap": 0,
+    "fieldContribution": 0,
+    "chosen": [
+      {
+        "id": "GR1",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "EN4",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "PR3",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "GR1",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "EN4",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "PR3",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      0,
+      2
+    ]
+  },
+  {
+    "hand": 24,
+    "opening": "F3",
+    "layoutChanged": false,
+    "positive": false,
+    "validationGap": 0,
+    "fieldContribution": 0,
+    "chosen": [
+      {
+        "id": "GL1",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR2",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL1",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "GL1",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR2",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL1",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      1,
+      1,
+      1
+    ]
+  },
+  {
+    "hand": 25,
+    "opening": "F8",
+    "layoutChanged": true,
+    "positive": false,
+    "validationGap": -1.1893750000000027,
+    "fieldContribution": -0.26937500000000236,
+    "chosen": [
+      {
+        "id": "LU1",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR2",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR1",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "GR2",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR1",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "LU1",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      0,
+      1
+    ]
+  },
+  {
+    "hand": 26,
+    "opening": "F5",
+    "layoutChanged": true,
+    "positive": false,
+    "validationGap": 0.1193750000000009,
+    "fieldContribution": 0.2275000000000006,
+    "chosen": [
+      {
+        "id": "GL5",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "LU4",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL3",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "LU4",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL5",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL3",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      1,
+      1,
+      2
+    ]
+  },
+  {
+    "hand": 27,
+    "opening": "F3",
+    "layoutChanged": false,
+    "positive": false,
+    "validationGap": 0,
+    "fieldContribution": 0,
+    "chosen": [
+      {
+        "id": "SL1",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR2",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL2",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "SL1",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR2",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL2",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      0,
+      2
+    ]
+  },
+  {
+    "hand": 28,
+    "opening": "F7",
+    "layoutChanged": true,
+    "positive": true,
+    "validationGap": 1.045625000000006,
+    "fieldContribution": 3.7843750000000074,
+    "chosen": [
+      {
+        "id": "EN2",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR2",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "PR2",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "PR2",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR2",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "EN2",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 1
+        }
+      }
+    ],
+    "tiers": [
+      2,
+      2,
+      2
+    ]
+  },
+  {
+    "hand": 29,
+    "opening": "F5",
+    "layoutChanged": true,
+    "positive": true,
+    "validationGap": 0.7481249999999999,
+    "fieldContribution": 0.24937500000000073,
+    "chosen": [
+      {
+        "id": "EN3",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "PR3",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL3",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "PR3",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "EN3",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL3",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      2,
+      2
+    ]
+  },
+  {
+    "hand": 30,
+    "opening": "F3",
+    "layoutChanged": false,
+    "positive": false,
+    "validationGap": 0,
+    "fieldContribution": 0,
+    "chosen": [
+      {
+        "id": "GR2",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR2",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR1",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "GR2",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR2",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR1",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      1,
+      2
+    ]
+  },
+  {
+    "hand": 31,
+    "opening": "F1",
+    "layoutChanged": true,
+    "positive": true,
+    "validationGap": 1.460000000000004,
+    "fieldContribution": 1.3606250000000064,
+    "chosen": [
+      {
+        "id": "PR2",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR2",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR4",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "PR2",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR4",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR2",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "hand": 32,
+    "opening": "F5",
+    "layoutChanged": false,
+    "positive": false,
+    "validationGap": 0,
+    "fieldContribution": 0,
+    "chosen": [
+      {
+        "id": "SL1",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL3",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL4",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "SL1",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL3",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL4",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      1,
+      1
+    ]
+  },
+  {
+    "hand": 33,
+    "opening": "F8",
+    "layoutChanged": true,
+    "positive": false,
+    "validationGap": -0.42125000000000057,
+    "fieldContribution": -1.5368750000000002,
+    "chosen": [
+      {
+        "id": "SL2",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 1
+        }
+      },
+      {
+        "id": "PR2",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR2",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "PR2",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR2",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL2",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 1
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      0,
+      2
+    ]
+  },
+  {
+    "hand": 34,
+    "opening": "F2",
+    "layoutChanged": true,
+    "positive": true,
+    "validationGap": 1.1262499999999984,
+    "fieldContribution": 1.230624999999998,
+    "chosen": [
+      {
+        "id": "GR1",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR4",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL1",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "GR1",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL1",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR4",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      2,
+      2
+    ]
+  },
+  {
+    "hand": 35,
+    "opening": "F7",
+    "layoutChanged": true,
+    "positive": true,
+    "validationGap": 1.2031249999999991,
+    "fieldContribution": 2.605624999999999,
+    "chosen": [
+      {
+        "id": "GR3",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "LU4",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "EN4",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 1
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "EN4",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "GR3",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "LU4",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      1,
+      1,
+      2
+    ]
+  },
+  {
+    "hand": 36,
+    "opening": "F6",
+    "layoutChanged": true,
+    "positive": false,
+    "validationGap": -0.38749999999999984,
+    "fieldContribution": -0.10625000000000018,
+    "chosen": [
+      {
+        "id": "PR1",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR2",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR4",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "PR1",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR2",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR4",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 1
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      1,
+      2
+    ]
+  },
+  {
+    "hand": 37,
+    "opening": "F3",
+    "layoutChanged": false,
+    "positive": false,
+    "validationGap": 0,
+    "fieldContribution": 0,
+    "chosen": [
+      {
+        "id": "EN1",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL3",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR4",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "EN1",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL3",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR4",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      1,
+      2,
+      2
+    ]
+  },
+  {
+    "hand": 38,
+    "opening": "F2",
+    "layoutChanged": false,
+    "positive": false,
+    "validationGap": 0.44937499999999897,
+    "fieldContribution": 2.5112499999999995,
+    "chosen": [
+      {
+        "id": "GL3",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR1",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR4",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 1
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "GL3",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR1",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR4",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      1,
+      1,
+      2
+    ]
+  },
+  {
+    "hand": 39,
+    "opening": "F5",
+    "layoutChanged": true,
+    "positive": false,
+    "validationGap": 0.12937500000000002,
+    "fieldContribution": 0.06937500000000085,
+    "chosen": [
+      {
+        "id": "GL4",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "LU2",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR4",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "LU2",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR4",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL4",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      2,
+      2
+    ]
+  },
+  {
+    "hand": 40,
+    "opening": "F7",
+    "layoutChanged": true,
+    "positive": true,
+    "validationGap": 0.6049999999999998,
+    "fieldContribution": -0.630625,
+    "chosen": [
+      {
+        "id": "WR2",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR3",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR1",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "GR1",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR3",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR2",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      1,
+      2
+    ]
+  },
+  {
+    "hand": 41,
+    "opening": "F8",
+    "layoutChanged": true,
+    "positive": false,
+    "validationGap": -1.0456249999999994,
+    "fieldContribution": -0.6156249999999991,
+    "chosen": [
+      {
+        "id": "GL5",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL5",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR3",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "GL5",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR3",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL5",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      1,
+      2
+    ]
+  },
+  {
+    "hand": 42,
+    "opening": "F5",
+    "layoutChanged": true,
+    "positive": true,
+    "validationGap": 0.23625000000000074,
+    "fieldContribution": 0.42312500000000064,
+    "chosen": [
+      {
+        "id": "SL4",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "LU5",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL1",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "SL4",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "GL1",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "LU5",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      2,
+      2
+    ]
+  },
+  {
+    "hand": 43,
+    "opening": "F6",
+    "layoutChanged": true,
+    "positive": false,
+    "validationGap": -0.6781249999999992,
+    "fieldContribution": -0.22437499999999932,
+    "chosen": [
+      {
+        "id": "GR3",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "LU5",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL1",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "SL1",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR3",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "LU5",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      1,
+      2
+    ]
+  },
+  {
+    "hand": 44,
+    "opening": "F6",
+    "layoutChanged": false,
+    "positive": false,
+    "validationGap": 0,
+    "fieldContribution": 0,
+    "chosen": [
+      {
+        "id": "PR2",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "LU2",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "PR3",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 1
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "PR2",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "LU2",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "PR3",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 1
+        }
+      }
+    ],
+    "tiers": [
+      1,
+      1,
+      2
+    ]
+  },
+  {
+    "hand": 45,
+    "opening": "F4",
+    "layoutChanged": false,
+    "positive": false,
+    "validationGap": 0.370625,
+    "fieldContribution": 1.228125,
+    "chosen": [
+      {
+        "id": "WR3",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR4",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "GR4",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 1
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "WR3",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR4",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR4",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 1
+        }
+      }
+    ],
+    "tiers": [
+      2,
+      2,
+      2
+    ]
+  },
+  {
+    "hand": 46,
+    "opening": "F7",
+    "layoutChanged": true,
+    "positive": false,
+    "validationGap": -0.015625,
+    "fieldContribution": 0.11374999999999691,
+    "chosen": [
+      {
+        "id": "EN2",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 1
+        }
+      },
+      {
+        "id": "GL4",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR2",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "EN2",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 1
+        }
+      },
+      {
+        "id": "WR2",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL4",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "hand": 47,
+    "opening": "F1",
+    "layoutChanged": false,
+    "positive": false,
+    "validationGap": 0,
+    "fieldContribution": 0,
+    "chosen": [
+      {
+        "id": "LU3",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 2
+            },
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "PR1",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR4",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "LU3",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 2
+            },
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "PR1",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR4",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "hand": 48,
+    "opening": "F4",
+    "layoutChanged": false,
+    "positive": false,
+    "validationGap": 0,
+    "fieldContribution": 0,
+    "chosen": [
+      {
+        "id": "WR3",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL3",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR3",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "WR3",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL3",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR3",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      2,
+      2,
+      2
+    ]
+  },
+  {
+    "hand": 49,
+    "opening": "F8",
+    "layoutChanged": true,
+    "positive": true,
+    "validationGap": 0.483125000000002,
+    "fieldContribution": 1.2237500000000034,
+    "chosen": [
+      {
+        "id": "GR4",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR1",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "EN2",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "EN2",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 1
+        }
+      },
+      {
+        "id": "GR4",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "WR1",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      0,
+      2
+    ]
+  },
+  {
+    "hand": 50,
+    "opening": "F2",
+    "layoutChanged": true,
+    "positive": false,
+    "validationGap": -0.3987499999999996,
+    "fieldContribution": 0.400625000000001,
+    "chosen": [
+      {
+        "id": "LU4",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL1",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR4",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "LU4",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR4",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL1",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      1,
+      2
+    ]
+  },
+  {
+    "hand": 51,
+    "opening": "F7",
+    "layoutChanged": true,
+    "positive": true,
+    "validationGap": 0.5518750000000012,
+    "fieldContribution": -0.14062499999999756,
+    "chosen": [
+      {
+        "id": "LU3",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 0
+            },
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "LU4",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL1",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "LU3",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL1",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "LU4",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      1,
+      2
+    ]
+  },
+  {
+    "hand": 52,
+    "opening": "F8",
+    "layoutChanged": true,
+    "positive": false,
+    "validationGap": 0.1043750000000001,
+    "fieldContribution": 1.015000000000002,
+    "chosen": [
+      {
+        "id": "LU1",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL1",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR1",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "SL1",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "LU1",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR1",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      1,
+      2,
+      2
+    ]
+  },
+  {
+    "hand": 53,
+    "opening": "F3",
+    "layoutChanged": true,
+    "positive": false,
+    "validationGap": -0.0012499999999999734,
+    "fieldContribution": -0.0006250000000000977,
+    "chosen": [
+      {
+        "id": "EN1",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR1",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "PR2",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "PR2",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR1",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "EN1",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      2,
+      2
+    ]
+  },
+  {
+    "hand": 54,
+    "opening": "F8",
+    "layoutChanged": true,
+    "positive": true,
+    "validationGap": 1.7156250000000002,
+    "fieldContribution": 2.2912499999999993,
+    "chosen": [
+      {
+        "id": "SL2",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL4",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR2",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "SL2",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 1
+        }
+      },
+      {
+        "id": "WR2",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL4",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 1
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      0,
+      2
+    ]
+  },
+  {
+    "hand": 55,
+    "opening": "F2",
+    "layoutChanged": true,
+    "positive": false,
+    "validationGap": 0.06000000000000316,
+    "fieldContribution": -0.07062499999999883,
+    "chosen": [
+      {
+        "id": "WR1",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR2",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR2",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "GR2",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR1",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR2",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      0,
+      1
+    ]
+  },
+  {
+    "hand": 56,
+    "opening": "F1",
+    "layoutChanged": false,
+    "positive": false,
+    "validationGap": 0,
+    "fieldContribution": 0,
+    "chosen": [
+      {
+        "id": "WR2",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "EN1",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL1",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "WR2",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "EN1",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL1",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      2,
+      2
+    ]
+  },
+  {
+    "hand": 57,
+    "opening": "F4",
+    "layoutChanged": true,
+    "positive": false,
+    "validationGap": -0.21875000000000044,
+    "fieldContribution": -0.010625000000001217,
+    "chosen": [
+      {
+        "id": "GR3",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR4",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "EN3",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "GR3",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "EN3",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR4",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      1,
+      2
+    ]
+  },
+  {
+    "hand": 58,
+    "opening": "F7",
+    "layoutChanged": true,
+    "positive": false,
+    "validationGap": -0.03312499999999874,
+    "fieldContribution": -0.36937499999999834,
+    "chosen": [
+      {
+        "id": "PR1",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR2",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL4",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "PR1",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL4",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR2",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      1,
+      2
+    ]
+  },
+  {
+    "hand": 59,
+    "opening": "F3",
+    "layoutChanged": false,
+    "positive": false,
+    "validationGap": 0,
+    "fieldContribution": 0,
+    "chosen": [
+      {
+        "id": "GR1",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "EN3",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR2",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "GR1",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "EN3",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR2",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      1,
+      2,
+      2
+    ]
+  },
+  {
+    "hand": 60,
+    "opening": "F7",
+    "layoutChanged": true,
+    "positive": false,
+    "validationGap": -0.233750000000001,
+    "fieldContribution": -1.768750000000002,
+    "chosen": [
+      {
+        "id": "EN1",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "LU5",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "GL1",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "GL1",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "LU5",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "EN1",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      1,
+      1,
+      2
+    ]
+  },
+  {
+    "hand": 61,
+    "opening": "F8",
+    "layoutChanged": true,
+    "positive": false,
+    "validationGap": -0.023125000000000284,
+    "fieldContribution": 0.024375000000000924,
+    "chosen": [
+      {
+        "id": "EN2",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR1",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR2",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "EN2",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 1
+        }
+      },
+      {
+        "id": "WR1",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR2",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "hand": 62,
+    "opening": "F6",
+    "layoutChanged": true,
+    "positive": true,
+    "validationGap": 0.6300000000000012,
+    "fieldContribution": 0.0012499999999997513,
+    "chosen": [
+      {
+        "id": "GR2",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR2",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL1",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "GR2",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR2",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL1",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      2,
+      2
+    ]
+  },
+  {
+    "hand": 63,
+    "opening": "F5",
+    "layoutChanged": true,
+    "positive": true,
+    "validationGap": 0.2575000000000016,
+    "fieldContribution": 0.34500000000000286,
+    "chosen": [
+      {
+        "id": "GR2",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "LU2",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "GL1",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "GR2",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "LU2",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL1",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      1,
+      2
+    ]
+  },
+  {
+    "hand": 64,
+    "opening": "F7",
+    "layoutChanged": true,
+    "positive": true,
+    "validationGap": 0.4937500000000026,
+    "fieldContribution": 2.3387500000000037,
+    "chosen": [
+      {
+        "id": "GR1",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL5",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL4",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "GL4",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL5",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "GR1",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      2,
+      2
+    ]
+  },
+  {
+    "hand": 65,
+    "opening": "F4",
+    "layoutChanged": true,
+    "positive": false,
+    "validationGap": -1.3693749999999996,
+    "fieldContribution": -0.4243749999999997,
+    "chosen": [
+      {
+        "id": "EN1",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR2",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "EN1",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "EN1",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "EN1",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR2",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      1,
+      1,
+      2
+    ]
+  },
+  {
+    "hand": 66,
+    "opening": "F7",
+    "layoutChanged": true,
+    "positive": true,
+    "validationGap": 0.5412500000000029,
+    "fieldContribution": 1.592500000000007,
+    "chosen": [
+      {
+        "id": "SL1",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR3",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL4",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 1
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "SL4",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "GR3",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL1",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      1,
+      2
+    ]
+  },
+  {
+    "hand": 67,
+    "opening": "F1",
+    "layoutChanged": true,
+    "positive": false,
+    "validationGap": -0.4731250000000018,
+    "fieldContribution": 0.271875000000001,
+    "chosen": [
+      {
+        "id": "GR3",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR1",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "LU2",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "GR3",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR1",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "LU2",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      0,
+      1
+    ]
+  },
+  {
+    "hand": 68,
+    "opening": "F1",
+    "layoutChanged": false,
+    "positive": false,
+    "validationGap": 0,
+    "fieldContribution": 0,
+    "chosen": [
+      {
+        "id": "GR1",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL1",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "EN4",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "GR1",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL1",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "EN4",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      2,
+      2
+    ]
+  },
+  {
+    "hand": 69,
+    "opening": "F6",
+    "layoutChanged": true,
+    "positive": true,
+    "validationGap": 0.6225000000000018,
+    "fieldContribution": 0.14749999999999996,
+    "chosen": [
+      {
+        "id": "LU3",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 2
+            },
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "EN1",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR2",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "EN1",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR2",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "LU3",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 2
+            },
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      2,
+      2,
+      2
+    ]
+  },
+  {
+    "hand": 70,
+    "opening": "F7",
+    "layoutChanged": false,
+    "positive": false,
+    "validationGap": 0.7581249999999996,
+    "fieldContribution": 0.08312500000000023,
+    "chosen": [
+      {
+        "id": "GR1",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "PR3",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "PR1",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "GR1",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "PR3",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "PR1",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      1,
+      2
+    ]
+  },
+  {
+    "hand": 71,
+    "opening": "F5",
+    "layoutChanged": false,
+    "positive": false,
+    "validationGap": 0,
+    "fieldContribution": 0,
+    "chosen": [
+      {
+        "id": "WR1",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL4",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL1",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "WR1",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL4",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL1",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "hand": 72,
+    "opening": "F5",
+    "layoutChanged": true,
+    "positive": false,
+    "validationGap": 0.07250000000000068,
+    "fieldContribution": 0.11125000000000007,
+    "chosen": [
+      {
+        "id": "GR4",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR1",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL1",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "WR1",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR4",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "GL1",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      1,
+      1,
+      1
+    ]
+  },
+  {
+    "hand": 73,
+    "opening": "F6",
+    "layoutChanged": false,
+    "positive": false,
+    "validationGap": 0,
+    "fieldContribution": 0,
+    "chosen": [
+      {
+        "id": "PR1",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "LU3",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 2
+            },
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL1",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "PR1",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "LU3",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 2
+            },
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL1",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      1,
+      2
+    ]
+  },
+  {
+    "hand": 74,
+    "opening": "F2",
+    "layoutChanged": true,
+    "positive": false,
+    "validationGap": 0.14187500000000064,
+    "fieldContribution": -0.49874999999999836,
+    "chosen": [
+      {
+        "id": "EN1",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL3",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL1",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "EN1",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL1",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL3",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      2,
+      2
+    ]
+  },
+  {
+    "hand": 75,
+    "opening": "F3",
+    "layoutChanged": false,
+    "positive": false,
+    "validationGap": 0,
+    "fieldContribution": 0,
+    "chosen": [
+      {
+        "id": "SL4",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR4",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL4",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 1
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "SL4",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR4",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL4",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 1
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      0,
+      2
+    ]
+  },
+  {
+    "hand": 76,
+    "opening": "F3",
+    "layoutChanged": true,
+    "positive": false,
+    "validationGap": -0.7581250000000004,
+    "fieldContribution": 0.1524999999999994,
+    "chosen": [
+      {
+        "id": "GL5",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR2",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR1",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "WR1",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL5",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "GR2",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      1,
+      2,
+      2
+    ]
+  },
+  {
+    "hand": 77,
+    "opening": "F8",
+    "layoutChanged": true,
+    "positive": false,
+    "validationGap": -0.36562499999999987,
+    "fieldContribution": 1.1700000000000006,
+    "chosen": [
+      {
+        "id": "SL4",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "GL2",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "PR3",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "PR3",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "SL4",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL2",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      1,
+      1
+    ]
+  },
+  {
+    "hand": 78,
+    "opening": "F3",
+    "layoutChanged": true,
+    "positive": false,
+    "validationGap": -0.07937500000000064,
+    "fieldContribution": -0.013125000000001386,
+    "chosen": [
+      {
+        "id": "GR4",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "EN4",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "SL1",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "SL1",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "EN4",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "GR4",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      1,
+      1
+    ]
+  },
+  {
+    "hand": 79,
+    "opening": "F2",
+    "layoutChanged": true,
+    "positive": false,
+    "validationGap": -0.9612499999999998,
+    "fieldContribution": 1.829375000000001,
+    "chosen": [
+      {
+        "id": "GL3",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL1",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL4",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "GL3",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL1",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL4",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      1,
+      1,
+      2
+    ]
+  },
+  {
+    "hand": 80,
+    "opening": "F3",
+    "layoutChanged": true,
+    "positive": false,
+    "validationGap": -0.06874999999999964,
+    "fieldContribution": -0.001875000000000071,
+    "chosen": [
+      {
+        "id": "EN1",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL2",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 1
+        }
+      },
+      {
+        "id": "GR3",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "SL2",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "EN1",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR3",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      0,
+      1
+    ]
+  },
+  {
+    "hand": 81,
+    "opening": "F5",
+    "layoutChanged": true,
+    "positive": true,
+    "validationGap": 0.41312499999999974,
+    "fieldContribution": -0.22562499999999974,
+    "chosen": [
+      {
+        "id": "GL4",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL1",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "LU1",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "GL4",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "LU1",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL1",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      2,
+      2
+    ]
+  },
+  {
+    "hand": 82,
+    "opening": "F8",
+    "layoutChanged": true,
+    "positive": true,
+    "validationGap": 1.1918750000000022,
+    "fieldContribution": 0.8600000000000012,
+    "chosen": [
+      {
+        "id": "EN1",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL3",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL3",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "GL3",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL3",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "EN1",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      0,
+      1
+    ]
+  },
+  {
+    "hand": 83,
+    "opening": "F7",
+    "layoutChanged": true,
+    "positive": false,
+    "validationGap": 0.05625000000000124,
+    "fieldContribution": 0.08687500000000181,
+    "chosen": [
+      {
+        "id": "EN2",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 1
+        }
+      },
+      {
+        "id": "GR4",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "LU2",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "EN2",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 1
+        }
+      },
+      {
+        "id": "GR4",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "LU2",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      0,
+      2
+    ]
+  },
+  {
+    "hand": 84,
+    "opening": "F8",
+    "layoutChanged": true,
+    "positive": false,
+    "validationGap": -0.19875000000000131,
+    "fieldContribution": 0.8906250000000018,
+    "chosen": [
+      {
+        "id": "PR1",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR2",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL4",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "WR2",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "PR1",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL4",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      0,
+      1
+    ]
+  },
+  {
+    "hand": 85,
+    "opening": "F7",
+    "layoutChanged": true,
+    "positive": true,
+    "validationGap": 0.2112500000000006,
+    "fieldContribution": 0.8587500000000028,
+    "chosen": [
+      {
+        "id": "EN1",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR2",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR1",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "EN1",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR2",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR1",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      1,
+      1
+    ]
+  },
+  {
+    "hand": 86,
+    "opening": "F3",
+    "layoutChanged": false,
+    "positive": false,
+    "validationGap": 0,
+    "fieldContribution": 0,
+    "chosen": [
+      {
+        "id": "SL2",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 1
+        }
+      },
+      {
+        "id": "EN3",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL4",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "SL2",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 1
+        }
+      },
+      {
+        "id": "EN3",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL4",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      1,
+      2
+    ]
+  },
+  {
+    "hand": 87,
+    "opening": "F3",
+    "layoutChanged": false,
+    "positive": false,
+    "validationGap": 0,
+    "fieldContribution": 0,
+    "chosen": [
+      {
+        "id": "LU4",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "PR3",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "WR3",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "LU4",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "PR3",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "WR3",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      0,
+      2
+    ]
+  },
+  {
+    "hand": 88,
+    "opening": "F5",
+    "layoutChanged": true,
+    "positive": false,
+    "validationGap": 0,
+    "fieldContribution": 0.11249999999999982,
+    "chosen": [
+      {
+        "id": "GL2",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR4",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "LU2",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "LU2",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR4",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL2",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      1,
+      2,
+      2
+    ]
+  },
+  {
+    "hand": 89,
+    "opening": "F8",
+    "layoutChanged": true,
+    "positive": false,
+    "validationGap": -0.7662499999999999,
+    "fieldContribution": -0.6393749999999985,
+    "chosen": [
+      {
+        "id": "GL1",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL1",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL4",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "SL1",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL1",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL4",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      1,
+      1
+    ]
+  },
+  {
+    "hand": 90,
+    "opening": "F2",
+    "layoutChanged": true,
+    "positive": true,
+    "validationGap": 0.30750000000000277,
+    "fieldContribution": 0.28687500000000443,
+    "chosen": [
+      {
+        "id": "WR4",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR4",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "EN4",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 1
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "GR4",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "EN4",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "WR4",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      1,
+      2
+    ]
+  },
+  {
+    "hand": 91,
+    "opening": "F4",
+    "layoutChanged": false,
+    "positive": false,
+    "validationGap": 0.23812500000000192,
+    "fieldContribution": 0.9118750000000038,
+    "chosen": [
+      {
+        "id": "GR1",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL2",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 1
+        }
+      },
+      {
+        "id": "PR3",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "GR1",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL2",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 1
+        }
+      },
+      {
+        "id": "PR3",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 1
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      0,
+      2
+    ]
+  },
+  {
+    "hand": 92,
+    "opening": "F3",
+    "layoutChanged": false,
+    "positive": false,
+    "validationGap": -0.5387499999999995,
+    "fieldContribution": 0.29062500000000013,
+    "chosen": [
+      {
+        "id": "EN1",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL3",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR4",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "EN1",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL3",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR4",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      1,
+      2,
+      2
+    ]
+  },
+  {
+    "hand": 93,
+    "opening": "F7",
+    "layoutChanged": true,
+    "positive": false,
+    "validationGap": 0.1418750000000042,
+    "fieldContribution": 3.180000000000007,
+    "chosen": [
+      {
+        "id": "GL4",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL5",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "GR1",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "GL4",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL5",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "GR1",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      2,
+      2,
+      2
+    ]
+  },
+  {
+    "hand": 94,
+    "opening": "F6",
+    "layoutChanged": true,
+    "positive": true,
+    "validationGap": 0.3206249999999998,
+    "fieldContribution": -0.04124999999999979,
+    "chosen": [
+      {
+        "id": "WR1",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR4",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR4",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "WR4",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR1",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR4",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      1,
+      1
+    ]
+  },
+  {
+    "hand": 95,
+    "opening": "F1",
+    "layoutChanged": false,
+    "positive": false,
+    "validationGap": 0,
+    "fieldContribution": 0,
+    "chosen": [
+      {
+        "id": "GR1",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR3",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "PR3",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "GR1",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR3",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "PR3",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      2,
+      2
+    ]
+  },
+  {
+    "hand": 96,
+    "opening": "F3",
+    "layoutChanged": false,
+    "positive": false,
+    "validationGap": 0,
+    "fieldContribution": 0,
+    "chosen": [
+      {
+        "id": "WR2",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "LU3",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 2
+            },
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL3",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "WR2",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "LU3",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 2
+            },
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL3",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      1,
+      1,
+      2
+    ]
+  },
+  {
+    "hand": 97,
+    "opening": "F4",
+    "layoutChanged": true,
+    "positive": true,
+    "validationGap": 0.2031250000000009,
+    "fieldContribution": 0.005624999999999991,
+    "chosen": [
+      {
+        "id": "GL4",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL3",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "PR3",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "GL4",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "PR3",
+        "raw": 5,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL3",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      0,
+      1,
+      2
+    ]
+  },
+  {
+    "hand": 98,
+    "opening": "F2",
+    "layoutChanged": true,
+    "positive": true,
+    "validationGap": 1.2087500000000082,
+    "fieldContribution": 3.2187500000000075,
+    "chosen": [
+      {
+        "id": "WR4",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR4",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "LU3",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 0
+            },
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "LU3",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 1
+            },
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR4",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR4",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "tiers": [
+      1,
+      2,
+      2
+    ]
+  },
+  {
+    "hand": 99,
+    "opening": "F5",
+    "layoutChanged": true,
+    "positive": true,
+    "validationGap": 0.21500000000000208,
+    "fieldContribution": 0.6562500000000011,
+    "chosen": [
+      {
+        "id": "GR4",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR3",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL5",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "plain": [
+      {
+        "id": "GR4",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR3",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL5",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 1
+        }
+      }
+    ],
+    "tiers": [
+      1,
+      1,
+      2
+    ]
+  }
+]

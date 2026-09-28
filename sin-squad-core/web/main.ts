@@ -28,8 +28,7 @@ import { installLight, relight } from "./light.js";
 import { BUILD, VERSION } from "./version.js";
 import { installTilt } from "./tilt.js";
 import { disableTips, dismissTip, resetTips, tipHtml } from "./tips.js";
-import { NumericTable } from "../src/numeric/table.js";
-import { NumericMode } from "./numeric.js";
+import { IntentMode as NumericMode } from "./intent.js";
 
 /**
  * 网页 demo：你（座位 0）对电脑（座位 1）。
@@ -2010,8 +2009,6 @@ const gate = new Gate({
   },
 }, ART);
 const numericMode = new NumericMode({
-  restore: data => NumericTable.restore(data as ReturnType<NumericTable["save"]>),
-  create: () => new NumericTable({ seed: Math.floor(Math.random() * 1e9) }),
   exit: () => gate.show("title"),
   art: ART,
 });
