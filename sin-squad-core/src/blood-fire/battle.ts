@@ -105,7 +105,25 @@ export function battle(sides:[Side,Side], field:string|null):Result {
   for(const u of units)if(u.card.id!=="N01"&&u.card.timing==="start"&&u.plan.enabled)skill(u);
   if(field==="E14")for(const side of [0,1]){const u=front(side);if(u){if(u.shield)pace(u,u,-1,"接班人");else shield(u,u,2,"接班人");}}
   while(tick<120&&alive(0).length&&alive(1).length){if(++work>12000){abnormal="事件链超出诊断上限";break;}const next=Math.min(...alive(0).concat(alive(1)).map(u=>u.next),...later.map(x=>x.at));if(!Number.isFinite(next))break;tick=next;for(const x of later.filter(x=>x.at===tick)){x.run();work++;}for(let i=later.length-1;i>=0;i--)if(later[i].at===tick)later.splice(i,1);const attackers=units.filter(u=>u.hp>0&&u.next<=tick);for(const u of attackers)if(!u.first){u.first=true;if(u.card.timing==="first")skill(u);if(u.card.id==="F02"&&u.morph){const n=Math.min(4,u.shield);shield(u,u,-u.shield,"出炉");if(enemy(u))damage(u,enemy(u)!,n,"出炉");}}const ready=attackers.filter(u=>u.hp>0&&u.next<=tick);const targets=new Map(ready.map(u=>[u,enemy(u)]));for(const u of ready){const t=targets.get(u);if(!t||t.hp<=0)continue;let n=u.card.attack+u.bonus;u.bonus=0;if(u.card.id==="B06"&&u.hp/u.max>t.hp/t.max)n++;if(u.card.id==="F07"&&t.shield)n++;if(u.card.id==="F09"&&[...burning].some(([v,count])=>v.side!==u.side&&count>0))n++;if(u.card.id==="F02"&&u.morph)n++;if(u.card.id==="F10"&&u.morph)n++;if(u.card.id==="N03")n=u.morph?Math.min(4,2+u.store):Math.max(1,n-u.store);if(u.card.id==="B09"&&u.morph)n--;if(u.card.id==="N10"&&u.morph&&u.attacks<2)n+=u.plan.choice===0?1:-1;const overflow=damage(u,t,n,"普攻",true);record("attack",u,t,n,"普攻");if(overflow&&field==="E19")shield(u,u,Math.min(2,overflow),"最后一寸");if(overflow&&sides[u.side].base==="P01"&&enemy(u))damage(u,enemy(u)!,Math.min(2,overflow),"余烬炉");u.attacks++;if(u.card.id==="B03"&&front(u.side))heal(u,front(u.side)!,1,"缝心");if((u.card.id==="B05"||u.card.id==="F05")&&u.hp>0)damage(u,u,1,"普攻·自伤");if(u.card.id==="N10")shield(u,u,1,"昨日余像");if(u.card.id==="F01"&&u.attacks===1&&t.hp>0)burn(u,t,1,"引火童");u.next=tick+u.card.interval+(u.card.kind==="melee"?2*alive(u.side).filter(v=>v.slot<u.slot).length:0);}
-    for(const side of [0,1] as const){const group=ready.filter(u=>u.side===side&&u.hp>0);if(group.length>=2){const melee=group.filter(u=>u.card.kind==="melee").length,ranged=group.length-melee;if(melee>=2)for(const u of group.filter(u=>u.card.kind==="melee"))u.bonus++;if(melee&&ranged&&front(side))shield(group[0],front(side)!,2*melee*ranged,"交叉掩护");if(ranged>=2)heal(group[0],alive(side).sort((a,b)=>a.hp/a.max-b.hp/b.max)[0],2,"齐射续援");if(group.length>=3)for(const u of group)pace(u,u,-1,"三重奏");record("combo",group[0],group[1],group.length,melee>=2?"并刃":melee?"交叉掩护":"齐射续援");}}
+    const performed=events.filter(e=>e.tick===tick&&e.kind==="attack").map(e=>units[e.source]);
+    for(const side of [0,1] as const){
+      const group=performed.filter(u=>u.side===side);
+      for(let i=0;i<group.length;i++)for(let j=i+1;j<group.length;j++){
+        const a=group[i],b=group[j];
+        if(a.card.kind==="melee"&&b.card.kind==="melee"){
+          if(a.hp>0)a.bonus++;if(b.hp>0)b.bonus++;
+          record("combo",a,b,2,"并刃");
+        }else if(a.card.kind==="ranged"&&b.card.kind==="ranged"){
+          const hurt=alive(side).sort((x,y)=>x.hp/x.max-y.hp/y.max)[0];
+          if(hurt)heal(a,hurt,2,"齐射续援");
+          record("combo",a,b,2,"齐射续援");
+        }else{
+          if(front(side))shield(a,front(side)!,2,"交叉掩护");
+          record("combo",a,b,2,"交叉掩护");
+        }
+      }
+      if(group.length===3){for(const u of group)if(u.hp>0)pace(u,u,-1,"三重奏");record("combo",group[0],group[2],3,"三重奏");}
+    }
   }
   return {winner:alive(0).length&&alive(1).length?null:alive(0).length?0:alive(1).length?1:null,tick,events,units,abnormal};
 }
