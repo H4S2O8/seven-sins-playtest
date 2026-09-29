@@ -1,5 +1,6 @@
-import { BASES, BY_ID, FIELDS } from "./content.js";
+import { BASES, BY_ID, CHOICE_TEXT, FIELDS } from "./content.js";
 import type { Plan } from "./battle.js";
+import { possibleCombos } from "./combos.js";
 
 export type Wheel="none"|"sync"|"rush"|"chain"|"disrupt";
 export type Analysis={timeline:{slot:number;tick:number;text:string}[];effects:string[];links:{name:string;reason:string;certainty:"确定"|"条件"}[];cautions:string[];advice:string[]};
@@ -8,13 +9,20 @@ const selfHarm=new Set(["B01","B05","B06","F05","F10","N10"]);
 const fireSource=new Set(["F01","F03","F06","F08","F09","F10"]);
 const shieldSource=new Set(["B04","B05","F05","F08","N08","N10"]);
 const paceSource=new Set(["N02","N04","N05","N07"]);
+function plannedTimes(plans:Plan[],fieldId:string|null):number[]{
+  const ticks=plans.map((p,slot)=>{const c=BY_ID[p.id];let tick=c.interval+(c.kind==="melee"?slot*2:0);if(p.enabled&&p.id==="B05")tick++;if(p.enabled&&p.id==="N08")tick+=2;if(p.enabled&&p.id==="N02")tick++;return tick;});
+  const gatekeeper=plans.findIndex(p=>p.enabled&&p.id==="N02");
+  if(gatekeeper>=0){const target=plans[gatekeeper].target;if(target!==gatekeeper&&plans[target])ticks[target]=Math.max(1,ticks[target]-(fieldId==="E20"?3:2));}
+  return ticks;
+}
 /** Own-side information only. All statements are either deterministic from the plan or marked conditional. */
 export function analyze(plans:Plan[],baseId:string,fieldId:string|null,wheel:Wheel="none"):Analysis{
-  const timeline=plans.map((p,slot)=>{const c=BY_ID[p.id];let tick=c.interval+(c.kind==="melee"?slot*2:0);if(p.enabled){if(p.id==="B05"||p.id==="N02")tick++;if(p.id==="N08")tick+=2;if(p.id==="N02"&&p.target!==slot&&plans[p.target]){ /* target's time is shown in effects */ }}return{slot,tick,text:`${pos[slot]}位 ${c.name}：首刀约第 ${tick} 刻${c.kind==="melee"&&slot?"（后位近战较慢）":""}`};});
+  const ticks=plannedTimes(plans,fieldId);
+  const timeline=plans.map((p,slot)=>{const c=BY_ID[p.id],tick=ticks[slot];return{slot,tick,text:`${pos[slot]}位 ${c.name}：首刀预计第 ${tick} 刻${c.kind==="melee"&&slot?"（后方友军会让近战晚2刻）":""}`};});
   const effects:string[]=[];const links:Analysis["links"]=[],cautions:string[]=[],advice:string[]=[];
   const chosen=plans.map(p=>BY_ID[p.id]);const active=plans.filter(p=>p.enabled);
   effects.push(`你把 ${plans.reduce((n,p)=>n+p.hp,0)} 点生命分成了：${plans.map((p,i)=>`${pos[i]}位 ${p.hp} 点`).join("、")}。三个人都会自己攻击，先打对面站在最前面的人。`);
-  for(let i=0;i<3;i++){const p=plans[i],c=chosen[i];if(p.enabled){const aim=c.target==="none"?"不需要选目标":`指向${c.target==="ally"?"自己这边":"对面"}${pos[p.target]}位`;effects.push(`${c.name}会在${c.timing==="start"?"开战时":c.timing==="first"?"自己第一次出手前":"自己倒下时"}发动「${c.skill.split("：")[0]}」，${aim}。`);if(c.target==="ally"&&p.target===i&&["N02","N04","N07","N09"].includes(c.id))cautions.push(`${c.name}这招要给另一名队友；现在指向了自己，可能什么都做不了。`);}else effects.push(`${c.name}没有发动技能；仍会普通攻击，基础能力也照常生效。`);}
+  for(let i=0;i<3;i++){const p=plans[i],c=chosen[i];if(p.enabled){let aim=c.target==="none"?"不需要选目标":`指向${c.target==="ally"?"己方":"敌方"}${pos[p.target]}位`;if(c.id==="F05")aim=`护盾给己方${pos[p.target]}位，伤害打敌方${pos[p.target2??p.target]}位`;if(c.id==="F06"&&p.choice===1)aim="灼烧敌方当前前位";if(c.id==="B04")aim="消耗自己的护盾，打敌方当前前位";const choice=CHOICE_TEXT[c.id]?.[p.choice];if(choice)aim+=`；选择“${choice}”`;effects.push(`${c.name}会在${c.timing==="start"?"开战时":c.timing==="first"?"第一次普攻前":"倒下时"}发动「${c.skill.split("：")[0]}」，${aim}。`);if(c.target==="ally"&&p.target===i&&["N02","N04","N07","N09"].includes(c.id))cautions.push(`${c.name}这招要给另一名队友；现在指向了自己，可能什么都做不了。`);if(c.id==="N06")cautions.push("倒写史官要先有一条成功的治疗或伤害技能记录；这套阵容不能保证记录先出现。");}else effects.push(`${c.name}没有发动技能；仍会普通攻击，基础能力也照常生效。`);}
   effects.push(`你的隐藏底板是「${BASES.find(b=>b.id===baseId)?.name??"未知"}」：${BASES.find(b=>b.id===baseId)?.text??""}`);
   if(fieldId)effects.push(`这局正在生效的场地是「${FIELDS.find(f=>f.id===fieldId)?.name??"未知"}」：${FIELDS.find(f=>f.id===fieldId)?.text??""}`);
   const harm=chosen.filter(c=>selfHarm.has(c.id)),recover=chosen.filter(c=>["B01","B02","B03","B07","B09","F06"].includes(c.id));
@@ -29,6 +37,7 @@ export function analyze(plans:Plan[],baseId:string,fieldId:string|null,wheel:Whe
   if(fieldId==="E04"&&chosen.some(c=>fireSource.has(c.id)))effects.push("急燃会把新灼烧改为立即伤害；长期有火条件因此会减少。");
   if(fieldId==="E15"&&active.some(p=>BY_ID[p.id].target==="ally"))effects.push("隔席相赠会按固定槽距离增强对队友的治疗与护盾；自用不增加。");
   if(baseId==="P04"&&active.some(p=>["B01","B02","B03","B07"].includes(p.id)))effects.push("圣餐桌能把溢疗换成下一刀伤害；满血治疗也可能是主动进攻。");
+  links.splice(0,links.length,...possibleCombos(plans,baseId,fieldId).map(route=>({name:route.name,certainty:"条件" as const,reason:`${route.condition}（参与者：${route.members.join("、")}）`})));
   if(wheel==="sync"){
     const sorted=[...timeline].sort((a,b)=>a.tick-b.tick);const gap=sorted[1].tick-sorted[0].tick;
     advice.push(gap===0?`已有首刀同刻窗口：${pos[sorted[0].slot]}与${pos[sorted[1].slot]}。对手干扰可能打散它。`:`最近两人的首刀差 ${gap} 刻。试着调近战位置或用行动提前技能追拍；不要只为了凑同刻牺牲前排生存。`);
