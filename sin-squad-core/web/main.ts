@@ -29,6 +29,7 @@ import { BUILD, VERSION } from "./version.js";
 import { installTilt } from "./tilt.js";
 import { disableTips, dismissTip, resetTips, tipHtml } from "./tips.js";
 import { IntentMode as NumericMode } from "./intent.js";
+import { BloodFireMode } from "./blood-fire.js";
 
 /**
  * 网页 demo：你（座位 0）对电脑（座位 1）。
@@ -1981,9 +1982,9 @@ const gate = new Gate({
       buyIn: table!.options.buyIn, blindEvery: table!.options.blindEvery, style: s,
     };
   },
-  numericStart(s) { numericMode.start(s); },
-  numericSaved: () => NumericMode.hasSave(),
-  numericResume() { numericMode.resume(); },
+  numericStart(s) { bloodFireMode.start(s); },
+  numericSaved: () => false,
+  numericResume() { bloodFireMode.start("cautious"); },
   resume() { if (!resumeGame()) gate.show("title"); },
   sheet(kind) {
     if (kind === "chars") { ui.helpTab = "chars"; ui.sheet = { kind: "help" }; } else ui.sheet = { kind };
@@ -2012,6 +2013,7 @@ const numericMode = new NumericMode({
   exit: () => gate.show("title"),
   art: ART,
 });
+const bloodFireMode = new BloodFireMode({exit:()=>gate.show("title")});
 
 window.addEventListener("resize", () => render(false));
 installTilt();

@@ -1,0 +1,16 @@
+import { describe,expect,it } from "vitest";
+import { BloodFireTable } from "../src/blood-fire/table.js";
+import { BloodFireBot } from "../src/blood-fire/bot.js";
+import { battle, type Plan } from "../src/blood-fire/battle.js";
+import { analyze } from "../src/blood-fire/analysis.js";
+import { CARDS, BASES, FIELDS } from "../src/blood-fire/content.js";
+
+const unit=(id:string,hp=8,target:0|1|2=0):Plan=>({id,hp,enabled:true,target,choice:0});
+describe("blood-fire playable core",()=>{
+  it("has the planned public card and effect catalog",()=>{expect(CARDS).toHaveLength(30);expect(BASES).toHaveLength(6);expect(FIELDS).toHaveLength(20);expect(new Set(CARDS.map(c=>c.interval)).size).toBeGreaterThan(5);});
+  it("plays purchases, field choices, betting and combat while conserving chips",()=>{const t=new BloodFireTable(47);for(let i=0;i<3;i++){t.bid(0,8);t.bid(1,1);expect(t.phase).toBe("arrange");t.choose(0,0);}expect(t.phase).toBe("field");for(let i=0;i<3;i++){t.bid(0,4);t.bid(1,1);expect(t.phase).toBe("field-choice");t.fieldDecision(0,i!==1);t.wager(0,"check");t.wager(1,"check");}expect(t.phase).toBe("over");expect(t.result?.events.length).toBeGreaterThan(0);expect(t.stacks[0]+t.stacks[1]).toBe(200);});
+  it("does not expose the player's hidden base or plans to bot decisions",()=>{const t=new BloodFireTable(72);t.picked=[["B01","F01","N01"],["B03","F02","N02"]];t.phase="field";t.plans=[[unit("B01"),unit("F01"),unit("N01")],[unit("B03"),unit("F02"),unit("N02")]];const first=new BloodFireBot("cautious",13),second=new BloodFireBot("cautious",13);const bid=first.fieldBid(t),action=first.betAction({...t,phase:"bet"} as BloodFireTable);t.base[0]="P06";t.plans[0]=[unit("N01",12,2),unit("F01",8,1),unit("B01",4,0)];expect(second.fieldBid(t)).toBe(bid);expect(second.betAction({...t,phase:"bet"} as BloodFireTable)).toEqual(action);});
+  it("keeps actual lineup explanations independent of the optional wheel",()=>{const plans=[unit("B01"),unit("B07",8,1),unit("N02",8,2)];const off=analyze(plans,"P04","E09","none"),sync=analyze(plans,"P04","E09","sync");expect(off.effects).toEqual(sync.effects);expect(off.timeline).toEqual(sync.timeline);expect(off.links).toEqual(sync.links);expect(sync.advice.length).toBeGreaterThan(0);expect(off.advice).toEqual([]);});
+  it("battle is deterministic and changes with the player's arrangement",()=>{const sides=[{base:"P01",units:[unit("B05"),unit("B03"),unit("N02")]},{base:"P04",units:[unit("F01"),unit("F06"),unit("N04")]}] as const;const a=battle(structuredClone(sides) as never,"E17"),b=battle(structuredClone(sides) as never,"E17");expect(a.events).toEqual(b.events);expect(a.events.some(e=>e.kind==="attack")).toBe(true);for(const u of a.units){expect(u.hp).toBeGreaterThanOrEqual(0);expect(u.shield).toBeGreaterThanOrEqual(0);}});
+  it("resolves a mixed sample across all fields without hidden event guard",()=>{for(let i=0;i<120;i++){const ids=Array.from({length:6},(_,j)=>CARDS[(i*17+j*7)%CARDS.length].id);const r=battle([{base:BASES[i%6].id,units:ids.slice(0,3).map((id,j)=>unit(id,8,j as 0|1|2))},{base:BASES[(i+3)%6].id,units:ids.slice(3).map((id,j)=>unit(id,8,j as 0|1|2))}],FIELDS[i%20].id);expect(r.abnormal).toBeUndefined();expect(r.events.length).toBeGreaterThan(0);expect(r.tick).toBeLessThanOrEqual(120);}});
+});

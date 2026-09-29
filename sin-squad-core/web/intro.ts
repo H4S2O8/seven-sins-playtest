@@ -390,8 +390,8 @@ export class Gate {
         <button class="primary big" data-go="campaign" autofocus>炼狱战役<small>${cp.saved ? `第 ${cp.saved.handNo} 手没打完 · ` : ""}${floor}</small></button>
         ${save ? `<button class="big" data-go="resume">继续自由牌桌<small>第 ${save.handNo} 手 · 你 ${save.stacks[HUMAN]} 筹码 · 对手${OPPONENTS[save.style].title}</small></button>` : ""}
         <button class="big" data-go="play">${save ? "开一张新的自由牌桌" : "自由牌桌"}<small>完整规则，随机牌池</small></button>
-        <button class="primary big numeric-mode-entry" data-go="numericPlay">七罪 · 暗流<small>九选三 · 明示指向 · 单场地替换</small></button>
-        ${this.hooks.numericSaved?.() ? `<button class="big" data-go="numericResume">继续暗流牌桌<small>恢复筹码、牌面和当前决定</small></button>` : ""}
+        <button class="primary big numeric-mode-entry" data-go="numericPlay">血 · 火 · 被遗忘之名<small>买三人 · 暗置布阵 · 卡片对撞</small></button>
+        ${this.hooks.numericSaved?.() ? `<button class="big" data-go="numericResume">继续新牌桌</button>` : ""}
         <div class="gate-row">
           <button data-go="help">规则</button>
           <button data-go="chars">人物图鉴</button>
@@ -440,15 +440,15 @@ export class Gate {
           <b>${o.title}</b>
           <q>${o.quote}</q>
           <p>${descriptions[k]}</p>
-          <span class="foe-level">数字模式 · ${k === "cautious" ? "谨慎" : k === "aggressive" ? "激进" : "混合诈唬"}</span>
+          <span class="foe-level">新战斗 · ${k === "cautious" ? "谨慎" : k === "aggressive" ? "激进" : "混合诈唬"}</span>
         </div>
       </div>`;
     }).join("");
     return `<div class="gate-panel numeric-mode-panel">
       <button class="gate-back" data-go="back" aria-label="返回">‹ 返回</button>
-      <h2>七宗罪-德州战棋</h2>
-      <p class="gate-sub">人物与数字隐藏，装备与技能指向公开。固定对位，赢更多位置即胜。场地始终只有一条。</p>
-      <p class="gate-sub numeric-mode-note">九选三允许同名人物；前三轮可改技能、拿装备、竞拍替换场地，之后锁定。人物旁可看简短输入输出分析。</p>
+      <h2>血、火与被遗忘之名</h2>
+      <p class="gate-sub">每轮竞拍两名公开人物的先选权，买齐三人后暗置布阵与技能。前中后各能普攻；近战后位出手更慢。</p>
+      <p class="gate-sub numeric-mode-note">三轮额外效果只保留一张场地。生命总额24自由分配，目标指固定位置；下注完成后揭示，卡片对撞自动战斗。</p>
       <div class="foe-list">${cards}</div>
     </div>`;
   }

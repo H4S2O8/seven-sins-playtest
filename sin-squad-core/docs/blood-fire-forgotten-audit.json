@@ -1,0 +1,239 @@
+{
+  "scope": "v2 static-design-audit; no combat execution or balance validation",
+  "cards": 30,
+  "factions": {
+    "B": 10,
+    "F": 10,
+    "N": 10
+  },
+  "one_skill_per_card": true,
+  "skill_types": {
+    "指向": 16,
+    "抉择": 5,
+    "开启": 5,
+    "变形": 4
+  },
+  "combat_types": {
+    "近战": 17,
+    "远程": 13
+  },
+  "allowed_output_interfaces": [
+    "D",
+    "H",
+    "S",
+    "A"
+  ],
+  "declared_card_interfaces": {
+    "B01": [
+      "D",
+      "H",
+      "S"
+    ],
+    "B02": [
+      "D",
+      "H"
+    ],
+    "B03": [
+      "H"
+    ],
+    "B04": [
+      "D",
+      "S"
+    ],
+    "B05": [
+      "A",
+      "D",
+      "S"
+    ],
+    "B06": [
+      "D"
+    ],
+    "B07": [
+      "H"
+    ],
+    "B08": [
+      "H"
+    ],
+    "B09": [
+      "D",
+      "H"
+    ],
+    "B10": [
+      "D",
+      "H"
+    ],
+    "F01": [
+      "D"
+    ],
+    "F02": [
+      "D",
+      "S"
+    ],
+    "F03": [
+      "D"
+    ],
+    "F04": [
+      "A",
+      "D"
+    ],
+    "F05": [
+      "D",
+      "S"
+    ],
+    "F06": [
+      "D",
+      "H"
+    ],
+    "F07": [
+      "D"
+    ],
+    "F08": [
+      "D",
+      "S"
+    ],
+    "F09": [
+      "D"
+    ],
+    "F10": [
+      "D"
+    ],
+    "N01": [
+      "A",
+      "D",
+      "H",
+      "S"
+    ],
+    "N02": [
+      "A"
+    ],
+    "N03": [
+      "D"
+    ],
+    "N04": [
+      "A",
+      "H",
+      "S"
+    ],
+    "N05": [
+      "A",
+      "S"
+    ],
+    "N06": [
+      "D",
+      "H"
+    ],
+    "N07": [
+      "A",
+      "S"
+    ],
+    "N08": [
+      "A",
+      "D",
+      "S"
+    ],
+    "N09": [
+      "D"
+    ],
+    "N10": [
+      "D",
+      "S"
+    ]
+  },
+  "base_field_and_reward_interface_declarations_checked": true,
+  "baseplates": 6,
+  "fields": 20,
+  "named_routes": 204,
+  "shared_achievement_rules": 29,
+  "all_catalogue_entries_referenced": true,
+  "legal_party_and_global_counts_in_declared_participants": true,
+  "same_participant_sets_requiring_distinct_mechanisms": {
+    "B02+B03": [
+      "009",
+      "203"
+    ],
+    "F08+N04": [
+      "025",
+      "053"
+    ],
+    "B04+F08": [
+      "026",
+      "091",
+      "185"
+    ],
+    "B06+P01": [
+      "036",
+      "184"
+    ],
+    "E08+F02": [
+      "164",
+      "190"
+    ]
+  },
+  "coverage": {
+    "B01": 14,
+    "B02": 19,
+    "B03": 17,
+    "B04": 11,
+    "B05": 10,
+    "B06": 12,
+    "B07": 12,
+    "B08": 3,
+    "B09": 9,
+    "B10": 12,
+    "E01": 3,
+    "E02": 3,
+    "E03": 3,
+    "E04": 3,
+    "E05": 4,
+    "E06": 2,
+    "E07": 1,
+    "E08": 8,
+    "E09": 2,
+    "E10": 1,
+    "E11": 9,
+    "E12": 5,
+    "E13": 2,
+    "E14": 4,
+    "E15": 3,
+    "E16": 1,
+    "E17": 3,
+    "E18": 2,
+    "E19": 4,
+    "E20": 1,
+    "F01": 15,
+    "F02": 8,
+    "F03": 7,
+    "F04": 7,
+    "F05": 19,
+    "F06": 21,
+    "F07": 8,
+    "F08": 17,
+    "F09": 9,
+    "F10": 7,
+    "N01": 10,
+    "N02": 13,
+    "N03": 7,
+    "N04": 14,
+    "N05": 6,
+    "N06": 7,
+    "N07": 10,
+    "N08": 8,
+    "N09": 6,
+    "N10": 12,
+    "P01": 9,
+    "P02": 8,
+    "P03": 2,
+    "P04": 7,
+    "P05": 8,
+    "P06": 10
+  },
+  "not_verified": [
+    "semantic four-interface closure",
+    "event reachability",
+    "timing consistency by execution",
+    "semantic independence of all routes",
+    "power balance",
+    "auction value",
+    "player enjoyment"
+  ]
+}
