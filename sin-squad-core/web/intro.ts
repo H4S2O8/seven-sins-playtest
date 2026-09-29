@@ -39,6 +39,10 @@ export interface GateHooks {
   save(): SaveInfo | null;
   /** 开一张新桌，返回开局信息（牌池、庄家等）。 */
   start(style: Style): Opening;
+  /** 开启新的单数值传统牌桌；由独立 NumericTable 驱动，旧牌桌状态不复用。 */
+  numericStart?(style: Style): void;
+  numericSaved?(): boolean;
+  numericResume?(): void;
   resume(): void;
   /** 打开牌桌那边的弹层：规则 / 人物图鉴 / 卡框 / 调试。 */
   sheet(kind: "help" | "chars" | "frames" | "debug"): void;
@@ -86,6 +90,7 @@ type Screen =
   | { kind: "cpool" }
   | { kind: "title" }
   | { kind: "opponent" }
+  | { kind: "numericOpponent" }
   | { kind: "pool"; open: Opening }
   | { kind: "toss"; open: Opening; landed: boolean }
   | { kind: "seat"; open: Opening };
@@ -130,7 +135,7 @@ export class Gate {
       if (el) this.go(el.dataset.go!, el.dataset.arg);
     });
     this.root.addEventListener("keydown", (ev) => {
-      if (ev.key === "Escape" && (this.screen?.kind === "opponent" || this.screen?.kind === "campaign")) return this.go("back");
+      if (ev.key === "Escape" && (this.screen?.kind === "opponent" || this.screen?.kind === "numericOpponent" || this.screen?.kind === "campaign")) return this.go("back");
       if (this.screen?.kind === "story") {
         if (ev.key === "Escape") return this.go("storySkip");
         if ((ev.target as HTMLElement).tagName === "BUTTON") return;
@@ -195,6 +200,8 @@ export class Gate {
     const s = this.screen;
     switch (what) {
       case "play": this.screen = { kind: "opponent" }; break;
+      case "numericResume": this.hide(); this.hooks.numericResume?.(); return;
+      case "numericPlay": this.screen = { kind: "numericOpponent" }; break;
       case "campaign": this.screen = { kind: "campaign" }; break;
       case "brief": {
         const no = Number(arg);
@@ -248,6 +255,13 @@ export class Gate {
         if (this.fast) { this.hide(); this.hooks.done(); return; }
         this.screen = { kind: "pool", open };
         break;
+      }
+      case "numericPick": {
+        const style = arg as Style;
+        if (!this.hooks.numericStart) return;
+        this.hide();
+        this.hooks.numericStart(style);
+        return;
       }
       case "toss":
         if (s?.kind === "pool") this.screen = { kind: "toss", open: s.open, landed: false };
@@ -354,6 +368,7 @@ export class Gate {
       }
       case "title": return this.titleView();
       case "opponent": return this.opponentView();
+      case "numericOpponent": return this.numericOpponentView();
       case "pool": return this.poolView(s.open);
       case "toss": return this.tossView(s.open, s.landed);
       case "seat": return this.seatView(s.open);
@@ -375,6 +390,8 @@ export class Gate {
         <button class="primary big" data-go="campaign" autofocus>炼狱战役<small>${cp.saved ? `第 ${cp.saved.handNo} 手没打完 · ` : ""}${floor}</small></button>
         ${save ? `<button class="big" data-go="resume">继续自由牌桌<small>第 ${save.handNo} 手 · 你 ${save.stacks[HUMAN]} 筹码 · 对手${OPPONENTS[save.style].title}</small></button>` : ""}
         <button class="big" data-go="play">${save ? "开一张新的自由牌桌" : "自由牌桌"}<small>完整规则，随机牌池</small></button>
+        <button class="primary big numeric-mode-entry" data-go="numericPlay">七罪 · 暗流<small>九选三 · 明示指向 · 单场地替换</small></button>
+        ${this.hooks.numericSaved?.() ? `<button class="big" data-go="numericResume">继续暗流牌桌<small>恢复筹码、牌面和当前决定</small></button>` : ""}
         <div class="gate-row">
           <button data-go="help">规则</button>
           <button data-go="chars">人物图鉴</button>
@@ -409,6 +426,30 @@ export class Gate {
       <label class="gate-check" data-go="fast" role="button" tabindex="0">
         <span class="box ${this.fast ? "on" : ""}"></span>快速开局：跳过牌池展示和定庄
       </label>
+    </div>`;
+  }
+
+  /** 新数字模式的入口。它使用同一套朋友版本立绘，但有独立的 NumericTable 和状态机。 */
+  private numericOpponentView() {
+    const descriptions: Record<Style,string> = { cautious:"更看重胜率与跟注成本，少诈唬，弱势时会弃牌。", aggressive:"下注更积极，愿意承担更多跟注风险。", bluff:"会混入弱势下注，用更大的注额施压；也可能弃牌。" };
+    const cards = (Object.keys(OPPONENTS) as Style[]).map((k) => {
+      const o = OPPONENTS[k];
+      return `<div class="foe-card numeric-foe-card" data-go="numericPick" data-arg="${k}" role="button" tabindex="0" data-tilt="12">
+        ${this.foeFace(k, "foe-face")}
+        <div class="foe-info">
+          <b>${o.title}</b>
+          <q>${o.quote}</q>
+          <p>${descriptions[k]}</p>
+          <span class="foe-level">数字模式 · ${k === "cautious" ? "谨慎" : k === "aggressive" ? "激进" : "混合诈唬"}</span>
+        </div>
+      </div>`;
+    }).join("");
+    return `<div class="gate-panel numeric-mode-panel">
+      <button class="gate-back" data-go="back" aria-label="返回">‹ 返回</button>
+      <h2>七宗罪-德州战棋</h2>
+      <p class="gate-sub">人物与数字隐藏，装备与技能指向公开。固定对位，赢更多位置即胜。场地始终只有一条。</p>
+      <p class="gate-sub numeric-mode-note">九选三允许同名人物；前三轮可改技能、拿装备、竞拍替换场地，之后锁定。人物旁可看简短输入输出分析。</p>
+      <div class="foe-list">${cards}</div>
     </div>`;
   }
 

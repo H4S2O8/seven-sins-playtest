@@ -1,0 +1,59 @@
+{
+  "definition": "1000 independent complete hands AI vs AI; additional 400 vs old baseline; fresh 100 chips each hand; fixed seeds; production six-sample policy; not human fun measurement",
+  "elapsedSeconds": 129.964,
+  "main": {
+    "hands": 1000,
+    "showdowns": 633,
+    "folds": 367,
+    "ties": 13,
+    "meanRounds": 3.528,
+    "meanPot": 91.317,
+    "actions": {
+      "keep": 6000,
+      "place": 2000,
+      "check": 4310,
+      "bet": 1709,
+      "fold": 367,
+      "raise": 1240,
+      "call": 1342,
+      "operate": 6468,
+      "equip": 3445,
+      "vote": 3864,
+      "reroll": 253,
+      "bid": 1764
+    },
+    "states": {
+      "drafting": 6000,
+      "positioning": 2000,
+      "checking": 4310,
+      "probing": 1610,
+      "folding": 367,
+      "value": 1154,
+      "defending": 1342,
+      "equipping": 9913,
+      "voting": 3864,
+      "rebuilding": 253,
+      "bidding": 1764,
+      "bluffing": 185
+    },
+    "rawHigherWins": 296,
+    "rawUnequalDecisiveShowdowns": 578,
+    "meanEquippedSlots": 1.628
+  },
+  "control": {
+    "hands": 400,
+    "newAIWins": 332,
+    "ties": 4,
+    "newAINetChips": 8777
+  },
+  "inference": {
+    "trainHands": 700,
+    "testHands": 300,
+    "slots": 1800,
+    "publicCompositionCorrect": 1143,
+    "plusGearCorrect": 1309,
+    "equippedSlots": 1034,
+    "equippedPriorCorrect": 648,
+    "equippedGearCorrect": 790
+  }
+}

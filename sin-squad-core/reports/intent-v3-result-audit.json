@@ -1,0 +1,216 @@
+{
+  "protocol": "intent-v3",
+  "method": "All 200 independent hands; high=8..10, low=3..5. Groups reflect naturally dealt samples and all final outcomes, not controlled balance trials. Terrain removal holds final choices fixed. Model fold diagnostics use revealed truth only after completion and cannot establish the ex-ante correct decision.",
+  "groups": {
+    "other": {
+      "n": 362,
+      "wins": 166,
+      "ties": 32,
+      "net": -466,
+      "showdowns": 230,
+      "showdownWins": 99,
+      "gear": 273,
+      "fieldChangedOutcome": 78
+    },
+    "threeHigh": {
+      "n": 18,
+      "wins": 15,
+      "ties": 0,
+      "net": -57,
+      "showdowns": 5,
+      "showdownWins": 2,
+      "gear": 4,
+      "fieldChangedOutcome": 0
+    },
+    "threeLow": {
+      "n": 20,
+      "wins": 2,
+      "ties": 2,
+      "net": -69,
+      "showdowns": 5,
+      "showdownWins": 2,
+      "gear": 19,
+      "fieldChangedOutcome": 4
+    }
+  },
+  "openingFields": {
+    "F1": {
+      "n": 24,
+      "folds": 11,
+      "showdowns": 13,
+      "decisive": 5
+    },
+    "F2": {
+      "n": 17,
+      "folds": 2,
+      "showdowns": 15,
+      "decisive": 5
+    },
+    "F5": {
+      "n": 26,
+      "folds": 9,
+      "showdowns": 17,
+      "decisive": 5
+    },
+    "F4": {
+      "n": 21,
+      "folds": 8,
+      "showdowns": 13,
+      "decisive": 4
+    },
+    "F8": {
+      "n": 29,
+      "folds": 8,
+      "showdowns": 21,
+      "decisive": 10
+    },
+    "F3": {
+      "n": 32,
+      "folds": 15,
+      "showdowns": 17,
+      "decisive": 4
+    },
+    "F6": {
+      "n": 24,
+      "folds": 13,
+      "showdowns": 11,
+      "decisive": 1
+    },
+    "F7": {
+      "n": 27,
+      "folds": 14,
+      "showdowns": 13,
+      "decisive": 7
+    }
+  },
+  "showdowns": 120,
+  "fieldDecisive": 41,
+  "fieldChangedLanes": 64,
+  "five": [
+    {
+      "id": 1,
+      "fold": false,
+      "winner": 1,
+      "seat": 0,
+      "net": -100,
+      "decisions": 22,
+      "powers": [
+        [
+          23,
+          6,
+          11
+        ],
+        [
+          16,
+          12,
+          22
+        ]
+      ],
+      "frozenShowdownWinner": 1,
+      "incorrectFoldAgainstFrozenPlan": false
+    },
+    {
+      "id": 2,
+      "fold": true,
+      "winner": 0,
+      "seat": 1,
+      "net": -22,
+      "decisions": 15,
+      "powers": [
+        [
+          12,
+          13,
+          12
+        ],
+        [
+          14,
+          4,
+          7
+        ]
+      ],
+      "frozenShowdownWinner": 0,
+      "incorrectFoldAgainstFrozenPlan": false
+    },
+    {
+      "id": 3,
+      "fold": true,
+      "winner": 0,
+      "seat": 0,
+      "net": 2,
+      "decisions": 8,
+      "powers": [
+        [
+          12,
+          15,
+          13
+        ],
+        [
+          12,
+          7,
+          9
+        ]
+      ],
+      "frozenShowdownWinner": 0,
+      "incorrectFoldAgainstFrozenPlan": false
+    },
+    {
+      "id": 4,
+      "fold": false,
+      "winner": 1,
+      "seat": 1,
+      "net": 2,
+      "decisions": 17,
+      "powers": [
+        [
+          8,
+          8,
+          9
+        ],
+        [
+          10,
+          13,
+          11
+        ]
+      ],
+      "frozenShowdownWinner": 1,
+      "incorrectFoldAgainstFrozenPlan": false
+    },
+    {
+      "id": 5,
+      "fold": true,
+      "winner": 1,
+      "seat": 0,
+      "net": -49,
+      "decisions": 19,
+      "powers": [
+        [
+          18,
+          15,
+          0
+        ],
+        [
+          12,
+          11,
+          10
+        ]
+      ],
+      "frozenShowdownWinner": 0,
+      "incorrectFoldAgainstFrozenPlan": true
+    }
+  ],
+  "model1WithoutSleep": {
+    "powers": [
+      [
+        21,
+        3,
+        12
+      ],
+      [
+        16,
+        12,
+        22
+      ]
+    ],
+    "winner": 1
+  }
+}

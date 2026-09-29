@@ -1,0 +1,5246 @@
+{
+  "protocol": "intent-v2",
+  "method": "First 40 round-three plan opportunities in the already completed 200 hands. Same own cards, search budget and public arena. Remove opponent equipment and intent evidence only from the blind belief model. Select before accessing final hidden truth. Opponent final plans are held fixed; this is a paired counterfactual showdown audit, not a new match win rate or proof of human enjoyment.",
+  "n": 40,
+  "changed": 34,
+  "better": 8,
+  "worse": 4,
+  "equal": 28,
+  "equityDelta": 0.0875,
+  "rows": [
+    {
+      "hand": 1,
+      "seat": 0,
+      "changed": true,
+      "before": {
+        "equity": 1,
+        "powers": [
+          [
+            9,
+            10,
+            9
+          ],
+          [
+            8,
+            7,
+            9
+          ]
+        ]
+      },
+      "after": {
+        "equity": 1,
+        "powers": [
+          [
+            9,
+            9,
+            9
+          ],
+          [
+            8,
+            7,
+            9
+          ]
+        ]
+      },
+      "delta": 0,
+      "reads": [
+        "敌1位·蓄能器：这里可能接自身、队友或装备转来的强化；主阶段截流可能扑空；最后仍会参与场地分配。",
+        "敌1位公开aim，我1位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌2位公开choice，其友1位、我1位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌3位公开aim，我2位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "技能结束后，己方当前最高力量位向最低位转移双方差值的一半，最多3；同值取左位。"
+      ],
+      "blind": [
+        {
+          "id": "GR4",
+          "raw": 8,
+          "gear": "G21",
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "ally",
+                "pos": 2
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "PR3",
+          "raw": 10,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 2
+              },
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 1
+          }
+        },
+        {
+          "id": "WR4",
+          "raw": 5,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 1
+              },
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ],
+      "informed": [
+        {
+          "id": "GR4",
+          "raw": 8,
+          "gear": "G21",
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "ally",
+                "pos": 1
+              }
+            ],
+            "mode": 1
+          }
+        },
+        {
+          "id": "PR3",
+          "raw": 10,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 2
+              },
+              {
+                "side": "enemy",
+                "pos": 2
+              }
+            ],
+            "mode": 1
+          }
+        },
+        {
+          "id": "WR4",
+          "raw": 5,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 1
+              },
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 1
+          }
+        }
+      ]
+    },
+    {
+      "hand": 1,
+      "seat": 1,
+      "changed": true,
+      "before": {
+        "equity": 0.5,
+        "powers": [
+          [
+            11,
+            5,
+            9
+          ],
+          [
+            10,
+            10,
+            9
+          ]
+        ]
+      },
+      "after": {
+        "equity": 0,
+        "powers": [
+          [
+            8,
+            7,
+            10
+          ],
+          [
+            10,
+            10,
+            9
+          ]
+        ]
+      },
+      "delta": -0.5,
+      "reads": [
+        "敌1位·余波罐：队伍可能用防护或支付技能代价供能；不能仅凭这个装备锁定具体角色。",
+        "敌1位公开choice，其友1位、其友2位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌2位公开choice，其友3位、我1位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌3位公开choice，其友2位、我1位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "技能结束后，己方当前最高力量位向最低位转移双方差值的一半，最多3；同值取左位。"
+      ],
+      "blind": [
+        {
+          "id": "GL1",
+          "raw": 5,
+          "gear": "G09",
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "WR4",
+          "raw": 10,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "EN3",
+          "raw": 10,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ],
+      "informed": [
+        {
+          "id": "GL1",
+          "raw": 5,
+          "gear": "G09",
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "WR4",
+          "raw": 10,
+          "gear": null,
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "EN3",
+          "raw": 10,
+          "gear": null,
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        }
+      ]
+    },
+    {
+      "hand": 3,
+      "seat": 0,
+      "changed": true,
+      "before": {
+        "equity": 0,
+        "powers": [
+          [
+            8,
+            8,
+            8
+          ],
+          [
+            2,
+            12,
+            12
+          ]
+        ]
+      },
+      "after": {
+        "equity": 0,
+        "powers": [
+          [
+            7,
+            6,
+            9
+          ],
+          [
+            2,
+            12,
+            12
+          ]
+        ]
+      },
+      "delta": 0,
+      "reads": [
+        "敌2位·蓄能器：这里可能接自身、队友或装备转来的强化；主阶段截流可能扑空；最后仍会参与场地分配。",
+        "敌3位·整流栅：大原数佩戴者支援较小数字更划算；也可能被迫装在不合适的位置，不能排除反例。",
+        "敌1位公开aim，其友3位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌2位公开aim，其友1位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。"
+      ],
+      "blind": [
+        {
+          "id": "PR3",
+          "raw": 8,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 2
+              },
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "LU3",
+          "raw": 7,
+          "gear": null,
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "LU2",
+          "raw": 9,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 1
+              },
+              {
+                "side": "ally",
+                "pos": 0
+              }
+            ],
+            "mode": 1
+          }
+        }
+      ],
+      "informed": [
+        {
+          "id": "PR3",
+          "raw": 8,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 1
+              },
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "LU3",
+          "raw": 7,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 2
+              },
+              {
+                "side": "ally",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "LU2",
+          "raw": 9,
+          "gear": null,
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        }
+      ]
+    },
+    {
+      "hand": 3,
+      "seat": 1,
+      "changed": false,
+      "before": {
+        "equity": 0.5,
+        "powers": [
+          [
+            2,
+            9,
+            12
+          ],
+          [
+            9,
+            9,
+            9
+          ]
+        ]
+      },
+      "after": {
+        "equity": 0.5,
+        "powers": [
+          [
+            2,
+            9,
+            12
+          ],
+          [
+            9,
+            9,
+            9
+          ]
+        ]
+      },
+      "delta": 0,
+      "reads": [
+        "敌1位公开choice，其友2位、我2位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。"
+      ],
+      "blind": [
+        {
+          "id": "GL4",
+          "raw": 5,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 2
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GR1",
+          "raw": 3,
+          "gear": "G09",
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "LU1",
+          "raw": 10,
+          "gear": "G23",
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        }
+      ],
+      "informed": [
+        {
+          "id": "GL4",
+          "raw": 5,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 2
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GR1",
+          "raw": 3,
+          "gear": "G09",
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "LU1",
+          "raw": 10,
+          "gear": "G23",
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        }
+      ]
+    },
+    {
+      "hand": 4,
+      "seat": 0,
+      "changed": false,
+      "before": {
+        "equity": 0,
+        "powers": [
+          [
+            7,
+            7,
+            9
+          ],
+          [
+            8,
+            8,
+            10
+          ]
+        ]
+      },
+      "after": {
+        "equity": 0,
+        "powers": [
+          [
+            7,
+            7,
+            9
+          ],
+          [
+            8,
+            8,
+            10
+          ]
+        ]
+      },
+      "delta": 0,
+      "reads": [
+        "敌1位·均压斗篷：这里收到力量后可能继续转给最低力量位；当前最高低会被前序技能改变，不由原数固定。",
+        "敌1位公开flip，无目标：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌2位公开flip，无目标：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌3位公开choice，其友2位、其友1位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "比较中位力量与两边平均值。差的一半、最多3点，由较强边转给低中位，或由高中位转给较弱边；向下取整，同值取左。"
+      ],
+      "blind": [
+        {
+          "id": "GR2",
+          "raw": 4,
+          "gear": "G21",
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "WR4",
+          "raw": 3,
+          "gear": "G09",
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GL4",
+          "raw": 6,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ],
+      "informed": [
+        {
+          "id": "GR2",
+          "raw": 4,
+          "gear": "G21",
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "WR4",
+          "raw": 3,
+          "gear": "G09",
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GL4",
+          "raw": 6,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ]
+    },
+    {
+      "hand": 4,
+      "seat": 1,
+      "changed": true,
+      "before": {
+        "equity": 1,
+        "powers": [
+          [
+            9,
+            10,
+            7
+          ],
+          [
+            7,
+            7,
+            9
+          ]
+        ]
+      },
+      "after": {
+        "equity": 1,
+        "powers": [
+          [
+            8,
+            8,
+            7
+          ],
+          [
+            7,
+            7,
+            9
+          ]
+        ]
+      },
+      "delta": 0,
+      "reads": [
+        "敌1位·余波罐：队伍可能用防护或支付技能代价供能；不能仅凭这个装备锁定具体角色。",
+        "敌2位·蓄能器：这里可能接自身、队友或装备转来的强化；主阶段截流可能扑空；最后仍会参与场地分配。",
+        "敌1位公开reinforce，无目标：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌2位公开choice，其友1位、我1位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌3位公开aim，其友1位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "比较中位力量与两边平均值。差的一半、最多3点，由较强边转给低中位，或由高中位转给较弱边；向下取整，同值取左。"
+      ],
+      "blind": [
+        {
+          "id": "SL2",
+          "raw": 6,
+          "gear": "G24",
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 1
+          }
+        },
+        {
+          "id": "EN2",
+          "raw": 6,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 1
+          }
+        },
+        {
+          "id": "GR4",
+          "raw": 3,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 2
+              },
+              {
+                "side": "ally",
+                "pos": 1
+              }
+            ],
+            "mode": 1
+          }
+        }
+      ],
+      "informed": [
+        {
+          "id": "SL2",
+          "raw": 6,
+          "gear": "G24",
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "EN2",
+          "raw": 6,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 1
+          }
+        },
+        {
+          "id": "GR4",
+          "raw": 3,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 1
+              },
+              {
+                "side": "ally",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ]
+    },
+    {
+      "hand": 5,
+      "seat": 0,
+      "changed": true,
+      "before": {
+        "equity": 0,
+        "powers": [
+          [
+            10,
+            10,
+            9
+          ],
+          [
+            9,
+            12,
+            11
+          ]
+        ]
+      },
+      "after": {
+        "equity": 0,
+        "powers": [
+          [
+            9,
+            10,
+            10
+          ],
+          [
+            9,
+            12,
+            11
+          ]
+        ]
+      },
+      "delta": 0,
+      "reads": [
+        "敌2位·蓄能器：这里可能接自身、队友或装备转来的强化；主阶段截流可能扑空；最后仍会参与场地分配。",
+        "敌1位公开choice，其友1位、其友2位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌2位公开aim，我1位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌3位公开reinforce，无目标：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "比较中位力量与两边平均值。差的一半、最多3点，由较强边转给低中位，或由高中位转给较弱边；向下取整，同值取左。",
+        "对位领先最多的位置向落后最多的位置转移力量，最多3；最多保留供体领先1点、把受援位补到领先1点。同值取左位。"
+      ],
+      "blind": [
+        {
+          "id": "GR4",
+          "raw": 8,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 2
+              },
+              {
+                "side": "ally",
+                "pos": 1
+              }
+            ],
+            "mode": 1
+          }
+        },
+        {
+          "id": "GR2",
+          "raw": 8,
+          "gear": "G14",
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "SL2",
+          "raw": 3,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 1
+          }
+        }
+      ],
+      "informed": [
+        {
+          "id": "GR4",
+          "raw": 8,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 1
+              },
+              {
+                "side": "ally",
+                "pos": 2
+              }
+            ],
+            "mode": 1
+          }
+        },
+        {
+          "id": "GR2",
+          "raw": 8,
+          "gear": "G14",
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "SL2",
+          "raw": 3,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 1
+          }
+        }
+      ]
+    },
+    {
+      "hand": 5,
+      "seat": 1,
+      "changed": true,
+      "before": {
+        "equity": 1,
+        "powers": [
+          [
+            9,
+            12,
+            11
+          ],
+          [
+            9,
+            10,
+            10
+          ]
+        ]
+      },
+      "after": {
+        "equity": 1,
+        "powers": [
+          [
+            7,
+            11,
+            14
+          ],
+          [
+            7,
+            10,
+            12
+          ]
+        ]
+      },
+      "delta": 0,
+      "reads": [
+        "敌2位·逆相片：这里可能欢迎第一笔敌方削弱；也可能主动替另一位置接伤。",
+        "敌1位公开choice，其友2位、其友3位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌2位公开reinforce，无目标：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌3位公开flip，无目标：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "比较中位力量与两边平均值。差的一半、最多3点，由较强边转给低中位，或由高中位转给较弱边；向下取整，同值取左。",
+        "对位领先最多的位置向落后最多的位置转移力量，最多3；最多保留供体领先1点、把受援位补到领先1点。同值取左位。"
+      ],
+      "blind": [
+        {
+          "id": "GR4",
+          "raw": 9,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "ally",
+                "pos": 1
+              }
+            ],
+            "mode": 1
+          }
+        },
+        {
+          "id": "GL1",
+          "raw": 7,
+          "gear": "G09",
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "SL1",
+          "raw": 6,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        }
+      ],
+      "informed": [
+        {
+          "id": "GR4",
+          "raw": 9,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "ally",
+                "pos": 2
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GL1",
+          "raw": 7,
+          "gear": "G09",
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "SL1",
+          "raw": 6,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        }
+      ]
+    },
+    {
+      "hand": 6,
+      "seat": 0,
+      "changed": false,
+      "before": {
+        "equity": 0,
+        "powers": [
+          [
+            15,
+            1,
+            6
+          ],
+          [
+            6,
+            9,
+            9
+          ]
+        ]
+      },
+      "after": {
+        "equity": 0,
+        "powers": [
+          [
+            15,
+            1,
+            6
+          ],
+          [
+            6,
+            9,
+            9
+          ]
+        ]
+      },
+      "delta": 0,
+      "reads": [
+        "敌1位公开reinforce，无目标：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌2位公开reinforce，无目标：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌3位公开choice，其友1位、我2位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。"
+      ],
+      "blind": [
+        {
+          "id": "LU1",
+          "raw": 8,
+          "gear": "G21",
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "WR2",
+          "raw": 3,
+          "gear": "G17",
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GR3",
+          "raw": 4,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        }
+      ],
+      "informed": [
+        {
+          "id": "LU1",
+          "raw": 8,
+          "gear": "G21",
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "WR2",
+          "raw": 3,
+          "gear": "G17",
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GR3",
+          "raw": 4,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        }
+      ]
+    },
+    {
+      "hand": 6,
+      "seat": 1,
+      "changed": true,
+      "before": {
+        "equity": 0,
+        "powers": [
+          [
+            6,
+            10,
+            6
+          ],
+          [
+            9,
+            1,
+            14
+          ]
+        ]
+      },
+      "after": {
+        "equity": 0,
+        "powers": [
+          [
+            7,
+            10,
+            8
+          ],
+          [
+            9,
+            1,
+            11
+          ]
+        ]
+      },
+      "delta": 0,
+      "reads": [
+        "敌1位·余波罐：队伍可能用防护或支付技能代价供能；不能仅凭这个装备锁定具体角色。",
+        "敌2位·超载环：这里可能放出前两笔较大强化；额外代价也可能让这里成为故意落后位。",
+        "敌2位公开aim，其友3位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌3位公开reinforce，无目标：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。"
+      ],
+      "blind": [
+        {
+          "id": "GR2",
+          "raw": 8,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "SL1",
+          "raw": 3,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "PR3",
+          "raw": 3,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "enemy",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ],
+      "informed": [
+        {
+          "id": "GR2",
+          "raw": 8,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "SL1",
+          "raw": 3,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "PR3",
+          "raw": 3,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "enemy",
+                "pos": 2
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ]
+    },
+    {
+      "hand": 7,
+      "seat": 0,
+      "changed": true,
+      "before": {
+        "equity": 1,
+        "powers": [
+          [
+            8,
+            9,
+            11
+          ],
+          [
+            12,
+            4,
+            3
+          ]
+        ]
+      },
+      "after": {
+        "equity": 1,
+        "powers": [
+          [
+            8,
+            9,
+            10
+          ],
+          [
+            12,
+            4,
+            3
+          ]
+        ]
+      },
+      "delta": 0,
+      "reads": [
+        "敌1位·超载环：这里可能放出前两笔较大强化；额外代价也可能让这里成为故意落后位。",
+        "敌2位·增幅线圈：这个位置可能是强化的发出者；也可能只放大一次吸取或收尾恢复。",
+        "敌1位公开choice，其友1位、其友2位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌2位公开reinforce，无目标：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌3位公开aim，我3位、其友1位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。"
+      ],
+      "blind": [
+        {
+          "id": "EN2",
+          "raw": 7,
+          "gear": "G17",
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 1
+          }
+        },
+        {
+          "id": "PR3",
+          "raw": 10,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "EN3",
+          "raw": 8,
+          "gear": null,
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        }
+      ],
+      "informed": [
+        {
+          "id": "EN2",
+          "raw": 7,
+          "gear": "G17",
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 1
+          }
+        },
+        {
+          "id": "PR3",
+          "raw": 10,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "EN3",
+          "raw": 8,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 2
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ]
+    },
+    {
+      "hand": 7,
+      "seat": 1,
+      "changed": true,
+      "before": {
+        "equity": 0,
+        "powers": [
+          [
+            10,
+            8,
+            2
+          ],
+          [
+            13,
+            6,
+            7
+          ]
+        ]
+      },
+      "after": {
+        "equity": 0,
+        "powers": [
+          [
+            15,
+            4,
+            3
+          ],
+          [
+            10,
+            6,
+            7
+          ]
+        ]
+      },
+      "delta": 0,
+      "reads": [
+        "敌1位·超载环：这里可能放出前两笔较大强化；额外代价也可能让这里成为故意落后位。",
+        "敌2位公开choice，其友1位、我2位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。"
+      ],
+      "blind": [
+        {
+          "id": "LU5",
+          "raw": 9,
+          "gear": "G17",
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GR3",
+          "raw": 8,
+          "gear": "G01",
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "LU3",
+          "raw": 3,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 1
+              },
+              {
+                "side": "ally",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ],
+      "informed": [
+        {
+          "id": "LU5",
+          "raw": 9,
+          "gear": "G17",
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GR3",
+          "raw": 8,
+          "gear": "G01",
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "LU3",
+          "raw": 3,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 0
+              },
+              {
+                "side": "ally",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ]
+    },
+    {
+      "hand": 8,
+      "seat": 0,
+      "changed": true,
+      "before": {
+        "equity": 0,
+        "powers": [
+          [
+            9,
+            11,
+            9
+          ],
+          [
+            10,
+            9,
+            12
+          ]
+        ]
+      },
+      "after": {
+        "equity": 1,
+        "powers": [
+          [
+            9,
+            11,
+            14
+          ],
+          [
+            10,
+            9,
+            10
+          ]
+        ]
+      },
+      "delta": 1,
+      "reads": [
+        "敌1位·一次护幕：这里不怕第一笔较重削弱；先用小笔消耗护幕会改变判断。",
+        "敌2位·摊伤网：佩戴者的受压会分到低原数队友；低数队友可能借实际受损反击。",
+        "敌1位公开reinforce，无目标：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌2位公开choice，其友2位、其友1位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌3位公开reinforce，无目标：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "对位领先最多的位置向落后最多的位置转移力量，最多3；最多保留供体领先1点、把受援位补到领先1点。同值取左位。"
+      ],
+      "blind": [
+        {
+          "id": "SL3",
+          "raw": 9,
+          "gear": null,
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GR2",
+          "raw": 10,
+          "gear": "G23",
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GL1",
+          "raw": 3,
+          "gear": "G12",
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ],
+      "informed": [
+        {
+          "id": "SL3",
+          "raw": 9,
+          "gear": null,
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GR2",
+          "raw": 10,
+          "gear": "G23",
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GL1",
+          "raw": 3,
+          "gear": "G12",
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 2
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ]
+    },
+    {
+      "hand": 8,
+      "seat": 1,
+      "changed": false,
+      "before": {
+        "equity": 0,
+        "powers": [
+          [
+            10,
+            9,
+            10
+          ],
+          [
+            9,
+            11,
+            14
+          ]
+        ]
+      },
+      "after": {
+        "equity": 0,
+        "powers": [
+          [
+            10,
+            9,
+            10
+          ],
+          [
+            9,
+            11,
+            14
+          ]
+        ]
+      },
+      "delta": 0,
+      "reads": [
+        "敌2位·整流栅：大原数佩戴者支援较小数字更划算；也可能被迫装在不合适的位置，不能排除反例。",
+        "敌3位·聚焦镜：首笔强化可能很大，之后输出缩水；首笔目标公开，但可能经过其他节点改道。",
+        "敌1位公开aim，其友2位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌2位公开reinforce，无目标：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌3位公开aim，我1位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "对位领先最多的位置向落后最多的位置转移力量，最多3；最多保留供体领先1点、把受援位补到领先1点。同值取左位。"
+      ],
+      "blind": [
+        {
+          "id": "GR2",
+          "raw": 9,
+          "gear": "G05",
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "SL4",
+          "raw": 8,
+          "gear": "G19",
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "SL1",
+          "raw": 7,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        }
+      ],
+      "informed": [
+        {
+          "id": "GR2",
+          "raw": 9,
+          "gear": "G05",
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "SL4",
+          "raw": 8,
+          "gear": "G19",
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "SL1",
+          "raw": 7,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        }
+      ]
+    },
+    {
+      "hand": 9,
+      "seat": 0,
+      "changed": true,
+      "before": {
+        "equity": 1,
+        "powers": [
+          [
+            12,
+            9,
+            4
+          ],
+          [
+            8,
+            8,
+            8
+          ]
+        ]
+      },
+      "after": {
+        "equity": 0.5,
+        "powers": [
+          [
+            9,
+            8,
+            6
+          ],
+          [
+            8,
+            8,
+            8
+          ]
+        ]
+      },
+      "delta": -0.5,
+      "reads": [
+        "敌2位·聚焦镜：首笔强化可能很大，之后输出缩水；首笔目标公开，但可能经过其他节点改道。",
+        "敌2位公开reinforce，无目标：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌3位公开aim，我2位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "每位把对位领先超过2点的部分送给右邻，最多3；末位绕回左位。按该场地开始时双方力量同时计算。",
+        "比较中位力量与两边平均值。差的一半、最多3点，由较强边转给低中位，或由高中位转给较弱边；向下取整，同值取左。"
+      ],
+      "blind": [
+        {
+          "id": "SL2",
+          "raw": 8,
+          "gear": "G12",
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 1
+          }
+        },
+        {
+          "id": "SL4",
+          "raw": 3,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "ally",
+                "pos": 2
+              }
+            ],
+            "mode": 1
+          }
+        },
+        {
+          "id": "GL5",
+          "raw": 7,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 1
+              },
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ],
+      "informed": [
+        {
+          "id": "SL2",
+          "raw": 8,
+          "gear": "G12",
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 1
+          }
+        },
+        {
+          "id": "SL4",
+          "raw": 3,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 1
+              },
+              {
+                "side": "ally",
+                "pos": 2
+              }
+            ],
+            "mode": 1
+          }
+        },
+        {
+          "id": "GL5",
+          "raw": 7,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 1
+              },
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ]
+    },
+    {
+      "hand": 9,
+      "seat": 1,
+      "changed": true,
+      "before": {
+        "equity": 0.5,
+        "powers": [
+          [
+            8,
+            8,
+            8
+          ],
+          [
+            9,
+            7,
+            8
+          ]
+        ]
+      },
+      "after": {
+        "equity": 1,
+        "powers": [
+          [
+            7,
+            8,
+            9
+          ],
+          [
+            8,
+            7,
+            8
+          ]
+        ]
+      },
+      "delta": 0.5,
+      "reads": [
+        "敌1位·聚焦镜：首笔强化可能很大，之后输出缩水；首笔目标公开，但可能经过其他节点改道。",
+        "敌1位公开flip，无目标：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌2位公开choice，其友1位、其友3位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌3位公开choice，其友2位、我1位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "每位把对位领先超过2点的部分送给右邻，最多3；末位绕回左位。按该场地开始时双方力量同时计算。",
+        "比较中位力量与两边平均值。差的一半、最多3点，由较强边转给低中位，或由高中位转给较弱边；向下取整，同值取左。"
+      ],
+      "blind": [
+        {
+          "id": "LU5",
+          "raw": 7,
+          "gear": null,
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "SL1",
+          "raw": 6,
+          "gear": "G12",
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "WR1",
+          "raw": 7,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ],
+      "informed": [
+        {
+          "id": "LU5",
+          "raw": 7,
+          "gear": null,
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "SL1",
+          "raw": 6,
+          "gear": "G12",
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "WR1",
+          "raw": 7,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ]
+    },
+    {
+      "hand": 11,
+      "seat": 0,
+      "changed": true,
+      "before": {
+        "equity": 0,
+        "powers": [
+          [
+            13,
+            6,
+            4
+          ],
+          [
+            4,
+            10,
+            10
+          ]
+        ]
+      },
+      "after": {
+        "equity": 0.5,
+        "powers": [
+          [
+            12,
+            7,
+            4
+          ],
+          [
+            7,
+            7,
+            10
+          ]
+        ]
+      },
+      "delta": 0.5,
+      "reads": [
+        "敌1位·缓释层：这里延后偿还第一笔削弱；延期不免伤，最后场地仍看实际偿还后的力量。",
+        "敌2位公开aim，其友3位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌3位公开aim，我2位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "每个对位落后位置向左邻转移落后差值，最多2，最左绕回最右；无法支付的部分不转移。"
+      ],
+      "blind": [
+        {
+          "id": "PR3",
+          "raw": 4,
+          "gear": "G19",
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 2
+              },
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 1
+          }
+        },
+        {
+          "id": "GR3",
+          "raw": 7,
+          "gear": "G08",
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GR3",
+          "raw": 7,
+          "gear": "G08",
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        }
+      ],
+      "informed": [
+        {
+          "id": "PR3",
+          "raw": 4,
+          "gear": "G19",
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 2
+              },
+              {
+                "side": "enemy",
+                "pos": 1
+              }
+            ],
+            "mode": 1
+          }
+        },
+        {
+          "id": "GR3",
+          "raw": 7,
+          "gear": "G08",
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GR3",
+          "raw": 7,
+          "gear": "G08",
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        }
+      ]
+    },
+    {
+      "hand": 11,
+      "seat": 1,
+      "changed": true,
+      "before": {
+        "equity": 1,
+        "powers": [
+          [
+            5,
+            9,
+            10
+          ],
+          [
+            13,
+            4,
+            6
+          ]
+        ]
+      },
+      "after": {
+        "equity": 0,
+        "powers": [
+          [
+            5,
+            11,
+            8
+          ],
+          [
+            11,
+            3,
+            10
+          ]
+        ]
+      },
+      "delta": -1,
+      "reads": [
+        "敌1位·摊伤网：佩戴者的受压会分到低原数队友；低数队友可能借实际受损反击。",
+        "敌2位·回声针：这里可能发出多笔强化，顺带养低数位；首要受益者与回声受益者可能不同。",
+        "敌3位·回声针：这里可能发出多笔强化，顺带养低数位；首要受益者与回声受益者可能不同。",
+        "敌1位公开choice，其友2位、我1位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌2位公开reinforce，无目标：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌3位公开reinforce，无目标：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "每个对位落后位置向左邻转移落后差值，最多2，最左绕回最右；无法支付的部分不转移。"
+      ],
+      "blind": [
+        {
+          "id": "LU2",
+          "raw": 9,
+          "gear": "G20",
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 1
+              },
+              {
+                "side": "ally",
+                "pos": 2
+              }
+            ],
+            "mode": 1
+          }
+        },
+        {
+          "id": "GL4",
+          "raw": 10,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "EN3",
+          "raw": 8,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 2
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ],
+      "informed": [
+        {
+          "id": "LU2",
+          "raw": 9,
+          "gear": "G20",
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GL4",
+          "raw": 10,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "EN3",
+          "raw": 8,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ]
+    },
+    {
+      "hand": 12,
+      "seat": 0,
+      "changed": true,
+      "before": {
+        "equity": 0,
+        "powers": [
+          [
+            8,
+            13,
+            1
+          ],
+          [
+            10,
+            12,
+            4
+          ]
+        ]
+      },
+      "after": {
+        "equity": 0,
+        "powers": [
+          [
+            9,
+            13,
+            1
+          ],
+          [
+            10,
+            12,
+            4
+          ]
+        ]
+      },
+      "delta": 0,
+      "reads": [],
+      "blind": [
+        {
+          "id": "EN3",
+          "raw": 9,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "SL1",
+          "raw": 5,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GL5",
+          "raw": 3,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 1
+              },
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ],
+      "informed": [
+        {
+          "id": "EN3",
+          "raw": 9,
+          "gear": null,
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "SL1",
+          "raw": 5,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GL5",
+          "raw": 3,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 1
+              },
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ]
+    },
+    {
+      "hand": 12,
+      "seat": 1,
+      "changed": true,
+      "before": {
+        "equity": 0,
+        "powers": [
+          [
+            8,
+            11,
+            6
+          ],
+          [
+            9,
+            13,
+            0
+          ]
+        ]
+      },
+      "after": {
+        "equity": 0,
+        "powers": [
+          [
+            6,
+            11,
+            11
+          ],
+          [
+            9,
+            13,
+            1
+          ]
+        ]
+      },
+      "delta": 0,
+      "reads": [
+        "敌2位公开reinforce，无目标：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌3位公开choice，其友2位、我1位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。"
+      ],
+      "blind": [
+        {
+          "id": "GR2",
+          "raw": 10,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GL5",
+          "raw": 9,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 2
+              },
+              {
+                "side": "enemy",
+                "pos": 2
+              }
+            ],
+            "mode": 1
+          }
+        },
+        {
+          "id": "WR3",
+          "raw": 4,
+          "gear": null,
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        }
+      ],
+      "informed": [
+        {
+          "id": "GR2",
+          "raw": 10,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GL5",
+          "raw": 9,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 2
+              },
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "WR3",
+          "raw": 4,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        }
+      ]
+    },
+    {
+      "hand": 13,
+      "seat": 0,
+      "changed": true,
+      "before": {
+        "equity": 1,
+        "powers": [
+          [
+            13,
+            10,
+            1
+          ],
+          [
+            8,
+            3,
+            3
+          ]
+        ]
+      },
+      "after": {
+        "equity": 1,
+        "powers": [
+          [
+            13,
+            10,
+            1
+          ],
+          [
+            8,
+            8,
+            1
+          ]
+        ]
+      },
+      "delta": 0,
+      "reads": [
+        "敌1位公开choice，其友1位、其友2位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "己方力量从左到右严格递增或递减时，中位获得两段相邻差中较小者，最多3；按技能结束后的力量判断。"
+      ],
+      "blind": [
+        {
+          "id": "EN1",
+          "raw": 8,
+          "gear": "G10",
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GL1",
+          "raw": 3,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "WR2",
+          "raw": 3,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ],
+      "informed": [
+        {
+          "id": "EN1",
+          "raw": 8,
+          "gear": "G10",
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GL1",
+          "raw": 3,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 2
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "WR2",
+          "raw": 3,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ]
+    },
+    {
+      "hand": 13,
+      "seat": 1,
+      "changed": true,
+      "before": {
+        "equity": 1,
+        "powers": [
+          [
+            10,
+            9,
+            0
+          ],
+          [
+            8,
+            7,
+            3
+          ]
+        ]
+      },
+      "after": {
+        "equity": 1,
+        "powers": [
+          [
+            10,
+            10,
+            0
+          ],
+          [
+            8,
+            7,
+            3
+          ]
+        ]
+      },
+      "delta": 0,
+      "reads": [
+        "敌1位·反震片：攻击这里会牵连攻击来源；它也可能等待护送过来的攻击。",
+        "敌2位公开aim，我3位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "己方力量从左到右严格递增或递减时，中位获得两段相邻差中较小者，最多3；按技能结束后的力量判断。"
+      ],
+      "blind": [
+        {
+          "id": "GR4",
+          "raw": 7,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "ally",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "LU5",
+          "raw": 3,
+          "gear": null,
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "EN3",
+          "raw": 3,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ],
+      "informed": [
+        {
+          "id": "GR4",
+          "raw": 7,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "ally",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "LU5",
+          "raw": 3,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "ally",
+                "pos": 2
+              }
+            ],
+            "mode": 1
+          }
+        },
+        {
+          "id": "EN3",
+          "raw": 3,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ]
+    },
+    {
+      "hand": 16,
+      "seat": 0,
+      "changed": true,
+      "before": {
+        "equity": 0,
+        "powers": [
+          [
+            11,
+            11,
+            6
+          ],
+          [
+            12,
+            10,
+            8
+          ]
+        ]
+      },
+      "after": {
+        "equity": 0,
+        "powers": [
+          [
+            9,
+            12,
+            7
+          ],
+          [
+            12,
+            10,
+            8
+          ]
+        ]
+      },
+      "delta": 0,
+      "reads": [
+        "敌1位公开choice，其友1位、其友2位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌3位公开choice，其友1位、我3位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "每位把对位领先超过2点的部分送给右邻，最多3；末位绕回左位。按该场地开始时双方力量同时计算。"
+      ],
+      "blind": [
+        {
+          "id": "GR2",
+          "raw": 8,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GR4",
+          "raw": 6,
+          "gear": "G13",
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "ally",
+                "pos": 2
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GL4",
+          "raw": 5,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ],
+      "informed": [
+        {
+          "id": "GR2",
+          "raw": 8,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GR4",
+          "raw": 6,
+          "gear": "G13",
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "ally",
+                "pos": 2
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GL4",
+          "raw": 5,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ]
+    },
+    {
+      "hand": 16,
+      "seat": 1,
+      "changed": true,
+      "before": {
+        "equity": 0.5,
+        "powers": [
+          [
+            11,
+            9,
+            10
+          ],
+          [
+            11,
+            10,
+            8
+          ]
+        ]
+      },
+      "after": {
+        "equity": 1,
+        "powers": [
+          [
+            12,
+            9,
+            11
+          ],
+          [
+            10,
+            8,
+            9
+          ]
+        ]
+      },
+      "delta": 0.5,
+      "reads": [
+        "敌2位·侧接导线：这里是向左绕行的接线点；箭头指向这里不代表最后力量留在这里。",
+        "敌1位公开reinforce，无目标：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌2位公开choice，其友3位、其友1位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌3位公开aim，其友1位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "每位把对位领先超过2点的部分送给右邻，最多3；末位绕回左位。按该场地开始时双方力量同时计算。"
+      ],
+      "blind": [
+        {
+          "id": "GR4",
+          "raw": 9,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "ally",
+                "pos": 2
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "LU5",
+          "raw": 8,
+          "gear": null,
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "PR3",
+          "raw": 7,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "enemy",
+                "pos": 2
+              }
+            ],
+            "mode": 1
+          }
+        }
+      ],
+      "informed": [
+        {
+          "id": "GR4",
+          "raw": 9,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "ally",
+                "pos": 2
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "LU5",
+          "raw": 8,
+          "gear": null,
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "PR3",
+          "raw": 7,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ]
+    },
+    {
+      "hand": 17,
+      "seat": 0,
+      "changed": true,
+      "before": {
+        "equity": 0,
+        "powers": [
+          [
+            10,
+            0,
+            11
+          ],
+          [
+            11,
+            12,
+            9
+          ]
+        ]
+      },
+      "after": {
+        "equity": 0,
+        "powers": [
+          [
+            10,
+            0,
+            12
+          ],
+          [
+            13,
+            12,
+            6
+          ]
+        ]
+      },
+      "delta": 0,
+      "reads": [
+        "敌1位公开aim，其友3位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌2位公开reinforce，无目标：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌3位公开aim，我1位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。"
+      ],
+      "blind": [
+        {
+          "id": "WR3",
+          "raw": 4,
+          "gear": "G22",
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GR2",
+          "raw": 3,
+          "gear": "G08",
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "LU4",
+          "raw": 7,
+          "gear": "G07",
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ],
+      "informed": [
+        {
+          "id": "WR3",
+          "raw": 4,
+          "gear": "G22",
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GR2",
+          "raw": 3,
+          "gear": "G08",
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "LU4",
+          "raw": 7,
+          "gear": "G07",
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "enemy",
+                "pos": 2
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ]
+    },
+    {
+      "hand": 17,
+      "seat": 1,
+      "changed": true,
+      "before": {
+        "equity": 1,
+        "powers": [
+          [
+            13,
+            9,
+            9
+          ],
+          [
+            12,
+            0,
+            9
+          ]
+        ]
+      },
+      "after": {
+        "equity": 1,
+        "powers": [
+          [
+            13,
+            12,
+            6
+          ],
+          [
+            10,
+            0,
+            12
+          ]
+        ]
+      },
+      "delta": 0,
+      "reads": [
+        "敌1位·献礼结：这里的强化会流向另一高原数位；原数高不代表最终强，可能只是转运目的地。",
+        "敌2位·回声针：这里可能发出多笔强化，顺带养低数位；首要受益者与回声受益者可能不同。",
+        "敌3位·回收刃：这里可能发出削弱并用实际命中回血；被格挡的部分不产生恢复。",
+        "敌1位公开reinforce，无目标：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌2位公开reinforce，无目标：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌3位公开choice，其友1位、我2位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。"
+      ],
+      "blind": [
+        {
+          "id": "GR1",
+          "raw": 8,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "SL1",
+          "raw": 9,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "EN1",
+          "raw": 10,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 2
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ],
+      "informed": [
+        {
+          "id": "GR1",
+          "raw": 8,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 2
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "SL1",
+          "raw": 9,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "EN1",
+          "raw": 10,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ]
+    },
+    {
+      "hand": 22,
+      "seat": 0,
+      "changed": false,
+      "before": {
+        "equity": 1,
+        "powers": [
+          [
+            10,
+            7,
+            9
+          ],
+          [
+            8,
+            6,
+            7
+          ]
+        ]
+      },
+      "after": {
+        "equity": 1,
+        "powers": [
+          [
+            10,
+            7,
+            9
+          ],
+          [
+            8,
+            6,
+            7
+          ]
+        ]
+      },
+      "delta": 0,
+      "reads": [
+        "敌2位·逆相片：这里可能欢迎第一笔敌方削弱；也可能主动替另一位置接伤。",
+        "敌1位公开choice，其友2位、我1位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌3位公开choice，其友1位、我1位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "每位把对位领先超过2点的部分送给右邻，最多3；末位绕回左位。按该场地开始时双方力量同时计算。",
+        "对位领先最多的位置向落后最多的位置转移力量，最多3；最多保留供体领先1点、把受援位补到领先1点。同值取左位。"
+      ],
+      "blind": [
+        {
+          "id": "LU5",
+          "raw": 10,
+          "gear": "G10",
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GL5",
+          "raw": 3,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 2
+              },
+              {
+                "side": "enemy",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "WR1",
+          "raw": 10,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ],
+      "informed": [
+        {
+          "id": "LU5",
+          "raw": 10,
+          "gear": "G10",
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GL5",
+          "raw": 3,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 2
+              },
+              {
+                "side": "enemy",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "WR1",
+          "raw": 10,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ]
+    },
+    {
+      "hand": 22,
+      "seat": 1,
+      "changed": true,
+      "before": {
+        "equity": 0,
+        "powers": [
+          [
+            6,
+            4,
+            9
+          ],
+          [
+            8,
+            6,
+            12
+          ]
+        ]
+      },
+      "after": {
+        "equity": 0,
+        "powers": [
+          [
+            8,
+            5,
+            9
+          ],
+          [
+            10,
+            8,
+            9
+          ]
+        ]
+      },
+      "delta": 0,
+      "reads": [
+        "敌1位·反震片：攻击这里会牵连攻击来源；它也可能等待护送过来的攻击。",
+        "敌2位公开choice，其友3位、我2位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌3位公开aim，我2位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "每位把对位领先超过2点的部分送给右邻，最多3；末位绕回左位。按该场地开始时双方力量同时计算。",
+        "对位领先最多的位置向落后最多的位置转移力量，最多3；最多保留供体领先1点、把受援位补到领先1点。同值取左位。"
+      ],
+      "blind": [
+        {
+          "id": "PR3",
+          "raw": 7,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 1
+              },
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 1
+          }
+        },
+        {
+          "id": "LU4",
+          "raw": 7,
+          "gear": "G14",
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "enemy",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GL5",
+          "raw": 7,
+          "gear": null,
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        }
+      ],
+      "informed": [
+        {
+          "id": "PR3",
+          "raw": 7,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 1
+              },
+              {
+                "side": "enemy",
+                "pos": 2
+              }
+            ],
+            "mode": 1
+          }
+        },
+        {
+          "id": "LU4",
+          "raw": 7,
+          "gear": "G14",
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GL5",
+          "raw": 7,
+          "gear": null,
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        }
+      ]
+    },
+    {
+      "hand": 23,
+      "seat": 0,
+      "changed": true,
+      "before": {
+        "equity": 1,
+        "powers": [
+          [
+            8,
+            7,
+            8
+          ],
+          [
+            8,
+            4,
+            7
+          ]
+        ]
+      },
+      "after": {
+        "equity": 1,
+        "powers": [
+          [
+            8,
+            7,
+            8
+          ],
+          [
+            8,
+            4,
+            7
+          ]
+        ]
+      },
+      "delta": 0,
+      "reads": [
+        "敌3位·余波罐：队伍可能用防护或支付技能代价供能；不能仅凭这个装备锁定具体角色。",
+        "敌1位公开reinforce，无目标：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌2位公开choice，其友2位、其友1位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "对位领先最多的位置向落后最多的位置转移力量，最多3；最多保留供体领先1点、把受援位补到领先1点。同值取左位。"
+      ],
+      "blind": [
+        {
+          "id": "GR1",
+          "raw": 7,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 2
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "WR1",
+          "raw": 5,
+          "gear": "G07",
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "PR3",
+          "raw": 3,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "enemy",
+                "pos": 1
+              }
+            ],
+            "mode": 1
+          }
+        }
+      ],
+      "informed": [
+        {
+          "id": "GR1",
+          "raw": 7,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 2
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "WR1",
+          "raw": 5,
+          "gear": "G07",
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "PR3",
+          "raw": 3,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "enemy",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ]
+    },
+    {
+      "hand": 23,
+      "seat": 1,
+      "changed": true,
+      "before": {
+        "equity": 0,
+        "powers": [
+          [
+            9,
+            5,
+            8
+          ],
+          [
+            10,
+            5,
+            8
+          ]
+        ]
+      },
+      "after": {
+        "equity": 0,
+        "powers": [
+          [
+            9,
+            7,
+            6
+          ],
+          [
+            9,
+            7,
+            7
+          ]
+        ]
+      },
+      "delta": 0,
+      "reads": [
+        "敌2位·回收刃：这里可能发出削弱并用实际命中回血；被格挡的部分不产生恢复。",
+        "敌1位公开aim，其友3位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌2位公开aim，我1位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌3位公开choice，其友1位、我3位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "对位领先最多的位置向落后最多的位置转移力量，最多3；最多保留供体领先1点、把受援位补到领先1点。同值取左位。"
+      ],
+      "blind": [
+        {
+          "id": "GR2",
+          "raw": 8,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GR4",
+          "raw": 5,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "ally",
+                "pos": 2
+              }
+            ],
+            "mode": 1
+          }
+        },
+        {
+          "id": "GL2",
+          "raw": 5,
+          "gear": "G21",
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        }
+      ],
+      "informed": [
+        {
+          "id": "GR2",
+          "raw": 8,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GR4",
+          "raw": 5,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 1
+              },
+              {
+                "side": "ally",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GL2",
+          "raw": 5,
+          "gear": "G21",
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        }
+      ]
+    },
+    {
+      "hand": 25,
+      "seat": 0,
+      "changed": true,
+      "before": {
+        "equity": 1,
+        "powers": [
+          [
+            4,
+            8,
+            6
+          ],
+          [
+            6,
+            7,
+            5
+          ]
+        ]
+      },
+      "after": {
+        "equity": 1,
+        "powers": [
+          [
+            7,
+            8,
+            3
+          ],
+          [
+            6,
+            11,
+            1
+          ]
+        ]
+      },
+      "delta": 0,
+      "reads": [
+        "敌1位公开aim，其友2位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌2位公开choice，其友1位、我1位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌3位公开aim，我1位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "每位把对位领先超过2点的部分送给右邻，最多3；末位绕回左位。按该场地开始时双方力量同时计算。"
+      ],
+      "blind": [
+        {
+          "id": "GR2",
+          "raw": 9,
+          "gear": "G10",
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "LU2",
+          "raw": 3,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 2
+              },
+              {
+                "side": "ally",
+                "pos": 0
+              }
+            ],
+            "mode": 1
+          }
+        },
+        {
+          "id": "WR1",
+          "raw": 3,
+          "gear": "G21",
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ],
+      "informed": [
+        {
+          "id": "GR2",
+          "raw": 9,
+          "gear": "G10",
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "LU2",
+          "raw": 3,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "ally",
+                "pos": 2
+              }
+            ],
+            "mode": 1
+          }
+        },
+        {
+          "id": "WR1",
+          "raw": 3,
+          "gear": "G21",
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 2
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ]
+    },
+    {
+      "hand": 25,
+      "seat": 1,
+      "changed": true,
+      "before": {
+        "equity": 0.5,
+        "powers": [
+          [
+            8,
+            8,
+            3
+          ],
+          [
+            9,
+            5,
+            3
+          ]
+        ]
+      },
+      "after": {
+        "equity": 0,
+        "powers": [
+          [
+            6,
+            11,
+            1
+          ],
+          [
+            7,
+            8,
+            3
+          ]
+        ]
+      },
+      "delta": -0.5,
+      "reads": [
+        "敌1位·反震片：攻击这里会牵连攻击来源；它也可能等待护送过来的攻击。",
+        "敌3位·余波罐：队伍可能用防护或支付技能代价供能；不能仅凭这个装备锁定具体角色。",
+        "敌1位公开reinforce，无目标：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌2位公开aim，其友2位、其友3位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌3位公开aim，我1位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "每位把对位领先超过2点的部分送给右邻，最多3；末位绕回左位。按该场地开始时双方力量同时计算。"
+      ],
+      "blind": [
+        {
+          "id": "GR1",
+          "raw": 7,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "PR3",
+          "raw": 5,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "enemy",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GL1",
+          "raw": 5,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ],
+      "informed": [
+        {
+          "id": "GR1",
+          "raw": 7,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "PR3",
+          "raw": 5,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 1
+          }
+        },
+        {
+          "id": "GL1",
+          "raw": 5,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ]
+    },
+    {
+      "hand": 27,
+      "seat": 0,
+      "changed": true,
+      "before": {
+        "equity": 0,
+        "powers": [
+          [
+            7,
+            3,
+            10
+          ],
+          [
+            12,
+            7,
+            11
+          ]
+        ]
+      },
+      "after": {
+        "equity": 1,
+        "powers": [
+          [
+            13,
+            4,
+            8
+          ],
+          [
+            11,
+            4,
+            8
+          ]
+        ]
+      },
+      "delta": 1,
+      "reads": [
+        "敌3位·超载环：这里可能放出前两笔较大强化；额外代价也可能让这里成为故意落后位。",
+        "敌1位公开choice，其友3位、我3位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌2位公开reinforce，无目标：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌3位公开choice，其友3位、其友1位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "每位把对位领先超过2点的部分送给右邻，最多3；末位绕回左位。按该场地开始时双方力量同时计算。",
+        "对位领先最多的位置向落后最多的位置转移力量，最多3；最多保留供体领先1点、把受援位补到领先1点。同值取左位。"
+      ],
+      "blind": [
+        {
+          "id": "SL2",
+          "raw": 4,
+          "gear": "G02",
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 1
+          }
+        },
+        {
+          "id": "WR2",
+          "raw": 4,
+          "gear": "G09",
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 2
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "LU3",
+          "raw": 8,
+          "gear": "G21",
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 2
+              },
+              {
+                "side": "ally",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ],
+      "informed": [
+        {
+          "id": "SL2",
+          "raw": 4,
+          "gear": "G02",
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 1
+          }
+        },
+        {
+          "id": "WR2",
+          "raw": 4,
+          "gear": "G09",
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "LU3",
+          "raw": 8,
+          "gear": "G21",
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 0
+              },
+              {
+                "side": "ally",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ]
+    },
+    {
+      "hand": 27,
+      "seat": 1,
+      "changed": true,
+      "before": {
+        "equity": 0,
+        "powers": [
+          [
+            11,
+            4,
+            8
+          ],
+          [
+            11,
+            6,
+            8
+          ]
+        ]
+      },
+      "after": {
+        "equity": 1,
+        "powers": [
+          [
+            15,
+            5,
+            8
+          ],
+          [
+            10,
+            3,
+            8
+          ]
+        ]
+      },
+      "delta": 1,
+      "reads": [
+        "敌1位·分流阀：这里可能先接大笔强化，再养低数队友；低数接收者不一定是最终争胜位。",
+        "敌2位·蓄能器：这里可能接自身、队友或装备转来的强化；主阶段截流可能扑空；最后仍会参与场地分配。",
+        "敌3位·余波罐：队伍可能用防护或支付技能代价供能；不能仅凭这个装备锁定具体角色。",
+        "敌1位公开flip，无目标：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌2位公开aim，其友3位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌3位公开aim，我1位、其友2位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "每位把对位领先超过2点的部分送给右邻，最多3；末位绕回左位。按该场地开始时双方力量同时计算。",
+        "对位领先最多的位置向落后最多的位置转移力量，最多3；最多保留供体领先1点、把受援位补到领先1点。同值取左位。"
+      ],
+      "blind": [
+        {
+          "id": "LU4",
+          "raw": 9,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 1
+              },
+              {
+                "side": "enemy",
+                "pos": 2
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GR2",
+          "raw": 4,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GR4",
+          "raw": 4,
+          "gear": "G17",
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "ally",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ],
+      "informed": [
+        {
+          "id": "LU4",
+          "raw": 9,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 1
+              },
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GR2",
+          "raw": 4,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GR4",
+          "raw": 4,
+          "gear": "G17",
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 2
+              },
+              {
+                "side": "ally",
+                "pos": 0
+              }
+            ],
+            "mode": 1
+          }
+        }
+      ]
+    },
+    {
+      "hand": 28,
+      "seat": 0,
+      "changed": true,
+      "before": {
+        "equity": 1,
+        "powers": [
+          [
+            9,
+            3,
+            13
+          ],
+          [
+            7,
+            12,
+            10
+          ]
+        ]
+      },
+      "after": {
+        "equity": 1,
+        "powers": [
+          [
+            9,
+            3,
+            13
+          ],
+          [
+            7,
+            12,
+            10
+          ]
+        ]
+      },
+      "delta": 0,
+      "reads": [
+        "敌1位·献礼结：这里的强化会流向另一高原数位；原数高不代表最终强，可能只是转运目的地。",
+        "敌1位公开aim，其友2位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。"
+      ],
+      "blind": [
+        {
+          "id": "GL4",
+          "raw": 8,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 2
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "WR2",
+          "raw": 3,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 2
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "LU3",
+          "raw": 8,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 0
+              },
+              {
+                "side": "ally",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ],
+      "informed": [
+        {
+          "id": "GL4",
+          "raw": 8,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 2
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "WR2",
+          "raw": 3,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 2
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "LU3",
+          "raw": 8,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 0
+              },
+              {
+                "side": "ally",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ]
+    },
+    {
+      "hand": 28,
+      "seat": 1,
+      "changed": false,
+      "before": {
+        "equity": 0.5,
+        "powers": [
+          [
+            9,
+            9,
+            10
+          ],
+          [
+            9,
+            3,
+            13
+          ]
+        ]
+      },
+      "after": {
+        "equity": 0.5,
+        "powers": [
+          [
+            9,
+            9,
+            10
+          ],
+          [
+            9,
+            3,
+            13
+          ]
+        ]
+      },
+      "delta": 0,
+      "reads": [
+        "敌1位公开aim，其友3位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌2位公开aim，其友3位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌3位公开aim，我1位、其友1位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。"
+      ],
+      "blind": [
+        {
+          "id": "GL3",
+          "raw": 9,
+          "gear": "G22",
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GR3",
+          "raw": 9,
+          "gear": null,
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "LU1",
+          "raw": 10,
+          "gear": null,
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        }
+      ],
+      "informed": [
+        {
+          "id": "GL3",
+          "raw": 9,
+          "gear": "G22",
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GR3",
+          "raw": 9,
+          "gear": null,
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "LU1",
+          "raw": 10,
+          "gear": null,
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        }
+      ]
+    },
+    {
+      "hand": 30,
+      "seat": 0,
+      "changed": true,
+      "before": {
+        "equity": 1,
+        "powers": [
+          [
+            9,
+            8,
+            10
+          ],
+          [
+            10,
+            5,
+            3
+          ]
+        ]
+      },
+      "after": {
+        "equity": 1,
+        "powers": [
+          [
+            9,
+            8,
+            10
+          ],
+          [
+            11,
+            5,
+            0
+          ]
+        ]
+      },
+      "delta": 0,
+      "reads": [
+        "敌1位·缓冲甲：这里能更便宜地承受敌方削弱；可能保护主力，也可能替队友接伤。",
+        "敌2位·整流栅：大原数佩戴者支援较小数字更划算；也可能被迫装在不合适的位置，不能排除反例。",
+        "敌1位公开reinforce，无目标：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌3位公开choice，其友1位、其友2位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "比较中位力量与两边平均值。差的一半、最多3点，由较强边转给低中位，或由高中位转给较弱边；向下取整，同值取左。"
+      ],
+      "blind": [
+        {
+          "id": "GR2",
+          "raw": 10,
+          "gear": "G23",
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "EN4",
+          "raw": 6,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 1
+          }
+        },
+        {
+          "id": "SL2",
+          "raw": 4,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 1
+          }
+        }
+      ],
+      "informed": [
+        {
+          "id": "GR2",
+          "raw": 10,
+          "gear": "G23",
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "EN4",
+          "raw": 6,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "enemy",
+                "pos": 2
+              }
+            ],
+            "mode": 1
+          }
+        },
+        {
+          "id": "SL2",
+          "raw": 4,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 1
+          }
+        }
+      ]
+    },
+    {
+      "hand": 30,
+      "seat": 1,
+      "changed": true,
+      "before": {
+        "equity": 0,
+        "powers": [
+          [
+            9,
+            5,
+            1
+          ],
+          [
+            9,
+            8,
+            10
+          ]
+        ]
+      },
+      "after": {
+        "equity": 0,
+        "powers": [
+          [
+            11,
+            5,
+            0
+          ],
+          [
+            9,
+            8,
+            10
+          ]
+        ]
+      },
+      "delta": 0,
+      "reads": [
+        "敌1位·整流栅：大原数佩戴者支援较小数字更划算；也可能被迫装在不合适的位置，不能排除反例。",
+        "敌1位公开reinforce，无目标：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌2位公开choice，其友3位、我2位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌3位公开flip，无目标：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "比较中位力量与两边平均值。差的一半、最多3点，由较强边转给低中位，或由高中位转给较弱边；向下取整，同值取左。"
+      ],
+      "blind": [
+        {
+          "id": "GR3",
+          "raw": 7,
+          "gear": "G04",
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "SL3",
+          "raw": 8,
+          "gear": "G23",
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "SL4",
+          "raw": 3,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "ally",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ],
+      "informed": [
+        {
+          "id": "GR3",
+          "raw": 7,
+          "gear": "G04",
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "SL3",
+          "raw": 8,
+          "gear": "G23",
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "SL4",
+          "raw": 3,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "ally",
+                "pos": 1
+              }
+            ],
+            "mode": 1
+          }
+        }
+      ]
+    },
+    {
+      "hand": 32,
+      "seat": 0,
+      "changed": true,
+      "before": {
+        "equity": 0,
+        "powers": [
+          [
+            8,
+            8,
+            8
+          ],
+          [
+            10,
+            9,
+            8
+          ]
+        ]
+      },
+      "after": {
+        "equity": 1,
+        "powers": [
+          [
+            9,
+            9,
+            8
+          ],
+          [
+            9,
+            8,
+            7
+          ]
+        ]
+      },
+      "delta": 1,
+      "reads": [
+        "敌1位·超载环：这里可能放出前两笔较大强化；额外代价也可能让这里成为故意落后位。",
+        "敌2位·折射棱镜：一条强化入口可能拆成两条支援线；一笔变多笔也可能触发更多截流。",
+        "敌1位公开choice，其友1位、其友2位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌2位公开aim，我2位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "技能结束后，己方当前最高力量位向最低位转移双方差值的一半，最多3；同值取左位。"
+      ],
+      "blind": [
+        {
+          "id": "SL1",
+          "raw": 5,
+          "gear": "G11",
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GR4",
+          "raw": 5,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 1
+              },
+              {
+                "side": "ally",
+                "pos": 2
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "LU3",
+          "raw": 8,
+          "gear": null,
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        }
+      ],
+      "informed": [
+        {
+          "id": "SL1",
+          "raw": 5,
+          "gear": "G11",
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GR4",
+          "raw": 5,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 1
+              },
+              {
+                "side": "ally",
+                "pos": 2
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "LU3",
+          "raw": 8,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 1
+              },
+              {
+                "side": "ally",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ]
+    },
+    {
+      "hand": 32,
+      "seat": 1,
+      "changed": true,
+      "before": {
+        "equity": 0,
+        "powers": [
+          [
+            9,
+            8,
+            7
+          ],
+          [
+            9,
+            9,
+            8
+          ]
+        ]
+      },
+      "after": {
+        "equity": 0.5,
+        "powers": [
+          [
+            7,
+            9,
+            9
+          ],
+          [
+            8,
+            9,
+            8
+          ]
+        ]
+      },
+      "delta": 0.5,
+      "reads": [
+        "敌1位·折射棱镜：一条强化入口可能拆成两条支援线；一笔变多笔也可能触发更多截流。",
+        "敌1位公开reinforce，无目标：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "敌2位公开choice，其友1位、其友3位：表示作用关系，不保证是增益或攻击；隐藏模式仍有分歧。",
+        "技能结束后，己方当前最高力量位向最低位转移双方差值的一半，最多3；同值取左位。"
+      ],
+      "blind": [
+        {
+          "id": "GR4",
+          "raw": 6,
+          "gear": "G17",
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "ally",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GL1",
+          "raw": 5,
+          "gear": "G11",
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "LU1",
+          "raw": 7,
+          "gear": null,
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        }
+      ],
+      "informed": [
+        {
+          "id": "GR4",
+          "raw": 6,
+          "gear": "G17",
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "ally",
+                "pos": 2
+              }
+            ],
+            "mode": 1
+          }
+        },
+        {
+          "id": "GL1",
+          "raw": 5,
+          "gear": "G11",
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "LU1",
+          "raw": 7,
+          "gear": null,
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        }
+      ]
+    }
+  ]
+}

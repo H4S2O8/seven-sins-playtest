@@ -1,0 +1,2000 @@
+[
+  {
+    "id": 1,
+    "modelSeat": 0,
+    "complete": true,
+    "result": {
+      "winner": null,
+      "fold": false,
+      "battle": {
+        "powers": [
+          [
+            5,
+            8,
+            9
+          ],
+          [
+            5,
+            8,
+            9
+          ]
+        ],
+        "winner": null,
+        "lanes": [
+          null,
+          null,
+          null
+        ],
+        "trace": [
+          {
+            "seat": 0,
+            "source": 0,
+            "targetSeat": 0,
+            "target": 0,
+            "amount": 1,
+            "kind": "cost",
+            "depth": 0,
+            "label": "GL4",
+            "phase": "main",
+            "origin": "skill",
+            "path": [],
+            "ticket": 1,
+            "proposed": 1,
+            "applied": 1,
+            "before": 4,
+            "after": 3,
+            "modifiers": []
+          },
+          {
+            "seat": 1,
+            "source": 0,
+            "targetSeat": 1,
+            "target": 0,
+            "amount": 2,
+            "kind": "cost",
+            "depth": 0,
+            "label": "GL3",
+            "phase": "main",
+            "origin": "skill",
+            "path": [],
+            "ticket": 2,
+            "proposed": 2,
+            "applied": 2,
+            "before": 8,
+            "after": 6,
+            "modifiers": []
+          },
+          {
+            "seat": 0,
+            "source": 1,
+            "targetSeat": 0,
+            "target": 1,
+            "amount": 2,
+            "kind": "cost",
+            "depth": 0,
+            "label": "GR4",
+            "phase": "main",
+            "origin": "skill",
+            "path": [],
+            "ticket": 3,
+            "proposed": 2,
+            "applied": 2,
+            "before": 7,
+            "after": 5,
+            "modifiers": []
+          },
+          {
+            "seat": 1,
+            "source": 1,
+            "targetSeat": 1,
+            "target": 1,
+            "amount": 1,
+            "kind": "cost",
+            "depth": 0,
+            "label": "PR3",
+            "phase": "main",
+            "origin": "skill",
+            "path": [],
+            "ticket": 4,
+            "proposed": 1,
+            "applied": 1,
+            "before": 5,
+            "after": 4,
+            "modifiers": []
+          },
+          {
+            "seat": 0,
+            "source": 1,
+            "targetSeat": 0,
+            "target": 1,
+            "amount": 1,
+            "kind": "cost",
+            "depth": 1,
+            "label": "G01",
+            "phase": "main",
+            "origin": "gear",
+            "path": [],
+            "ticket": 6,
+            "proposed": 1,
+            "applied": 1,
+            "before": 5,
+            "after": 4,
+            "modifiers": []
+          },
+          {
+            "seat": 0,
+            "source": 1,
+            "targetSeat": 0,
+            "target": 1,
+            "amount": 2,
+            "kind": "gain",
+            "depth": 0,
+            "label": "GR4",
+            "phase": "main",
+            "origin": "skill",
+            "path": [],
+            "ticket": 5,
+            "proposed": 2,
+            "applied": 2,
+            "before": 4,
+            "after": 6,
+            "modifiers": [
+              "G01:+2",
+              "reserve:2"
+            ]
+          },
+          {
+            "seat": 0,
+            "source": 1,
+            "targetSeat": 0,
+            "target": 2,
+            "amount": 2,
+            "kind": "gain",
+            "depth": 0,
+            "label": "GR4",
+            "phase": "main",
+            "origin": "skill",
+            "path": [],
+            "ticket": 7,
+            "proposed": 2,
+            "applied": 2,
+            "before": 8,
+            "after": 10,
+            "modifiers": []
+          },
+          {
+            "seat": 0,
+            "source": 1,
+            "targetSeat": 0,
+            "target": 1,
+            "amount": 2,
+            "kind": "gain",
+            "depth": 0,
+            "label": "GR4",
+            "phase": "tail",
+            "origin": "skill",
+            "path": [],
+            "ticket": 5,
+            "routed": true,
+            "proposed": 2,
+            "applied": 2,
+            "before": 6,
+            "after": 8,
+            "modifiers": []
+          },
+          {
+            "seat": 0,
+            "source": 1,
+            "targetSeat": 0,
+            "target": 1,
+            "amount": 1,
+            "kind": "gain",
+            "depth": 0,
+            "label": "reserve",
+            "phase": "tail",
+            "origin": "basic",
+            "path": [],
+            "ticket": 8,
+            "proposed": 1,
+            "applied": 1,
+            "before": 8,
+            "after": 9,
+            "modifiers": []
+          },
+          {
+            "seat": 0,
+            "source": 0,
+            "targetSeat": 0,
+            "target": 0,
+            "amount": 1,
+            "kind": "gain",
+            "depth": 0,
+            "label": "GL4",
+            "phase": "tail",
+            "origin": "skill",
+            "path": [],
+            "ticket": 9,
+            "proposed": 1,
+            "applied": 1,
+            "before": 3,
+            "after": 4,
+            "modifiers": []
+          },
+          {
+            "seat": 0,
+            "source": 0,
+            "targetSeat": 0,
+            "target": 1,
+            "amount": 1,
+            "kind": "gain",
+            "depth": 0,
+            "label": "GL4",
+            "phase": "tail",
+            "origin": "skill",
+            "path": [],
+            "ticket": 10,
+            "proposed": 1,
+            "applied": 1,
+            "before": 9,
+            "after": 10,
+            "modifiers": []
+          },
+          {
+            "seat": 1,
+            "source": 0,
+            "targetSeat": 1,
+            "target": 2,
+            "amount": 3,
+            "kind": "gain",
+            "depth": 0,
+            "label": "GL3",
+            "phase": "tail",
+            "origin": "skill",
+            "path": [],
+            "ticket": 11,
+            "proposed": 3,
+            "applied": 3,
+            "before": 6,
+            "after": 9,
+            "modifiers": []
+          },
+          {
+            "seat": 0,
+            "source": 1,
+            "targetSeat": 0,
+            "target": 1,
+            "amount": 1,
+            "kind": "cost",
+            "depth": 0,
+            "label": "GR4",
+            "phase": "tail",
+            "origin": "skill",
+            "path": [],
+            "ticket": 12,
+            "proposed": 1,
+            "applied": 1,
+            "before": 10,
+            "after": 9,
+            "modifiers": []
+          },
+          {
+            "seat": 0,
+            "source": 1,
+            "targetSeat": 0,
+            "target": 2,
+            "amount": 1,
+            "kind": "cost",
+            "depth": 0,
+            "label": "GR4",
+            "phase": "tail",
+            "origin": "skill",
+            "path": [],
+            "ticket": 13,
+            "proposed": 1,
+            "applied": 1,
+            "before": 10,
+            "after": 9,
+            "modifiers": []
+          },
+          {
+            "seat": 0,
+            "source": 1,
+            "targetSeat": 0,
+            "target": 1,
+            "amount": 3,
+            "kind": "gain",
+            "depth": 0,
+            "label": "GR4",
+            "phase": "tail",
+            "origin": "skill",
+            "path": [],
+            "ticket": 14,
+            "proposed": 3,
+            "applied": 3,
+            "before": 9,
+            "after": 12,
+            "modifiers": []
+          },
+          {
+            "seat": 1,
+            "source": 1,
+            "targetSeat": 1,
+            "target": 0,
+            "amount": 2,
+            "kind": "cost",
+            "depth": 0,
+            "label": "PR3",
+            "phase": "tail",
+            "origin": "skill",
+            "path": [],
+            "ticket": 15,
+            "proposed": 2,
+            "applied": 2,
+            "before": 6,
+            "after": 4,
+            "modifiers": []
+          },
+          {
+            "seat": 1,
+            "source": 1,
+            "targetSeat": 0,
+            "target": 1,
+            "amount": 3,
+            "kind": "loss",
+            "depth": 0,
+            "label": "PR3",
+            "phase": "tail",
+            "origin": "skill",
+            "path": [],
+            "ticket": 16,
+            "proposed": 3,
+            "applied": 3,
+            "before": 12,
+            "after": 9,
+            "modifiers": []
+          },
+          {
+            "seat": 1,
+            "source": 1,
+            "targetSeat": 1,
+            "target": 1,
+            "amount": 5,
+            "kind": "gain",
+            "depth": 0,
+            "label": "PR3",
+            "phase": "tail",
+            "origin": "skill",
+            "path": [],
+            "ticket": 17,
+            "proposed": 5,
+            "applied": 5,
+            "before": 4,
+            "after": 9,
+            "modifiers": []
+          },
+          {
+            "seat": 1,
+            "source": 1,
+            "targetSeat": 1,
+            "target": 1,
+            "amount": 2,
+            "kind": "cost",
+            "depth": 0,
+            "label": "PR3",
+            "phase": "tail",
+            "origin": "skill",
+            "path": [],
+            "ticket": 18,
+            "proposed": 2,
+            "applied": 2,
+            "before": 9,
+            "after": 7,
+            "modifiers": []
+          },
+          {
+            "seat": 1,
+            "source": 1,
+            "targetSeat": 1,
+            "target": 0,
+            "amount": 2,
+            "kind": "gain",
+            "depth": 0,
+            "label": "PR3",
+            "phase": "tail",
+            "origin": "skill",
+            "path": [],
+            "ticket": 19,
+            "proposed": 2,
+            "applied": 2,
+            "before": 4,
+            "after": 6,
+            "modifiers": []
+          },
+          {
+            "seat": 0,
+            "source": 0,
+            "targetSeat": 0,
+            "target": 0,
+            "amount": 1,
+            "kind": "gain",
+            "depth": 0,
+            "label": "F4",
+            "proposed": 1,
+            "applied": 1,
+            "before": 4,
+            "after": 5,
+            "modifiers": [
+              "场地：双方快照同时结算"
+            ]
+          },
+          {
+            "seat": 0,
+            "source": 1,
+            "targetSeat": 0,
+            "target": 1,
+            "amount": 1,
+            "kind": "cost",
+            "depth": 0,
+            "label": "F4",
+            "proposed": 1,
+            "applied": 1,
+            "before": 9,
+            "after": 8,
+            "modifiers": [
+              "场地：双方快照同时结算"
+            ]
+          },
+          {
+            "seat": 1,
+            "source": 0,
+            "targetSeat": 1,
+            "target": 0,
+            "amount": 1,
+            "kind": "cost",
+            "depth": 0,
+            "label": "F4",
+            "proposed": 1,
+            "applied": 1,
+            "before": 6,
+            "after": 5,
+            "modifiers": [
+              "场地：双方快照同时结算"
+            ]
+          },
+          {
+            "seat": 1,
+            "source": 1,
+            "targetSeat": 1,
+            "target": 1,
+            "amount": 1,
+            "kind": "gain",
+            "depth": 0,
+            "label": "F4",
+            "proposed": 1,
+            "applied": 1,
+            "before": 7,
+            "after": 8,
+            "modifiers": [
+              "场地：双方快照同时结算"
+            ]
+          }
+        ],
+        "interactions": [
+          "0:1:G01:+2,reserve:2"
+        ]
+      },
+      "payouts": [
+        2.5,
+        2.5
+      ]
+    },
+    "stacks": [
+      98.5,
+      99.5
+    ],
+    "fees": 2,
+    "modelDecisions": 18,
+    "modelBets": [
+      {
+        "round": 1,
+        "action": {
+          "type": "check"
+        },
+        "probability": 0.56,
+        "reason": "敌方左向右供能，中位抉择同时关联右友和我右；可能集中右路也可能复仇，不能仅按原数领先判定安全。"
+      },
+      {
+        "round": 2,
+        "action": {
+          "type": "check"
+        },
+        "probability": 0.53,
+        "reason": "敌中已从关联右友改为左友且指我中，压力转到我供体；侧翼增援也可能替对手补线，暂不加码。"
+      },
+      {
+        "round": 3,
+        "action": {
+          "type": "check"
+        },
+        "probability": 0.57,
+        "reason": "两个场地给分配留下回旋，敌中持续指我中说明中路风险尚在；没有足够证据大幅加注。"
+      },
+      {
+        "round": 4,
+        "action": {
+          "type": "check"
+        },
+        "probability": 0.55,
+        "reason": "锁定后中位受敌方抉择影响、两个场地双向改分配，只有轻微优势判断，不用弱置信下注。"
+      }
+    ],
+    "revealed": [
+      [
+        {
+          "id": "GL4",
+          "raw": 4,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GR4",
+          "raw": 6,
+          "gear": "G01",
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 1
+              },
+              {
+                "side": "ally",
+                "pos": 2
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "PR2",
+          "raw": 6,
+          "gear": null,
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        }
+      ],
+      [
+        {
+          "id": "GL3",
+          "raw": 8,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 2
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "PR3",
+          "raw": 3,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "enemy",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "LU2",
+          "raw": 5,
+          "gear": null,
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        }
+      ]
+    ]
+  },
+  {
+    "id": 2,
+    "modelSeat": 1,
+    "complete": true,
+    "result": {
+      "winner": 1,
+      "fold": false,
+      "battle": {
+        "powers": [
+          [
+            4,
+            14,
+            7
+          ],
+          [
+            7,
+            11,
+            8
+          ]
+        ],
+        "winner": 1,
+        "lanes": [
+          1,
+          0,
+          1
+        ],
+        "trace": [
+          {
+            "seat": 1,
+            "source": 0,
+            "targetSeat": 1,
+            "target": 0,
+            "amount": 2,
+            "kind": "cost",
+            "depth": 0,
+            "label": "GL3",
+            "phase": "main",
+            "origin": "skill",
+            "path": [],
+            "ticket": 1,
+            "proposed": 2,
+            "applied": 2,
+            "before": 9,
+            "after": 7,
+            "modifiers": []
+          },
+          {
+            "seat": 0,
+            "source": 1,
+            "targetSeat": 0,
+            "target": 1,
+            "amount": 2,
+            "kind": "cost",
+            "depth": 0,
+            "label": "GR4",
+            "phase": "main",
+            "origin": "skill",
+            "path": [],
+            "ticket": 2,
+            "proposed": 2,
+            "applied": 2,
+            "before": 7,
+            "after": 5,
+            "modifiers": []
+          },
+          {
+            "seat": 0,
+            "source": 2,
+            "targetSeat": 0,
+            "target": 2,
+            "amount": 2,
+            "kind": "cost",
+            "depth": 0,
+            "label": "GR2",
+            "phase": "main",
+            "origin": "skill",
+            "path": [],
+            "ticket": 3,
+            "proposed": 2,
+            "applied": 2,
+            "before": 9,
+            "after": 7,
+            "modifiers": []
+          },
+          {
+            "seat": 1,
+            "source": 2,
+            "targetSeat": 1,
+            "target": 0,
+            "amount": 1,
+            "kind": "cost",
+            "depth": 0,
+            "label": "GL2",
+            "phase": "main",
+            "origin": "skill",
+            "path": [],
+            "ticket": 4,
+            "proposed": 1,
+            "applied": 1,
+            "before": 7,
+            "after": 6,
+            "modifiers": []
+          },
+          {
+            "seat": 0,
+            "source": 1,
+            "targetSeat": 0,
+            "target": 1,
+            "amount": 2,
+            "kind": "gain",
+            "depth": 0,
+            "label": "GR4",
+            "phase": "main",
+            "origin": "skill",
+            "path": [],
+            "ticket": 5,
+            "proposed": 2,
+            "applied": 0,
+            "before": 5,
+            "after": 5,
+            "modifiers": [
+              "reserve:2"
+            ]
+          },
+          {
+            "seat": 0,
+            "source": 1,
+            "targetSeat": 0,
+            "target": 0,
+            "amount": 2,
+            "kind": "gain",
+            "depth": 0,
+            "label": "GR4",
+            "phase": "main",
+            "origin": "skill",
+            "path": [],
+            "ticket": 6,
+            "proposed": 2,
+            "applied": 2,
+            "before": 3,
+            "after": 5,
+            "modifiers": []
+          },
+          {
+            "seat": 0,
+            "source": 2,
+            "targetSeat": 0,
+            "target": 0,
+            "amount": 2,
+            "kind": "gain",
+            "depth": 0,
+            "label": "GR2",
+            "phase": "main",
+            "origin": "skill",
+            "path": [],
+            "ticket": 7,
+            "proposed": 2,
+            "applied": 2,
+            "before": 5,
+            "after": 7,
+            "modifiers": []
+          },
+          {
+            "seat": 0,
+            "source": 2,
+            "targetSeat": 0,
+            "target": 1,
+            "amount": 2,
+            "kind": "gain",
+            "depth": 0,
+            "label": "GR2",
+            "phase": "main",
+            "origin": "skill",
+            "path": [],
+            "ticket": 8,
+            "proposed": 2,
+            "applied": 2,
+            "before": 5,
+            "after": 7,
+            "modifiers": []
+          },
+          {
+            "seat": 1,
+            "source": 2,
+            "targetSeat": 1,
+            "target": 2,
+            "amount": 1,
+            "kind": "gain",
+            "depth": 0,
+            "label": "GL2",
+            "phase": "main",
+            "origin": "skill",
+            "path": [],
+            "ticket": 9,
+            "proposed": 1,
+            "applied": 1,
+            "before": 7,
+            "after": 8,
+            "modifiers": []
+          },
+          {
+            "seat": 0,
+            "source": 1,
+            "targetSeat": 0,
+            "target": 1,
+            "amount": 2,
+            "kind": "gain",
+            "depth": 0,
+            "label": "GR4",
+            "phase": "tail",
+            "origin": "skill",
+            "path": [],
+            "ticket": 5,
+            "routed": true,
+            "proposed": 2,
+            "applied": 2,
+            "before": 7,
+            "after": 9,
+            "modifiers": []
+          },
+          {
+            "seat": 0,
+            "source": 1,
+            "targetSeat": 0,
+            "target": 1,
+            "amount": 1,
+            "kind": "gain",
+            "depth": 0,
+            "label": "reserve",
+            "phase": "tail",
+            "origin": "basic",
+            "path": [],
+            "ticket": 10,
+            "proposed": 1,
+            "applied": 1,
+            "before": 9,
+            "after": 10,
+            "modifiers": []
+          },
+          {
+            "seat": 1,
+            "source": 0,
+            "targetSeat": 1,
+            "target": 1,
+            "amount": 3,
+            "kind": "gain",
+            "depth": 0,
+            "label": "GL3",
+            "phase": "tail",
+            "origin": "skill",
+            "path": [],
+            "ticket": 11,
+            "proposed": 3,
+            "applied": 6,
+            "before": 6,
+            "after": 12,
+            "modifiers": [
+              "G12"
+            ]
+          },
+          {
+            "seat": 0,
+            "source": 1,
+            "targetSeat": 0,
+            "target": 1,
+            "amount": 1,
+            "kind": "cost",
+            "depth": 0,
+            "label": "GR4",
+            "phase": "tail",
+            "origin": "skill",
+            "path": [],
+            "ticket": 12,
+            "proposed": 1,
+            "applied": 1,
+            "before": 10,
+            "after": 9,
+            "modifiers": []
+          },
+          {
+            "seat": 0,
+            "source": 1,
+            "targetSeat": 0,
+            "target": 0,
+            "amount": 2,
+            "kind": "cost",
+            "depth": 0,
+            "label": "GR4",
+            "phase": "tail",
+            "origin": "skill",
+            "path": [],
+            "ticket": 13,
+            "proposed": 2,
+            "applied": 2,
+            "before": 7,
+            "after": 5,
+            "modifiers": []
+          },
+          {
+            "seat": 0,
+            "source": 1,
+            "targetSeat": 0,
+            "target": 1,
+            "amount": 4,
+            "kind": "gain",
+            "depth": 0,
+            "label": "GR4",
+            "phase": "tail",
+            "origin": "skill",
+            "path": [],
+            "ticket": 14,
+            "proposed": 4,
+            "applied": 4,
+            "before": 9,
+            "after": 13,
+            "modifiers": []
+          },
+          {
+            "seat": 0,
+            "source": 0,
+            "targetSeat": 0,
+            "target": 0,
+            "amount": 1,
+            "kind": "cost",
+            "depth": 0,
+            "label": "F5",
+            "proposed": 1,
+            "applied": 1,
+            "before": 5,
+            "after": 4,
+            "modifiers": [
+              "场地：双方快照同时结算"
+            ]
+          },
+          {
+            "seat": 0,
+            "source": 1,
+            "targetSeat": 0,
+            "target": 1,
+            "amount": 1,
+            "kind": "gain",
+            "depth": 0,
+            "label": "F5",
+            "proposed": 1,
+            "applied": 1,
+            "before": 13,
+            "after": 14,
+            "modifiers": [
+              "场地：双方快照同时结算"
+            ]
+          },
+          {
+            "seat": 1,
+            "source": 0,
+            "targetSeat": 1,
+            "target": 0,
+            "amount": 1,
+            "kind": "gain",
+            "depth": 0,
+            "label": "F5",
+            "proposed": 1,
+            "applied": 1,
+            "before": 6,
+            "after": 7,
+            "modifiers": [
+              "场地：双方快照同时结算"
+            ]
+          },
+          {
+            "seat": 1,
+            "source": 1,
+            "targetSeat": 1,
+            "target": 1,
+            "amount": 1,
+            "kind": "cost",
+            "depth": 0,
+            "label": "F5",
+            "proposed": 1,
+            "applied": 1,
+            "before": 12,
+            "after": 11,
+            "modifiers": [
+              "场地：双方快照同时结算"
+            ]
+          }
+        ],
+        "interactions": [
+          "0:1:reserve:2",
+          "1:1:G12"
+        ]
+      },
+      "payouts": [
+        0,
+        12
+      ]
+    },
+    "stacks": [
+      93,
+      103
+    ],
+    "fees": 4,
+    "modelDecisions": 20,
+    "modelBets": [
+      {
+        "round": 1,
+        "action": {
+          "type": "check"
+        },
+        "probability": 0.5,
+        "reason": "敌左指我左，敌中双友抉择可能债权或延期，敌右自强；我孔雀标中可能抓不到增益，先不放大底池。"
+      },
+      {
+        "round": 1,
+        "action": {
+          "type": "call"
+        },
+        "probability": 0.45,
+        "reason": "敌方下注提示较强组合，估计降到45%，但跟2进入8底池仍可继续，下一窗口能重标孔雀。"
+      },
+      {
+        "round": 2,
+        "action": {
+          "type": "check"
+        },
+        "probability": 0.63,
+        "reason": "敌左改指我中，但我的大笔支援在收尾，主阶段截流会错过；若是直接削弱仍危险，保留判断分支。"
+      },
+      {
+        "round": 3,
+        "action": {
+          "type": "check"
+        },
+        "probability": 0.6,
+        "reason": "敌左再次指右，可能在保护自强右位；我中位延迟大增益稳但第二线不够确定，不加注。"
+      },
+      {
+        "round": 4,
+        "action": {
+          "type": "check"
+        },
+        "probability": 0.6,
+        "reason": "敌左关闭技能，中改双友目标到自身和左，可能重新收租争中；胜势接力对中路是否仍有余量不确定，不贸然加码。"
+      }
+    ],
+    "revealed": [
+      [
+        {
+          "id": "PR1",
+          "raw": 3,
+          "gear": null,
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GR4",
+          "raw": 7,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 1
+              },
+              {
+                "side": "ally",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GR2",
+          "raw": 7,
+          "gear": "G14",
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        }
+      ],
+      [
+        {
+          "id": "GL3",
+          "raw": 9,
+          "gear": "G12",
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "PR1",
+          "raw": 3,
+          "gear": null,
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GL2",
+          "raw": 7,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ]
+    ]
+  },
+  {
+    "id": 3,
+    "modelSeat": 0,
+    "complete": true,
+    "result": {
+      "winner": 1,
+      "fold": true,
+      "battle": null,
+      "payouts": [
+        0,
+        4
+      ]
+    },
+    "stacks": [
+      98,
+      102
+    ],
+    "fees": 0,
+    "modelDecisions": 4,
+    "modelBets": [
+      {
+        "round": 1,
+        "action": {
+          "type": "fold"
+        },
+        "probability": 0.18,
+        "reason": "敌左供右、右自强，中位抉择没有明显自强化，塞壬截中很可能落空；低低低对低高高，2筹码需25%权益而我估计不足。"
+      }
+    ],
+    "revealed": [
+      [
+        {
+          "id": "GL1",
+          "raw": 5,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GR4",
+          "raw": 4,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 1
+              },
+              {
+                "side": "ally",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "LU3",
+          "raw": 3,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 1
+              },
+              {
+                "side": "ally",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ],
+      [
+        {
+          "id": "GL4",
+          "raw": 9,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 2
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "EN4",
+          "raw": 8,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "enemy",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "SL1",
+          "raw": 4,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        }
+      ]
+    ]
+  },
+  {
+    "id": 4,
+    "modelSeat": 1,
+    "complete": true,
+    "result": {
+      "winner": 1,
+      "fold": true,
+      "battle": null,
+      "payouts": [
+        0,
+        4
+      ]
+    },
+    "stacks": [
+      98,
+      102
+    ],
+    "fees": 0,
+    "modelDecisions": 4,
+    "modelBets": [
+      {
+        "round": 1,
+        "action": {
+          "type": "raise",
+          "to": 2
+        },
+        "probability": 0.8,
+        "reason": "敌方三个技能全关，原数构成与差值桥不足以稳定打过我的左12中13，先小额价值下注。"
+      }
+    ],
+    "revealed": [
+      [
+        {
+          "id": "SL2",
+          "raw": 4,
+          "gear": null,
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "WR3",
+          "raw": 6,
+          "gear": null,
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GR1",
+          "raw": 9,
+          "gear": null,
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        }
+      ],
+      [
+        {
+          "id": "WR2",
+          "raw": 10,
+          "gear": null,
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "SL4",
+          "raw": 10,
+          "gear": null,
+          "plan": {
+            "on": false,
+            "targets": [],
+            "mode": 0
+          }
+        },
+        {
+          "id": "WR4",
+          "raw": 3,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              },
+              {
+                "side": "enemy",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ]
+    ]
+  },
+  {
+    "id": 5,
+    "modelSeat": 0,
+    "complete": true,
+    "result": {
+      "winner": 1,
+      "fold": false,
+      "battle": {
+        "powers": [
+          [
+            8,
+            7,
+            5
+          ],
+          [
+            5,
+            11,
+            9
+          ]
+        ],
+        "winner": 1,
+        "lanes": [
+          0,
+          1,
+          1
+        ],
+        "trace": [
+          {
+            "seat": 0,
+            "source": 0,
+            "targetSeat": 0,
+            "target": 0,
+            "amount": 2,
+            "kind": "cost",
+            "depth": 0,
+            "label": "WR2",
+            "phase": "main",
+            "origin": "skill",
+            "path": [],
+            "ticket": 1,
+            "proposed": 2,
+            "applied": 2,
+            "before": 8,
+            "after": 6,
+            "modifiers": []
+          },
+          {
+            "seat": 1,
+            "source": 0,
+            "targetSeat": 1,
+            "target": 0,
+            "amount": 1,
+            "kind": "cost",
+            "depth": 0,
+            "label": "GL4",
+            "phase": "main",
+            "origin": "skill",
+            "path": [],
+            "ticket": 2,
+            "proposed": 1,
+            "applied": 1,
+            "before": 6,
+            "after": 5,
+            "modifiers": []
+          },
+          {
+            "seat": 0,
+            "source": 1,
+            "targetSeat": 0,
+            "target": 1,
+            "amount": 2,
+            "kind": "cost",
+            "depth": 0,
+            "label": "GR4",
+            "phase": "main",
+            "origin": "skill",
+            "path": [],
+            "ticket": 3,
+            "proposed": 2,
+            "applied": 1,
+            "before": 5,
+            "after": 4,
+            "modifiers": []
+          },
+          {
+            "seat": 1,
+            "source": 1,
+            "targetSeat": 1,
+            "target": 1,
+            "amount": 1,
+            "kind": "cost",
+            "depth": 0,
+            "label": "EN1",
+            "phase": "main",
+            "origin": "skill",
+            "path": [],
+            "ticket": 4,
+            "proposed": 1,
+            "applied": 1,
+            "before": 8,
+            "after": 7,
+            "modifiers": []
+          },
+          {
+            "seat": 0,
+            "source": 2,
+            "targetSeat": 0,
+            "target": 2,
+            "amount": 1,
+            "kind": "cost",
+            "depth": 0,
+            "label": "PR2",
+            "phase": "main",
+            "origin": "skill",
+            "path": [],
+            "ticket": 5,
+            "proposed": 1,
+            "applied": 1,
+            "before": 4,
+            "after": 3,
+            "modifiers": []
+          },
+          {
+            "seat": 1,
+            "source": 2,
+            "targetSeat": 1,
+            "target": 0,
+            "amount": 1,
+            "kind": "cost",
+            "depth": 0,
+            "label": "GR3",
+            "phase": "main",
+            "origin": "skill",
+            "path": [],
+            "ticket": 6,
+            "proposed": 1,
+            "applied": 1,
+            "before": 5,
+            "after": 4,
+            "modifiers": []
+          },
+          {
+            "seat": 1,
+            "source": 2,
+            "targetSeat": 1,
+            "target": 1,
+            "amount": 1,
+            "kind": "cost",
+            "depth": 0,
+            "label": "GR3",
+            "phase": "main",
+            "origin": "skill",
+            "path": [],
+            "ticket": 7,
+            "proposed": 1,
+            "applied": 1,
+            "before": 7,
+            "after": 6,
+            "modifiers": []
+          },
+          {
+            "seat": 0,
+            "source": 0,
+            "targetSeat": 0,
+            "target": 0,
+            "amount": 1,
+            "kind": "cost",
+            "depth": 1,
+            "label": "G01",
+            "phase": "main",
+            "origin": "gear",
+            "path": [],
+            "ticket": 9,
+            "proposed": 1,
+            "applied": 1,
+            "before": 6,
+            "after": 5,
+            "modifiers": []
+          },
+          {
+            "seat": 1,
+            "source": 1,
+            "targetSeat": 1,
+            "target": 1,
+            "amount": 3,
+            "kind": "gain",
+            "depth": 1,
+            "label": "EN1",
+            "phase": "main",
+            "origin": "skill",
+            "path": [],
+            "ticket": 10,
+            "proposed": 3,
+            "applied": 3,
+            "before": 6,
+            "after": 9,
+            "modifiers": []
+          },
+          {
+            "seat": 0,
+            "source": 0,
+            "targetSeat": 0,
+            "target": 0,
+            "amount": 3,
+            "kind": "gain",
+            "depth": 1,
+            "label": "WR2",
+            "phase": "main",
+            "origin": "skill",
+            "path": [
+              "0:2:PR2"
+            ],
+            "ticket": 8,
+            "routed": true,
+            "proposed": 3,
+            "applied": 3,
+            "before": 5,
+            "after": 8,
+            "modifiers": []
+          },
+          {
+            "seat": 0,
+            "source": 0,
+            "targetSeat": 0,
+            "target": 2,
+            "amount": 4,
+            "kind": "gain",
+            "depth": 0,
+            "label": "WR2",
+            "phase": "main",
+            "origin": "skill",
+            "path": [
+              "0:2:PR2"
+            ],
+            "ticket": 8,
+            "proposed": 4,
+            "applied": 0,
+            "before": 3,
+            "after": 3,
+            "modifiers": [
+              "G01:+2",
+              "EN1:intercept",
+              "PR2:3"
+            ]
+          },
+          {
+            "seat": 0,
+            "source": 1,
+            "targetSeat": 0,
+            "target": 1,
+            "amount": 2,
+            "kind": "gain",
+            "depth": 0,
+            "label": "GR4",
+            "phase": "main",
+            "origin": "skill",
+            "path": [],
+            "ticket": 11,
+            "proposed": 2,
+            "applied": 0,
+            "before": 4,
+            "after": 4,
+            "modifiers": [
+              "reserve:2"
+            ]
+          },
+          {
+            "seat": 0,
+            "source": 1,
+            "targetSeat": 0,
+            "target": 2,
+            "amount": 2,
+            "kind": "gain",
+            "depth": 1,
+            "label": "GR4",
+            "phase": "main",
+            "origin": "skill",
+            "path": [
+              "0:2:PR2"
+            ],
+            "ticket": 12,
+            "routed": true,
+            "proposed": 2,
+            "applied": 2,
+            "before": 3,
+            "after": 5,
+            "modifiers": []
+          },
+          {
+            "seat": 0,
+            "source": 1,
+            "targetSeat": 0,
+            "target": 0,
+            "amount": 2,
+            "kind": "gain",
+            "depth": 0,
+            "label": "GR4",
+            "phase": "main",
+            "origin": "skill",
+            "path": [
+              "0:2:PR2"
+            ],
+            "ticket": 12,
+            "proposed": 2,
+            "applied": 0,
+            "before": 8,
+            "after": 8,
+            "modifiers": [
+              "PR2:2"
+            ]
+          },
+          {
+            "seat": 1,
+            "source": 2,
+            "targetSeat": 1,
+            "target": 2,
+            "amount": 1,
+            "kind": "cost",
+            "depth": 1,
+            "label": "G17",
+            "phase": "main",
+            "origin": "gear",
+            "path": [],
+            "ticket": 14,
+            "proposed": 1,
+            "applied": 1,
+            "before": 5,
+            "after": 4,
+            "modifiers": []
+          },
+          {
+            "seat": 1,
+            "source": 2,
+            "targetSeat": 1,
+            "target": 2,
+            "amount": 3,
+            "kind": "gain",
+            "depth": 0,
+            "label": "GR3",
+            "phase": "main",
+            "origin": "skill",
+            "path": [],
+            "ticket": 13,
+            "proposed": 3,
+            "applied": 5,
+            "before": 4,
+            "after": 9,
+            "modifiers": [
+              "G17:+2"
+            ]
+          },
+          {
+            "seat": 0,
+            "source": 1,
+            "targetSeat": 0,
+            "target": 1,
+            "amount": 2,
+            "kind": "gain",
+            "depth": 0,
+            "label": "GR4",
+            "phase": "tail",
+            "origin": "skill",
+            "path": [],
+            "ticket": 11,
+            "routed": true,
+            "proposed": 2,
+            "applied": 2,
+            "before": 4,
+            "after": 6,
+            "modifiers": []
+          },
+          {
+            "seat": 0,
+            "source": 1,
+            "targetSeat": 0,
+            "target": 1,
+            "amount": 1,
+            "kind": "gain",
+            "depth": 0,
+            "label": "reserve",
+            "phase": "tail",
+            "origin": "basic",
+            "path": [],
+            "ticket": 15,
+            "proposed": 1,
+            "applied": 1,
+            "before": 6,
+            "after": 7,
+            "modifiers": []
+          },
+          {
+            "seat": 1,
+            "source": 0,
+            "targetSeat": 1,
+            "target": 0,
+            "amount": 1,
+            "kind": "gain",
+            "depth": 0,
+            "label": "GL4",
+            "phase": "tail",
+            "origin": "skill",
+            "path": [],
+            "ticket": 16,
+            "proposed": 1,
+            "applied": 1,
+            "before": 4,
+            "after": 5,
+            "modifiers": []
+          },
+          {
+            "seat": 1,
+            "source": 0,
+            "targetSeat": 1,
+            "target": 1,
+            "amount": 2,
+            "kind": "gain",
+            "depth": 0,
+            "label": "GL4",
+            "phase": "tail",
+            "origin": "skill",
+            "path": [],
+            "ticket": 17,
+            "proposed": 2,
+            "applied": 2,
+            "before": 9,
+            "after": 11,
+            "modifiers": []
+          },
+          {
+            "seat": 0,
+            "source": 1,
+            "targetSeat": 0,
+            "target": 0,
+            "amount": 1,
+            "kind": "cost",
+            "depth": 0,
+            "label": "GR4",
+            "phase": "tail",
+            "origin": "skill",
+            "path": [],
+            "ticket": 18,
+            "proposed": 1,
+            "applied": 0,
+            "before": 8,
+            "after": 8,
+            "modifiers": []
+          }
+        ],
+        "interactions": [
+          "0:2:G01:+2,EN1:intercept,PR2:3",
+          "0:1:reserve:2",
+          "0:0:PR2:2",
+          "1:2:G17:+2"
+        ]
+      },
+      "payouts": [
+        0,
+        22
+      ]
+    },
+    "stacks": [
+      85,
+      109
+    ],
+    "fees": 6,
+    "modelDecisions": 22,
+    "modelBets": [
+      {
+        "round": 1,
+        "action": {
+          "type": "check"
+        },
+        "probability": 0.58,
+        "reason": "敌中指向我供能中位，可能截流；敌左送右且右自强，预计对手集中右线，我保左中但不能忽视中位被截。"
+      },
+      {
+        "round": 2,
+        "action": {
+          "type": "call"
+        },
+        "probability": 0.42,
+        "reason": "敌方带超载的右路继续集中，敌中改指我左，可能切掉贷款回流并伤害左线；仍高于2/9的跟注门槛。"
+      },
+      {
+        "round": 3,
+        "action": {
+          "type": "check"
+        },
+        "probability": 0.56,
+        "reason": "交换收款重组后估计两路更均衡，敌中仍指左且敌右超载；第二线边际小，暂不加注。"
+      },
+      {
+        "round": 4,
+        "action": {
+          "type": "raise",
+          "to": 4
+        },
+        "probability": 0.72,
+        "reason": "敌中改指我右接线点；若为截流，右位交换先转走增益可能使它落空。敌左也从供右改供中，右路压力降低但中位更强；小额价值下注，保留对隐藏直接攻击的风险。"
+      },
+      {
+        "round": 5,
+        "action": {
+          "type": "check"
+        },
+        "probability": 0.68,
+        "reason": "对方跟注表明它也认为能争中路，降低置信；配置已锁定且没有新信息，停止连续加注，接受摊牌。"
+      }
+    ],
+    "revealed": [
+      [
+        {
+          "id": "WR2",
+          "raw": 8,
+          "gear": "G01",
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 2
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GR4",
+          "raw": 3,
+          "gear": "G16",
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 1
+              },
+              {
+                "side": "ally",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "PR2",
+          "raw": 3,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 0
+              }
+            ],
+            "mode": 0
+          }
+        }
+      ],
+      [
+        {
+          "id": "GL4",
+          "raw": 6,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "ally",
+                "pos": 1
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "EN1",
+          "raw": 6,
+          "gear": null,
+          "plan": {
+            "on": true,
+            "targets": [
+              {
+                "side": "enemy",
+                "pos": 2
+              }
+            ],
+            "mode": 0
+          }
+        },
+        {
+          "id": "GR3",
+          "raw": 3,
+          "gear": "G17",
+          "plan": {
+            "on": true,
+            "targets": [],
+            "mode": 0
+          }
+        }
+      ]
+    ]
+  }
+]

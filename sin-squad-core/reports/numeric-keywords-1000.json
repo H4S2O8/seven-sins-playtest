@@ -1,0 +1,266 @@
+{
+  "definition": "1000 independent complete hands AI vs AI; additional 400 vs old baseline; fresh 100 chips each hand; fixed seeds; production six-sample policy; not human fun measurement",
+  "elapsedSeconds": 609.663,
+  "main": {
+    "hands": 1000,
+    "showdowns": 644,
+    "folds": 356,
+    "ties": 9,
+    "meanRounds": 3.622,
+    "meanPot": 91.27,
+    "actions": {
+      "keep": 6000,
+      "place": 2000,
+      "check": 4550,
+      "bet": 1656,
+      "fold": 356,
+      "call": 1300,
+      "operate": 6487,
+      "equip": 3856,
+      "vote": 3846,
+      "bid": 1618,
+      "raise": 1323,
+      "reroll": 243
+    },
+    "states": {
+      "drafting": 6000,
+      "positioning": 2000,
+      "checking": 4550,
+      "probing": 1555,
+      "folding": 356,
+      "defending": 1300,
+      "equipping": 10343,
+      "voting": 3846,
+      "bidding": 1618,
+      "value": 1252,
+      "rebuilding": 243,
+      "bluffing": 172
+    },
+    "rawHigherWins": 318,
+    "rawUnequalDecisiveShowdowns": 591,
+    "meanEquippedSlots": 1.766
+  },
+  "control": {
+    "hands": 400,
+    "newAIWins": 314,
+    "ties": 2,
+    "newAINetChips": 7468
+  },
+  "inference": {
+    "trainHands": 700,
+    "testHands": 300,
+    "slots": 1800,
+    "publicCompositionCorrect": 1143,
+    "plusGearCorrect": 1253,
+    "equippedSlots": 1146,
+    "equippedPriorCorrect": 724,
+    "equippedGearCorrect": 830
+  },
+  "content": {
+    "characters": 29,
+    "keywordCharacters": 16,
+    "doubleKeywordCharacters": 3,
+    "equipment": 24,
+    "keywordEquipment": 13,
+    "keywordTypes": 11
+  },
+  "keywords": {
+    "ward": {
+      "name": "护盾",
+      "showdownsWithTrigger": 76
+    },
+    "guard": {
+      "name": "护送",
+      "showdownsWithTrigger": 16
+    },
+    "intercept": {
+      "name": "截流",
+      "showdownsWithTrigger": 377
+    },
+    "legacy": {
+      "name": "遗赠",
+      "showdownsWithTrigger": 112
+    },
+    "echo": {
+      "name": "共鸣",
+      "showdownsWithTrigger": 209
+    },
+    "reserve": {
+      "name": "蓄能",
+      "showdownsWithTrigger": 356
+    },
+    "rage": {
+      "name": "激怒",
+      "showdownsWithTrigger": 66
+    },
+    "pursuit": {
+      "name": "追猎",
+      "showdownsWithTrigger": 193
+    },
+    "inspire": {
+      "name": "激励",
+      "showdownsWithTrigger": 487
+    },
+    "command": {
+      "name": "统御",
+      "showdownsWithTrigger": 177
+    },
+    "link": {
+      "name": "结盟",
+      "showdownsWithTrigger": 232
+    }
+  },
+  "duplicateLineups": 257,
+  "characterInference": {
+    "slots": 1800,
+    "priorCorrect": 159,
+    "gearCorrect": 183
+  },
+  "composition": [
+    {
+      "id": "GR2",
+      "name": "赎罪券商",
+      "selected": 531
+    },
+    {
+      "id": "SL4",
+      "name": "守夜人",
+      "selected": 486
+    },
+    {
+      "id": "PR3",
+      "name": "僭王",
+      "selected": 331
+    },
+    {
+      "id": "SL1",
+      "name": "冬眠熊",
+      "selected": 309
+    },
+    {
+      "id": "EN4",
+      "name": "影子",
+      "selected": 291
+    },
+    {
+      "id": "GL5",
+      "name": "大野狼",
+      "selected": 263
+    },
+    {
+      "id": "GL3",
+      "name": "食腐鸦",
+      "selected": 261
+    },
+    {
+      "id": "LU5",
+      "name": "双子",
+      "selected": 260
+    },
+    {
+      "id": "EN1",
+      "name": "密探",
+      "selected": 252
+    },
+    {
+      "id": "LU4",
+      "name": "交际花",
+      "selected": 250
+    },
+    {
+      "id": "LU1",
+      "name": "痴情骑士",
+      "selected": 239
+    },
+    {
+      "id": "GL1",
+      "name": "放血师",
+      "selected": 220
+    },
+    {
+      "id": "GR1",
+      "name": "豪商",
+      "selected": 207
+    },
+    {
+      "id": "LU3",
+      "name": "塞壬",
+      "selected": 200
+    },
+    {
+      "id": "GL2",
+      "name": "饕餮",
+      "selected": 189
+    },
+    {
+      "id": "LU2",
+      "name": "牵线人",
+      "selected": 183
+    },
+    {
+      "id": "EN2",
+      "name": "镜中人",
+      "selected": 182
+    },
+    {
+      "id": "SL2",
+      "name": "沉眠巨像",
+      "selected": 177
+    },
+    {
+      "id": "WR2",
+      "name": "狂战士",
+      "selected": 158
+    },
+    {
+      "id": "PR2",
+      "name": "无瑕刺客",
+      "selected": 146
+    },
+    {
+      "id": "WR4",
+      "name": "攻城锤手",
+      "selected": 143
+    },
+    {
+      "id": "SL3",
+      "name": "隐修士",
+      "selected": 138
+    },
+    {
+      "id": "PR1",
+      "name": "孔雀",
+      "selected": 122
+    },
+    {
+      "id": "WR1",
+      "name": "小红帽",
+      "selected": 108
+    },
+    {
+      "id": "GR3",
+      "name": "收藏家",
+      "selected": 93
+    },
+    {
+      "id": "EN3",
+      "name": "扒手",
+      "selected": 72
+    },
+    {
+      "id": "WR3",
+      "name": "清算者",
+      "selected": 69
+    },
+    {
+      "id": "GR4",
+      "name": "金库守卫",
+      "selected": 60
+    },
+    {
+      "id": "GL4",
+      "name": "噬铁软泥",
+      "selected": 60
+    }
+  ]
+}

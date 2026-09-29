@@ -23,6 +23,9 @@ const git = (args) => execSync(`git ${args}`, { cwd: root, env: { ...process.env
 let buildId = "本地";
 try { buildId = `${git("log -1 --format=%cd --date=format-local:%m-%d")} · ${git("rev-parse --short=7 HEAD")}`; } catch { /* 不在 git 仓库里 */ }
 
+const workerResult = await build({entryPoints:[join(web, "intent-worker.ts")],bundle:true,format:"esm",target:"es2020",minify:true,write:false});
+const worker = workerResult.outputFiles[0].contents;
+const workerName = `intent-worker-${createHash("sha256").update(worker).digest("hex").slice(0,10)}.js`;
 const result = await build({
   entryPoints: [join(web, "main.ts")],
   bundle: true,
@@ -32,14 +35,15 @@ const result = await build({
   charset: "utf8",
   legalComments: "none",
   write: false,
-  define: { __ART_IDS__: JSON.stringify(artIds), __GAME_VERSION__: JSON.stringify(gameVersion), __BUILD__: JSON.stringify(buildId) },
+  define: { __ART_IDS__: JSON.stringify(artIds), __GAME_VERSION__: JSON.stringify(gameVersion), __BUILD__: JSON.stringify(buildId), __INTENT_WORKER__: JSON.stringify(workerName) },
 });
 const js = result.outputFiles[0].contents;
-const css = await readFile(join(web, "style.css"));
-const version = createHash("sha256").update(js).update(css).digest("hex").slice(0, 10);
+const css = Buffer.concat([await readFile(join(web, "style.css")), Buffer.from('\n'), await readFile(join(web, "numeric.css")), Buffer.from('\n'), await readFile(join(web, "intent.css"))]);
+const version = createHash("sha256").update(js).update(css).update(worker).digest("hex").slice(0, 10);
 const html = (await readFile(join(web, "index.html"), "utf8")).replaceAll("__VERSION__", version).replaceAll("__GAME_VERSION__", gameVersion);
 
 await writeFile(join(out, "app.js"), js);
+await writeFile(join(out, workerName), worker);
 await writeFile(join(out, "style.css"), css);
 await writeFile(join(out, "index.html"), html);
 await mkdir(join(out, "art"), { recursive: true });
