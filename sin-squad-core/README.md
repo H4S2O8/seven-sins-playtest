@@ -149,5 +149,5 @@ npm run build:web                 # 打包到仓库根目录的 sin-squad-v3/
 
 - [意图实验 v2：装备、场地与六步教程](docs/intent-v2-design.md)（纯代码实验，尚未接入旧前端）。
 
-- 当前：[暗流v4实际游戏](docs/intent-v4-game.md)：首页「七罪 · 暗流」，单场地替换、公开技能意图、每牌50字以内的黑盒输入输出分析；复用既有卡框和美术。运行 `npm run build:web` 后预览仓库根目录的 `sin-squad-v3/`。
+- 当前：[暗流v4实际游戏](docs/intent-v4-game.md)：首页「七罪 · 暗流」，单场地替换、公开技能意图、自然语言黑盒输入输出分析；复用既有卡框和美术。运行 `npm run build:web` 后预览仓库根目录的 `sin-squad-v3/`。
 - 历史：[v3过程型场地规则](docs/intent-v3-rules.md) · [200桌＋5桌客观对照](docs/intent-v3-evaluation.md)，其叠加场地数据不代表v4。

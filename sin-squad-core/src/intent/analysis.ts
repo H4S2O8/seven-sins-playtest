@@ -37,37 +37,11 @@ export function planText(id: string, plan: Plan, opponent = false) {
     ? "技能关闭"
     : `${modeName(id, plan.mode)}${plan.targets.length ? " → " + plan.targets.map((t) => `${(t.side === "ally") !== opponent ? "己" : "敌"}${t.pos + 1}位`).join(" / ") : " · 无指定目标"}`;
 }
-const GEAR_IO: Record<string, string> = {
-  G01: "首笔技能强化+2，自付1",
-  G02: "首次主阶段收强化，分半给低原数队友",
-  G03: "主阶段队友收强化时分1到这里，共至多4",
-  G04: "每笔敌方削弱减半",
-  G05: "首笔敌方削弱最多挡3",
-  G06: "首笔主阶段削弱分半给高原数队友",
-  G07: "技能实际削敌的一半回补自己，累计最多3",
-  G08: "主阶段技能每笔强化后补低原数队友1，最多3次",
-  G09: "主阶段收强化暂存至多4，收尾返还并加半",
-  G10: "首次实际受敌方削弱，反还来源2",
-  G11: "主阶段收强化分半给另两位，累计最多分6",
-  G12: "首笔技能强化+3，后续−1",
-  G13: "主阶段每笔收强化转1给左邻，累计最多3",
-  G14: "首笔敌方削弱至多2转为自强",
-  G15: "主阶段技能强化延到收尾，前两笔各+1",
-  G16: "技能的己方代价每次少1，共最多少2",
-  G17: "前两笔主阶段技能强化各+2，每次自付1",
-  G18: "低原数队友首笔主阶段削弱转来并减1",
-  G19: "首笔主阶段削弱分半给低原数队友",
-  G20: "首笔主阶段削弱延至收尾偿还",
-  G21: "回收己方格挡、弃增益和技能代价，收尾至多+2",
-  G22: "主阶段每笔强化转1给高原数队友，最多3次",
-  G23: "技能强化低原数队友+1，其他强化−1",
-  G24: "主阶段高于均值则强化转最低队友；否则前两笔+1",
-};
 export function publicAnalysis(o: Observation, p: number): string {
   const g = o.foe.equipment[p];
   return g
-    ? `条件：${GEAR_IO[g]}；暗技未知。`
-    : "暗牌：技能内容与基础能力未知，输出待揭示。";
+    ? `装备「${gear(g).name}」：${gear(g).text}对方技能尚未揭示，不能确定最终输出。`
+    : "对方人物尚未揭示，暂时无法确定技能与基础能力的效果。";
 }
 export function labelName(label: string): string {
   const base = label.match(/^(?:G\d+|F\d+|[A-Z]{2}\d+)/)?.[0];
@@ -115,72 +89,49 @@ export interface UnitAnalysis {
   sampleMax: number;
   comparisons: { label: string; delta: number[] }[];
 }
-/** Compact player text; the full trace remains internal. No hidden-card certainty is implied. */
+/** Player-facing endpoints in natural language; the event chain stays internal. */
 export function compactAnalysis(a: Analysis, p: number): string {
   const events = a.battle.trace,
     incoming = events.filter((e) => e.targetSeat === 0 && e.target === p);
   const sum = (list: Trace[], kind: Trace["kind"]) =>
     list.filter((e) => e.kind === kind).reduce((n, e) => n + e.applied, 0);
   const out = events.filter((e) => e.seat === 0 && e.source === p);
-  const short = (n: number) =>
-    Math.abs(n) < 1000 ? String(n) : `${(n / 1000).toPrecision(2)}千`;
-  const vector = (ns: number[]) =>
-    ns
-      .map((n, p) => (n ? `${p + 1}位${n > 0 ? "+" : ""}${short(n)}` : ""))
-      .filter(Boolean)
-      .join("/") || "无净变化";
   const u = a.units[p];
-  const prefix = a.kind === "actual" ? "实" : "例";
-  const inputs = [
-    ["收", sum(incoming, "gain")],
-    ["受削", sum(incoming, "loss")],
-    ["付", sum(incoming, "cost")],
-  ] as const;
-  const outputs = [
-    [
-      "送友",
-      sum(
-        out.filter((e) => e.targetSeat === 0),
-        "gain",
-      ),
-    ],
-    [
-      "削敌",
-      sum(
-        out.filter((e) => e.targetSeat === 1),
-        "loss",
-      ),
-    ],
-  ] as const;
-  const io = `${prefix}：${
-    inputs
-      .filter(([, n]) => n)
-      .map(([label, n]) => label + short(n))
-      .join("、") || "无输入"
-  }→${
-    outputs
-      .filter(([, n]) => n)
-      .map(([label, n]) => label + short(n))
-      .join("、") || "无输出"
-  }`;
-  const impact = `装${vector(u.comparisons[1].delta)}；场${vector(u.comparisons[2].delta)}`;
-  const full = `${io}；${impact}`;
-  if ([...full].length <= 50) return full;
-  // Dense outcomes retain all three positional deltas in a compact layout; no intermediate trace.
-  const dense = (ns: number[]) =>
-    ns.map((n) => `${n > 0 ? "+" : ""}${short(n)}`).join("/");
-  const compact = `${prefix}：收${short(sum(incoming, "gain"))}削${short(sum(incoming, "loss"))}付${short(sum(incoming, "cost"))}；友${short(
-    sum(
-      out.filter((e) => e.targetSeat === 0),
-      "gain",
-    ),
-  )}敌${short(
-    sum(
-      out.filter((e) => e.targetSeat === 1),
+  const positions = ["左位", "中位", "右位"];
+  const facts: string[] = [];
+  const received = sum(incoming, "gain"),
+    lost = sum(incoming, "loss"),
+    paid = sum(incoming, "cost");
+  if (received) facts.push(`收到${received}点强化`);
+  if (lost) facts.push(`受到${lost}点削弱`);
+  if (paid) facts.push(`支付${paid}点力量`);
+  for (let q = 0; q < 3; q++) {
+    const friendly = out.filter((e) => e.targetSeat === 0 && e.target === q);
+    const delivered = sum(friendly, "gain"),
+      cost = sum(friendly, "cost");
+    const attacked = sum(
+      out.filter((e) => e.targetSeat === 1 && e.target === q),
       "loss",
-    ),
-  )}；装${dense(u.comparisons[1].delta)}；场${dense(u.comparisons[2].delta)}`;
-  return [...compact].length <= 50 ? compact : `${io}；终${short(u.final)}`;
+    );
+    // Self-strengthening is already included in the received amount, not counted twice in prose.
+    if (q !== p && delivered)
+      facts.push(`向${positions[q]}送出${delivered}点强化`);
+    if (q !== p && cost) facts.push(`让${positions[q]}队友支付${cost}点力量`);
+    if (attacked) facts.push(`削弱敌方${positions[q]}${attacked}点力量`);
+  }
+  if (!facts.length) facts.push("没有产生力量变化");
+  facts.push(`最终力量为${u.final}`);
+  const impact = (description: string, delta: number[]) => {
+    if (!description.includes("：")) return "";
+    const name = description.split("：")[0];
+    const changes = delta.flatMap((n, q) =>
+      n ? [`${positions[q]}${n > 0 ? "多" : "少"}${Math.abs(n)}点`] : [],
+    );
+    return changes.length
+      ? `${name}使${changes.join("、")}力量。`
+      : `${name}没有改变本方最终力量。`;
+  };
+  return `${a.kind === "actual" ? "本次" : "本例"}${facts.join("，")}。${impact(u.equipment, u.comparisons[1].delta)}${impact(u.field, u.comparisons[2].delta)}`;
 }
 export interface Analysis {
   ruleset: string;
@@ -221,7 +172,7 @@ export function analyse(o: Observation, edited?: Unit[]): Analysis | null {
     kind: actual ? "actual" : "scenario",
     assumption: actual
       ? "实际摊牌复盘：所有身份和模式已揭示，以下为真实结算。"
-      : "条件演算：从公开构成、装备和已确认指向生成6个合法敌方示例；逐步明细采用示例1。样本跨度不是保证范围，不是胜率，也不代表真实暗牌。未提交的己方技能仅用于本地预览。",
+      : "条件演算：从公开构成、装备和已确认指向生成6个合法敌方示例；当前说明采用示例1。样本跨度不是保证范围，不是胜率，也不代表真实暗牌。未提交的己方技能仅用于本地预览。",
     scenarios: opponents.length,
     example: opponents[0],
     battle: example,

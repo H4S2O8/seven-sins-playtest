@@ -73,7 +73,7 @@ const TIPS = [
   ],
   [
     "看输入输出，不用心算过程",
-    "每张己方牌旁有不超过50字的分析，包含人物能力、主动技能、装备和当前场地的共同结果。例表示公开信息下的一个合法假设，绝不是预测保证；实表示摊牌实算。收、受削、付是收到强化、受到削弱、支付代价；送友、削敌是此位输出。装、场表示装备或场地使己方各位最终力量的净变化，不能直接相加。",
+    "每张牌旁会写明支付或收到多少力量、强化或削弱哪个位置，以及装备和场地改变了什么。只讲输入输出，不用追踪中间过程。「本例」是假设敌阵下的演算，不保证实战如此；摊牌后的「本次」才是真实结果。装备与场地的影响分别比较，不能直接相加。",
   ],
   [
     "读信号，再决定投入",
@@ -582,7 +582,7 @@ export class IntentMode {
         )
         .join("") ??
       `<div class="intent-hand-numbers">${o.me.numbers.map((n) => `<b>${n}</b>`).join("")}<span>你的三个原始数字</span></div>`;
-    this.root.innerHTML = `<div class="room intent-room" style="--room:url('room/A01.webp')"></div><header class="intent-top"><b>七罪 · 暗流</b><span>第${this.session.hand}手 · ${o.round <= 3 ? `第${o.round}轮` : "配置锁定"} · ${o.initiative === 0 ? "你" : "对手"}先结算</span><strong>你 ${o.stacks[0]} ｜ 对手 ${o.stacks[1]}</strong>${button("music", isMuted() ? "♪ 关" : "♪ 开")}${button("tutorial", "教程")}${button("exit", "退出")}</header><section class="intent-field"><button data-ia="info" data-arg="${fieldCard.id}"><small>当前唯一场地</small><b>${esc(fieldCard.name)}</b><span>${esc(fieldCard.text)}</span></button><small>新候选 ${Math.min(o.effects.filter((f) => f.id !== null).length - 1, 3)}/3</small></section><main class="intent-board numeric-board"><div class="intent-composition">对手构成 ${o.foe.tiers.map((n) => ["低", "中", "高"][n]).join(" · ")} <small>不对应位置</small></div><section class="intent-row enemy">${enemyCards}</section><div class="intent-center"><span>${PHASE[o.phase]}</span><strong>◉ ${o.pot}</strong></div><section class="intent-row mine">${myCards}</section>${analysis ? `<aside class="intent-analysis-key">${analysis.kind === "actual" ? "实＝摊牌实算" : "例＝公开信息下的假设演算，并非真实暗牌"} · ${button("info", "分析怎么看", "analysis")}</aside>` : ""}${o.phase === "draft" ? `<div class="intent-draft">${o.me.offer.map((id, i) => this.physical({ id, raw: 0, gear: null, plan: OFF() }, i, 0, o, i)).join("")}</div>` : ""}</main><footer class="intent-dock">${this.error ? `<p role="alert">${esc(this.error)} ${button("retry", "重试")}</p>` : ""}${this.dock(o)}</footer>${this.tutorial >= 0 ? this.tutorialView() : this.detail ? this.detailView(o, analysis) : ""}`;
+    this.root.innerHTML = `<div class="room intent-room" style="--room:url('room/A01.webp')"></div><header class="intent-top"><b>七罪 · 暗流</b><span>第${this.session.hand}手 · ${o.round <= 3 ? `第${o.round}轮` : "配置锁定"} · ${o.initiative === 0 ? "你" : "对手"}先结算</span><strong>你 ${o.stacks[0]} ｜ 对手 ${o.stacks[1]}</strong>${button("music", isMuted() ? "♪ 关" : "♪ 开")}${button("tutorial", "教程")}${button("exit", "退出")}</header><section class="intent-field"><button data-ia="info" data-arg="${fieldCard.id}"><small>当前唯一场地</small><b>${esc(fieldCard.name)}</b><span>${esc(fieldCard.text)}</span></button><small>新候选 ${Math.min(o.effects.filter((f) => f.id !== null).length - 1, 3)}/3</small></section><main class="intent-board numeric-board"><div class="intent-composition">对手构成 ${o.foe.tiers.map((n) => ["低", "中", "高"][n]).join(" · ")} <small>不对应位置</small></div><section class="intent-row enemy">${enemyCards}</section><div class="intent-center"><span>${PHASE[o.phase]}</span><strong>◉ ${o.pot}</strong></div><section class="intent-row mine">${myCards}</section>${analysis ? `<aside class="intent-analysis-key">${analysis.kind === "actual" ? "本次＝摊牌实算" : "本例＝假设敌阵下的演算，并非真实暗牌"} · ${button("info", "分析怎么看", "analysis")}</aside>` : ""}${o.phase === "draft" ? `<div class="intent-draft">${o.me.offer.map((id, i) => this.physical({ id, raw: 0, gear: null, plan: OFF() }, i, 0, o, i)).join("")}</div>` : ""}</main><footer class="intent-dock">${this.error ? `<p role="alert">${esc(this.error)} ${button("retry", "重试")}</p>` : ""}${this.dock(o)}</footer>${this.tutorial >= 0 ? this.tutorialView() : this.detail ? this.detailView(o, analysis) : ""}`;
     if (this.detail || this.tutorial >= 0) {
       for (const el of Array.from(this.root.children))
         if (el instanceof HTMLElement && !el.classList.contains("intent-modal"))
@@ -649,7 +649,7 @@ export class IntentMode {
   private detailView(o: Observation, a: ReturnType<typeof analyse>) {
     if (this.detail === "analysis")
       return this.modal(
-        `<h2>只看输入与输出</h2><p>${esc(a?.assumption ?? "选好人物并排位后显示分析。")}</p><p>收、受削、付：实际收到的强化、削弱、代价。送友包括强化自己和队友；削敌表示削弱敌人。输入输出含基础能力及装备衍生。</p><p>装、场后的数：在同一示例里，该因素使本方各位最终力量的净变化。保留其余配置，分别移除该因素计算；彼此不能相加，无净变化也可能是收益与代价抵消。紧凑三数按左/中/右排列。</p>${
+        `<h2>只看输入与输出</h2><p>${esc(a?.assumption ?? "选好人物并排位后显示分析。")}</p><p>说明包含人物能力、主动技能、装备和场地共同产生的结果。左、中、右均按牌桌位置描述；己方说明中的队友是己方，敌方说明中的队友是敌方。不会展开中间触发过程。</p><p>例如「聚焦镜使中位多3点力量」，指保留同一敌阵及其余配置，相比不装聚焦镜，中位最终多3点力量。场地也单独这样比较，两者不能直接相加。「没有改变最终力量」可能是没有触发，也可能是收益与代价互相抵消。</p>${
           a
             ? `<p>${a.kind === "actual" ? "实际敌阵" : "示例1假设敌阵"}：${a.example
                 .map(

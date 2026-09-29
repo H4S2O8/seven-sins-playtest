@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { IntentSession } from "../src/intent/session.js";
 import { IntentTable } from "../src/intent/table.js";
+import { battle } from "../src/intent/battle.js";
 import {
   analyse,
   compactAnalysis,
@@ -126,11 +127,10 @@ describe("single-field game integration", () => {
     expect(analyse(s.table.observe(0))).toEqual(a);
     expect(JSON.stringify(o)).not.toContain('seedLabel":992');
   });
-  it("covers every character and equipment with legal scenario analyses under 50 characters", () => {
+  it("explains every character and equipment using natural language instead of compressed notation", () => {
     const s = new IntentSession(832);
     prepare(s);
     const o = s.table.observe(0);
-    let largest = 0;
     for (let i = 0; i < Math.max(CARDS.length, GEARS.length); i++) {
       const c = CARDS[i % CARDS.length],
         own: Unit[] = [
@@ -145,20 +145,21 @@ describe("single-field game integration", () => {
       const a = analyse(o, own)!;
       for (let p = 0; p < 3; p++) {
         const text = compactAnalysis(a, p);
-        largest = Math.max(largest, [...text].length);
-        expect(text).toMatch(/^例：/);
-        expect([...text].length).toBeLessThanOrEqual(50);
+        expect(text).toMatch(/^本例/);
+        expect(text).toContain(`最终力量为${a.units[p].final}`);
+        expect(text).not.toMatch(/装[123]|场[123]|→|\d\/\d/);
       }
     }
-    expect(largest).toBeGreaterThan(20);
   });
-  it("keeps enemy equipment hints short and target labels in the viewer perspective", () => {
+  it("uses the full public equipment rule without guessing hidden skills", () => {
     const s = new IntentSession(99);
     prepare(s);
     const o = s.table.observe(0);
     for (const g of GEARS) {
       o.foe.equipment[0] = g.id;
-      expect([...publicAnalysis(o, 0)].length).toBeLessThanOrEqual(50);
+      expect(publicAnalysis(o, 0)).toContain(g.name);
+      expect(publicAnalysis(o, 0)).toContain(g.text);
+      expect(publicAnalysis(o, 0)).toContain("不能确定最终输出");
     }
     expect(
       planText(
@@ -167,5 +168,47 @@ describe("single-field game integration", () => {
         true,
       ),
     ).toBe("发动 → 敌2位");
+  });
+  it("names the recipient, equipment and field in the played support combination", () => {
+    const s = new IntentSession(99);
+    prepare(s);
+    const o = s.table.observe(0);
+    const own: Unit[] = [
+      {
+        id: "WR3",
+        raw: 3,
+        gear: null,
+        plan: { on: true, mode: 0, targets: [] },
+      },
+      { id: "WR3", raw: 6, gear: null, plan: OFF() },
+      {
+        id: "WR2",
+        raw: 9,
+        gear: "G12",
+        plan: { on: true, mode: 0, targets: [{ side: "ally", pos: 1 }] },
+      },
+    ];
+    const foe: Unit[] = Array.from({ length: 3 }, () => ({
+      id: "WR3",
+      raw: 6,
+      gear: null,
+      plan: OFF(),
+    }));
+    o.initiative = 0;
+    o.effects = [{ id: "F4", active: true }];
+    o.me.units = own;
+    const resolved = battle([own, foe], ["F4"]);
+    o.result = {
+      fold: false,
+      winner: resolved.winner,
+      battle: resolved,
+      teams: [own, foe],
+      payouts: [0, 0],
+    };
+    const text = compactAnalysis(analyse(o)!, 2);
+    expect(text).toBe(
+      "本次支付4点力量，向中位送出9点强化，最终力量为5。聚焦镜使中位多3点力量。代价熔炉使左位多4点、中位多2点力量。",
+    );
+    expect(text.length).toBeGreaterThan(50);
   });
 });
