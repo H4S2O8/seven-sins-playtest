@@ -1,5 +1,4 @@
 import { battle } from "./battle.js";
-import { hypotheses } from "./agent.js";
 import { card, gear, FIELDS, INTENT_RULESET } from "./content.js";
 import {
   OFF,
@@ -142,7 +141,16 @@ export interface Analysis {
   battle: Battle;
   units: UnitAnalysis[];
 }
-/** Only legal observations enter this interpreter. Samples are illustrations, never bounds or win probabilities. */
+/** Preview-only stand-ins: WR3 has no basic ability and its active skill stays off. */
+export function previewOpponents(o: Observation): Unit[] {
+  return [0, 1, 2].map((p) => ({
+    id: "WR3",
+    raw: 6,
+    gear: o.foe.equipment[p] ?? null,
+    plan: OFF(),
+  }));
+}
+/** Only legal observations enter this interpreter. The fixed preview is not a prediction. */
 export function analyse(o: Observation, edited?: Unit[]): Analysis | null {
   if (!o.me.units) return null;
   const actual = !!o.result?.battle && !!o.result.teams;
@@ -152,7 +160,7 @@ export function analyse(o: Observation, edited?: Unit[]): Analysis | null {
   const fields = o.effects.filter((f) => f.active && f.id).map((f) => f.id!);
   const opponents = actual
     ? [o.result!.teams![1 - o.seat]]
-    : hypotheses(o, 6, true, true, 419);
+    : [previewOpponents(o)];
   const options = { initiative: (o.initiative === o.seat ? 0 : 1) as 0 | 1 };
   const resolved = opponents.map((foe) => battle([own, foe], fields, options)),
     example = resolved[0];
@@ -172,7 +180,7 @@ export function analyse(o: Observation, edited?: Unit[]): Analysis | null {
     kind: actual ? "actual" : "scenario",
     assumption: actual
       ? "实际摊牌复盘：所有身份和模式已揭示，以下为真实结算。"
-      : "条件演算：从公开构成、装备和已确认指向生成6个合法敌方示例；当前说明采用示例1。样本跨度不是保证范围，不是胜率，也不代表真实暗牌。未提交的己方技能仅用于本地预览。",
+      : "白板演算：保留敌方三个位置已公开的装备，人物没有主动技能和基础能力，隐藏数字统一按每位6点计算。6点只是固定基准，不代表对方真实数字或构成；公开指向不用于猜测技能。依赖敌方发动技能的配合可能不会触发。这不是胜率或保证结果；摊牌后改用实际敌阵。",
     scenarios: opponents.length,
     example: opponents[0],
     battle: example,

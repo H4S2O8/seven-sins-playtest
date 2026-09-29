@@ -36,6 +36,42 @@ function passive(s: IntentSession) {
 }
 
 describe("single-field game integration", () => {
+  it("previews blank opponents with their public equipment, without guessing skills or numbers", () => {
+    const s = new IntentSession(51);
+    prepare(s);
+    const o = s.table.observe(0);
+    o.effects = [];
+    o.me.units = [
+      {
+        id: "WR1",
+        raw: 8,
+        gear: null,
+        plan: { on: true, mode: 0, targets: [{ side: "enemy", pos: 0 }] },
+      },
+      ...Array.from({ length: 2 }, () => ({
+        id: "WR3",
+        raw: 6,
+        gear: null,
+        plan: OFF(),
+      })),
+    ];
+    o.foe.equipment = ["G04", null, null];
+    const equipped = analyse(o)!;
+    expect(equipped.scenarios).toBe(1);
+    expect(
+      equipped.example.every(
+        (u) =>
+          u.raw === 6 && !u.plan.on && !CARDS.find((c) => c.id === u.id)!.basic,
+      ),
+    ).toBe(true);
+    expect(equipped.example[0].gear).toBe("G04");
+    expect(equipped.battle.powers[1][0]).toBe(5);
+    o.foe.tiers = [2, 2, 2];
+    o.foe.signals = [{ on: true, kind: "flip", targets: [] }];
+    expect(analyse(o)).toEqual(equipped);
+    o.foe.equipment = [null, null, null];
+    expect(analyse(o)!.battle.powers[1][0]).toBe(3);
+  });
   it("replaces the current field and a later tied auction preserves that replacement", () => {
     const s = new IntentSession(215);
     prepare(s);
