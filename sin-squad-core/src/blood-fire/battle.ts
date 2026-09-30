@@ -3,12 +3,12 @@ import { triggeredCombos } from "./combos.js";
 
 export type Plan = { id:string; hp:number; enabled:boolean; target:0|1|2; target2?:0|1|2; choice:0|1 };
 export type Side = { units:Plan[]; base:string };
-export type Unit = { card:Card; side:0|1; slot:number; hp:number; max:number; shield:number; next:number; attacks:number; first:boolean; bonus:number; bloodLost:number; deathStacks:number; shieldLost:number; wounded:boolean; promise:boolean; morph:boolean; marked:boolean; remember:boolean; used:boolean; plan:Plan };
+export type Unit = { card:Card; side:0|1; slot:number; hp:number; max:number; shield:number; next:number; skillNext:number; cycleStarted:boolean; attacks:number; first:boolean; bonus:number; bloodLost:number; deathStacks:number; shieldLost:number; wounded:boolean; promise:boolean; morph:boolean; marked:boolean; remember:boolean; used:boolean; plan:Plan };
 export type Event = { tick:number; kind:"attack"|"damage"|"heal"|"shield"|"pace"|"burn"|"combo"|"death"|"skill"; source:number; target:number; amount:number; requested?:number; label:string; hp:[number,number,number,number,number,number]; shields:[number,number,number,number,number,number] };
 export type Result = { winner:0|1|null; tick:number; events:Event[]; units:Unit[]; abnormal?:string };
 
 export function battle(sides:[Side,Side], field:string|null):Result {
-  const units:Unit[] = sides.flatMap((side,si)=>side.units.map((plan,slot)=>({card:BY_ID[plan.id],side:si as 0|1,slot,hp:plan.hp,max:plan.hp,shield:0,next:0,attacks:0,first:false,bonus:0,bloodLost:0,deathStacks:0,shieldLost:0,wounded:false,promise:false,morph:false,marked:false,remember:false,used:false,plan})));
+  const units:Unit[] = sides.flatMap((side,si)=>side.units.map((plan,slot)=>({card:BY_ID[plan.id],side:si as 0|1,slot,hp:plan.hp,max:plan.hp,shield:0,next:0,skillNext:0,cycleStarted:false,attacks:0,first:false,bonus:0,bloodLost:0,deathStacks:0,shieldLost:0,wounded:false,promise:false,morph:false,marked:false,remember:false,used:false,plan})));
   if(units.length!==6 || units.some(u=>!u.card || u.max<4 || u.max>12) || sides.some(s=>s.units.reduce((n,p)=>n+p.hp,0)!==24)) throw Error("非法阵容或生命分配");
   const events:Event[]=[];
   const later:{at:number;run:()=>void}[]=[];
@@ -24,13 +24,14 @@ export function battle(sides:[Side,Side], field:string|null):Result {
   const enemy=(u:Unit)=>front(1-u.side);
   const idx=(u?:Unit)=>u?units.indexOf(u):-1;
   const record=(kind:Event["kind"],source:Unit|undefined,target:Unit|undefined,amount:number,label:string,requested?:number)=>{const hp=units.map(u=>u.hp) as Event["hp"],shields=units.map(u=>u.shield) as Event["shields"];if(hp.some((n,i)=>n!==lastHp[i])||shields.some((n,i)=>n!==lastShields[i])){lastChangeTick=tick;hp.forEach((n,i)=>lastHp[i]=n);shields.forEach((n,i)=>lastShields[i]=n);}events.push({tick,kind,source:idx(source),target:idx(target),amount,...(requested===undefined?{}:{requested}),label,hp,shields});resolveComboRewards();};
+  const chargeLostShield=(target:Unit,amount:number)=>{if(field!=="E08"||amount<=0)return;target.shieldLost+=amount;const gains=Math.min(2,Math.floor(target.shieldLost/2));if(gains){target.bonus=Math.min(2,target.bonus+gains);target.shieldLost%=2;}};
   const awardedRoutes=new Set<string>();
   const announcedSyncRoutes=new Set<string>();
   let resolvingComboRewards=false;
   let resolveComboRewards=()=>{};
   const schedule=(delay:number,run:()=>void)=>later.push({at:tick+delay,run});
-  const pace=(source:Unit,target:Unit,n:number,label:string)=>{if(target.hp<=0)return; const old=target.next; if(n<0&&field==="E20")n--;target.next=Math.max(tick+1,target.next+n); if(target.next!==old){record("pace",source,target,target.next-old,label);if(n<0&&sides[target.side].base==="P03")shield(source,target,1,"无名剧院");if(n<0&&field==="E20")damage(source,target,1,"急行军·代价");if(n>0&&source.card.id==="N05"&&source!==target)shield(source,source,1,"延迟得盾");}};
-  const shield=(source:Unit,target:Unit,n:number,label:string,transferred=false)=>{if(target.hp<=0)return; if(n>0&&transferred&&field==="E01")n+=Math.min(3,n);if(n>0&&field==="E15"&&source!==target&&source.side===target.side)n+=Math.min(2,Math.abs(source.slot-target.slot));if(n>0&&(field==="E06"||field==="E12"))n=Math.max(0,n-1); const take=Math.min(target.shield,Math.max(0,-n));const actual=n<0?-take:n;target.shield+=actual;if(actual)record("shield",source,target,actual,label);if(actual>0&&field==="E12")pace(source,target,-1,"轻甲快行");if(actual<0&&field==="E08"){target.shieldLost+=take;if(target.shieldLost>=2){const gains=Math.min(2,Math.floor(target.shieldLost/2));target.bonus=Math.min(2,target.bonus+gains);target.shieldLost%=2;}}};
+  const pace=(source:Unit,target:Unit,n:number,label:string)=>{if(target.hp<=0)return; const old=target.next; if(n<0&&field==="E20")n--;target.next=Math.max(tick+1,target.next+n);const shift=target.next-old;if(shift){if(target.card.timing==="cycle"&&!target.cycleStarted)target.skillNext=Math.max(tick+1,target.skillNext+shift);record("pace",source,target,shift,label);if(n<0&&sides[target.side].base==="P03")shield(source,target,1,"无名剧院");if(n<0&&field==="E20")damage(source,target,1,"急行军·代价");if(n>0&&source.card.id==="N05"&&source!==target)shield(source,source,1,"延迟得盾");}};
+  const shield=(source:Unit,target:Unit,n:number,label:string,transferred=false)=>{if(target.hp<=0)return; if(n>0&&transferred&&field==="E01")n+=Math.min(3,n);if(n>0&&field==="E15"&&source!==target&&source.side===target.side)n+=Math.min(2,Math.abs(source.slot-target.slot));if(n>0&&(field==="E06"||field==="E12"))n=Math.max(0,n-1); const take=Math.min(target.shield,Math.max(0,-n));const actual=n<0?-take:n;target.shield+=actual;if(actual)record("shield",source,target,actual,label);if(actual>0&&field==="E12")pace(source,target,-1,"轻甲快行");if(actual<0)chargeLostShield(target,take);};
   const heal=(source:Unit,target:Unit,n:number,label:string)=>{
     if(target.hp<=0)return;
     if(target.promise){target.promise=false;target=front(target.side)??target;n+=2;}
@@ -52,6 +53,7 @@ export function battle(sides:[Side,Side], field:string|null):Result {
     const shieldUnit=!attack&&field==="E07"?2:1;
     const shieldLoss=Math.min(target.shield,Math.ceil(ordinary/shieldUnit));
     target.shield-=shieldLoss;
+    chargeLostShield(target,shieldLoss);
     const hpLoss=Math.min(target.hp,pierce+Math.max(0,ordinary-shieldLoss*shieldUnit));
     target.hp-=hpLoss;
     record(burnHit?"burn":"damage",source,target,hpLoss,label);
@@ -90,7 +92,7 @@ export function battle(sides:[Side,Side], field:string|null):Result {
       if(dealtHealthDamage)onHealthDamage?.();
       const succeeded=kind==="burn"?target.hp>0:target.hp!==before||target.shield!==shields;
       if(!succeeded)return;
-      lastOutput[source.side]={kind,amount:n,slot:target.slot,side:target.side};
+      if(source.card.id!=="N06")lastOutput[source.side]={kind,amount:n,slot:target.slot,side:target.side};
       replaySaved(source);
       if((label==="记住·回放"||label==="倒写")&&source.card.id!=="N06"){
         const frontAlly=front(source.side);
@@ -102,8 +104,8 @@ export function battle(sides:[Side,Side], field:string|null):Result {
     fn();
   };
   replaySaved=(source)=>{if(!source.remember)return;const saved=lastOutput[source.side];if(!saved)return;source.remember=false;schedule(2,()=>{const target=slot(saved.side,saved.slot);if(!target)return;if(saved.kind==="pace"){const before=target.next;pace(source,target,saved.amount,"记住·回放");if(target.next!==before&&source.card.id!=="N06"){const frontAlly=front(source.side);if(frontAlly)for(const ally of alive(source.side))if(ally!==source&&ally.card.id==="N06")heal(ally,frontAlly,1,"倒写史官");}}else out(source,target,saved.kind,saved.amount,"记住·回放");});};
-  const shieldOut=(source:Unit,target:Unit|undefined,n:number,label:string,transferred=false)=>{if(!target||n<=0||target.hp<=0)return;const before=target.shield;shield(source,target,n,label,transferred);if(target.shield>before){lastOutput[source.side]={kind:"shield",amount:n,slot:target.slot,side:target.side};replaySaved(source);}};
-  const paceOut=(source:Unit,target:Unit|undefined,n:number,label:string)=>{if(!target||target.hp<=0)return;const before=target.next;pace(source,target,n,label);if(target.next!==before){lastOutput[source.side]={kind:"pace",amount:n,slot:target.slot,side:target.side};replaySaved(source);}};
+  const shieldOut=(source:Unit,target:Unit|undefined,n:number,label:string,transferred=false)=>{if(!target||n<=0||target.hp<=0)return;const before=target.shield;shield(source,target,n,label,transferred);if(target.shield>before){if(source.card.id!=="N06")lastOutput[source.side]={kind:"shield",amount:n,slot:target.slot,side:target.side};replaySaved(source);}};
+  const paceOut=(source:Unit,target:Unit|undefined,n:number,label:string)=>{if(!target||target.hp<=0)return;const before=target.next;pace(source,target,n,label);if(target.next!==before){if(source.card.id!=="N06")lastOutput[source.side]={kind:"pace",amount:n,slot:target.slot,side:target.side};replaySaved(source);}};
   resolveComboRewards=()=>{
     if(resolvingComboRewards)return;
     resolvingComboRewards=true;
@@ -165,11 +167,11 @@ export function battle(sides:[Side,Side], field:string|null):Result {
     case "N09":if(ally&&ally!==u)ally.marked=true;break;
     case "N10":if(choice===0){damage(u,u,2,"改稿·代价");u.morph=true;}else{shieldOut(u,u,4,"改稿");u.morph=true;}break;
   }const sourceIndex=idx(u),produced=events.slice(skillEventStart+1).some(event=>event.source===sourceIndex&&((event.amount>0&&(event.kind==="heal"||event.kind==="shield"||event.kind==="burn"||(event.kind==="damage"&&event.target!==sourceIndex)))||(event.kind==="pace"&&event.amount!==0)));if(produced)for(const v of alive(u.side))if(v!==u&&v.card.id==="N01")shield(v,v,1,"无名见证");};
-  for(const u of units)u.next=u.card.interval+(u.card.kind==="melee"?2*u.slot:0);
+  for(const u of units){u.next=u.card.interval+(u.card.kind==="melee"?2*u.slot:0);u.skillNext=u.next;}
   for(const u of units)if(u.card.id==="N01"&&u.plan.enabled)skill(u);
   for(const u of units)if(u.card.id!=="N01"&&u.card.timing==="start"&&u.plan.enabled)skill(u);
   if(field==="E14")for(const side of [0,1]){const u=front(side);if(u){if(u.shield)pace(u,u,-1,"接班人");else shield(u,u,2,"接班人");}}
-  while(alive(0).length&&alive(1).length){if(++work>12000){abnormal="事件链超出诊断上限";break;}const next=Math.min(...alive(0).concat(alive(1)).map(u=>u.next),...later.map(x=>x.at));if(!Number.isFinite(next))break;if(next>120){abnormal="达到120刻工程上限，按平局结束";break;}tick=next;for(const x of later.filter(x=>x.at===tick)){x.run();work++;}for(let i=later.length-1;i>=0;i--)if(later[i].at===tick)later.splice(i,1);const attackers=units.filter(u=>u.hp>0&&u.next<=tick);for(const u of attackers)if(!u.first){u.first=true;if(u.card.timing==="first")skill(u);if(u.card.id==="F02"&&u.morph){const n=Math.min(4,u.shield),target=enemy(u);shield(u,u,-u.shield,"出炉");if(target&&n>0)out(u,target,"damage",n,"出炉");}}const ready=attackers.filter(u=>u.hp>0&&u.next<=tick);const targets=new Map(ready.map(u=>[u,enemy(u)]));for(const u of ready){const t=targets.get(u);if(!t||t.hp<=0)continue;let n=u.card.attack+u.bonus;u.bonus=0;if(u.card.id==="B06"&&u.hp/u.max>t.hp/t.max)n++;if(u.card.id==="F07"&&t.shield)n++;if(u.card.id==="F09"&&[...burning].some(([v,count])=>v.side!==u.side&&count>0))n++;if(u.card.id==="F02"&&u.morph)n++;if(u.card.id==="F10"&&u.morph)n++;if(u.card.id==="N03")n=u.morph?Math.min(4,2+u.deathStacks):Math.max(1,n-u.deathStacks);if(u.card.id==="B09"&&u.morph)n--;if(u.card.id==="N10"&&u.morph&&u.attacks<2)n+=u.plan.choice===0?1:-1;const overflow=damage(u,t,n,"普攻",true);record("attack",u,t,n,"普攻");if(overflow&&field==="E19")shield(u,u,Math.min(2,overflow),"最后一寸");if(overflow&&sides[u.side].base==="P01"&&enemy(u))damage(u,enemy(u)!,Math.min(2,overflow),"余烬炉");u.attacks++;if(u.card.id==="B03"&&front(u.side))heal(u,front(u.side)!,1,"缝心");if((u.card.id==="B05"||u.card.id==="F05")&&u.hp>0)damage(u,u,1,"普攻·自伤");if(u.card.id==="N10")shield(u,u,1,"昨日余像");if(u.card.id==="F01"&&u.attacks===1&&t.hp>0)burn(u,t,1,"引火童");u.next=tick+u.card.interval+(u.card.kind==="melee"?2*alive(u.side).filter(v=>v.slot<u.slot).length:0);}
+  while(alive(0).length&&alive(1).length){if(++work>12000){abnormal="事件链超出诊断上限";break;}const live=alive(0).concat(alive(1));const next=Math.min(...live.map(u=>u.next),...live.filter(u=>u.plan.enabled&&u.card.timing==="cycle").map(u=>u.skillNext),...later.map(x=>x.at));if(!Number.isFinite(next))break;if(next>120){abnormal="达到120刻工程上限，按平局结束";break;}tick=next;for(const x of later.filter(x=>x.at===tick)){x.run();work++;}for(let i=later.length-1;i>=0;i--)if(later[i].at===tick)later.splice(i,1);for(const u of units)if(u.hp>0&&u.plan.enabled&&u.card.timing==="cycle"&&u.skillNext<=tick){skill(u);u.cycleStarted=true;u.skillNext=tick+u.card.skillInterval!;}const attackers=units.filter(u=>u.hp>0&&u.next<=tick);for(const u of attackers)if(!u.first){u.first=true;if(u.card.timing==="first")skill(u);if(u.card.id==="F02"&&u.morph){const n=Math.min(4,u.shield),target=enemy(u);shield(u,u,-u.shield,"出炉");if(target&&n>0)out(u,target,"damage",n,"出炉");}}const ready=attackers.filter(u=>u.hp>0&&u.next<=tick);const targets=new Map(ready.map(u=>[u,enemy(u)]));for(const u of ready){const t=targets.get(u);if(!t||t.hp<=0)continue;let n=u.card.attack+u.bonus;u.bonus=0;if(u.card.id==="B06"&&u.hp/u.max>t.hp/t.max)n++;if(u.card.id==="F07"&&t.shield)n++;if(u.card.id==="F09"&&[...burning].some(([v,count])=>v.side!==u.side&&count>0))n++;if(u.card.id==="F02"&&u.morph)n++;if(u.card.id==="F10"&&u.morph)n++;if(u.card.id==="N03")n=u.morph?Math.min(4,2+u.deathStacks):Math.max(1,n-u.deathStacks);if(u.card.id==="B09"&&u.morph)n--;if(u.card.id==="N10"&&u.morph&&u.attacks<2)n+=u.plan.choice===0?1:-1;const overflow=damage(u,t,n,"普攻",true);record("attack",u,t,n,"普攻");if(overflow&&field==="E19")shield(u,u,Math.min(2,overflow),"最后一寸");if(overflow&&sides[u.side].base==="P01"&&enemy(u))damage(u,enemy(u)!,Math.min(2,overflow),"余烬炉");u.attacks++;if(u.card.id==="B03"&&front(u.side))heal(u,front(u.side)!,1,"缝心");if((u.card.id==="B05"||u.card.id==="F05")&&u.hp>0)damage(u,u,1,"普攻·自伤");if(u.card.id==="N10")shield(u,u,1,"昨日余像");if(u.card.id==="F01"&&u.attacks===1&&t.hp>0)burn(u,t,1,"引火童");u.next=tick+u.card.interval+(u.card.kind==="melee"?2*alive(u.side).filter(v=>v.slot<u.slot).length:0);}
     const performed=events.filter(e=>e.tick===tick&&e.kind==="attack").map(e=>units[e.source]);
     for(const side of [0,1] as const){
       const group=performed.filter(u=>u.side===side);

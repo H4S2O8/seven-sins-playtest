@@ -10,6 +10,7 @@
     "test": "vitest run",
     "sim": "tsx src/sim/cli.ts",
     "build:blood-fire-combos": "node scripts/build-blood-fire-combos.mjs",
+    "audit:blood-fire-reachability": "tsx scripts/audit-blood-fire-reachability.ts",
     "build:web": "node scripts/build-web.mjs"
   },
   "devDependencies": {
