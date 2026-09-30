@@ -1,2 +1,5 @@
 node_modules/
 dist/
+reports/*.private.json
+reports/*-progress.log
+reports/intent-model-input.json

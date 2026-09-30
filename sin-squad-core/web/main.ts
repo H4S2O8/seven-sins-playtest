@@ -1,3 +1,4 @@
+import { cardShell } from "./card-shell.js";
 import { HeuristicAgent, RandomAgent, type Agent, type Style } from "../src/ai/agents.js";
 import { applyReward, checkProgress, newProgress, recordLoss, recordWin, stageTable, type CampaignProgress } from "../src/campaign/progress.js";
 import { stage } from "../src/campaign/stages.js";
@@ -27,6 +28,8 @@ import { installLight, relight } from "./light.js";
 import { BUILD, VERSION } from "./version.js";
 import { installTilt } from "./tilt.js";
 import { disableTips, dismissTip, resetTips, tipHtml } from "./tips.js";
+import { IntentMode as NumericMode } from "./intent.js";
+import { BloodFireMode } from "./blood-fire.js";
 
 /**
  * 网页 demo：你（座位 0）对电脑（座位 1）。
@@ -902,14 +905,10 @@ function card(id: string | null, o: CardOpts = {}) {
     "card person", `fr-${o.frame ?? currentFrame()}`, "foil", o.cls ?? "", down ? "down" : "", o.dead ? "dead" : "", o.act ? "clickable" : "", b?.barrier && !down ? "shielded" : "",
     o.fan !== undefined ? "fanned" : "", o.lane ? "switching" : "",
   ].filter(Boolean).join(" ");
-  return `<div class="${cls}"${style ? ` style="${style}"` : ""}${o.key ? ` data-key="${o.key}"` : ""}${o.unit ? ` data-unit="${o.unit}"` : ""}${o.acting ? " data-acting" : ""}${attrs(o)}${c && !down ? ` title="${esc(`${c.name}（${c.sin}）：${c.ability}`)}"` : ""}>
-    <div class="shade"></div>
-    <div class="lift"><div class="flip">
-      <i class="edge top"></i><i class="edge bottom"></i><i class="edge left"></i><i class="edge right"></i>
-      <div class="face front">${id ? cardFront(id, o) : ""}</div>
-      <div class="face back"><i class="sheen"></i><i class="gloss"></i>${o.backText ? `<div class="back-text">${o.backText}</div>` : ""}${eq ? `<div class="equip" title="${esc(`${eq.name}：${eq.text}`)}">${eq.name}</div>` : ""}</div>
-    </div>${o.flag ? `<span class="flag">${o.flag}</span>` : ""}${o.lane ? `<span class="lane-tag">${o.lane < 0 ? "←" : "→"}</span>` : ""}${o.aim !== undefined ? `<span class="aim-tag">打${posName(o.aim)}</span>` : ""}</div>
-  </div>`;
+  return cardShell({classes:cls,attributes:`${style ? `style="${style}"` : ""}${o.key ? ` data-key="${o.key}"` : ""}${o.unit ? ` data-unit="${o.unit}"` : ""}${o.acting ? " data-acting" : ""}${attrs(o)}${c && !down ? ` title="${esc(`${c.name}（${c.sin}）：${c.ability}`)}"` : ""}`,
+    front:id ? cardFront(id,o) : "",
+    back:`${o.backText ? `<div class="back-text">${o.backText}</div>` : ""}${eq ? `<div class="equip" title="${esc(`${eq.name}：${eq.text}`)}">${eq.name}</div>` : ""}`,
+    extras:`${o.flag ? `<span class="flag">${o.flag}</span>` : ""}${o.lane ? `<span class="lane-tag">${o.lane < 0 ? "←" : "→"}</span>` : ""}${o.aim !== undefined ? `<span class="aim-tag">打${posName(o.aim)}</span>` : ""}`});
 }
 
 function slot(text: string, o: CardOpts = {}) {
@@ -1983,6 +1982,9 @@ const gate = new Gate({
       buyIn: table!.options.buyIn, blindEvery: table!.options.blindEvery, style: s,
     };
   },
+  numericStart(s) { bloodFireMode.start(s); },
+  numericSaved: () => false,
+  numericResume() { bloodFireMode.start("cautious"); },
   resume() { if (!resumeGame()) gate.show("title"); },
   sheet(kind) {
     if (kind === "chars") { ui.helpTab = "chars"; ui.sheet = { kind: "help" }; } else ui.sheet = { kind };
@@ -2007,6 +2009,11 @@ const gate = new Gate({
     storeProgress();
   },
 }, ART);
+const numericMode = new NumericMode({
+  exit: () => gate.show("title"),
+  art: ART,
+});
+const bloodFireMode = new BloodFireMode({exit:()=>gate.show("title")});
 
 window.addEventListener("resize", () => render(false));
 installTilt();

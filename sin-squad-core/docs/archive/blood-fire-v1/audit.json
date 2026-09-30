@@ -1,0 +1,111 @@
+{
+  "scope": "static-design-audit; no combat execution or balance validation",
+  "cards": 30,
+  "factions": {
+    "B": 10,
+    "F": 10,
+    "N": 10
+  },
+  "one_skill_per_card": true,
+  "skill_types": {
+    "指向": 16,
+    "抉择": 5,
+    "开启": 5,
+    "变形": 4
+  },
+  "baseplates": 6,
+  "fields": 20,
+  "named_routes": 200,
+  "shared_achievement_rules": 25,
+  "all_catalogue_entries_referenced": true,
+  "legal_party_and_global_counts_in_declared_participants": true,
+  "same_participant_sets_requiring_distinct_mechanisms": {
+    "F08+N04": [
+      "025",
+      "053"
+    ],
+    "B04+F08": [
+      "026",
+      "091",
+      "185"
+    ],
+    "E12+F05": [
+      "090",
+      "114"
+    ],
+    "F01+F09": [
+      "105",
+      "179"
+    ],
+    "E14+F08": [
+      "162",
+      "167"
+    ]
+  },
+  "coverage": {
+    "B01": 13,
+    "B02": 14,
+    "B03": 18,
+    "B04": 10,
+    "B05": 6,
+    "B06": 14,
+    "B07": 12,
+    "B08": 4,
+    "B09": 8,
+    "B10": 12,
+    "E01": 4,
+    "E02": 2,
+    "E03": 3,
+    "E04": 2,
+    "E05": 5,
+    "E06": 2,
+    "E07": 1,
+    "E08": 2,
+    "E09": 2,
+    "E10": 3,
+    "E11": 9,
+    "E12": 4,
+    "E13": 2,
+    "E14": 4,
+    "E15": 4,
+    "E16": 1,
+    "E17": 3,
+    "E18": 2,
+    "E19": 4,
+    "E20": 2,
+    "F01": 15,
+    "F02": 9,
+    "F03": 8,
+    "F04": 11,
+    "F05": 16,
+    "F06": 21,
+    "F07": 9,
+    "F08": 23,
+    "F09": 11,
+    "F10": 7,
+    "N01": 11,
+    "N02": 11,
+    "N03": 8,
+    "N04": 12,
+    "N05": 8,
+    "N06": 7,
+    "N07": 7,
+    "N08": 10,
+    "N09": 8,
+    "N10": 5,
+    "P01": 8,
+    "P02": 8,
+    "P03": 1,
+    "P04": 8,
+    "P05": 8,
+    "P06": 10
+  },
+  "not_verified": [
+    "event reachability",
+    "timing consistency by execution",
+    "semantic independence of all routes",
+    "power balance",
+    "auction value",
+    "player enjoyment"
+  ]
+}

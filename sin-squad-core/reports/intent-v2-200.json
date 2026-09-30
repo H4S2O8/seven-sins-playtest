@@ -1,0 +1,261 @@
+{
+  "hands": 200,
+  "seedStart": 972001,
+  "protocol": "intent-v2",
+  "folds": 78,
+  "earlyFolds": 34,
+  "midFolds": 44,
+  "showdowns": 122,
+  "ties": 22,
+  "actions": 6549,
+  "paidOffers": 280,
+  "awkwardOffers": 47,
+  "gear": 280,
+  "duplicates": 41,
+  "rawSumLargerWins": 45,
+  "rawSumComparable": 88,
+  "normalCandidates": 95,
+  "upsets": 61,
+  "comboUpsets": 41,
+  "regretCandidates": 15,
+  "regretAudited": 140,
+  "seatWins": [
+    93,
+    85
+  ],
+  "style": {
+    "balanced": {
+      "hands": 135,
+      "net": 703,
+      "folded": 31
+    },
+    "cautious": {
+      "hands": 133,
+      "net": -192,
+      "folded": 32
+    },
+    "pressure": {
+      "hands": 132,
+      "net": -1071,
+      "folded": 15
+    }
+  },
+  "cards": {
+    "WR1": {
+      "selected": 44,
+      "on": 42,
+      "wins": 25
+    },
+    "WR2": {
+      "selected": 61,
+      "on": 55,
+      "wins": 30.5
+    },
+    "WR3": {
+      "selected": 47,
+      "on": 34,
+      "wins": 19.5
+    },
+    "GR1": {
+      "selected": 47,
+      "on": 43,
+      "wins": 24.5
+    },
+    "GR2": {
+      "selected": 80,
+      "on": 63,
+      "wins": 46
+    },
+    "GR3": {
+      "selected": 39,
+      "on": 32,
+      "wins": 20.5
+    },
+    "GL1": {
+      "selected": 77,
+      "on": 77,
+      "wins": 35
+    },
+    "GL2": {
+      "selected": 18,
+      "on": 7,
+      "wins": 5
+    },
+    "GL3": {
+      "selected": 30,
+      "on": 29,
+      "wins": 15.5
+    },
+    "EN1": {
+      "selected": 42,
+      "on": 33,
+      "wins": 17.5
+    },
+    "EN2": {
+      "selected": 36,
+      "on": 36,
+      "wins": 21.5
+    },
+    "EN3": {
+      "selected": 27,
+      "on": 17,
+      "wins": 9
+    },
+    "SL1": {
+      "selected": 66,
+      "on": 65,
+      "wins": 32.5
+    },
+    "SL2": {
+      "selected": 40,
+      "on": 33,
+      "wins": 26
+    },
+    "SL3": {
+      "selected": 19,
+      "on": 1,
+      "wins": 9.5
+    },
+    "PR1": {
+      "selected": 28,
+      "on": 10,
+      "wins": 15
+    },
+    "PR2": {
+      "selected": 15,
+      "on": 4,
+      "wins": 7.5
+    },
+    "PR3": {
+      "selected": 71,
+      "on": 66,
+      "wins": 38
+    },
+    "LU1": {
+      "selected": 23,
+      "on": 4,
+      "wins": 7.5
+    },
+    "LU2": {
+      "selected": 30,
+      "on": 19,
+      "wins": 14
+    },
+    "LU3": {
+      "selected": 39,
+      "on": 30,
+      "wins": 20
+    },
+    "WR4": {
+      "selected": 36,
+      "on": 26,
+      "wins": 16.5
+    },
+    "GR4": {
+      "selected": 93,
+      "on": 93,
+      "wins": 54.5
+    },
+    "GL4": {
+      "selected": 56,
+      "on": 52,
+      "wins": 26
+    },
+    "GL5": {
+      "selected": 31,
+      "on": 24,
+      "wins": 18.5
+    },
+    "EN4": {
+      "selected": 29,
+      "on": 27,
+      "wins": 17.5
+    },
+    "SL4": {
+      "selected": 24,
+      "on": 14,
+      "wins": 9
+    },
+    "LU4": {
+      "selected": 33,
+      "on": 28,
+      "wins": 11
+    },
+    "LU5": {
+      "selected": 19,
+      "on": 3,
+      "wins": 7.5
+    }
+  },
+  "brier": 65.82031250000004,
+  "forecastCount": 244,
+  "calibration": [
+    {
+      "from": 0,
+      "to": 0.2,
+      "n": 1,
+      "predicted": 0.16666666666666666,
+      "actual": 0
+    },
+    {
+      "from": 0.2,
+      "to": 0.4,
+      "n": 4,
+      "predicted": 1.2916666666666667,
+      "actual": 1.5
+    },
+    {
+      "from": 0.4,
+      "to": 0.6,
+      "n": 27,
+      "predicted": 14.229166666666668,
+      "actual": 7
+    },
+    {
+      "from": 0.6,
+      "to": 0.8,
+      "n": 59,
+      "predicted": 41.979166666666664,
+      "actual": 17
+    },
+    {
+      "from": 0.8,
+      "to": 1,
+      "n": 153,
+      "predicted": 142.45833333333337,
+      "actual": 96.5
+    }
+  ],
+  "signals": {
+    "before": {
+      "char": 36,
+      "tier": 823,
+      "n": 1200
+    },
+    "gear": {
+      "char": 54,
+      "tier": 844,
+      "n": 1200
+    },
+    "after": {
+      "char": 316,
+      "tier": 823,
+      "n": 1200
+    }
+  },
+  "seatSwapFailures": 0,
+  "seconds": 286.93836969999995,
+  "layout": {
+    "sample": 100,
+    "positive": 7,
+    "skillSupported": 6,
+    "method": "First 100 seat-zero dealt situations. Same 36 arrangements and plan search for both groups. Arena-only conventional set fixed first. Independent hypothesis salt for validation. No future equipment or hidden opponent truth. This is modeled showdown advantage, NOT full-chip EV or human genius validation."
+  },
+  "metrics": {
+    "foldRate": 0.39,
+    "meanGear": 0.7,
+    "meanBrier": 0.26975537909836084,
+    "awkwardRate": 0.16785714285714284,
+    "largerRawSumWinRate": 0.5113636363636364
+  }
+}

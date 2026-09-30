@@ -1,0 +1,981 @@
+[
+  {
+    "hand": 0,
+    "hasAlternative": true,
+    "positive": false,
+    "trainingGap": -0.25,
+    "validationGap": -0.4137500000000025,
+    "winGap": -0.046875,
+    "skillContribution": 1.4231249999999973,
+    "conventional": [
+      {
+        "id": "GR2",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR1",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL5",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "unconventional": [
+      {
+        "id": "GR2",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR1",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL5",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "arena": "A4",
+    "tiers": [
+      0,
+      1,
+      2
+    ]
+  },
+  {
+    "hand": 1,
+    "hasAlternative": true,
+    "positive": false,
+    "trainingGap": 0.005000000000000782,
+    "validationGap": -0.0625,
+    "winGap": 0,
+    "skillContribution": -0.14750000000000218,
+    "conventional": [
+      {
+        "id": "GL3",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "LU4",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "SL1",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "unconventional": [
+      {
+        "id": "GL3",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "LU4",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL1",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "arena": "A5",
+    "tiers": [
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "hand": 2,
+    "hasAlternative": true,
+    "positive": false,
+    "trainingGap": -0.9850000000000001,
+    "validationGap": -0.14249999999999952,
+    "winGap": -0.015625,
+    "skillContribution": 1.1450000000000058,
+    "conventional": [
+      {
+        "id": "LU2",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR1",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "EN4",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 1
+        }
+      }
+    ],
+    "unconventional": [
+      {
+        "id": "LU2",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR1",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "EN4",
+        "raw": 8,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 1
+        }
+      }
+    ],
+    "arena": "A6",
+    "tiers": [
+      2,
+      2,
+      2
+    ]
+  },
+  {
+    "hand": 3,
+    "hasAlternative": true,
+    "positive": false,
+    "trainingGap": 8.881784197001252e-16,
+    "validationGap": -0.29937500000000306,
+    "winGap": -0.015625,
+    "skillContribution": -0.6600000000000035,
+    "conventional": [
+      {
+        "id": "SL1",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR4",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR3",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "unconventional": [
+      {
+        "id": "GR4",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR3",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "SL1",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "arena": "A2",
+    "tiers": [
+      1,
+      1,
+      2
+    ]
+  },
+  {
+    "hand": 4,
+    "hasAlternative": true,
+    "positive": false,
+    "trainingGap": 0.08999999999999986,
+    "validationGap": -0.18312499999999998,
+    "winGap": 0,
+    "skillContribution": 0.28062500000000146,
+    "conventional": [
+      {
+        "id": "LU2",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR1",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR4",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "unconventional": [
+      {
+        "id": "LU2",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR1",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR4",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 1
+        }
+      }
+    ],
+    "arena": "A2",
+    "tiers": [
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "hand": 5,
+    "hasAlternative": true,
+    "positive": false,
+    "trainingGap": -0.034999999999999254,
+    "validationGap": -0.4012500000000023,
+    "winGap": -0.046875,
+    "skillContribution": -0.11937500000000267,
+    "conventional": [
+      {
+        "id": "GL3",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GR4",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            },
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "PR1",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "unconventional": [
+      {
+        "id": "GR4",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 1
+        }
+      },
+      {
+        "id": "PR1",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "GL3",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "arena": "A6",
+    "tiers": [
+      0,
+      2,
+      2
+    ]
+  },
+  {
+    "hand": 6,
+    "hasAlternative": false,
+    "positive": false
+  },
+  {
+    "hand": 7,
+    "hasAlternative": true,
+    "positive": false,
+    "trainingGap": 0.04499999999999993,
+    "validationGap": 1.8806250000000007,
+    "winGap": 0.28125,
+    "skillContribution": 1.6981249999999988,
+    "conventional": [
+      {
+        "id": "LU3",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "EN2",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 1
+        }
+      },
+      {
+        "id": "GR4",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 1
+        }
+      }
+    ],
+    "unconventional": [
+      {
+        "id": "LU3",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "EN2",
+        "raw": 9,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [],
+          "mode": 1
+        }
+      },
+      {
+        "id": "GR4",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 1
+        }
+      }
+    ],
+    "arena": "A2",
+    "tiers": [
+      1,
+      2,
+      2
+    ]
+  },
+  {
+    "hand": 8,
+    "hasAlternative": true,
+    "positive": false,
+    "trainingGap": 0,
+    "validationGap": -0.012500000000000178,
+    "winGap": 0,
+    "skillContribution": -0.501875000000001,
+    "conventional": [
+      {
+        "id": "LU4",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR1",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "EN4",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      }
+    ],
+    "unconventional": [
+      {
+        "id": "LU4",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "EN4",
+        "raw": 6,
+        "gear": null,
+        "plan": {
+          "on": false,
+          "targets": [],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR1",
+        "raw": 7,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "arena": "A5",
+    "tiers": [
+      1,
+      1,
+      1
+    ]
+  },
+  {
+    "hand": 9,
+    "hasAlternative": true,
+    "positive": false,
+    "trainingGap": -0.004999999999999893,
+    "validationGap": 0.218125000000001,
+    "winGap": 0.015625,
+    "skillContribution": 0.9893750000000021,
+    "conventional": [
+      {
+        "id": "PR3",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 2
+            },
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "LU3",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 1
+            },
+            {
+              "side": "ally",
+              "pos": 2
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "WR2",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "unconventional": [
+      {
+        "id": "WR2",
+        "raw": 10,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 1
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "LU3",
+        "raw": 3,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "enemy",
+              "pos": 1
+            },
+            {
+              "side": "ally",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      },
+      {
+        "id": "PR3",
+        "raw": 4,
+        "gear": null,
+        "plan": {
+          "on": true,
+          "targets": [
+            {
+              "side": "ally",
+              "pos": 0
+            },
+            {
+              "side": "enemy",
+              "pos": 0
+            }
+          ],
+          "mode": 0
+        }
+      }
+    ],
+    "arena": "A3",
+    "tiers": [
+      0,
+      0,
+      1
+    ]
+  }
+]
