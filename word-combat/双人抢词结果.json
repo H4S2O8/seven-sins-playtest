@@ -1,0 +1,47 @@
+{
+  "seed": "0x8d4c3a21",
+  "trials": 10000,
+  "method": "双方各随机发12个基础词，保证一类基础攻击句；每轮两袋各20个互不重复词，基础55%/进阶40%/奇术5%，至少10基础；一方逐轮争夺全队伤转疗所需词，另一方争夺移除公开限时效果的词，轮流先选。只计算持词，未模拟AP、数字预算、施法时机或技能树合法性。一般路线数仅是词集合可得性，不等同于完整合法技能。",
+  "rows": [
+    {
+      "rounds": 2,
+      "trials": 10000,
+      "strongReadyPct": 0.02,
+      "counterReadyPct": 7.99,
+      "counterGivenStrongPct": 0,
+      "offersWithDifferentGoalProgressPct": 88.72,
+      "averageCompletedWordSets": 3.22,
+      "generalBagChoiceClearlyDifferentPct": 91.28
+    },
+    {
+      "rounds": 4,
+      "trials": 10000,
+      "strongReadyPct": 1.66,
+      "counterReadyPct": 27.49,
+      "counterGivenStrongPct": 30.72,
+      "offersWithDifferentGoalProgressPct": 84.01,
+      "averageCompletedWordSets": 6.51,
+      "generalBagChoiceClearlyDifferentPct": 90.44
+    },
+    {
+      "rounds": 6,
+      "trials": 10000,
+      "strongReadyPct": 14,
+      "counterReadyPct": 51.59,
+      "counterGivenStrongPct": 50.29,
+      "offersWithDifferentGoalProgressPct": 76.81,
+      "averageCompletedWordSets": 9.7,
+      "generalBagChoiceClearlyDifferentPct": 88.07
+    },
+    {
+      "rounds": 8,
+      "trials": 10000,
+      "strongReadyPct": 36.53,
+      "counterReadyPct": 71.79,
+      "counterGivenStrongPct": 72.93,
+      "offersWithDifferentGoalProgressPct": 68.67,
+      "averageCompletedWordSets": 12.15,
+      "generalBagChoiceClearlyDifferentPct": 82.39
+    }
+  ]
+}

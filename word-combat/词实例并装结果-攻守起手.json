@@ -1,0 +1,39 @@
+{
+  "seed": "0x714da95c",
+  "trials": 20000,
+  "method": "20词袋允许重复，基础55%进阶40%奇术5%，每袋至少10基础。常用语法及基础效果相对权重3，选中进阶连接/移除词权重2，其余1；开局12基础词随机包含一条基础攻击和一条自身治疗或自身减伤的完整句，其余随机可重复。两条句使用的词实例互不共用。只审持词，不审AP、预算和战斗。",
+  "rows": [
+    {
+      "rounds": 2,
+      "attackerReadyPct": 64.43,
+      "attackSamples": 12886,
+      "defenderAnyWordCounterPct": 32.33,
+      "defenderCounterAndSeparateTargetedAttackPct": 6.29,
+      "defenderTargetedAttackReadyPct": 37.5
+    },
+    {
+      "rounds": 4,
+      "attackerReadyPct": 87.61,
+      "attackSamples": 17521,
+      "defenderAnyWordCounterPct": 68.68,
+      "defenderCounterAndSeparateTargetedAttackPct": 30.77,
+      "defenderTargetedAttackReadyPct": 59.49
+    },
+    {
+      "rounds": 6,
+      "attackerReadyPct": 95.93,
+      "attackSamples": 19186,
+      "defenderAnyWordCounterPct": 88.23,
+      "defenderCounterAndSeparateTargetedAttackPct": 60,
+      "defenderTargetedAttackReadyPct": 77.09
+    },
+    {
+      "rounds": 8,
+      "attackerReadyPct": 98.6,
+      "attackSamples": 19720,
+      "defenderAnyWordCounterPct": 95.43,
+      "defenderCounterAndSeparateTargetedAttackPct": 79.55,
+      "defenderTargetedAttackReadyPct": 88.29
+    }
+  ]
+}
