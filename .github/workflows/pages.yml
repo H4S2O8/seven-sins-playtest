@@ -32,6 +32,8 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build:web
+      - name: Add the 词战 web build (Godot export in word-combat-lab/web)
+        run: mkdir -p ../sin-squad-v3/word-combat && cp -r ../word-combat-lab/web/. ../sin-squad-v3/word-combat/
       - uses: actions/upload-pages-artifact@v3
         if: github.ref == 'refs/heads/main'
         with:

@@ -1,0 +1,7031 @@
+{
+  "ap": 30,
+  "results": [
+    {
+      "attack": "单点",
+      "base_score": 20,
+      "base_v": 20.0,
+      "cost": 30,
+      "counters": [
+        {
+          "name": "改道·全队·每次→来源",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 26,
+              "def_score": 0,
+              "frac": 0.866666666666667,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "改道·自身·首次→来源",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 18,
+              "def_score": 0,
+              "frac": 0.6,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 16,
+              "cost": 28,
+              "def_score": 0,
+              "frac": 0.933333333333333,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 16.0
+            }
+          ]
+        },
+        {
+          "name": "改道·全队·每次→敌方最高生命",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 26,
+              "def_score": 0,
+              "frac": 0.866666666666667,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "转伤为疗·全队·每次",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 27,
+              "def_score": 0,
+              "frac": 0.9,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "回敬·全队·等量·每次",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 20,
+              "cost": 17,
+              "def_score": 17,
+              "frac": 0.566666666666667,
+              "neutral": true,
+              "power": 0,
+              "reversed": false,
+              "start": 1,
+              "trade": true,
+              "v": 3.0
+            }
+          ]
+        },
+        {
+          "name": "回敬·全队·双倍·每次",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 20,
+              "cost": 21,
+              "def_score": 17,
+              "frac": 0.7,
+              "neutral": true,
+              "power": 0,
+              "reversed": false,
+              "start": 2,
+              "trade": true,
+              "v": 3.0
+            }
+          ]
+        },
+        {
+          "name": "减伤·全队·按比例",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.666666666666667,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "护盾·全队",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 21,
+              "def_score": 0,
+              "frac": 0.7,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "治疗·全队",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.666666666666667,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 3,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "护盾·全队·双倍",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.666666666666667,
+              "neutral": true,
+              "power": 5,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "改道·全队·每次→来源·双倍",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 25,
+              "def_score": 0,
+              "frac": 0.833333333333333,
+              "neutral": true,
+              "power": 5,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "转伤为疗·全队·每次·双倍",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 26,
+              "def_score": 0,
+              "frac": 0.866666666666667,
+              "neutral": true,
+              "power": 5,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "打断·双倍力度",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 19,
+              "cost": 18,
+              "def_score": 0,
+              "frac": 0.6,
+              "neutral": false,
+              "power": 5,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 19.0
+            },
+            {
+              "att_score": 18,
+              "cost": 23,
+              "def_score": 0,
+              "frac": 0.766666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 0,
+              "cost": 28,
+              "def_score": 0,
+              "frac": 0.933333333333333,
+              "neutral": true,
+              "power": 15,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "打断",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 19,
+              "def_score": 0,
+              "frac": 0.633333333333333,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 16,
+              "cost": 29,
+              "def_score": 0,
+              "frac": 0.966666666666667,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 16.0
+            }
+          ]
+        },
+        {
+          "name": "延后",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 20,
+              "cost": 10,
+              "def_score": 0,
+              "frac": 0.333333333333333,
+              "neutral": false,
+              "power": 4,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 20.0
+            },
+            {
+              "att_score": 20,
+              "cost": 14,
+              "def_score": 0,
+              "frac": 0.466666666666667,
+              "neutral": false,
+              "power": 8,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 20.0
+            },
+            {
+              "att_score": 20,
+              "cost": 18,
+              "def_score": 0,
+              "frac": 0.6,
+              "neutral": false,
+              "power": 12,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 20.0
+            },
+            {
+              "att_score": 20,
+              "cost": 22,
+              "def_score": 0,
+              "frac": 0.733333333333333,
+              "neutral": false,
+              "power": 16,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 20.0
+            },
+            {
+              "att_score": 17,
+              "cost": 25,
+              "def_score": 0,
+              "frac": 0.833333333333333,
+              "neutral": false,
+              "power": 19,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 17.0
+            }
+          ]
+        },
+        {
+          "name": "沉默攻击者",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 17,
+              "def_score": 0,
+              "frac": 0.566666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 16,
+              "cost": 27,
+              "def_score": 0,
+              "frac": 0.9,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 16.0
+            }
+          ]
+        },
+        {
+          "name": "见招收税",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 27,
+              "def_score": 0,
+              "frac": 0.9,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            }
+          ]
+        },
+        {
+          "name": "遗志",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 23,
+              "def_score": 0,
+              "frac": 0.766666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            }
+          ]
+        },
+        {
+          "name": "反击·全体打击",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 21,
+              "def_score": 0,
+              "frac": 0.7,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            }
+          ]
+        },
+        {
+          "name": "反击·单点打击",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 17,
+              "def_score": 0,
+              "frac": 0.566666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 0,
+              "cost": 27,
+              "def_score": 17,
+              "frac": 0.9,
+              "neutral": true,
+              "power": 20,
+              "reversed": true,
+              "start": 2,
+              "trade": false,
+              "v": -17.0
+            }
+          ]
+        }
+      ],
+      "text": "对所选的一个敌方随从造成 23 点伤害",
+      "windup": 3
+    },
+    {
+      "attack": "单点·双倍",
+      "base_score": 20,
+      "base_v": 20.0,
+      "cost": 30,
+      "counters": [
+        {
+          "name": "改道·全队·每次→来源",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 26,
+              "def_score": 0,
+              "frac": 0.866666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            }
+          ]
+        },
+        {
+          "name": "改道·自身·首次→来源",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 18,
+              "def_score": 0,
+              "frac": 0.6,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 16,
+              "cost": 28,
+              "def_score": 0,
+              "frac": 0.933333333333333,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 16.0
+            }
+          ]
+        },
+        {
+          "name": "改道·全队·每次→敌方最高生命",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 26,
+              "def_score": 0,
+              "frac": 0.866666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            }
+          ]
+        },
+        {
+          "name": "转伤为疗·全队·每次",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 27,
+              "def_score": 0,
+              "frac": 0.9,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            }
+          ]
+        },
+        {
+          "name": "回敬·全队·等量·每次",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 20,
+              "cost": 17,
+              "def_score": 17,
+              "frac": 0.566666666666667,
+              "neutral": true,
+              "power": 0,
+              "reversed": false,
+              "start": 1,
+              "trade": true,
+              "v": 3.0
+            }
+          ]
+        },
+        {
+          "name": "回敬·全队·双倍·每次",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 20,
+              "cost": 21,
+              "def_score": 17,
+              "frac": 0.7,
+              "neutral": true,
+              "power": 0,
+              "reversed": false,
+              "start": 2,
+              "trade": true,
+              "v": 3.0
+            }
+          ]
+        },
+        {
+          "name": "减伤·全队·按比例",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.666666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 16,
+              "cost": 30,
+              "def_score": 0,
+              "frac": 1.0,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 3,
+              "trade": false,
+              "v": 16.0
+            }
+          ]
+        },
+        {
+          "name": "护盾·全队",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 21,
+              "def_score": 0,
+              "frac": 0.7,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            }
+          ]
+        },
+        {
+          "name": "治疗·全队",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.666666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 16,
+              "cost": 30,
+              "def_score": 0,
+              "frac": 1.0,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 3,
+              "trade": false,
+              "v": 16.0
+            }
+          ]
+        },
+        {
+          "name": "护盾·全队·双倍",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 19,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.666666666666667,
+              "neutral": false,
+              "power": 5,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 19.0
+            },
+            {
+              "att_score": 18,
+              "cost": 25,
+              "def_score": 0,
+              "frac": 0.833333333333333,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 0,
+              "cost": 30,
+              "def_score": 0,
+              "frac": 1.0,
+              "neutral": true,
+              "power": 15,
+              "reversed": false,
+              "start": 3,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "改道·全队·每次→来源·双倍",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 19,
+              "cost": 25,
+              "def_score": 0,
+              "frac": 0.833333333333333,
+              "neutral": false,
+              "power": 5,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 19.0
+            },
+            {
+              "att_score": 18,
+              "cost": 30,
+              "def_score": 17,
+              "frac": 1.0,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 3,
+              "trade": true,
+              "v": 1.0
+            }
+          ]
+        },
+        {
+          "name": "转伤为疗·全队·每次·双倍",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 26,
+              "def_score": 0,
+              "frac": 0.866666666666667,
+              "neutral": true,
+              "power": 5,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "打断·双倍力度",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 19,
+              "cost": 18,
+              "def_score": 0,
+              "frac": 0.6,
+              "neutral": false,
+              "power": 5,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 19.0
+            },
+            {
+              "att_score": 18,
+              "cost": 23,
+              "def_score": 0,
+              "frac": 0.766666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 0,
+              "cost": 28,
+              "def_score": 0,
+              "frac": 0.933333333333333,
+              "neutral": true,
+              "power": 15,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "打断",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 19,
+              "def_score": 0,
+              "frac": 0.633333333333333,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 16,
+              "cost": 29,
+              "def_score": 0,
+              "frac": 0.966666666666667,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 16.0
+            }
+          ]
+        },
+        {
+          "name": "延后",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 20,
+              "cost": 10,
+              "def_score": 0,
+              "frac": 0.333333333333333,
+              "neutral": false,
+              "power": 4,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 20.0
+            },
+            {
+              "att_score": 20,
+              "cost": 14,
+              "def_score": 0,
+              "frac": 0.466666666666667,
+              "neutral": false,
+              "power": 8,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 20.0
+            },
+            {
+              "att_score": 20,
+              "cost": 18,
+              "def_score": 0,
+              "frac": 0.6,
+              "neutral": false,
+              "power": 12,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 20.0
+            },
+            {
+              "att_score": 20,
+              "cost": 22,
+              "def_score": 0,
+              "frac": 0.733333333333333,
+              "neutral": false,
+              "power": 16,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 20.0
+            },
+            {
+              "att_score": 17,
+              "cost": 25,
+              "def_score": 0,
+              "frac": 0.833333333333333,
+              "neutral": false,
+              "power": 19,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 17.0
+            }
+          ]
+        },
+        {
+          "name": "沉默攻击者",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 17,
+              "def_score": 0,
+              "frac": 0.566666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 16,
+              "cost": 27,
+              "def_score": 0,
+              "frac": 0.9,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 16.0
+            }
+          ]
+        },
+        {
+          "name": "见招收税",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 27,
+              "def_score": 0,
+              "frac": 0.9,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            }
+          ]
+        },
+        {
+          "name": "遗志",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 23,
+              "def_score": 0,
+              "frac": 0.766666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            }
+          ]
+        },
+        {
+          "name": "反击·全体打击",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 21,
+              "def_score": 0,
+              "frac": 0.7,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            }
+          ]
+        },
+        {
+          "name": "反击·单点打击",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 17,
+              "def_score": 0,
+              "frac": 0.566666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 0,
+              "cost": 27,
+              "def_score": 17,
+              "frac": 0.9,
+              "neutral": true,
+              "power": 20,
+              "reversed": true,
+              "start": 2,
+              "trade": false,
+              "v": -17.0
+            }
+          ]
+        }
+      ],
+      "text": "对所选的一个敌方随从造成 ×2 19 点伤害",
+      "windup": 3
+    },
+    {
+      "attack": "单点·双倍×2",
+      "base_score": 20,
+      "base_v": 20.0,
+      "cost": 30,
+      "counters": [
+        {
+          "name": "改道·全队·每次→来源",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 26,
+              "def_score": 0,
+              "frac": 0.866666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            }
+          ]
+        },
+        {
+          "name": "改道·自身·首次→来源",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 18,
+              "def_score": 0,
+              "frac": 0.6,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 16,
+              "cost": 28,
+              "def_score": 0,
+              "frac": 0.933333333333333,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 16.0
+            }
+          ]
+        },
+        {
+          "name": "改道·全队·每次→敌方最高生命",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 26,
+              "def_score": 0,
+              "frac": 0.866666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            }
+          ]
+        },
+        {
+          "name": "转伤为疗·全队·每次",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 27,
+              "def_score": 0,
+              "frac": 0.9,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            }
+          ]
+        },
+        {
+          "name": "回敬·全队·等量·每次",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 20,
+              "cost": 17,
+              "def_score": 17,
+              "frac": 0.566666666666667,
+              "neutral": true,
+              "power": 0,
+              "reversed": false,
+              "start": 1,
+              "trade": true,
+              "v": 3.0
+            }
+          ]
+        },
+        {
+          "name": "回敬·全队·双倍·每次",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 20,
+              "cost": 21,
+              "def_score": 17,
+              "frac": 0.7,
+              "neutral": true,
+              "power": 0,
+              "reversed": false,
+              "start": 2,
+              "trade": true,
+              "v": 3.0
+            }
+          ]
+        },
+        {
+          "name": "减伤·全队·按比例",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.666666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 16,
+              "cost": 30,
+              "def_score": 0,
+              "frac": 1.0,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 3,
+              "trade": false,
+              "v": 16.0
+            }
+          ]
+        },
+        {
+          "name": "护盾·全队",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 21,
+              "def_score": 0,
+              "frac": 0.7,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            }
+          ]
+        },
+        {
+          "name": "治疗·全队",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.666666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 16,
+              "cost": 30,
+              "def_score": 0,
+              "frac": 1.0,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 3,
+              "trade": false,
+              "v": 16.0
+            }
+          ]
+        },
+        {
+          "name": "护盾·全队·双倍",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 19,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.666666666666667,
+              "neutral": false,
+              "power": 5,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 19.0
+            },
+            {
+              "att_score": 18,
+              "cost": 25,
+              "def_score": 0,
+              "frac": 0.833333333333333,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 17,
+              "cost": 30,
+              "def_score": 0,
+              "frac": 1.0,
+              "neutral": false,
+              "power": 15,
+              "reversed": false,
+              "start": 3,
+              "trade": false,
+              "v": 17.0
+            }
+          ]
+        },
+        {
+          "name": "改道·全队·每次→来源·双倍",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 19,
+              "cost": 25,
+              "def_score": 0,
+              "frac": 0.833333333333333,
+              "neutral": false,
+              "power": 5,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 19.0
+            },
+            {
+              "att_score": 18,
+              "cost": 30,
+              "def_score": 17,
+              "frac": 1.0,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 3,
+              "trade": true,
+              "v": 1.0
+            }
+          ]
+        },
+        {
+          "name": "转伤为疗·全队·每次·双倍",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 19,
+              "cost": 26,
+              "def_score": 0,
+              "frac": 0.866666666666667,
+              "neutral": false,
+              "power": 5,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 19.0
+            }
+          ]
+        },
+        {
+          "name": "打断·双倍力度",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 19,
+              "cost": 18,
+              "def_score": 0,
+              "frac": 0.6,
+              "neutral": false,
+              "power": 5,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 19.0
+            },
+            {
+              "att_score": 18,
+              "cost": 23,
+              "def_score": 0,
+              "frac": 0.766666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 0,
+              "cost": 28,
+              "def_score": 0,
+              "frac": 0.933333333333333,
+              "neutral": true,
+              "power": 15,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "打断",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 19,
+              "def_score": 0,
+              "frac": 0.633333333333333,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 16,
+              "cost": 29,
+              "def_score": 0,
+              "frac": 0.966666666666667,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 16.0
+            }
+          ]
+        },
+        {
+          "name": "延后",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 20,
+              "cost": 10,
+              "def_score": 0,
+              "frac": 0.333333333333333,
+              "neutral": false,
+              "power": 4,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 20.0
+            },
+            {
+              "att_score": 20,
+              "cost": 14,
+              "def_score": 0,
+              "frac": 0.466666666666667,
+              "neutral": false,
+              "power": 8,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 20.0
+            },
+            {
+              "att_score": 20,
+              "cost": 18,
+              "def_score": 0,
+              "frac": 0.6,
+              "neutral": false,
+              "power": 12,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 20.0
+            },
+            {
+              "att_score": 20,
+              "cost": 22,
+              "def_score": 0,
+              "frac": 0.733333333333333,
+              "neutral": false,
+              "power": 16,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 20.0
+            },
+            {
+              "att_score": 17,
+              "cost": 25,
+              "def_score": 0,
+              "frac": 0.833333333333333,
+              "neutral": false,
+              "power": 19,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 17.0
+            }
+          ]
+        },
+        {
+          "name": "沉默攻击者",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 17,
+              "def_score": 0,
+              "frac": 0.566666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 16,
+              "cost": 27,
+              "def_score": 0,
+              "frac": 0.9,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 16.0
+            }
+          ]
+        },
+        {
+          "name": "见招收税",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 27,
+              "def_score": 0,
+              "frac": 0.9,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            }
+          ]
+        },
+        {
+          "name": "遗志",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 23,
+              "def_score": 0,
+              "frac": 0.766666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            }
+          ]
+        },
+        {
+          "name": "反击·全体打击",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 21,
+              "def_score": 0,
+              "frac": 0.7,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            }
+          ]
+        },
+        {
+          "name": "反击·单点打击",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 17,
+              "def_score": 0,
+              "frac": 0.566666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 0,
+              "cost": 27,
+              "def_score": 17,
+              "frac": 0.9,
+              "neutral": true,
+              "power": 20,
+              "reversed": true,
+              "start": 2,
+              "trade": false,
+              "v": -17.0
+            }
+          ]
+        }
+      ],
+      "text": "对所选的一个敌方随从造成 ×4 15 点伤害",
+      "windup": 3
+    },
+    {
+      "attack": "单点·双倍·重复",
+      "base_score": 20,
+      "base_v": 20.0,
+      "cost": 29,
+      "counters": [
+        {
+          "name": "改道·全队·每次→来源",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 26,
+              "def_score": 0,
+              "frac": 0.896551724137931,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            }
+          ]
+        },
+        {
+          "name": "改道·自身·首次→来源",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 18,
+              "def_score": 0,
+              "frac": 0.620689655172414,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 16,
+              "cost": 28,
+              "def_score": 0,
+              "frac": 0.96551724137931,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 16.0
+            }
+          ]
+        },
+        {
+          "name": "改道·全队·每次→敌方最高生命",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 26,
+              "def_score": 0,
+              "frac": 0.896551724137931,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            }
+          ]
+        },
+        {
+          "name": "转伤为疗·全队·每次",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 27,
+              "def_score": 0,
+              "frac": 0.931034482758621,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "回敬·全队·等量·每次",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 20,
+              "cost": 17,
+              "def_score": 21,
+              "frac": 0.586206896551724,
+              "neutral": true,
+              "power": 0,
+              "reversed": true,
+              "start": 1,
+              "trade": true,
+              "v": -1.0
+            }
+          ]
+        },
+        {
+          "name": "回敬·全队·双倍·每次",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 20,
+              "cost": 21,
+              "def_score": 21,
+              "frac": 0.724137931034483,
+              "neutral": true,
+              "power": 0,
+              "reversed": true,
+              "start": 2,
+              "trade": true,
+              "v": -1.0
+            }
+          ]
+        },
+        {
+          "name": "减伤·全队·按比例",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.689655172413793,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 16,
+              "cost": 30,
+              "def_score": 0,
+              "frac": 1.03448275862069,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 3,
+              "trade": false,
+              "v": 16.0
+            }
+          ]
+        },
+        {
+          "name": "护盾·全队",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 21,
+              "def_score": 0,
+              "frac": 0.724137931034483,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            }
+          ]
+        },
+        {
+          "name": "治疗·全队",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.689655172413793,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 0,
+              "cost": 30,
+              "def_score": 0,
+              "frac": 1.03448275862069,
+              "neutral": true,
+              "power": 20,
+              "reversed": false,
+              "start": 3,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "护盾·全队·双倍",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.689655172413793,
+              "neutral": true,
+              "power": 5,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "改道·全队·每次→来源·双倍",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 25,
+              "def_score": 0,
+              "frac": 0.862068965517241,
+              "neutral": true,
+              "power": 5,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "转伤为疗·全队·每次·双倍",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 26,
+              "def_score": 0,
+              "frac": 0.896551724137931,
+              "neutral": true,
+              "power": 5,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "打断·双倍力度",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 19,
+              "cost": 18,
+              "def_score": 0,
+              "frac": 0.620689655172414,
+              "neutral": false,
+              "power": 5,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 19.0
+            },
+            {
+              "att_score": 18,
+              "cost": 23,
+              "def_score": 0,
+              "frac": 0.793103448275862,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 0,
+              "cost": 28,
+              "def_score": 0,
+              "frac": 0.96551724137931,
+              "neutral": true,
+              "power": 15,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "打断",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 19,
+              "def_score": 0,
+              "frac": 0.655172413793103,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 16,
+              "cost": 29,
+              "def_score": 0,
+              "frac": 1.0,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 16.0
+            }
+          ]
+        },
+        {
+          "name": "延后",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 20,
+              "cost": 10,
+              "def_score": 0,
+              "frac": 0.344827586206897,
+              "neutral": false,
+              "power": 4,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 20.0
+            },
+            {
+              "att_score": 20,
+              "cost": 14,
+              "def_score": 0,
+              "frac": 0.482758620689655,
+              "neutral": false,
+              "power": 8,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 20.0
+            },
+            {
+              "att_score": 20,
+              "cost": 18,
+              "def_score": 0,
+              "frac": 0.620689655172414,
+              "neutral": false,
+              "power": 12,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 20.0
+            },
+            {
+              "att_score": 0,
+              "cost": 22,
+              "def_score": 0,
+              "frac": 0.758620689655172,
+              "neutral": true,
+              "power": 16,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "沉默攻击者",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 17,
+              "def_score": 0,
+              "frac": 0.586206896551724,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 16,
+              "cost": 27,
+              "def_score": 0,
+              "frac": 0.931034482758621,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 16.0
+            }
+          ]
+        },
+        {
+          "name": "见招收税",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 27,
+              "def_score": 0,
+              "frac": 0.931034482758621,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            }
+          ]
+        },
+        {
+          "name": "遗志",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 23,
+              "def_score": 0,
+              "frac": 0.793103448275862,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            }
+          ]
+        },
+        {
+          "name": "反击·全体打击",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 21,
+              "def_score": 0,
+              "frac": 0.724137931034483,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            }
+          ]
+        },
+        {
+          "name": "反击·单点打击",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 17,
+              "def_score": 0,
+              "frac": 0.586206896551724,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 16,
+              "cost": 27,
+              "def_score": 18,
+              "frac": 0.931034482758621,
+              "neutral": true,
+              "power": 20,
+              "reversed": true,
+              "start": 2,
+              "trade": true,
+              "v": -2.0
+            }
+          ]
+        }
+      ],
+      "text": "对所选的一个敌方随从造成 ×2 7 点伤害，再重复 1 次（每次间隔2秒，每次重新付数字）",
+      "windup": 2
+    },
+    {
+      "attack": "单点·重复×3",
+      "base_score": 0,
+      "base_v": 0.0,
+      "cost": 27,
+      "counters": [
+        {
+          "name": "改道·全队·每次→来源",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 26,
+              "def_score": 0,
+              "frac": 0.962962962962963,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "改道·自身·首次→来源",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 18,
+              "def_score": 0,
+              "frac": 0.666666666666667,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "改道·全队·每次→敌方最高生命",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 26,
+              "def_score": 0,
+              "frac": 0.962962962962963,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "转伤为疗·全队·每次",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 27,
+              "def_score": 0,
+              "frac": 1.0,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "回敬·全队·等量·每次",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 17,
+              "def_score": 0,
+              "frac": 0.62962962962963,
+              "neutral": true,
+              "power": 0,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "回敬·全队·双倍·每次",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 21,
+              "def_score": 0,
+              "frac": 0.777777777777778,
+              "neutral": true,
+              "power": 0,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "减伤·全队·按比例",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.740740740740741,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "护盾·全队",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 21,
+              "def_score": 0,
+              "frac": 0.777777777777778,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "治疗·全队",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.740740740740741,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "护盾·全队·双倍",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.740740740740741,
+              "neutral": true,
+              "power": 5,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "改道·全队·每次→来源·双倍",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 25,
+              "def_score": 0,
+              "frac": 0.925925925925926,
+              "neutral": true,
+              "power": 5,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "转伤为疗·全队·每次·双倍",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 26,
+              "def_score": 0,
+              "frac": 0.962962962962963,
+              "neutral": true,
+              "power": 5,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "打断·双倍力度",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 18,
+              "def_score": 0,
+              "frac": 0.666666666666667,
+              "neutral": true,
+              "power": 5,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "打断",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 19,
+              "def_score": 0,
+              "frac": 0.703703703703704,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "延后",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 10,
+              "def_score": 0,
+              "frac": 0.37037037037037,
+              "neutral": true,
+              "power": 4,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "沉默攻击者",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 17,
+              "def_score": 0,
+              "frac": 0.62962962962963,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "见招收税",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 27,
+              "def_score": 0,
+              "frac": 1.0,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "遗志",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 23,
+              "def_score": 0,
+              "frac": 0.851851851851852,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "反击·全体打击",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 21,
+              "def_score": 0,
+              "frac": 0.777777777777778,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "反击·单点打击",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 17,
+              "def_score": 0,
+              "frac": 0.62962962962963,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        }
+      ],
+      "text": "对所选的一个敌方随从造成 2 点伤害，再重复 3 次（每次间隔2秒，每次重新付数字）",
+      "windup": 2
+    },
+    {
+      "attack": "全体",
+      "base_score": 0,
+      "base_v": 0.0,
+      "cost": 30,
+      "counters": [
+        {
+          "name": "改道·全队·每次→来源",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 26,
+              "def_score": 17,
+              "frac": 0.866666666666667,
+              "neutral": true,
+              "power": 10,
+              "reversed": true,
+              "start": 2,
+              "trade": false,
+              "v": -17.0
+            }
+          ]
+        },
+        {
+          "name": "改道·自身·首次→来源",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 72,
+              "cost": 18,
+              "def_score": 0,
+              "frac": 0.6,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 72.0
+            },
+            {
+              "att_score": 64,
+              "cost": 28,
+              "def_score": 17,
+              "frac": 0.933333333333333,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 2,
+              "trade": true,
+              "v": 47.0
+            }
+          ]
+        },
+        {
+          "name": "改道·全队·每次→敌方最高生命",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 26,
+              "def_score": 0,
+              "frac": 0.866666666666667,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "转伤为疗·全队·每次",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 27,
+              "def_score": 0,
+              "frac": 0.9,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "回敬·全队·等量·每次",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 17,
+              "def_score": 17,
+              "frac": 0.566666666666667,
+              "neutral": true,
+              "power": 0,
+              "reversed": true,
+              "start": 1,
+              "trade": false,
+              "v": -17.0
+            }
+          ]
+        },
+        {
+          "name": "回敬·全队·双倍·每次",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 21,
+              "def_score": 17,
+              "frac": 0.7,
+              "neutral": true,
+              "power": 0,
+              "reversed": true,
+              "start": 2,
+              "trade": false,
+              "v": -17.0
+            }
+          ]
+        },
+        {
+          "name": "减伤·全队·按比例",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.666666666666667,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "护盾·全队",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 21,
+              "def_score": 0,
+              "frac": 0.7,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "治疗·全队",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.666666666666667,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 3,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "护盾·全队·双倍",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.666666666666667,
+              "neutral": true,
+              "power": 5,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "改道·全队·每次→来源·双倍",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 25,
+              "def_score": 17,
+              "frac": 0.833333333333333,
+              "neutral": true,
+              "power": 5,
+              "reversed": true,
+              "start": 2,
+              "trade": false,
+              "v": -17.0
+            }
+          ]
+        },
+        {
+          "name": "转伤为疗·全队·每次·双倍",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 26,
+              "def_score": 0,
+              "frac": 0.866666666666667,
+              "neutral": true,
+              "power": 5,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "打断·双倍力度",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 95,
+              "cost": 18,
+              "def_score": 0,
+              "frac": 0.6,
+              "neutral": false,
+              "power": 5,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 95.0
+            },
+            {
+              "att_score": 90,
+              "cost": 23,
+              "def_score": 0,
+              "frac": 0.766666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 90.0
+            },
+            {
+              "att_score": 0,
+              "cost": 28,
+              "def_score": 0,
+              "frac": 0.933333333333333,
+              "neutral": true,
+              "power": 15,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "打断",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 90,
+              "cost": 19,
+              "def_score": 0,
+              "frac": 0.633333333333333,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 90.0
+            },
+            {
+              "att_score": 80,
+              "cost": 29,
+              "def_score": 0,
+              "frac": 0.966666666666667,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 80.0
+            }
+          ]
+        },
+        {
+          "name": "延后",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 76,
+              "cost": 10,
+              "def_score": 0,
+              "frac": 0.333333333333333,
+              "neutral": false,
+              "power": 4,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 76.0
+            },
+            {
+              "att_score": 72,
+              "cost": 14,
+              "def_score": 0,
+              "frac": 0.466666666666667,
+              "neutral": false,
+              "power": 8,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 72.0
+            },
+            {
+              "att_score": 68,
+              "cost": 18,
+              "def_score": 0,
+              "frac": 0.6,
+              "neutral": false,
+              "power": 12,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 68.0
+            },
+            {
+              "att_score": 64,
+              "cost": 22,
+              "def_score": 0,
+              "frac": 0.733333333333333,
+              "neutral": false,
+              "power": 16,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 64.0
+            },
+            {
+              "att_score": 81,
+              "cost": 25,
+              "def_score": 0,
+              "frac": 0.833333333333333,
+              "neutral": false,
+              "power": 19,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 81.0
+            }
+          ]
+        },
+        {
+          "name": "沉默攻击者",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 90,
+              "cost": 17,
+              "def_score": 0,
+              "frac": 0.566666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 90.0
+            },
+            {
+              "att_score": 80,
+              "cost": 27,
+              "def_score": 0,
+              "frac": 0.9,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 80.0
+            }
+          ]
+        },
+        {
+          "name": "见招收税",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 90,
+              "cost": 27,
+              "def_score": 0,
+              "frac": 0.9,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 90.0
+            }
+          ]
+        },
+        {
+          "name": "遗志",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 90,
+              "cost": 23,
+              "def_score": 0,
+              "frac": 0.766666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 90.0
+            }
+          ]
+        },
+        {
+          "name": "反击·全体打击",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 90,
+              "cost": 21,
+              "def_score": 0,
+              "frac": 0.7,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 90.0
+            }
+          ]
+        },
+        {
+          "name": "反击·单点打击",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 90,
+              "cost": 17,
+              "def_score": 0,
+              "frac": 0.566666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 90.0
+            },
+            {
+              "att_score": 0,
+              "cost": 27,
+              "def_score": 17,
+              "frac": 0.9,
+              "neutral": true,
+              "power": 20,
+              "reversed": true,
+              "start": 2,
+              "trade": false,
+              "v": -17.0
+            }
+          ]
+        }
+      ],
+      "text": "对全部敌方随从造成 19 点伤害",
+      "windup": 3
+    },
+    {
+      "attack": "全体·双倍",
+      "base_score": 100,
+      "base_v": 100.0,
+      "cost": 30,
+      "counters": [
+        {
+          "name": "改道·全队·每次→来源",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 90,
+              "cost": 26,
+              "def_score": 17,
+              "frac": 0.866666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": true,
+              "v": 73.0
+            }
+          ]
+        },
+        {
+          "name": "改道·自身·首次→来源",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 90,
+              "cost": 18,
+              "def_score": 0,
+              "frac": 0.6,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 90.0
+            },
+            {
+              "att_score": 64,
+              "cost": 28,
+              "def_score": 17,
+              "frac": 0.933333333333333,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 2,
+              "trade": true,
+              "v": 47.0
+            }
+          ]
+        },
+        {
+          "name": "改道·全队·每次→敌方最高生命",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 90,
+              "cost": 26,
+              "def_score": 0,
+              "frac": 0.866666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 90.0
+            }
+          ]
+        },
+        {
+          "name": "转伤为疗·全队·每次",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 27,
+              "def_score": 0,
+              "frac": 0.9,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "回敬·全队·等量·每次",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 100,
+              "cost": 17,
+              "def_score": 17,
+              "frac": 0.566666666666667,
+              "neutral": false,
+              "power": 0,
+              "reversed": false,
+              "start": 1,
+              "trade": true,
+              "v": 83.0
+            }
+          ]
+        },
+        {
+          "name": "回敬·全队·双倍·每次",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 100,
+              "cost": 21,
+              "def_score": 17,
+              "frac": 0.7,
+              "neutral": false,
+              "power": 0,
+              "reversed": false,
+              "start": 2,
+              "trade": true,
+              "v": 83.0
+            }
+          ]
+        },
+        {
+          "name": "减伤·全队·按比例",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 90,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.666666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 90.0
+            },
+            {
+              "att_score": 0,
+              "cost": 30,
+              "def_score": 0,
+              "frac": 1.0,
+              "neutral": true,
+              "power": 20,
+              "reversed": false,
+              "start": 3,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "护盾·全队",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 90,
+              "cost": 21,
+              "def_score": 0,
+              "frac": 0.7,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 90.0
+            }
+          ]
+        },
+        {
+          "name": "治疗·全队",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 90,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.666666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 90.0
+            },
+            {
+              "att_score": 0,
+              "cost": 30,
+              "def_score": 0,
+              "frac": 1.0,
+              "neutral": true,
+              "power": 20,
+              "reversed": false,
+              "start": 3,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "护盾·全队·双倍",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 95,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.666666666666667,
+              "neutral": false,
+              "power": 5,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 95.0
+            },
+            {
+              "att_score": 0,
+              "cost": 25,
+              "def_score": 0,
+              "frac": 0.833333333333333,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "改道·全队·每次→来源·双倍",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 95,
+              "cost": 25,
+              "def_score": 17,
+              "frac": 0.833333333333333,
+              "neutral": false,
+              "power": 5,
+              "reversed": false,
+              "start": 2,
+              "trade": true,
+              "v": 78.0
+            },
+            {
+              "att_score": 0,
+              "cost": 30,
+              "def_score": 17,
+              "frac": 1.0,
+              "neutral": true,
+              "power": 10,
+              "reversed": true,
+              "start": 3,
+              "trade": false,
+              "v": -17.0
+            }
+          ]
+        },
+        {
+          "name": "转伤为疗·全队·每次·双倍",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 26,
+              "def_score": 0,
+              "frac": 0.866666666666667,
+              "neutral": true,
+              "power": 5,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "打断·双倍力度",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 95,
+              "cost": 18,
+              "def_score": 0,
+              "frac": 0.6,
+              "neutral": false,
+              "power": 5,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 95.0
+            },
+            {
+              "att_score": 90,
+              "cost": 23,
+              "def_score": 0,
+              "frac": 0.766666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 90.0
+            },
+            {
+              "att_score": 0,
+              "cost": 28,
+              "def_score": 0,
+              "frac": 0.933333333333333,
+              "neutral": true,
+              "power": 15,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "打断",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 90,
+              "cost": 19,
+              "def_score": 0,
+              "frac": 0.633333333333333,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 90.0
+            },
+            {
+              "att_score": 80,
+              "cost": 29,
+              "def_score": 0,
+              "frac": 0.966666666666667,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 80.0
+            }
+          ]
+        },
+        {
+          "name": "延后",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 96,
+              "cost": 10,
+              "def_score": 0,
+              "frac": 0.333333333333333,
+              "neutral": false,
+              "power": 4,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 96.0
+            },
+            {
+              "att_score": 92,
+              "cost": 14,
+              "def_score": 0,
+              "frac": 0.466666666666667,
+              "neutral": false,
+              "power": 8,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 92.0
+            },
+            {
+              "att_score": 88,
+              "cost": 18,
+              "def_score": 0,
+              "frac": 0.6,
+              "neutral": false,
+              "power": 12,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 88.0
+            },
+            {
+              "att_score": 84,
+              "cost": 22,
+              "def_score": 0,
+              "frac": 0.733333333333333,
+              "neutral": false,
+              "power": 16,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 84.0
+            },
+            {
+              "att_score": 81,
+              "cost": 25,
+              "def_score": 0,
+              "frac": 0.833333333333333,
+              "neutral": false,
+              "power": 19,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 81.0
+            }
+          ]
+        },
+        {
+          "name": "沉默攻击者",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 90,
+              "cost": 17,
+              "def_score": 0,
+              "frac": 0.566666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 90.0
+            },
+            {
+              "att_score": 80,
+              "cost": 27,
+              "def_score": 0,
+              "frac": 0.9,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 80.0
+            }
+          ]
+        },
+        {
+          "name": "见招收税",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 90,
+              "cost": 27,
+              "def_score": 0,
+              "frac": 0.9,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 90.0
+            }
+          ]
+        },
+        {
+          "name": "遗志",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 90,
+              "cost": 23,
+              "def_score": 0,
+              "frac": 0.766666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 90.0
+            }
+          ]
+        },
+        {
+          "name": "反击·全体打击",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 90,
+              "cost": 21,
+              "def_score": 0,
+              "frac": 0.7,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 90.0
+            }
+          ]
+        },
+        {
+          "name": "反击·单点打击",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 90,
+              "cost": 17,
+              "def_score": 0,
+              "frac": 0.566666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 90.0
+            },
+            {
+              "att_score": 0,
+              "cost": 27,
+              "def_score": 17,
+              "frac": 0.9,
+              "neutral": true,
+              "power": 20,
+              "reversed": true,
+              "start": 2,
+              "trade": false,
+              "v": -17.0
+            }
+          ]
+        }
+      ],
+      "text": "对全部敌方随从造成 ×2 15 点伤害",
+      "windup": 3
+    },
+    {
+      "attack": "全体·重复",
+      "base_score": 0,
+      "base_v": 0.0,
+      "cost": 29,
+      "counters": [
+        {
+          "name": "改道·全队·每次→来源",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 26,
+              "def_score": 21,
+              "frac": 0.896551724137931,
+              "neutral": true,
+              "power": 10,
+              "reversed": true,
+              "start": 2,
+              "trade": false,
+              "v": -21.0
+            }
+          ]
+        },
+        {
+          "name": "改道·自身·首次→来源",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 18,
+              "def_score": 0,
+              "frac": 0.620689655172414,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "改道·全队·每次→敌方最高生命",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 26,
+              "def_score": 0,
+              "frac": 0.896551724137931,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "转伤为疗·全队·每次",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 27,
+              "def_score": 0,
+              "frac": 0.931034482758621,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "回敬·全队·等量·每次",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 17,
+              "def_score": 21,
+              "frac": 0.586206896551724,
+              "neutral": true,
+              "power": 0,
+              "reversed": true,
+              "start": 1,
+              "trade": false,
+              "v": -21.0
+            }
+          ]
+        },
+        {
+          "name": "回敬·全队·双倍·每次",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 21,
+              "def_score": 21,
+              "frac": 0.724137931034483,
+              "neutral": true,
+              "power": 0,
+              "reversed": true,
+              "start": 2,
+              "trade": false,
+              "v": -21.0
+            }
+          ]
+        },
+        {
+          "name": "减伤·全队·按比例",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.689655172413793,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "护盾·全队",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 21,
+              "def_score": 0,
+              "frac": 0.724137931034483,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "治疗·全队",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.689655172413793,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "护盾·全队·双倍",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.689655172413793,
+              "neutral": true,
+              "power": 5,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "改道·全队·每次→来源·双倍",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 25,
+              "def_score": 21,
+              "frac": 0.862068965517241,
+              "neutral": true,
+              "power": 5,
+              "reversed": true,
+              "start": 2,
+              "trade": false,
+              "v": -21.0
+            }
+          ]
+        },
+        {
+          "name": "转伤为疗·全队·每次·双倍",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 26,
+              "def_score": 0,
+              "frac": 0.896551724137931,
+              "neutral": true,
+              "power": 5,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "打断·双倍力度",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 18,
+              "def_score": 0,
+              "frac": 0.620689655172414,
+              "neutral": true,
+              "power": 5,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "打断",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 19,
+              "def_score": 0,
+              "frac": 0.655172413793103,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "延后",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 10,
+              "def_score": 0,
+              "frac": 0.344827586206897,
+              "neutral": true,
+              "power": 4,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "沉默攻击者",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 17,
+              "def_score": 0,
+              "frac": 0.586206896551724,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "见招收税",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 27,
+              "def_score": 0,
+              "frac": 0.931034482758621,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "遗志",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 23,
+              "def_score": 0,
+              "frac": 0.793103448275862,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "反击·全体打击",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 21,
+              "def_score": 0,
+              "frac": 0.724137931034483,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "反击·单点打击",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 17,
+              "def_score": 0,
+              "frac": 0.586206896551724,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        }
+      ],
+      "text": "对全部敌方随从造成 7 点伤害，再重复 1 次（每次间隔2秒，每次重新付数字）",
+      "windup": 2
+    },
+    {
+      "attack": "全体·双倍·重复",
+      "base_score": 100,
+      "base_v": 100.0,
+      "cost": 29,
+      "counters": [
+        {
+          "name": "改道·全队·每次→来源",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 26,
+              "def_score": 19,
+              "frac": 0.896551724137931,
+              "neutral": true,
+              "power": 10,
+              "reversed": true,
+              "start": 2,
+              "trade": false,
+              "v": -19.0
+            }
+          ]
+        },
+        {
+          "name": "改道·自身·首次→来源",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 72,
+              "cost": 18,
+              "def_score": 0,
+              "frac": 0.620689655172414,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 72.0
+            },
+            {
+              "att_score": 64,
+              "cost": 28,
+              "def_score": 0,
+              "frac": 0.96551724137931,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 64.0
+            }
+          ]
+        },
+        {
+          "name": "改道·全队·每次→敌方最高生命",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 26,
+              "def_score": 0,
+              "frac": 0.896551724137931,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "转伤为疗·全队·每次",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 27,
+              "def_score": 0,
+              "frac": 0.931034482758621,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "回敬·全队·等量·每次",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 100,
+              "cost": 17,
+              "def_score": 19,
+              "frac": 0.586206896551724,
+              "neutral": false,
+              "power": 0,
+              "reversed": false,
+              "start": 1,
+              "trade": true,
+              "v": 81.0
+            }
+          ]
+        },
+        {
+          "name": "回敬·全队·双倍·每次",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 100,
+              "cost": 21,
+              "def_score": 19,
+              "frac": 0.724137931034483,
+              "neutral": false,
+              "power": 0,
+              "reversed": false,
+              "start": 2,
+              "trade": true,
+              "v": 81.0
+            }
+          ]
+        },
+        {
+          "name": "减伤·全队·按比例",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.689655172413793,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "护盾·全队",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 21,
+              "def_score": 0,
+              "frac": 0.724137931034483,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "治疗·全队",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.689655172413793,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "护盾·全队·双倍",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.689655172413793,
+              "neutral": true,
+              "power": 5,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "改道·全队·每次→来源·双倍",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 25,
+              "def_score": 19,
+              "frac": 0.862068965517241,
+              "neutral": true,
+              "power": 5,
+              "reversed": true,
+              "start": 2,
+              "trade": false,
+              "v": -19.0
+            }
+          ]
+        },
+        {
+          "name": "转伤为疗·全队·每次·双倍",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 26,
+              "def_score": 0,
+              "frac": 0.896551724137931,
+              "neutral": true,
+              "power": 5,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "打断·双倍力度",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 95,
+              "cost": 18,
+              "def_score": 0,
+              "frac": 0.620689655172414,
+              "neutral": false,
+              "power": 5,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 95.0
+            },
+            {
+              "att_score": 90,
+              "cost": 23,
+              "def_score": 0,
+              "frac": 0.793103448275862,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 90.0
+            },
+            {
+              "att_score": 0,
+              "cost": 28,
+              "def_score": 0,
+              "frac": 0.96551724137931,
+              "neutral": true,
+              "power": 15,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "打断",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 90,
+              "cost": 19,
+              "def_score": 0,
+              "frac": 0.655172413793103,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 90.0
+            },
+            {
+              "att_score": 80,
+              "cost": 29,
+              "def_score": 0,
+              "frac": 1.0,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 80.0
+            }
+          ]
+        },
+        {
+          "name": "延后",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 96,
+              "cost": 10,
+              "def_score": 0,
+              "frac": 0.344827586206897,
+              "neutral": false,
+              "power": 4,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 96.0
+            },
+            {
+              "att_score": 92,
+              "cost": 14,
+              "def_score": 0,
+              "frac": 0.482758620689655,
+              "neutral": false,
+              "power": 8,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 92.0
+            },
+            {
+              "att_score": 88,
+              "cost": 18,
+              "def_score": 0,
+              "frac": 0.620689655172414,
+              "neutral": false,
+              "power": 12,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 88.0
+            },
+            {
+              "att_score": 0,
+              "cost": 22,
+              "def_score": 0,
+              "frac": 0.758620689655172,
+              "neutral": true,
+              "power": 16,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "沉默攻击者",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 90,
+              "cost": 17,
+              "def_score": 0,
+              "frac": 0.586206896551724,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 90.0
+            },
+            {
+              "att_score": 80,
+              "cost": 27,
+              "def_score": 0,
+              "frac": 0.931034482758621,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 80.0
+            }
+          ]
+        },
+        {
+          "name": "见招收税",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 90,
+              "cost": 27,
+              "def_score": 0,
+              "frac": 0.931034482758621,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 90.0
+            }
+          ]
+        },
+        {
+          "name": "遗志",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 90,
+              "cost": 23,
+              "def_score": 0,
+              "frac": 0.793103448275862,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 90.0
+            }
+          ]
+        },
+        {
+          "name": "反击·全体打击",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 90,
+              "cost": 21,
+              "def_score": 0,
+              "frac": 0.724137931034483,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 90.0
+            }
+          ]
+        },
+        {
+          "name": "反击·单点打击",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 90,
+              "cost": 17,
+              "def_score": 0,
+              "frac": 0.586206896551724,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 90.0
+            },
+            {
+              "att_score": 80,
+              "cost": 27,
+              "def_score": 19,
+              "frac": 0.931034482758621,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 2,
+              "trade": true,
+              "v": 61.0
+            }
+          ]
+        }
+      ],
+      "text": "对全部敌方随从造成 ×2 5 点伤害，再重复 1 次（每次间隔2秒，每次重新付数字）",
+      "windup": 2
+    },
+    {
+      "attack": "逐个全体·双倍",
+      "base_score": 100,
+      "base_v": 100.0,
+      "cost": 30,
+      "counters": [
+        {
+          "name": "改道·全队·每次→来源",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 90,
+              "cost": 26,
+              "def_score": 17,
+              "frac": 0.866666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": true,
+              "v": 73.0
+            }
+          ]
+        },
+        {
+          "name": "改道·自身·首次→来源",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 90,
+              "cost": 18,
+              "def_score": 0,
+              "frac": 0.6,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 90.0
+            },
+            {
+              "att_score": 64,
+              "cost": 28,
+              "def_score": 17,
+              "frac": 0.933333333333333,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 2,
+              "trade": true,
+              "v": 47.0
+            }
+          ]
+        },
+        {
+          "name": "改道·全队·每次→敌方最高生命",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 90,
+              "cost": 26,
+              "def_score": 0,
+              "frac": 0.866666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 90.0
+            }
+          ]
+        },
+        {
+          "name": "转伤为疗·全队·每次",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 27,
+              "def_score": 0,
+              "frac": 0.9,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "回敬·全队·等量·每次",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 100,
+              "cost": 17,
+              "def_score": 17,
+              "frac": 0.566666666666667,
+              "neutral": false,
+              "power": 0,
+              "reversed": false,
+              "start": 1,
+              "trade": true,
+              "v": 83.0
+            }
+          ]
+        },
+        {
+          "name": "回敬·全队·双倍·每次",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 100,
+              "cost": 21,
+              "def_score": 17,
+              "frac": 0.7,
+              "neutral": false,
+              "power": 0,
+              "reversed": false,
+              "start": 2,
+              "trade": true,
+              "v": 83.0
+            }
+          ]
+        },
+        {
+          "name": "减伤·全队·按比例",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 90,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.666666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 90.0
+            },
+            {
+              "att_score": 0,
+              "cost": 30,
+              "def_score": 0,
+              "frac": 1.0,
+              "neutral": true,
+              "power": 20,
+              "reversed": false,
+              "start": 3,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "护盾·全队",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 90,
+              "cost": 21,
+              "def_score": 0,
+              "frac": 0.7,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 90.0
+            }
+          ]
+        },
+        {
+          "name": "治疗·全队",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 90,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.666666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 90.0
+            },
+            {
+              "att_score": 64,
+              "cost": 30,
+              "def_score": 0,
+              "frac": 1.0,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 3,
+              "trade": false,
+              "v": 64.0
+            }
+          ]
+        },
+        {
+          "name": "护盾·全队·双倍",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 95,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.666666666666667,
+              "neutral": false,
+              "power": 5,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 95.0
+            },
+            {
+              "att_score": 0,
+              "cost": 25,
+              "def_score": 0,
+              "frac": 0.833333333333333,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "改道·全队·每次→来源·双倍",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 95,
+              "cost": 25,
+              "def_score": 17,
+              "frac": 0.833333333333333,
+              "neutral": false,
+              "power": 5,
+              "reversed": false,
+              "start": 2,
+              "trade": true,
+              "v": 78.0
+            },
+            {
+              "att_score": 72,
+              "cost": 30,
+              "def_score": 17,
+              "frac": 1.0,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 3,
+              "trade": true,
+              "v": 55.0
+            }
+          ]
+        },
+        {
+          "name": "转伤为疗·全队·每次·双倍",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 26,
+              "def_score": 0,
+              "frac": 0.866666666666667,
+              "neutral": true,
+              "power": 5,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "打断·双倍力度",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 95,
+              "cost": 18,
+              "def_score": 0,
+              "frac": 0.6,
+              "neutral": false,
+              "power": 5,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 95.0
+            },
+            {
+              "att_score": 90,
+              "cost": 23,
+              "def_score": 0,
+              "frac": 0.766666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 90.0
+            },
+            {
+              "att_score": 0,
+              "cost": 28,
+              "def_score": 0,
+              "frac": 0.933333333333333,
+              "neutral": true,
+              "power": 15,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "打断",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 90,
+              "cost": 19,
+              "def_score": 0,
+              "frac": 0.633333333333333,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 90.0
+            },
+            {
+              "att_score": 80,
+              "cost": 29,
+              "def_score": 0,
+              "frac": 0.966666666666667,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 80.0
+            }
+          ]
+        },
+        {
+          "name": "延后",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 96,
+              "cost": 10,
+              "def_score": 0,
+              "frac": 0.333333333333333,
+              "neutral": false,
+              "power": 4,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 96.0
+            },
+            {
+              "att_score": 92,
+              "cost": 14,
+              "def_score": 0,
+              "frac": 0.466666666666667,
+              "neutral": false,
+              "power": 8,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 92.0
+            },
+            {
+              "att_score": 88,
+              "cost": 18,
+              "def_score": 0,
+              "frac": 0.6,
+              "neutral": false,
+              "power": 12,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 88.0
+            },
+            {
+              "att_score": 20,
+              "cost": 22,
+              "def_score": 0,
+              "frac": 0.733333333333333,
+              "neutral": true,
+              "power": 16,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 20.0
+            }
+          ]
+        },
+        {
+          "name": "沉默攻击者",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 90,
+              "cost": 17,
+              "def_score": 0,
+              "frac": 0.566666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 90.0
+            },
+            {
+              "att_score": 80,
+              "cost": 27,
+              "def_score": 0,
+              "frac": 0.9,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 80.0
+            }
+          ]
+        },
+        {
+          "name": "见招收税",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 90,
+              "cost": 27,
+              "def_score": 0,
+              "frac": 0.9,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 90.0
+            }
+          ]
+        },
+        {
+          "name": "遗志",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 90,
+              "cost": 23,
+              "def_score": 0,
+              "frac": 0.766666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 90.0
+            }
+          ]
+        },
+        {
+          "name": "反击·全体打击",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 90,
+              "cost": 21,
+              "def_score": 0,
+              "frac": 0.7,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 90.0
+            }
+          ]
+        },
+        {
+          "name": "反击·单点打击",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 90,
+              "cost": 17,
+              "def_score": 0,
+              "frac": 0.566666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 90.0
+            },
+            {
+              "att_score": 0,
+              "cost": 27,
+              "def_score": 17,
+              "frac": 0.9,
+              "neutral": true,
+              "power": 20,
+              "reversed": true,
+              "start": 2,
+              "trade": false,
+              "v": -17.0
+            }
+          ]
+        }
+      ],
+      "text": "对逐个敌方随从造成 ×2 15 点伤害",
+      "windup": 3
+    },
+    {
+      "attack": "分流",
+      "base_score": 0,
+      "base_v": 0.0,
+      "cost": 30,
+      "counters": [
+        {
+          "name": "改道·全队·每次→来源",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 26,
+              "def_score": 0,
+              "frac": 0.866666666666667,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "改道·自身·首次→来源",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 18,
+              "def_score": 0,
+              "frac": 0.6,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 16,
+              "cost": 28,
+              "def_score": 0,
+              "frac": 0.933333333333333,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 16.0
+            }
+          ]
+        },
+        {
+          "name": "改道·全队·每次→敌方最高生命",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 26,
+              "def_score": 0,
+              "frac": 0.866666666666667,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "转伤为疗·全队·每次",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 27,
+              "def_score": 0,
+              "frac": 0.9,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "回敬·全队·等量·每次",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 17,
+              "def_score": 17,
+              "frac": 0.566666666666667,
+              "neutral": true,
+              "power": 0,
+              "reversed": true,
+              "start": 1,
+              "trade": false,
+              "v": -17.0
+            }
+          ]
+        },
+        {
+          "name": "回敬·全队·双倍·每次",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 21,
+              "def_score": 17,
+              "frac": 0.7,
+              "neutral": true,
+              "power": 0,
+              "reversed": true,
+              "start": 2,
+              "trade": false,
+              "v": -17.0
+            }
+          ]
+        },
+        {
+          "name": "减伤·全队·按比例",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.666666666666667,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "护盾·全队",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 21,
+              "def_score": 0,
+              "frac": 0.7,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "治疗·全队",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.666666666666667,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 3,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "护盾·全队·双倍",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.666666666666667,
+              "neutral": true,
+              "power": 5,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "改道·全队·每次→来源·双倍",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 25,
+              "def_score": 0,
+              "frac": 0.833333333333333,
+              "neutral": true,
+              "power": 5,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "转伤为疗·全队·每次·双倍",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 26,
+              "def_score": 0,
+              "frac": 0.866666666666667,
+              "neutral": true,
+              "power": 5,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "打断·双倍力度",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 19,
+              "cost": 18,
+              "def_score": 0,
+              "frac": 0.6,
+              "neutral": false,
+              "power": 5,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 19.0
+            },
+            {
+              "att_score": 18,
+              "cost": 23,
+              "def_score": 0,
+              "frac": 0.766666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 0,
+              "cost": 28,
+              "def_score": 0,
+              "frac": 0.933333333333333,
+              "neutral": true,
+              "power": 15,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "打断",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 19,
+              "def_score": 0,
+              "frac": 0.633333333333333,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 16,
+              "cost": 29,
+              "def_score": 0,
+              "frac": 0.966666666666667,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 16.0
+            }
+          ]
+        },
+        {
+          "name": "延后",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 10,
+              "def_score": 0,
+              "frac": 0.333333333333333,
+              "neutral": true,
+              "power": 4,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "沉默攻击者",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 17,
+              "def_score": 0,
+              "frac": 0.566666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 16,
+              "cost": 27,
+              "def_score": 0,
+              "frac": 0.9,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 16.0
+            }
+          ]
+        },
+        {
+          "name": "见招收税",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 27,
+              "def_score": 0,
+              "frac": 0.9,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            }
+          ]
+        },
+        {
+          "name": "遗志",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 23,
+              "def_score": 0,
+              "frac": 0.766666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            }
+          ]
+        },
+        {
+          "name": "反击·全体打击",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 21,
+              "def_score": 0,
+              "frac": 0.7,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            }
+          ]
+        },
+        {
+          "name": "反击·单点打击",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 17,
+              "def_score": 0,
+              "frac": 0.566666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 0,
+              "cost": 27,
+              "def_score": 17,
+              "frac": 0.9,
+              "neutral": true,
+              "power": 20,
+              "reversed": true,
+              "start": 2,
+              "trade": false,
+              "v": -17.0
+            }
+          ]
+        }
+      ],
+      "text": "分流总计 19 点伤害：所选的一个敌方随从 12；生命最低的敌方随从 7",
+      "windup": 3
+    },
+    {
+      "attack": "复制",
+      "base_score": 20,
+      "base_v": 20.0,
+      "cost": 30,
+      "counters": [
+        {
+          "name": "改道·全队·每次→来源",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 26,
+              "def_score": 0,
+              "frac": 0.866666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            }
+          ]
+        },
+        {
+          "name": "改道·自身·首次→来源",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 18,
+              "def_score": 0,
+              "frac": 0.6,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 16,
+              "cost": 28,
+              "def_score": 0,
+              "frac": 0.933333333333333,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 16.0
+            }
+          ]
+        },
+        {
+          "name": "改道·全队·每次→敌方最高生命",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 26,
+              "def_score": 0,
+              "frac": 0.866666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            }
+          ]
+        },
+        {
+          "name": "转伤为疗·全队·每次",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 27,
+              "def_score": 0,
+              "frac": 0.9,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "回敬·全队·等量·每次",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 20,
+              "cost": 17,
+              "def_score": 17,
+              "frac": 0.566666666666667,
+              "neutral": true,
+              "power": 0,
+              "reversed": false,
+              "start": 1,
+              "trade": true,
+              "v": 3.0
+            }
+          ]
+        },
+        {
+          "name": "回敬·全队·双倍·每次",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 20,
+              "cost": 21,
+              "def_score": 17,
+              "frac": 0.7,
+              "neutral": true,
+              "power": 0,
+              "reversed": false,
+              "start": 2,
+              "trade": true,
+              "v": 3.0
+            }
+          ]
+        },
+        {
+          "name": "减伤·全队·按比例",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.666666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 0,
+              "cost": 30,
+              "def_score": 0,
+              "frac": 1.0,
+              "neutral": true,
+              "power": 20,
+              "reversed": false,
+              "start": 3,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "护盾·全队",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 21,
+              "def_score": 0,
+              "frac": 0.7,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            }
+          ]
+        },
+        {
+          "name": "治疗·全队",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.666666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 16,
+              "cost": 30,
+              "def_score": 0,
+              "frac": 1.0,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 3,
+              "trade": false,
+              "v": 16.0
+            }
+          ]
+        },
+        {
+          "name": "护盾·全队·双倍",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.666666666666667,
+              "neutral": true,
+              "power": 5,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "改道·全队·每次→来源·双倍",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 25,
+              "def_score": 0,
+              "frac": 0.833333333333333,
+              "neutral": true,
+              "power": 5,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "转伤为疗·全队·每次·双倍",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 26,
+              "def_score": 0,
+              "frac": 0.866666666666667,
+              "neutral": true,
+              "power": 5,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "打断·双倍力度",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 19,
+              "cost": 18,
+              "def_score": 0,
+              "frac": 0.6,
+              "neutral": false,
+              "power": 5,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 19.0
+            },
+            {
+              "att_score": 18,
+              "cost": 23,
+              "def_score": 0,
+              "frac": 0.766666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 0,
+              "cost": 28,
+              "def_score": 0,
+              "frac": 0.933333333333333,
+              "neutral": true,
+              "power": 15,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "打断",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 19,
+              "def_score": 0,
+              "frac": 0.633333333333333,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 16,
+              "cost": 29,
+              "def_score": 0,
+              "frac": 0.966666666666667,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 16.0
+            }
+          ]
+        },
+        {
+          "name": "延后",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 20,
+              "cost": 10,
+              "def_score": 0,
+              "frac": 0.333333333333333,
+              "neutral": false,
+              "power": 4,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 20.0
+            },
+            {
+              "att_score": 20,
+              "cost": 14,
+              "def_score": 0,
+              "frac": 0.466666666666667,
+              "neutral": false,
+              "power": 8,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 20.0
+            },
+            {
+              "att_score": 20,
+              "cost": 18,
+              "def_score": 0,
+              "frac": 0.6,
+              "neutral": false,
+              "power": 12,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 20.0
+            },
+            {
+              "att_score": 20,
+              "cost": 22,
+              "def_score": 0,
+              "frac": 0.733333333333333,
+              "neutral": false,
+              "power": 16,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 20.0
+            },
+            {
+              "att_score": 17,
+              "cost": 25,
+              "def_score": 0,
+              "frac": 0.833333333333333,
+              "neutral": false,
+              "power": 19,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 17.0
+            }
+          ]
+        },
+        {
+          "name": "沉默攻击者",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 17,
+              "def_score": 0,
+              "frac": 0.566666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 16,
+              "cost": 27,
+              "def_score": 0,
+              "frac": 0.9,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 16.0
+            }
+          ]
+        },
+        {
+          "name": "见招收税",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 27,
+              "def_score": 0,
+              "frac": 0.9,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            }
+          ]
+        },
+        {
+          "name": "遗志",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 23,
+              "def_score": 0,
+              "frac": 0.766666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            }
+          ]
+        },
+        {
+          "name": "反击·全体打击",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 21,
+              "def_score": 0,
+              "frac": 0.7,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            }
+          ]
+        },
+        {
+          "name": "反击·单点打击",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 17,
+              "def_score": 0,
+              "frac": 0.566666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 0,
+              "cost": 27,
+              "def_score": 17,
+              "frac": 0.9,
+              "neutral": true,
+              "power": 20,
+              "reversed": true,
+              "start": 2,
+              "trade": false,
+              "v": -17.0
+            }
+          ]
+        }
+      ],
+      "text": "对所选的一个敌方随从造成 19 点伤害，并把实际数值复制给生命最低的敌方随从",
+      "windup": 3
+    },
+    {
+      "attack": "汲取",
+      "base_score": 0,
+      "base_v": 0.0,
+      "cost": 30,
+      "counters": [
+        {
+          "name": "改道·全队·每次→来源",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 26,
+              "def_score": 0,
+              "frac": 0.866666666666667,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "改道·自身·首次→来源",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 18,
+              "def_score": 0,
+              "frac": 0.6,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 16,
+              "cost": 28,
+              "def_score": 0,
+              "frac": 0.933333333333333,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 16.0
+            }
+          ]
+        },
+        {
+          "name": "改道·全队·每次→敌方最高生命",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 26,
+              "def_score": 0,
+              "frac": 0.866666666666667,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "转伤为疗·全队·每次",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 27,
+              "def_score": 0,
+              "frac": 0.9,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "回敬·全队·等量·每次",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 17,
+              "def_score": 0,
+              "frac": 0.566666666666667,
+              "neutral": true,
+              "power": 0,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "回敬·全队·双倍·每次",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 21,
+              "def_score": 18,
+              "frac": 0.7,
+              "neutral": true,
+              "power": 0,
+              "reversed": true,
+              "start": 2,
+              "trade": false,
+              "v": -18.0
+            }
+          ]
+        },
+        {
+          "name": "减伤·全队·按比例",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.666666666666667,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "护盾·全队",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 21,
+              "def_score": 0,
+              "frac": 0.7,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "治疗·全队",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.666666666666667,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 3,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "护盾·全队·双倍",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.666666666666667,
+              "neutral": true,
+              "power": 5,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "改道·全队·每次→来源·双倍",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 25,
+              "def_score": 0,
+              "frac": 0.833333333333333,
+              "neutral": true,
+              "power": 5,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "转伤为疗·全队·每次·双倍",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 26,
+              "def_score": 0,
+              "frac": 0.866666666666667,
+              "neutral": true,
+              "power": 5,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "打断·双倍力度",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 18,
+              "def_score": 0,
+              "frac": 0.6,
+              "neutral": true,
+              "power": 5,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "打断",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 19,
+              "def_score": 0,
+              "frac": 0.633333333333333,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 16,
+              "cost": 29,
+              "def_score": 0,
+              "frac": 0.966666666666667,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 16.0
+            }
+          ]
+        },
+        {
+          "name": "延后",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 10,
+              "def_score": 0,
+              "frac": 0.333333333333333,
+              "neutral": true,
+              "power": 4,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "沉默攻击者",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 17,
+              "def_score": 0,
+              "frac": 0.566666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 16,
+              "cost": 27,
+              "def_score": 0,
+              "frac": 0.9,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 16.0
+            }
+          ]
+        },
+        {
+          "name": "见招收税",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 27,
+              "def_score": 0,
+              "frac": 0.9,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            }
+          ]
+        },
+        {
+          "name": "遗志",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 23,
+              "def_score": 0,
+              "frac": 0.766666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            }
+          ]
+        },
+        {
+          "name": "反击·全体打击",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 21,
+              "def_score": 0,
+              "frac": 0.7,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            }
+          ]
+        },
+        {
+          "name": "反击·单点打击",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 17,
+              "def_score": 0,
+              "frac": 0.566666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 0,
+              "cost": 27,
+              "def_score": 18,
+              "frac": 0.9,
+              "neutral": true,
+              "power": 20,
+              "reversed": true,
+              "start": 2,
+              "trade": false,
+              "v": -18.0
+            }
+          ]
+        }
+      ],
+      "text": "对所选的一个敌方随从造成 18 点伤害，接着以其实际数值：使自身恢复【前一效果的实际数值】的生命",
+      "windup": 3
+    },
+    {
+      "attack": "易伤+双倍打击",
+      "base_score": 0,
+      "base_v": 0.0,
+      "cost": 30,
+      "counters": [
+        {
+          "name": "改道·全队·每次→来源",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 26,
+              "def_score": 0,
+              "frac": 0.866666666666667,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "改道·自身·首次→来源",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 18,
+              "def_score": 0,
+              "frac": 0.6,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 16,
+              "cost": 28,
+              "def_score": 0,
+              "frac": 0.933333333333333,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 16.0
+            }
+          ]
+        },
+        {
+          "name": "改道·全队·每次→敌方最高生命",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 26,
+              "def_score": 0,
+              "frac": 0.866666666666667,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "转伤为疗·全队·每次",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 27,
+              "def_score": 0,
+              "frac": 0.9,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "回敬·全队·等量·每次",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 17,
+              "def_score": 0,
+              "frac": 0.566666666666667,
+              "neutral": true,
+              "power": 0,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "回敬·全队·双倍·每次",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 21,
+              "def_score": 21,
+              "frac": 0.7,
+              "neutral": true,
+              "power": 0,
+              "reversed": true,
+              "start": 2,
+              "trade": false,
+              "v": -21.0
+            }
+          ]
+        },
+        {
+          "name": "减伤·全队·按比例",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.666666666666667,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "护盾·全队",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 21,
+              "def_score": 0,
+              "frac": 0.7,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "治疗·全队",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.666666666666667,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 5,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "护盾·全队·双倍",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.666666666666667,
+              "neutral": true,
+              "power": 5,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "改道·全队·每次→来源·双倍",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 25,
+              "def_score": 0,
+              "frac": 0.833333333333333,
+              "neutral": true,
+              "power": 5,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "转伤为疗·全队·每次·双倍",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 26,
+              "def_score": 0,
+              "frac": 0.866666666666667,
+              "neutral": true,
+              "power": 5,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "打断·双倍力度",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 18,
+              "def_score": 0,
+              "frac": 0.6,
+              "neutral": true,
+              "power": 5,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "打断",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 19,
+              "def_score": 0,
+              "frac": 0.633333333333333,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 16,
+              "cost": 29,
+              "def_score": 0,
+              "frac": 0.966666666666667,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 16.0
+            }
+          ]
+        },
+        {
+          "name": "延后",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 10,
+              "def_score": 0,
+              "frac": 0.333333333333333,
+              "neutral": true,
+              "power": 4,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "沉默攻击者",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 17,
+              "def_score": 0,
+              "frac": 0.566666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 16,
+              "cost": 27,
+              "def_score": 0,
+              "frac": 0.9,
+              "neutral": false,
+              "power": 20,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 16.0
+            }
+          ]
+        },
+        {
+          "name": "见招收税",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 27,
+              "def_score": 0,
+              "frac": 0.9,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            }
+          ]
+        },
+        {
+          "name": "遗志",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 23,
+              "def_score": 0,
+              "frac": 0.766666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            }
+          ]
+        },
+        {
+          "name": "反击·全体打击",
+          "neutralized": false,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 21,
+              "def_score": 0,
+              "frac": 0.7,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 18.0
+            }
+          ]
+        },
+        {
+          "name": "反击·单点打击",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 18,
+              "cost": 17,
+              "def_score": 0,
+              "frac": 0.566666666666667,
+              "neutral": false,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 18.0
+            },
+            {
+              "att_score": 16,
+              "cost": 27,
+              "def_score": 19,
+              "frac": 0.9,
+              "neutral": true,
+              "power": 20,
+              "reversed": true,
+              "start": 2,
+              "trade": true,
+              "v": -3.0
+            }
+          ]
+        }
+      ],
+      "text": "给所选的一个敌方随从施加【易伤】（直到本轮结束）；并 对所选的一个敌方随从造成 ×2 3 点伤害，再重复 1 次（每次间隔2秒，每次重新付数字）",
+      "windup": 3
+    },
+    {
+      "attack": "狂振+全体·双倍",
+      "base_score": 0,
+      "base_v": 0.0,
+      "cost": 30,
+      "counters": [
+        {
+          "name": "改道·全队·每次→来源",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 26,
+              "def_score": 0,
+              "frac": 0.866666666666667,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "改道·自身·首次→来源",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 18,
+              "def_score": 0,
+              "frac": 0.6,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "改道·全队·每次→敌方最高生命",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 26,
+              "def_score": 0,
+              "frac": 0.866666666666667,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "转伤为疗·全队·每次",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 27,
+              "def_score": 0,
+              "frac": 0.9,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "回敬·全队·等量·每次",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 17,
+              "def_score": 22,
+              "frac": 0.566666666666667,
+              "neutral": true,
+              "power": 0,
+              "reversed": true,
+              "start": 1,
+              "trade": false,
+              "v": -22.0
+            }
+          ]
+        },
+        {
+          "name": "回敬·全队·双倍·每次",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 21,
+              "def_score": 22,
+              "frac": 0.7,
+              "neutral": true,
+              "power": 0,
+              "reversed": true,
+              "start": 2,
+              "trade": false,
+              "v": -22.0
+            }
+          ]
+        },
+        {
+          "name": "减伤·全队·按比例",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.666666666666667,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "护盾·全队",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 21,
+              "def_score": 0,
+              "frac": 0.7,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "治疗·全队",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.666666666666667,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "护盾·全队·双倍",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 20,
+              "def_score": 0,
+              "frac": 0.666666666666667,
+              "neutral": true,
+              "power": 5,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "改道·全队·每次→来源·双倍",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 25,
+              "def_score": 0,
+              "frac": 0.833333333333333,
+              "neutral": true,
+              "power": 5,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "转伤为疗·全队·每次·双倍",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 26,
+              "def_score": 0,
+              "frac": 0.866666666666667,
+              "neutral": true,
+              "power": 5,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "打断·双倍力度",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 18,
+              "def_score": 0,
+              "frac": 0.6,
+              "neutral": true,
+              "power": 5,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "打断",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 19,
+              "def_score": 0,
+              "frac": 0.633333333333333,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "延后",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 10,
+              "def_score": 0,
+              "frac": 0.333333333333333,
+              "neutral": true,
+              "power": 4,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "沉默攻击者",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 17,
+              "def_score": 0,
+              "frac": 0.566666666666667,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "见招收税",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 27,
+              "def_score": 0,
+              "frac": 0.9,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "遗志",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 23,
+              "def_score": 0,
+              "frac": 0.766666666666667,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "反击·全体打击",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 21,
+              "def_score": 0,
+              "frac": 0.7,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 2,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "反击·单点打击",
+          "neutralized": true,
+          "tries": [
+            {
+              "att_score": 0,
+              "cost": 17,
+              "def_score": 0,
+              "frac": 0.566666666666667,
+              "neutral": true,
+              "power": 10,
+              "reversed": false,
+              "start": 1,
+              "trade": false,
+              "v": 0.0
+            }
+          ]
+        }
+      ],
+      "text": "给全部敌方随从施加【狂振】（直到本轮结束）；并 对全部敌方随从造成 ×2 2 点伤害",
+      "windup": 3
+    }
+  ]
+}

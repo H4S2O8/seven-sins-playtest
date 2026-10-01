@@ -1,0 +1,39 @@
+{
+  "seed": "0x714da95c",
+  "trials": 20000,
+  "method": "与范围攻防抢词同一词袋分布，但将取得的词按实例计数；一枚词不能同时装在防御和另一张定点攻击上。分别统计只有反制技能可装、反制和另一张定点攻击同时可装。仅审持词，不审AP、构筑数值、受伤结算或胜负。",
+  "rows": [
+    {
+      "rounds": 2,
+      "attackerReadyPct": 49.54,
+      "attackSamples": 9908,
+      "defenderAnyWordCounterPct": 9.94,
+      "defenderCounterAndSeparateTargetedAttackPct": 0.88,
+      "defenderTargetedAttackReadyPct": 29.94
+    },
+    {
+      "rounds": 4,
+      "attackerReadyPct": 75.31,
+      "attackSamples": 15063,
+      "defenderAnyWordCounterPct": 36.98,
+      "defenderCounterAndSeparateTargetedAttackPct": 8.19,
+      "defenderTargetedAttackReadyPct": 41.75
+    },
+    {
+      "rounds": 6,
+      "attackerReadyPct": 87.45,
+      "attackSamples": 17490,
+      "defenderAnyWordCounterPct": 63.1,
+      "defenderCounterAndSeparateTargetedAttackPct": 24.12,
+      "defenderTargetedAttackReadyPct": 55.3
+    },
+    {
+      "rounds": 8,
+      "attackerReadyPct": 93.91,
+      "attackSamples": 18781,
+      "defenderAnyWordCounterPct": 80.44,
+      "defenderCounterAndSeparateTargetedAttackPct": 42.92,
+      "defenderTargetedAttackReadyPct": 67.19
+    }
+  ]
+}

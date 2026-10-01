@@ -1,0 +1,119 @@
+{
+ "_说明": "战斗特效（打击感）配置。每个事件可以有：sound 音效名、hitstop 顿帧秒数、shake [幅度, 秒]、shake_per_amount 每点数值额外幅度、amount_cap 数值上限、big_text 大字模板、big_size 字号、size_per_n 每层连锁加字号、color 颜色、fly 是否把分数飞向比分牌、fly_text 飞字模板、asset 素材场景（相对 res://assets/）、lifetime 素材存活秒数、pet 桌宠台词（随机一句）、pet_mood、pet_dur、variants 按 who=mine/foe 覆盖。模板里的 {score} {amount} {n} {name} {skill} 会被替换。详见 docs/素材与特效接口.md",
+ "events": {
+  "cast": {
+   "sound": "cast",
+   "asset": "fx/cast.tscn",
+   "lifetime": 1.2
+  },
+  "hit": {
+   "sound": "hit",
+   "shake": [
+    0.004,
+    0.18
+   ],
+   "shake_per_amount": 0.0012,
+   "amount_cap": 25,
+   "asset": "fx/hit.tscn",
+   "lifetime": 1.0
+  },
+  "big_hit": {
+   "sound": "hit",
+   "hitstop": 0.05,
+   "shake": [
+    0.012,
+    0.3
+   ],
+   "shake_per_amount": 0.0012,
+   "amount_cap": 25,
+   "min_amount": 10,
+   "asset": "fx/big_hit.tscn",
+   "lifetime": 1.2
+  },
+  "heal": {
+   "sound": "heal",
+   "asset": "fx/heal.tscn",
+   "lifetime": 1.2
+  },
+  "block": {
+   "sound": "block",
+   "shake": [
+    0.006,
+    0.15
+   ],
+   "asset": "fx/block.tscn",
+   "lifetime": 1.0
+  },
+  "shield": {
+   "sound": "block",
+   "asset": "fx/shield.tscn",
+   "lifetime": 1.0
+  },
+  "trigger": {
+   "sound": "magic",
+   "asset": "fx/trigger.tscn",
+   "lifetime": 1.2
+  },
+  "interrupt": {
+   "sound": "interrupt",
+   "shake": [
+    0.01,
+    0.25
+   ],
+   "asset": "fx/interrupt.tscn",
+   "lifetime": 1.2
+  },
+  "kill": {
+   "sound": "down",
+   "hitstop": 0.13,
+   "shake": [
+    0.03,
+    0.45
+   ],
+   "big_size": 72,
+   "fly": true,
+   "asset": "fx/kill.tscn",
+   "lifetime": 2.0,
+   "variants": {
+    "mine": {
+     "big_text": "击倒！ +{score}",
+     "color": "#e0b85c",
+     "fly_text": "+{score}",
+     "pet": [
+      "打倒啦！+{score} 分！",
+      "漂亮！又拿下一个！",
+      "就是这样！"
+     ],
+     "pet_mood": "excited",
+     "pet_dur": 3.0
+    },
+    "foe": {
+     "big_text": "被击倒 -{score}",
+     "color": "#e0605a",
+     "fly_text": "+{score}",
+     "pet": [
+      "呜……{name}倒下了。它休息一轮就会回来的。"
+     ],
+     "pet_mood": "sad",
+     "pet_dur": 3.5
+    }
+   }
+  },
+  "chain": {
+   "min": 2,
+   "window": 1,
+   "sound": "magic",
+   "big_text": "连锁 ×{n}",
+   "big_size": 48,
+   "size_per_n": 6,
+   "color": "#c8a0ff",
+   "shake": [
+    0.0,
+    0.25
+   ],
+   "shake_per_n": 0.006,
+   "asset": "fx/chain.tscn",
+   "lifetime": 1.2
+  }
+ }
+}

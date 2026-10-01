@@ -4,12 +4,15 @@
 
 **在线试玩：** https://h4s2o8.github.io/seven-sins-playtest/ （`main` 每次更新后自动构建发布）
 
+**《词战》在线试玩：** https://h4s2o8.github.io/seven-sins-playtest/word-combat/
+
 ## 目录
 
 | 目录 | 内容 |
 | --- | --- |
 | [`sin-squad-core/`](sin-squad-core/) | 游戏本体：规则核心（TypeScript）、电脑对手、模拟器，以及 `web/` 下的网页界面、立绘和背景音乐 |
 | [`sin-squad-source/`](sin-squad-source/) | 早期 Godot 版本源码和完整设计稿 |
+| [`word-combat-lab/`](word-combat-lab/) | 《词战：拼词对决》：用词语拼出招式的 5 对 5 卡牌对战（Godot 4.7.1 源码在 `godot/`，网页版导出在 `web/`，设计与审计记录在根目录） |
 
 ## 本地运行
 

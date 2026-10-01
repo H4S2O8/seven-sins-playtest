@@ -1,0 +1,462 @@
+{
+ "steps": [
+  {
+   "id": "welcome",
+   "title": "欢迎",
+   "text": "欢迎来到《词战》！这是一个“用词语拼出招式”的卡牌对战游戏。\n别担心，我会从最开头一点一点教你，每一步都只讲一件事。大约 10 分钟。",
+   "target": "",
+   "wait": "next",
+   "pos": "center"
+  },
+  {
+   "id": "goal",
+   "title": "怎么才算赢",
+   "text": "你和对手各有 5 张随从卡。\n把对手的随从打倒就能得分，先到 100 分的人获胜（打满 10 轮则比分高者获胜）。",
+   "target": "",
+   "wait": "next",
+   "pos": "center"
+  },
+  {
+   "id": "scarecrow",
+   "title": "今天的对手",
+   "text": "今天你的对手是【稻草人】：它只会站着，不会动脑筋。\n放心大胆地练，亲手把它们打碎吧！",
+   "target": "",
+   "wait": "next",
+   "pos": "center"
+  },
+  {
+   "id": "cards",
+   "title": "认识随从卡",
+   "text": "这里是你的 5 张随从卡。每张卡就是桌上的一个小人。",
+   "target": "b:cards",
+   "wait": "next"
+  },
+  {
+   "id": "unit",
+   "title": "一张卡长什么样",
+   "text": "一张卡上有：\n· 名字（上面）和【生命】（右上角的绿色数字，被打到 0 就倒下）；\n· 关键词（金色小条，给它一个特殊能力，现在先不管）；\n· 一个【技能】：这张卡会的招式。一个人物只有一招，但一招里可以连好几个效果。现在还是空的。",
+   "target": "b:unit0",
+   "wait": "next"
+  },
+  {
+   "id": "budget",
+   "title": "100 点预算",
+   "text": "上面这条是【点数预算】：所有卡的生命、以及技能里填的数字，加起来最多 100 点。\n想要更强，就得花更多点数；花完就没了。所以“越强越贵”是这个游戏的基本规矩。",
+   "target": "b:budget",
+   "wait": "next"
+  },
+  {
+   "id": "pool",
+   "title": "词库",
+   "text": "这是你的【词库】。每一个招式都是用词拼出来的，词用掉了就没了，不够就拼不出来。\n教学里发给你的词刚好够用，放心。",
+   "target": "b:pool",
+   "wait": "next"
+  },
+  {
+   "id": "edit",
+   "title": "装第一个技能",
+   "text": "现在，我们给第一张卡装一个技能。点它下面的【编辑】。",
+   "target": "b:edit0",
+   "wait": "editor_open",
+   "hint_click": true
+  },
+  {
+   "id": "ed_left",
+   "title": "编辑窗口",
+   "text": "这是编辑窗口。左边是这张卡本身：名字、生命、关键词、它的技能。\n右边是给这张卡设计技能的地方。",
+   "target": "e:left",
+   "wait": "next"
+  },
+  {
+   "id": "ed_free",
+   "title": "自由拼词",
+   "text": "右边默认就是【自由拼词】：你可以像搭积木一样，自己添加效果节点、选目标、填数字，想怎么组合都行。\n第一次可能不知从何下手——所以游戏还准备了一些【备选模板】，我们先用它们学。",
+   "target": "e:complex",
+   "wait": "next"
+  },
+  {
+   "id": "ed_tab",
+   "title": "备选模板",
+   "text": "点上面的【备选模板】。注意：它们只是“现成的备选招式”，用来省事，并不是你唯一能用的技能。",
+   "target": "e:tab_simple",
+   "wait": "tab:simple"
+  },
+  {
+   "id": "ed_tpl",
+   "title": "选一个招式",
+   "text": "我们挑最简单的【单点打击】：对一个敌人造成伤害。它已经选好了（金色边框）。",
+   "target": "e:tpl:atk1",
+   "wait": "next"
+  },
+  {
+   "id": "ed_param",
+   "title": "填数字",
+   "text": "这里的【伤害】是一个数字，你可以拖动它。\n先把它拖到 5（对手的稻草人有 10 点生命，我们分两次打）。",
+   "target": "e:param:n",
+   "wait": "param:n:5"
+  },
+  {
+   "id": "ed_preview",
+   "title": "你看到的就是会发生的",
+   "text": "看这里的预览：你拼的东西自动变成了一句话。\n这个游戏最重要的规矩：你拼什么词，它就做什么事，看到的就是会发生的。",
+   "target": "e:preview",
+   "wait": "next"
+  },
+  {
+   "id": "ed_cost",
+   "title": "越强越贵",
+   "text": "费用怎么算？\n操作费 = 起步 5 点 + 你填的数字 + 用到的词语的价格。\n现在是：{cost} = 5 + {nums} + {price}。\n数字越大、词越多，就越贵——越强越贵。\n旁边的“起手 ≥ {windup} 秒”是操作费除以 10，意思是：越贵的招越慢，至少要这么多秒才起效。",
+   "target": "e:preview",
+   "wait": "next"
+  },
+  {
+   "id": "ed_name",
+   "title": "起名字",
+   "text": "给招式起个名字吧。可以自己填，也可以点旁边的【随机】按钮，让游戏按你的效果随机起一个。",
+   "target": "e:name",
+   "wait": "dice"
+  },
+  {
+   "id": "ed_dbl",
+   "title": "更强，更贵",
+   "text": "想更强？把【双倍次数】拖到 1 试试：伤害会翻倍，但“双倍”这个词也要花点数，所以费用会上涨。",
+   "target": "e:param:dbl",
+   "wait": "param:dbl:1"
+  },
+  {
+   "id": "ed_dbl0",
+   "title": "拖回 0",
+   "text": "看到了吗：伤害变大了，费用也涨了。这就是取舍。\n我们先练手，把双倍次数拖回 0，再继续。",
+   "target": "e:param:dbl",
+   "wait": "param:dbl:0"
+  },
+  {
+   "id": "ed_install",
+   "title": "装进去",
+   "text": "点【装上这个技能】，把它装到这张卡上。",
+   "target": "e:install",
+   "wait": "installed"
+  },
+  {
+   "id": "ed_commit",
+   "title": "确认",
+   "text": "装好了。最后点【确认修改】，把它写进这张卡。",
+   "target": "e:commit",
+   "wait": "committed"
+  },
+  {
+   "id": "back",
+   "title": "装好了",
+   "text": "看，剑灵学会了你的新技能。费用也写在旁边了。",
+   "target": "b:unit0",
+   "wait": "next"
+  },
+  {
+   "id": "start",
+   "title": "开战",
+   "text": "准备好了！点右上角的【开始对战】。",
+   "target": "b:finish",
+   "wait": "build_finish"
+  },
+  {
+   "id": "w_b1",
+   "title": "",
+   "text": "",
+   "target": "",
+   "wait": "screen:battle",
+   "hide": true
+  },
+  {
+   "id": "b_table",
+   "title": "牌桌",
+   "text": "这是牌桌。你坐在近的这一边，你的随从站在你面前；对面是稻草人。",
+   "target": "",
+   "wait": "next",
+   "pos": "top"
+  },
+  {
+   "id": "b_ap",
+   "title": "行动点",
+   "text": "右边这堆金色筹码是你的【行动点】：{ap} 点。出招要花行动点，每轮会回复一些，但有上限。",
+   "target": "b:ap",
+   "wait": "next"
+  },
+  {
+   "id": "b_timeline",
+   "title": "时间轴",
+   "text": "这条线是一轮里的 20 秒。每个招式都会在你选的那一秒“起效”。\n后面你会看到，时间点很重要。",
+   "target": "b:timeline",
+   "wait": "next"
+  },
+  {
+   "id": "b_hand",
+   "title": "第一次出招",
+   "text": "这是你的手牌：就是你装的技能。\n点一下你的【{skill}】。",
+   "target": "b:hand",
+   "wait": "select_skill"
+  },
+  {
+   "id": "b_target",
+   "title": "选目标",
+   "text": "它要打谁？点桌上任意一个稻草人（它会出现金色的圈）。",
+   "target": "b:foe",
+   "wait": "target_picked"
+  },
+  {
+   "id": "b_preview",
+   "title": "出招预判",
+   "text": "看右下角的【出招预判】：它会告诉你这招预计会怎样、要小心什么。\n现在它说：稻草人会掉 5 点生命，不会被打倒。",
+   "target": "b:preview",
+   "wait": "next"
+  },
+  {
+   "id": "b_start",
+   "title": "起效时间",
+   "text": "这里选“第几秒起效”。第一次就用默认的，不用动。\n（以后遇到对手的行动，你可以把时间拖到它之前或之后，拆它的招。）",
+   "target": "b:start",
+   "wait": "next"
+  },
+  {
+   "id": "b_declare",
+   "title": "宣告",
+   "text": "点【宣告 ✓】，把这个行动定下来。",
+   "target": "b:confirm",
+   "wait": "declared"
+  },
+  {
+   "id": "b_finish",
+   "title": "完成宣告",
+   "text": "你可以宣告多个行动，只要行动点够。这轮就一个，点【完成宣告】。",
+   "target": "b:finish_decl",
+   "wait": "pass"
+  },
+  {
+   "id": "w_b1r",
+   "title": "",
+   "text": "",
+   "target": "",
+   "wait": "round_done",
+   "hide": true
+  },
+  {
+   "id": "b_result",
+   "title": "演出",
+   "text": "打中了！稻草人还剩 5 点生命。\n每轮战斗是这样：双方先把行动都说好（宣告），然后按时间轴从头演一遍。",
+   "target": "",
+   "wait": "next",
+   "pos": "top"
+  },
+  {
+   "id": "b_next",
+   "title": "下一轮",
+   "text": "点【下一轮】。",
+   "target": "b:next",
+   "wait": "next_round"
+  },
+  {
+   "id": "w_d",
+   "title": "",
+   "text": "",
+   "target": "",
+   "wait": "screen:draft",
+   "hide": true
+  },
+  {
+   "id": "d_intro",
+   "title": "抽词",
+   "text": "新的一轮开始了，先【抽词】：每轮出现两袋词，先手的人先挑一袋，剩下的一袋归后手。\n这一轮对手是先手，所以它先挑；剩下的归你。你拿到的词会放进词库。\n（下面的黄色提示条是“辅助轮”，会告诉你这袋词可能凑出什么招。）",
+   "target": "",
+   "wait": "next",
+   "pos": "top"
+  },
+  {
+   "id": "d_go",
+   "title": "收下",
+   "text": "点【收下并继续】。",
+   "target": "d:continue",
+   "wait": "draft_done"
+  },
+  {
+   "id": "w_a",
+   "title": "",
+   "text": "",
+   "target": "",
+   "wait": "screen:adjust",
+   "hide": true
+  },
+  {
+   "id": "a_intro",
+   "title": "调整",
+   "text": "接着是【调整】阶段：每轮你有几次机会改一张卡：换技能、改数字、改生命都行。\n这一轮稻草人要在第 6 秒挥拳打你的剑灵。我们给第二张卡【盾卫】装一个【减伤】——减伤不只能给自己，也可以套在队友头上。",
+   "target": "b:unit1",
+   "wait": "next"
+  },
+  {
+   "id": "a_edit",
+   "title": "编辑",
+   "text": "点盾卫的【编辑】。",
+   "target": "b:edit1",
+   "wait": "editor_open"
+  },
+  {
+   "id": "a_tab",
+   "title": "备选模板",
+   "text": "再点【备选模板】。",
+   "target": "e:tab_simple",
+   "wait": "tab:simple"
+  },
+  {
+   "id": "a_tpl",
+   "title": "选减伤",
+   "text": "在右边选【减伤】模板：让自己受到的伤害变小。",
+   "target": "e:tpl:mit",
+   "wait": "tpl:mit"
+  },
+  {
+   "id": "a_tgt",
+   "title": "套在别人头上",
+   "text": "把【目标】改成「所选一个」：这样出招时，你可以把减伤套在任何一个队友身上。",
+   "target": "e:param:tgt",
+   "wait": "param:tgt:choose"
+  },
+  {
+   "id": "a_install",
+   "title": "装入",
+   "text": "点【装上这个技能】。",
+   "target": "e:install",
+   "wait": "installed"
+  },
+  {
+   "id": "a_commit",
+   "title": "确认",
+   "text": "点【确认修改】。确认后会直接进入战斗（没用完的调整次数会作废）。",
+   "target": "e:commit",
+   "wait": "committed"
+  },
+  {
+   "id": "w_b2",
+   "title": "",
+   "text": "",
+   "target": "",
+   "wait": "foe_declared",
+   "hide": true
+  },
+  {
+   "id": "r2_foe",
+   "title": "对手先手",
+   "text": "这一轮对手是先手。看上面的红色框：稻草人已经宣告了它的行动——它要在第 {foe_t} 秒挥拳打你。\n你能看到对手宣告的全部行动；而你先手时，对手也能看到你的。",
+   "target": "b:foeacts",
+   "wait": "next",
+   "pos": "bottom"
+  },
+  {
+   "id": "r2_tl",
+   "title": "时间点很重要",
+   "text": "时间轴上的红色标记就是它出拳的时刻。想防住它，你的减伤必须比它更早起效。",
+   "target": "b:timeline",
+   "wait": "next"
+  },
+  {
+   "id": "r2_mit",
+   "title": "防守",
+   "text": "点盾卫的【减伤】。",
+   "target": "b:hand:def",
+   "wait": "select_skill"
+  },
+  {
+   "id": "r2_mit_tgt",
+   "title": "选谁",
+   "text": "减伤要套在谁头上？稻草人要打的是剑灵，所以点你的【剑灵】。",
+   "target": "b:mine0",
+   "wait": "target_picked"
+  },
+  {
+   "id": "r2_slider",
+   "title": "抢在前面",
+   "text": "把【起效】拖到比第 {foe_t} 秒更早的时间（例如第 3 秒）。减伤要先生效，才能挡住后面的拳头。",
+   "target": "b:start",
+   "wait": [
+    "start:2",
+    "start:3",
+    "start:4",
+    "start:5"
+   ]
+  },
+  {
+   "id": "r2_conf",
+   "title": "宣告",
+   "text": "点【宣告 ✓】。",
+   "target": "b:confirm",
+   "wait": "declared"
+  },
+  {
+   "id": "r2_more",
+   "title": "再来一个行动",
+   "text": "只要行动点够，一轮可以宣告好几个行动。再来一个：点你的【{skill}】，去打那个只剩 5 点生命的稻草人（血条没满的那个）。",
+   "target": "b:hand:atk",
+   "wait": "select_skill"
+  },
+  {
+   "id": "r2_tgt",
+   "title": "选目标",
+   "text": "点那个血条没满的稻草人。",
+   "target": "b:foe:hurt",
+   "wait": "target_picked"
+  },
+  {
+   "id": "r2_conf2",
+   "title": "宣告",
+   "text": "点【宣告 ✓】。",
+   "target": "b:confirm",
+   "wait": "declared"
+  },
+  {
+   "id": "r2_fin",
+   "title": "完成宣告",
+   "text": "行动说完了，点【完成宣告】，开始演出。",
+   "target": "b:finish_decl",
+   "wait": "pass"
+  },
+  {
+   "id": "w_b2r",
+   "title": "",
+   "text": "",
+   "target": "",
+   "wait": "round_done",
+   "hide": true
+  },
+  {
+   "id": "r2_res",
+   "title": "结果",
+   "text": "漂亮！你的减伤挡下了一部分伤害，稻草人也被你打碎了。\n打倒一个随从，得分 = 它的最大生命。被打倒的随从会休息 1 轮，然后回来。",
+   "target": "",
+   "wait": "next",
+   "pos": "top"
+  },
+  {
+   "id": "g1",
+   "title": "毕业了！",
+   "text": "你已经学会了整个流程：\n① 抽词  ② 调整你的卡  ③ 宣告行动（可以多个）  ④ 看时间轴演出  ⑤ 打倒对手的随从得分。",
+   "target": "",
+   "wait": "next",
+   "pos": "center"
+  },
+  {
+   "id": "g2",
+   "title": "要点",
+   "text": "几点要记住：\n· 越强越贵：数字大、词多，操作费就高，起效也慢。\n· 先手的人先说完所有行动，后手能看到全部——所以后手可以拆招。\n· 战斗里的【出招预判】会随时告诉你预计的效果和风险，可以在设置里关掉辅助轮。",
+   "target": "",
+   "wait": "next",
+   "pos": "center"
+  },
+  {
+   "id": "g3",
+   "title": "出发",
+   "text": "接下来可以去打真正的对手（电脑）了：从最简单的难度开始就好。祝你玩得开心！",
+   "target": "",
+   "wait": "next",
+   "pos": "center",
+   "button": "回到主菜单"
+  }
+ ]
+}

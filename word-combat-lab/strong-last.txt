@@ -1,0 +1,3 @@
+已完成审计并写入 [strong-report.md](/C:/Users/27654/Documents/New%20project/word-combat-lab/strong-report.md)。
+
+报告审计了 **14 种**基于词库真实词实例的强组合，列出构筑数量与数字、行动点、公开／回应／20 秒结算顺序、胜利路径、前提与反制，并单列规则歧义及严重度前五名。未修改 `README.md` 或 `词库.tsv`，也未调用网络。
