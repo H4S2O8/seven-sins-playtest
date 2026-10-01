@@ -1,4 +1,4 @@
-name: Build and deploy
+name: Deploy word combat
 
 on:
   push:
@@ -18,24 +18,18 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: sin-squad-core
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: sin-squad-core/package-lock.json
-      - run: npm ci
-      - run: npm run typecheck
-      - run: npm test
-      - run: npm run build:web
+      - name: Check playable export
+        run: |
+          test -s pages/index.html
+          test -s pages/index.js
+          test -s pages/index.pck
+          test -s pages/index.wasm
       - uses: actions/upload-pages-artifact@v3
         if: github.ref == 'refs/heads/main'
         with:
-          path: sin-squad-v3
+          path: pages
 
   deploy:
     if: github.ref == 'refs/heads/main'

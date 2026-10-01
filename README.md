@@ -1,32 +1,18 @@
-# 七罪暗队 · Sin Squad
+# 拼词对决 · Word Combat
 
-德州扑克的下注 × 酒馆战棋的自动战斗。每手从牌池排出 3 名人物、只亮 1 名，靠下注讲故事，揭开后自动开打。
+双人轮流选词、编辑五张随从卡，在公开出招与应对后沿同一条时间轴结算的游戏原型。当前可与电脑对战。
 
-**在线试玩：** https://h4s2o8.github.io/seven-sins-playtest/ （`main` 每次更新后自动构建发布）
+**[在线试玩](https://h4s2o8.github.io/seven-sins-playtest/)**。`main` 更新后，GitHub Pages 发布 `pages/` 中的 Godot 网页版。
 
 ## 目录
 
 | 目录 | 内容 |
 | --- | --- |
-| [`sin-squad-core/`](sin-squad-core/) | 游戏本体：规则核心（TypeScript）、电脑对手、模拟器，以及 `web/` 下的网页界面、立绘和背景音乐 |
-| [`sin-squad-source/`](sin-squad-source/) | 早期 Godot 版本源码和完整设计稿 |
+| [`word-combat/godot/`](word-combat/godot/) | Godot 游戏源码、词库、编辑器、电脑对手和测试 |
+| [`word-combat/`](word-combat/) | 规则、强组合与反制审计、参考结算器和模拟结果 |
+| [`pages/`](pages/) | 当前可玩的 Web 导出，由 Pages 直接发布 |
+| [`sin-squad-core/`](sin-squad-core/) | 旧版七罪暗队源码，仅作历史留存 |
 
-## 本地运行
+本地运行和规则说明见 [Godot 原型文档](word-combat/godot/README.md)。当前仍是原型；强组合、反制与费用平衡尚在验证中。
 
-```sh
-cd sin-squad-core
-npm install
-npm test
-npm run build:web      # 打包到仓库根目录的 sin-squad-v3/（不进 git）
-python3 -m http.server --directory ../sin-squad-v3
-```
-
-## 分支约定
-
-- `main` 是唯一主线，永远保持可玩。
-- 新功能从最新的 `main` 开短分支，做完合回 `main` 后删除分支。
-- 打包产物 `sin-squad-v3/` 不提交，由 GitHub Actions 在 `main` 上构建并发布到 GitHub Pages。
-
-## 早期原型
-
-无欲之所第一幕试玩、Four Desires、Oath Fall、卡牌对决、面具牌桌，以及 Godot 版七罪暗队的网页导出，已从 `main` 移除，完整保留在 tag [`prototypes-archive-2026-09`](../../tree/prototypes-archive-2026-09)。
+要更新网页游戏，用 Godot 4.7.1 打开 `word-combat/godot/project.godot`，运行核心测试后将 Web Release 导出到仓库的 `pages/index.html`，提交源码和导出产物。`main` 上的 Pages 工作流会检查导出文件并发布。

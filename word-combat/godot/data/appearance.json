@@ -1,0 +1,48 @@
+{
+  "_说明": "外观对照表：随从卡上装了什么，身上就多出什么。规则越靠后优先级越要看 priority（大者胜）。asset 为 res://assets/ 下的 glTF 路径（存在就用，不存在就用 proc 指定的代码占位件）。",
+  "slots": ["head", "back", "shoulder_l", "shoulder_r", "hand_l", "hand_r", "chest", "waist", "aura", "ghost"],
+  "bodies": {
+    "剑": {"asset": "models/minions/body_sword.glb", "proc": "body_sword", "color": "#b45a52"},
+    "盾": {"asset": "models/minions/body_shield.glb", "proc": "body_shield", "color": "#5a7fa8"},
+    "咒": {"asset": "models/minions/body_mage.glb", "proc": "body_mage", "color": "#7a58a8"},
+    "弓": {"asset": "models/minions/body_bow.glb", "proc": "body_bow", "color": "#58a064"},
+    "魂": {"asset": "models/minions/body_wisp.glb", "proc": "body_wisp", "color": "#a85a82"}
+  },
+  "scale": {"hp_ref": 14, "per_hp": 0.012, "min": 0.82, "max": 1.3},
+  "rules": [
+    {"when": {"kw": "首挡"}, "slot": "hand_l", "asset": "models/attachments/shield.glb", "proc": "shield", "color": "#c8ccd6", "priority": 9},
+    {"when": {"kw": "不屈"}, "slot": "back", "asset": "models/attachments/cape.glb", "proc": "cape", "color": "#a02828", "priority": 9},
+    {"when": {"kw": "回击"}, "slot": "shoulder_r", "asset": "models/attachments/thorns.glb", "proc": "thorns", "color": "#d8d0b8", "priority": 9},
+    {"when": {"kw": "回春"}, "slot": "shoulder_l", "asset": "models/attachments/vines.glb", "proc": "vines", "color": "#4fae5c", "priority": 9},
+    {"when": {"kw": "同调"}, "slot": "chest", "asset": "models/attachments/twin_ring.glb", "proc": "twin_ring", "color": "#6fd0e0", "priority": 8},
+    {"when": {"kw": "免疫狂振"}, "slot": "chest", "asset": "models/attachments/amulet.glb", "proc": "amulet", "color": "#d84a3c", "priority": 7},
+    {"when": {"kw": "免疫牵连"}, "slot": "chest", "asset": "models/attachments/amulet.glb", "proc": "amulet", "color": "#8c5cd8", "priority": 7},
+    {"when": {"kw": "免疫升华"}, "slot": "chest", "asset": "models/attachments/amulet.glb", "proc": "amulet", "color": "#e0b84a", "priority": 7},
+
+    {"when": {"word": "双倍"}, "slot": "aura", "asset": "models/attachments/ring_double.glb", "proc": "ring_double", "color": "#f0c850", "priority": 6},
+    {"when": {"word": "重复"}, "slot": "ghost", "asset": "models/attachments/afterimage.glb", "proc": "afterimage", "color": "#9ab0ff", "priority": 6},
+
+    {"when": {"template": "time"}, "slot": "hand_l", "asset": "models/attachments/hourglass.glb", "proc": "hourglass", "color": "#e0c88a", "priority": 7},
+    {"when": {"node": "time"}, "slot": "hand_l", "asset": "models/attachments/hourglass.glb", "proc": "hourglass", "color": "#e0c88a", "priority": 6},
+    {"when": {"template": "reflect"}, "slot": "hand_l", "asset": "models/attachments/mirror.glb", "proc": "mirror", "color": "#cfe8f0", "priority": 6},
+    {"when": {"template": "redirect"}, "slot": "hand_l", "asset": "models/attachments/mirror.glb", "proc": "mirror", "color": "#b8a0e8", "priority": 6},
+    {"when": {"template": "convert"}, "slot": "hand_l", "asset": "models/attachments/mirror.glb", "proc": "mirror", "color": "#90e0a8", "priority": 6},
+    {"when": {"node": "status"}, "slot": "hand_r", "asset": "models/attachments/wand.glb", "proc": "wand", "color": "#c070e0", "priority": 5},
+    {"when": {"node": "remove"}, "slot": "hand_r", "asset": "models/attachments/wand.glb", "proc": "wand", "color": "#70c8e0", "priority": 5},
+
+    {"when": {"tag": "atk"}, "slot": "hand_r", "asset": "models/attachments/sword.glb", "proc": "sword", "color": "#d8dce8", "priority": 5},
+    {"when": {"tag": "heal"}, "slot": "head", "asset": "models/attachments/halo.glb", "proc": "halo", "color": "#ffe27a", "priority": 5},
+    {"when": {"tag": "def"}, "slot": "hand_l", "asset": "models/attachments/buckler.glb", "proc": "buckler", "color": "#7aa0d8", "priority": 4},
+    {"when": {"tag": "trap"}, "slot": "waist", "asset": "models/attachments/chains.glb", "proc": "chains", "color": "#8a8f9c", "priority": 5},
+    {"when": {"tag": "ctl"}, "slot": "head", "asset": "models/attachments/mask.glb", "proc": "mask", "color": "#e8e4d8", "priority": 5},
+    {"when": {"tag": "buff"}, "slot": "back", "asset": "models/attachments/book.glb", "proc": "book", "color": "#8a5a30", "priority": 3}
+  ],
+  "status_fx": {
+    "狂振": {"proc": "aura_fire", "color": "#e04a30"},
+    "易伤": {"proc": "aura_crack", "color": "#e09040"},
+    "沉默": {"proc": "aura_lock", "color": "#8a90a0"},
+    "护盾": {"proc": "aura_shield", "color": "#5aa0f0"},
+    "牵连": {"proc": "aura_link", "color": "#a070e0"},
+    "升华": {"proc": "aura_gold", "color": "#f0c850"}
+  }
+}

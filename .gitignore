@@ -1,5 +1,8 @@
 # 打包产物：由 GitHub Actions 在 main 上构建发布，不进 git
 /sin-squad-v3/
 
+# Godot generated editor cache and imported assets
+/word-combat/godot/.godot/
+
 # Claude Code 本地工作区
 /.claude/worktrees/

@@ -1,0 +1,62 @@
+{
+  "seed": "0x7719c53a",
+  "trials": 30000,
+  "method": "12个随机基础词开局含一条合法基础攻击模板，后续每轮两袋各20词、基础55%进阶40%奇术5%、每袋至少10基础。进攻方追全部敌方伤害；防守方在全队治疗、全队减伤、全队伤转疗三条词路线中追最接近者。轮流先选。这里只算词是否持有，不算AP、构筑数字、能否在同刻救活，也不把“全队减伤”一律判为足以承受。",
+  "rows": [
+    {
+      "rounds": 1,
+      "attackReadyPct": 40.99,
+      "conditionedOnAttack": {
+        "allHealPct": 0.23,
+        "allMitigationPct": 0.94,
+        "allConversionPct": 0,
+        "anyWordRoutePct": 1.11
+      },
+      "attackSamples": 12296
+    },
+    {
+      "rounds": 2,
+      "attackReadyPct": 46.47,
+      "conditionedOnAttack": {
+        "allHealPct": 3.88,
+        "allMitigationPct": 9.95,
+        "allConversionPct": 0.01,
+        "anyWordRoutePct": 12.33
+      },
+      "attackSamples": 13942
+    },
+    {
+      "rounds": 3,
+      "attackReadyPct": 68.58,
+      "conditionedOnAttack": {
+        "allHealPct": 9.09,
+        "allMitigationPct": 17.08,
+        "allConversionPct": 0.1,
+        "anyWordRoutePct": 21.48
+      },
+      "attackSamples": 20574
+    },
+    {
+      "rounds": 4,
+      "attackReadyPct": 73.34,
+      "conditionedOnAttack": {
+        "allHealPct": 22.73,
+        "allMitigationPct": 35.77,
+        "allConversionPct": 1.4,
+        "anyWordRoutePct": 43.64
+      },
+      "attackSamples": 22002
+    },
+    {
+      "rounds": 6,
+      "attackReadyPct": 86.46,
+      "conditionedOnAttack": {
+        "allHealPct": 48.46,
+        "allMitigationPct": 59.69,
+        "allConversionPct": 12.26,
+        "anyWordRoutePct": 69.17
+      },
+      "attackSamples": 25938
+    }
+  ]
+}

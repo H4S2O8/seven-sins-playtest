@@ -1,0 +1,15 @@
+{
+  "seed": "0x771c9e44",
+  "trials": 30000,
+  "method": "三种随机基础应对起手；后续两袋各20，允许重复，基础55%进阶40%奇术5%，常用词加权；进攻追全部、分流及能指定守者的目标词，防守若有转移起手则追每次与全部，轮流先选。只审取得词实例，不审技能安置、两次换词限制、AP或战斗。",
+  "aoeByRound2Pct": 61.92,
+  "redirectStarterGivenAoePct": 34.24,
+  "conditionedOnAoeAndRedirect": {
+    "samples": 6361,
+    "splitByRound4Pct": 56.15,
+    "everyByRound4Pct": 89.78,
+    "bothByRound4Pct": 50.28,
+    "sweepByRound6Pct": 96.75,
+    "allThreeUpgradesPct": 48.67
+  }
+}

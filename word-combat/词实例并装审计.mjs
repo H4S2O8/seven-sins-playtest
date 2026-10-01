@@ -1,0 +1,52 @@
+import {readFileSync,writeFileSync} from 'node:fs';
+const words=readFileSync(new URL('./词库.tsv',import.meta.url),'utf8').trim().split(/\r?\n/).slice(1).map(s=>{const [id,,,rarity]=s.split('\t');return{id,rarity};});
+const pools=Object.fromEntries(['基础','进阶','奇术'].map(r=>[r,words.filter(w=>w.rarity===r).map(w=>w.id)]));
+const basic=new Set(pools['基础']);
+const starts=[['001','002','064','065','026','015','016'],['001','002','021','015','016'],['001','002','022','015','016'],['001','002','028','015','016']];
+const attack=['001','002','015','016','027'];
+const targeted=['001','002','064','065','026','015','016'];
+const heal=['003','004','014','016','027'];
+const mitigate=['005','014','016','027'];
+const convert=['010','008','002','003','004','014','016','027','038','039','062','020'];
+let seed=0x714da95c;
+function rand(){seed^=seed<<13;seed^=seed>>>17;seed^=seed<<5;return(seed>>>0)/4294967296;}
+function pick(a){return a[Math.floor(rand()*a.length)];}
+function draw(){const n=rand();return pick(pools[n<.55?'基础':n<.95?'进阶':'奇术']);}
+function opening(){const s=new Set(pick(starts));while(s.size<12)s.add(pick(pools['基础']));return [...s];}
+function bag(){let s;do{s=new Set();while(s.size<20)s.add(draw());}while([...s].filter(x=>basic.has(x)).length<10);return [...s];}
+function counts(xs){const m=new Map();for(const x of xs)m.set(x,(m.get(x)||0)+1);return m;}
+function need(xs){return counts(xs);}
+function missing(h,recipe){let n=0;for(const [k,v] of recipe)n+=Math.max(0,v-(h.get(k)||0));return n;}
+function gain(h,b,recipe){const bh=counts(b);let n=0;for(const[k,v]of recipe)n+=Math.min(bh.get(k)||0,Math.max(0,v-(h.get(k)||0)));return n;}
+function add(h,b){for(const x of b)h.set(x,(h.get(x)||0)+1);}
+function union(a,b){return need([...a,...b]);}
+const options=[need(heal),need(mitigate),need(convert)];
+const optionsAndAttack=[union(heal,targeted),union(mitigate,targeted),union(convert,targeted)];
+const trials=20000,rows=[];
+for(const rounds of [2,4,6,8]){
+ let nAttack=0,nOnly=0,nBoth=0,nCanStillAttack=0;
+ for(let t=0;t<trials;t++){
+  const a=counts(opening()),d=counts(opening());
+  for(let r=1;r<=rounds;r++){
+   const l=bag(),q=bag();
+   const first=r%2===1;
+   const asL=gain(a,l,need(attack)),asQ=gain(a,q,need(attack));
+   const dsL=Math.max(...options.map(o=>gain(d,l,o))),dsQ=Math.max(...options.map(o=>gain(d,q,o)));
+   const aL=first?asL>=asQ:!(dsL>=dsQ);
+   add(a,aL?l:q);add(d,aL?q:l);
+  }
+  if(missing(a,need(attack))===0){
+   nAttack++;
+   const only=options.some(o=>missing(d,o)===0);
+   const both=optionsAndAttack.some(o=>missing(d,o)===0);
+   nOnly+=+only;nBoth+=+both;nCanStillAttack+=+(missing(d,need(targeted))===0);
+  }
+ }
+ rows.push({rounds,attackerReadyPct:+(100*nAttack/trials).toFixed(2),attackSamples:nAttack,
+  defenderAnyWordCounterPct:nAttack?+(100*nOnly/nAttack).toFixed(2):null,
+  defenderCounterAndSeparateTargetedAttackPct:nAttack?+(100*nBoth/nAttack).toFixed(2):null,
+  defenderTargetedAttackReadyPct:nAttack?+(100*nCanStillAttack/nAttack).toFixed(2):null});
+}
+const result={seed:'0x714da95c',trials,method:'与范围攻防抢词同一词袋分布，但将取得的词按实例计数；一枚词不能同时装在防御和另一张定点攻击上。分别统计只有反制技能可装、反制和另一张定点攻击同时可装。仅审持词，不审AP、构筑数值、受伤结算或胜负。',rows};
+writeFileSync(new URL('./词实例并装结果.json',import.meta.url),JSON.stringify(result,null,2)+'\n');
+console.log(rows);
